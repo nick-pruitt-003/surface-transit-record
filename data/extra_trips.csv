@@ -8,13 +8,44 @@ TARTA,Route 18 to Meijer Alexis then walk into Michigan,0000010,America/New_York
 TARTA,Walk back from Michigan then Route 18 to Downtown,0000010,America/New_York,+Michigan state line on Jackman Rd (walk);-83.5847;41.7342@15:40|+Brooke Park & Jackman (TARTA 18);-83.5845;41.7289@15:48|+TARTA downtown hub;-83.5317;41.6557@16:15
 TARTA,Walk back from Michigan then Route 18 to Downtown,0000010,America/New_York,+Michigan state line on Jackman Rd (walk);-83.5847;41.7342@18:40|+Brooke Park & Jackman (TARTA 18);-83.5845;41.7289@18:48|+TARTA downtown hub;-83.5317;41.6557@19:15
 TARTA,Walk back from Michigan then Route 18 to Downtown,0000010,America/New_York,+Michigan state line on Jackman Rd (walk);-83.5847;41.7342@20:16|+Brooke Park & Jackman (TARTA 18);-83.5845;41.7289@20:24|+TARTA downtown hub;-83.5317;41.6557@20:51
-Dartmouth Coach,New York -> Hanover 08:30,1111111,America/New_York,+Dartmouth Coach NYC stop (Midtown East);-73.9772;40.7527@08:30|=ibus:900@13:15
-Dartmouth Coach,Hanover -> Boston South Station 14:40,1111111,America/New_York,=ibus:900@14:40|=ibus:3598@17:25
 Advance Transit,Green Route Hanover -> Norwich VT (King Arthur),1111111,America/New_York,=ibus:900@13:45|+King Arthur Flour (Norwich VT);-72.3107;43.6987@13:55
 Advance Transit,Green Route Norwich VT -> Hanover,1111111,America/New_York,+King Arthur Flour (Norwich VT);-72.3107;43.6987@14:18|=ibus:900@14:23
-Dartmouth Coach,Hanover -> Boston South Station 13:40 (arrival assumed 16:25),1111111,America/New_York,=ibus:900@13:40|=ibus:3598@16:25
 On foot (jog),Hanover Inn -> Vermont end of Ledyard Bridge,1111111,America/New_York,=ibus:900@13:16|+Ledyard Bridge Vermont end;-72.3003;43.7036@13:27
 On foot (jog),Vermont end of Ledyard Bridge -> Hanover Inn,1111111,America/New_York,+Ledyard Bridge Vermont end;-72.3003;43.7036@13:28|=ibus:900@13:39
 MBTA Commuter Rail,Providence Line 885 South Station -> Providence,1111111,America/New_York,=ibus:3598@21:40|=amtrak:PVD@22:56
 MBTA Commuter Rail,Providence Line Providence -> South Station (arrival assumed),1111111,America/New_York,=amtrak:PVD@23:25|=ibus:3598@24:40
 MBTA subway,North Station -> South Station (Orange + Red Line; times assumed),1111111,America/New_York,=amtrak:BON@21:12|=ibus:3598@21:32
+Dartmouth Coach,Hanover -> Boston South Station 03:00,1111111,America/New_York,=ibus:900@03:00|=ibus:3598@06:00
+Dartmouth Coach,Hanover -> Boston South Station 04:40,1111111,America/New_York,=ibus:900@04:40|=ibus:3598@07:40
+Dartmouth Coach,Hanover -> Boston South Station 06:40,1111111,America/New_York,=ibus:900@06:40|=ibus:3598@09:30
+Dartmouth Coach,Hanover -> Boston South Station 07:40,1111111,America/New_York,=ibus:900@07:40|=ibus:3598@10:25
+Dartmouth Coach,Hanover -> Boston South Station 08:40,1111111,America/New_York,=ibus:900@08:40|=ibus:3598@11:25
+Dartmouth Coach,Hanover -> Boston South Station 09:40,1111111,America/New_York,=ibus:900@09:40|=ibus:3598@12:25
+Dartmouth Coach,Hanover -> Boston South Station 10:40,1111111,America/New_York,=ibus:900@10:40|=ibus:3598@13:25
+Dartmouth Coach,Hanover -> Boston South Station 11:40,1111111,America/New_York,=ibus:900@11:40|=ibus:3598@14:25
+Dartmouth Coach,Hanover -> Boston South Station 12:40,1111111,America/New_York,=ibus:900@12:40|=ibus:3598@15:25
+Dartmouth Coach,Hanover -> Boston South Station 13:40,1111111,America/New_York,=ibus:900@13:40|=ibus:3598@16:25
+Dartmouth Coach,Hanover -> Boston South Station 14:40,1111111,America/New_York,=ibus:900@14:40|=ibus:3598@17:25
+Dartmouth Coach,Hanover -> Boston South Station 16:40,1111111,America/New_York,=ibus:900@16:40|=ibus:3598@19:25
+Dartmouth Coach,Boston South Station -> Hanover 07:30,1111111,America/New_York,=ibus:3598@07:30|=ibus:900@10:30
+Dartmouth Coach,Boston South Station -> Hanover 09:30,1111111,America/New_York,=ibus:3598@09:30|=ibus:900@12:00
+Dartmouth Coach,Boston South Station -> Hanover 11:30,1111111,America/New_York,=ibus:3598@11:30|=ibus:900@14:00
+Dartmouth Coach,Boston South Station -> Hanover 12:30,1111111,America/New_York,=ibus:3598@12:30|=ibus:900@15:00
+Dartmouth Coach,Boston South Station -> Hanover 13:30,1111111,America/New_York,=ibus:3598@13:30|=ibus:900@16:00
+Dartmouth Coach,Boston South Station -> Hanover 14:30,1111111,America/New_York,=ibus:3598@14:30|=ibus:900@17:00
+Dartmouth Coach,Boston South Station -> Hanover 15:30,1111111,America/New_York,=ibus:3598@15:30|=ibus:900@18:30
+Dartmouth Coach,Boston South Station -> Hanover 16:30,1111111,America/New_York,=ibus:3598@16:30|=ibus:900@19:30
+Dartmouth Coach,Boston South Station -> Hanover 17:30,1111111,America/New_York,=ibus:3598@17:30|=ibus:900@20:30
+Dartmouth Coach,Boston South Station -> Hanover 18:30,1111111,America/New_York,=ibus:3598@18:30|=ibus:900@21:00
+Dartmouth Coach,Boston South Station -> Hanover 19:30,1111111,America/New_York,=ibus:3598@19:30|=ibus:900@22:00
+Dartmouth Coach,Boston South Station -> Hanover 21:30,1111111,America/New_York,=ibus:3598@21:30|=ibus:900@24:00
+Dartmouth Coach,Hanover -> New York 06:30,1111111,America/New_York,=ibus:900@06:30|+Dartmouth Coach NYC (150 E 42nd St);-73.9759;40.7510@11:30
+Dartmouth Coach,Hanover -> New York 09:30,0000111,America/New_York,=ibus:900@09:30|+Dartmouth Coach NYC (150 E 42nd St);-73.9759;40.7510@14:45
+Dartmouth Coach,Hanover -> New York 14:30,1111101,America/New_York,=ibus:900@14:30|+Dartmouth Coach NYC (150 E 42nd St);-73.9759;40.7510@19:30
+Dartmouth Coach,New York -> Hanover 08:30,1111110,America/New_York,+Dartmouth Coach NYC (150 E 42nd St);-73.9759;40.7510@08:30|=ibus:900@13:15
+Dartmouth Coach,New York -> Hanover 10:30 (Sun),0000001,America/New_York,+Dartmouth Coach NYC (150 E 42nd St);-73.9759;40.7510@10:30|=ibus:900@15:15
+Dartmouth Coach,New York -> Hanover 13:30,1110000,America/New_York,+Dartmouth Coach NYC (150 E 42nd St);-73.9759;40.7510@13:30|=ibus:900@19:00
+Dartmouth Coach,New York -> Hanover 13:30 (Thu Fri),0001100,America/New_York,+Dartmouth Coach NYC (150 E 42nd St);-73.9759;40.7510@13:30|=ibus:900@19:30
+Dartmouth Coach,New York -> Hanover 13:30 (Sat Sun),0000011,America/New_York,+Dartmouth Coach NYC (150 E 42nd St);-73.9759;40.7510@13:30|=ibus:900@18:45
+Dartmouth Coach,New York -> Hanover 16:30 (Fri),0000100,America/New_York,+Dartmouth Coach NYC (150 E 42nd St);-73.9759;40.7510@16:30|=ibus:900@22:45
+Dartmouth Coach,New York -> Hanover 16:30 (Sun),0000001,America/New_York,+Dartmouth Coach NYC (150 E 42nd St);-73.9759;40.7510@16:30|=ibus:900@21:15
