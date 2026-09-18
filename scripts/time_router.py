@@ -231,7 +231,9 @@ class TimeRouter:
         for t in order:
             tgt = self.target_set(t)
             out, pred, best = self.scan(labels, tgt)
-            if not out: return None, layers + [('unreachable', t)]
+            if not out:
+                self.last_outs = [o for _, o, _ in layers]
+                return None, layers + [('unreachable', t)]
             layers.append((t, out, pred)); labels = out
         self.last_outs = [out for _, out, _ in layers]
         # reconstruct backwards
