@@ -18,8 +18,9 @@ def _finish(order):
 
 
 class Search:
-    def __init__(self, R, start, t0, prefix, workers):
+    def __init__(self, R, start, t0, prefix, workers, done=()):
         self.R = R; self.start = start; self.t0 = t0; self.workers = workers
+        self.done = set(done)   # states already collected before the start
         self.prefix = []
         for p in prefix:
             self.prefix.append(p if p.startswith('@') else R.state_names.index(p))
@@ -59,10 +60,10 @@ class Search:
         return order, f, legs
 
     def all_states(self, legs):
-        return len(self.covered(legs) | {int(self.R.state[self.start])}) >= N_STATES
+        return len(self.covered(legs) | {int(self.R.state[self.start])} | self.done) >= N_STATES
 
     def missing(self, legs):
-        cov = self.covered(legs) | {int(self.R.state[self.start])}
+        cov = self.covered(legs) | {int(self.R.state[self.start])} | self.done
         return [s for s in range(N_STATES) if s not in cov]
 
     def repair(self, order, pool):
@@ -79,10 +80,10 @@ class Search:
         n = len(order); P = self.P; out = []
         for i in range(P, n):
             seg = order[i:i + 1]; rest = order[:i] + order[i + 1:]
-            for j in range(P, n):
+            for j in range(max(P, i - 8), min(n, i + 9)):   # relocate within 8 positions
                 if j != i: out.append(rest[:j] + seg + rest[j:])
         for i in range(P, n - 1):
-            for j in range(i + 2, min(n, i + 12) + 1):
+            for j in range(i + 2, min(n, i + 6) + 1):        # reverse segments of up to 6
                 out.append(order[:i] + order[i:j][::-1] + order[j:])
         return out
 
@@ -157,17 +158,20 @@ def main():
     ap.add_argument('--seed', help='result pickle'); ap.add_argument('--seed-states', help='comma list of state abbreviations in visiting order'); ap.add_argument('--prefix', default='')
     ap.add_argument('--budget', type=float, default=900); ap.add_argument('--workers', type=int, default=1)
     ap.add_argument('--days', type=int, default=20); ap.add_argument('--out', required=True)
+    ap.add_argument('--done', default='', help='comma list of state abbreviations already collected before --start')
     a = ap.parse_args()
     t0 = datetime.fromisoformat(a.at).replace(tzinfo=ZoneInfo(a.tz))
     R = TimeRouter(load_feeds(), t0.date(), a.days)
     start = R.stops_matching(a.start)[0]
+    from common import ABBR
+    inv = {v: k for k, v in ABBR.items()}
+    done = [R.state_names.index(inv[x.strip()]) for x in a.done.split(',') if x.strip()]
     if a.seed_states:
-        from common import ABBR
-        inv = {v: k for k, v in ABBR.items()}
         seed = [R.state_names.index(inv[x.strip()]) for x in a.seed_states.split(',')]
     else:
         seed = [x for x in pickle.load(open(a.seed, 'rb'))['order'] if isinstance(x, (int, np.integer)) and x < N_STATES]
-    S = Search(R, start, t0.timestamp(), [x.strip() for x in a.prefix.split(',') if x.strip()], a.workers)
+    seed = [x for x in seed if x not in done]
+    S = Search(R, start, t0.timestamp(), [x.strip() for x in a.prefix.split(',') if x.strip()], a.workers, done)
     order, f, legs = S.run(seed, a.budget)
     if f == float('inf'): print('FINAL unreachable'); return
     print('FINAL', round((f - t0.timestamp()) / 3600, 1), 'h', R.fmt_time(f, [l for l in legs if l[0] == 'ride'][-1][4]))
