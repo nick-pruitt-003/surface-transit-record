@@ -13,6 +13,14 @@ from scipy.sparse.csgraph import dijkstra
 from common import load_graph
 
 N_STATES = 48
+_SOLVER = None
+
+
+def _evaluate(order):
+    """Module-level so a forked worker pool can call it; uses the solver set
+    by local_search (workers inherit it through fork)."""
+    S = _SOLVER
+    return S.penalised(order)[0] if S.turn_penalty > 0 else S.exact(order)
 
 
 class Solver:
@@ -68,7 +76,7 @@ class Solver:
         for k in keys:
             if k[0] == 'r': groups[k[2]].add(gid[k[1]])
         self.cell_groups = {c: len(g) for c, g in groups.items()}
-        self.turn_penalty = 0.0; self.frequent = 4
+        self.turn_penalty = 0.0; self.frequent = 4; self.workers = 1; self.max_evals = 400
 
     # --- shortest paths -------------------------------------------------
     def multi_source(self, src_idx, src_val, pred=False):
@@ -226,17 +234,25 @@ class Solver:
         print('start', round(c), 'km,', len(order), 'required, turnarounds', self.turnarounds(path))
         t0 = time.time(); improved = True; it = 0
         proxy = lambda o: sum(self.D[o[i], o[i + 1]] for i in range(len(o) - 1) if o[i] < N_STATES and o[i + 1] < N_STATES)
+        global _SOLVER
+        _SOLVER = self
+        evaluate = _evaluate
+        pool = None
+        if self.workers > 1:
+            import multiprocessing as mp
+            pool = mp.get_context('fork').Pool(self.workers)
         while improved and time.time() - t0 < budget:
             improved = False; base = proxy(order)
-            for o in sorted(self.moves(order), key=proxy):
-                if time.time() - t0 > budget or proxy(o) - base > 800: break
-                if self.turn_penalty > 0:
-                    cc, _ = self.penalised(o)
-                else:
-                    cc = self.exact(o)
-                it += 1
-                if cc < c - 1:
-                    c = cc; order = o; improved = True
+            cands = [o for o in sorted(self.moves(order), key=proxy) if proxy(o) - base <= 800][:self.max_evals]
+            batch = max(1, self.workers * 2)
+            for i in range(0, len(cands), batch):
+                if time.time() - t0 > budget: break
+                chunk = cands[i:i + batch]
+                costs = pool.map(evaluate, chunk) if pool else [evaluate(o) for o in chunk]
+                it += len(chunk)
+                j = int(np.argmin(costs))
+                if costs[j] < c - 1:
+                    c = costs[j]; order = chunk[j]; improved = True
                     print('  improve', round(c), 'km after', it, 'evals', round(time.time() - t0), 's'); break
             if improved:
                 self.cache.clear()   # bound memory; prefixes are recomputed on demand
@@ -244,6 +260,7 @@ class Solver:
                 if self.turn_penalty > 0: c, path = self.penalised(order)
                 if len(self.covered(path)) < N_STATES:
                     order = self.ensure_covered(order); c, path = self.exact_full(order)
+        if pool: pool.close()
         return order, c, path
 
 
@@ -254,11 +271,13 @@ def main():
     ap.add_argument('--prefix', default='', help='comma list of states / @stop names locked at the front')
     ap.add_argument('--turn-penalty', type=float, default=0.0, help='km-equivalent charged per reversal on a corridor with < 4 parallel services')
     ap.add_argument('--transfer-penalty', type=float, default=None, help='km-equivalent per transfer (graph default is 10)')
+    ap.add_argument('--workers', type=int, default=1, help='parallel evaluations (fork); 6-8 on an M-series Mac')
+    ap.add_argument('--max-evals', type=int, default=400, help='candidates tried per round before declaring a local optimum')
     ap.add_argument('--out', required=True)
     a = ap.parse_args()
     graph, cedges = load_graph(a.graph)
     S = Solver(graph, cedges, [x.strip() for x in a.prefix.split(',') if x.strip()])
-    S.turn_penalty = a.turn_penalty
+    S.turn_penalty = a.turn_penalty; S.workers = a.workers; S.max_evals = a.max_evals
     if a.transfer_penalty is not None:
         S.w[S.hub_edge] = max(a.transfer_penalty / 2.0, 1e-6)   # two hub edges per transfer
     order = S.initial_order()
