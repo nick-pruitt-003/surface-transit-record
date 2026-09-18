@@ -1,2 +1,5 @@
 agency,route,days,tz,stops
 Northwestern Stage Lines,NWL 710 Spokane -> Pasco,1111111,America/Los_Angeles,Spokane@10:45|Ritzville@11:45/11:55|Pasco Bus Stop@13:10
+Concord Coach Lines,Boston -> Portland 08:00,1111111,America/New_York,=ibus:3598@08:00|=ibus:1304@09:55
+Concord Coach Lines,Portland -> Boston 10:30,1111111,America/New_York,=ibus:1304@10:30|=ibus:3598@12:25
+Northwestern Stage Lines,NWL Boise -> Pasco (La Grande time approximate),1111111,America/Los_Angeles,=ibus:1465@07:15|=flix:1e6e4e25-e311-47fd-92cf-c4829424d136@10:35/10:40|=ibus:2048@13:10
