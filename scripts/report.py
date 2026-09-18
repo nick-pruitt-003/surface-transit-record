@@ -71,7 +71,19 @@ for i,(ce,st,_) in enumerate(seq):
         legs.append(dict(route=lab[i],cells=[legs[-1]['cells'][-1],ce],cellset={ce},states=[st] if st>=0 else [],km=hav((legs[-1]['cells'][-1][0]*GRID,legs[-1]['cells'][-1][1]*GRID),(ce[0]*GRID,ce[1]*GRID))))
         continue
     if not legs or legs[-1]['route']!=lab[i]:
-        legs.append(dict(route=lab[i],cells=[ce],cellset={ce},states=[st] if st>=0 else [],km=0.0))
+        if legs:
+            # the move from the previous leg's last cell to this one is real travel:
+            # keep it on the previous bus if that bus serves this cell (an out-and-back
+            # whose return is a single hop), otherwise it opens the new leg
+            pl=legs[-1]; pc=pl['cells'][-1]; gap=hav((pc[0]*GRID,pc[1]*GRID),(ce[0]*GRID,ce[1]*GRID))
+            if pl['route'] in cell_routes.get(ce,()) and ce in pl['cellset']:
+                pl['km']+=gap; pl['cells'].append(ce); pl['turnaround']=True
+                if st>=0 and (not pl['states'] or pl['states'][-1]!=st): pl['states'].append(st)
+                legs.append(dict(route=lab[i],cells=[ce],cellset={ce},states=[st] if st>=0 else [],km=0.0))
+            else:
+                legs.append(dict(route=lab[i],cells=[pc,ce],cellset={ce},states=[st] if st>=0 else [],km=gap))
+        else:
+            legs.append(dict(route=lab[i],cells=[ce],cellset={ce},states=[st] if st>=0 else [],km=0.0))
     else:
         l=legs[-1]; l['km']+=hav((l['cells'][-1][0]*GRID,l['cells'][-1][1]*GRID),(ce[0]*GRID,ce[1]*GRID)); l['cells'].append(ce); l['cellset'].add(ce)
         if st>=0 and (not l['states'] or l['states'][-1]!=st): l['states'].append(st)

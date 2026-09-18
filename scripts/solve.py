@@ -25,6 +25,8 @@ class Solver:
         ek = list(cedges.keys())
         self.a = np.array([self.idx[e[0]] for e in ek]); self.b = np.array([self.idx[e[1]] for e in ek])
         self.w = np.array([max(cedges[e][0], 1e-6) for e in ek])
+        # edges touching a stop hub carry the transfer cost; overridable at solve time
+        self.hub_edge = np.array([keys[e[0]][0] == 's' or keys[e[1]][0] == 's' for e in ek])
         # a node "counts" for a state if it is a stop hub or a route cell adjacent to one
         isstop = np.array([keys[v][0] == 's' for v in self.nodes])
         self.nearstop = isstop.copy()
@@ -251,11 +253,14 @@ def main():
     ap.add_argument('--seed', help='result pickle whose state order seeds the search')
     ap.add_argument('--prefix', default='', help='comma list of states / @stop names locked at the front')
     ap.add_argument('--turn-penalty', type=float, default=0.0, help='km-equivalent charged per reversal on a corridor with < 4 parallel services')
+    ap.add_argument('--transfer-penalty', type=float, default=None, help='km-equivalent per transfer (graph default is 10)')
     ap.add_argument('--out', required=True)
     a = ap.parse_args()
     graph, cedges = load_graph(a.graph)
     S = Solver(graph, cedges, [x.strip() for x in a.prefix.split(',') if x.strip()])
     S.turn_penalty = a.turn_penalty
+    if a.transfer_penalty is not None:
+        S.w[S.hub_edge] = max(a.transfer_penalty / 2.0, 1e-6)   # two hub edges per transfer
     order = S.initial_order()
     if a.seed:
         seed = [x for x in pickle.load(open(a.seed, 'rb'))['order'] if x < N_STATES]
