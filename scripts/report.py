@@ -107,7 +107,13 @@ for n,l in enumerate(legs,1):
             stopstate.setdefault(stabbr,nm)
     for stabbr,nm in stopstate.items():
         if stabbr in abbr.values() and stabbr not in seen: seen.append(stabbr); fresh.append(f"{stabbr} @ {nm.rsplit(', ',1)[0]}")
-    board=stop_at(l['cells'][0]) or (stop_at(legs[n-2]['cells'][-1]) if n>1 else ''); alight=stop_at(l['cells'][-1])
+    def first_stop(cells):
+        for c in cells:
+            nm=stop_at(c)
+            if nm: return nm
+        return ''
+    board=first_stop(l['cells'][:3]) or (first_stop(legs[n-2]['cells'][-3:][::-1]) if n>1 else '')
+    alight=first_stop(l['cells'][-3:][::-1])
     local=car.startswith('LOCAL'); speed=25 if local else 90
     note='out-and-back, return on same corridor' if l.get('turnaround') else ''
     lines.append(f"{n:2d}. {car} — {long_ or short}  [{l['km']:.0f} km]  {board} -> {alight}  states: {'>'.join(sts)}"+(f"  NEW: {','.join(fresh)}" if fresh else ""))
