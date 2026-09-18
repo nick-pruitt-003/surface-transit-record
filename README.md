@@ -50,3 +50,22 @@ Data files are found by glob in `data/` (override with `BUS48_DATA=/path`).
 - Carriers not in the NTAD atlas (Tufesa, Turimex, El Expreso, Omnibus…) are invisible.
 - No timetables yet; Amtrak GTFS `stop_times.txt` is in the zip for a later time-aware pass.
 - Route names are grouped by carrier + sorted endpoint names, so "A -> B" and "B -> A" merge.
+
+## Timetable routing (real schedules)
+`scripts/time_router.py` and `scripts/time_search.py` route on actual GTFS timetables
+instead of distance. Feeds in `data/`: `flix_gtfs.zip` (Greyhound + FlixBus, UTC, current),
+`amtrak_gtfs.zip` (Eastern), `intercity_merged_gtfs.zip` (72 regional carriers; each
+agency's times are in its home zone, inferred from its stops; calendars are stale so only
+the weekday pattern is used). `data/extra_trips.csv` holds manual trips missing from the
+feeds (e.g. Northwestern NWL 710 Spokane -> Pasco).
+
+Rules: 15 min minimum between different vehicles, 0 to re-board the same one; walking up
+to 1.5 km; local-transit proxy (30 min + 4 min/km) up to 10 km. A state counts when a
+ridden trip stops there. Times print in the stop's local zone with a day counter.
+
+```
+python3 time_router.py --start "Pasco Bus Stop" --at 2026-09-21T13:00 --tz America/Los_Angeles \
+    --order "Oregon,Utah,Arizona,Nevada,California,New Mexico,Colorado,Kansas,Oklahoma"
+python3 time_search.py --start Missoula --at 2026-09-21T07:00 --tz America/Denver \
+    --seed-states "WA,OR,ID,UT,..." --budget 1200 --workers 8 --out ../out/time_best.pkl
+```
