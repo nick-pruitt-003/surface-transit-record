@@ -200,6 +200,7 @@ class Solver:
                     c = cc; order = o; improved = True
                     print('  improve', round(c), 'km after', it, 'evals', round(time.time() - t0), 's'); break
             if improved:
+                self.cache.clear()   # bound memory; prefixes are recomputed on demand
                 order, c, path = self.prune(order)
                 if len(self.covered(path)) < N_STATES:
                     order = self.ensure_covered(order); c, path = self.exact_full(order)

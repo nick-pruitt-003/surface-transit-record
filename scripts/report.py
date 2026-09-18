@@ -80,7 +80,8 @@ def stop_at(cell):
     if not ss: return ''
     lon,lat=cell[0]*GRID,cell[1]*GRID
     si=min(ss,key=lambda s:hav((stops[s][3],stops[s][4]),(lon,lat)))
-    return f"{stops[si][0]}, {stops[si][1]}"
+    name,st_=stops[si][:2]
+    return f"{name}, {st_}" if st_ else name
 seen=[]; lines=[]; rows=[]; km=0
 for n,l in enumerate(legs,1):
     car,long_=gname[l['route']]; short=long_; km+=l['km']
