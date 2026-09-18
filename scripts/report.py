@@ -1,15 +1,11 @@
-# Relabel the node path with the fewest bus legs (switch only at stop cells), then emit txt/csv/geojson
-import pickle, json, math, sys, csv
+import json, sys, csv, pickle, re
 from collections import defaultdict
-gfile=sys.argv[3] if len(sys.argv)>3 else 'graph2.pkl'
-G=pickle.load(open(gfile,'rb')); CE=pickle.load(open(gfile.replace('graph','cgraph'),'rb')); R=pickle.load(open(sys.argv[1],'rb'))
+from common import ABBR as abbr, GRID, hav, load_graph
+with open(sys.argv[1], 'rb') as f:
+    R = pickle.load(f)
+gname_arg = sys.argv[3] if len(sys.argv) > 3 else R.get('graph', 'graph2')
+G, CE = load_graph(gname_arg[:-4] if gname_arg.endswith('.pkl') else gname_arg)
 keys=G['keys']; xy=G['node_xy']; state=G['state']; names=G['names']; routes=G['routes']; stops=G['stops']
-abbr={'Alabama':'AL','Arizona':'AZ','Arkansas':'AR','California':'CA','Colorado':'CO','Connecticut':'CT','Delaware':'DE','Florida':'FL','Georgia':'GA','Idaho':'ID','Illinois':'IL','Indiana':'IN','Iowa':'IA','Kansas':'KS','Kentucky':'KY','Louisiana':'LA','Maine':'ME','Maryland':'MD','Massachusetts':'MA','Michigan':'MI','Minnesota':'MN','Mississippi':'MS','Missouri':'MO','Montana':'MT','Nebraska':'NE','Nevada':'NV','New Hampshire':'NH','New Jersey':'NJ','New Mexico':'NM','New York':'NY','North Carolina':'NC','North Dakota':'ND','Ohio':'OH','Oklahoma':'OK','Oregon':'OR','Pennsylvania':'PA','Rhode Island':'RI','South Carolina':'SC','South Dakota':'SD','Tennessee':'TN','Texas':'TX','Utah':'UT','Vermont':'VT','Virginia':'VA','Washington':'WA','West Virginia':'WV','Wisconsin':'WI','Wyoming':'WY'}
-GRID=0.01
-def hav(a,b):
-    lon1,lat1=a; lon2,lat2=b; p=math.pi/180
-    x=(math.sin((lat2-lat1)*p/2)**2+math.cos(lat1*p)*math.cos(lat2*p)*math.sin((lon2-lon1)*p/2)**2)
-    return 2*6371*math.asin(math.sqrt(x))
 cp=R['path']; full=[cp[0]]
 for a,b in zip(cp,cp[1:]):
     k=(a,b) if a<b else (b,a); w,p=CE[k]
@@ -24,7 +20,6 @@ def canon(ri):
 groups={}; gid_of={}
 for ri in range(len(routes)):
     g=canon(ri); gid_of[ri]=groups.setdefault(g,len(groups))
-grep_=None
 cell_routes=defaultdict(set); cell_stops=defaultdict(set)
 for i,k in enumerate(keys):
     if k[0]=='r':

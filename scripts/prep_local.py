@@ -1,10 +1,10 @@
 """Select local transit bus routes worth adding to the graph: those that cross a
 state line, or that come within a stop patch of two intercity stops >= 3 km apart.
 Writes local_kept.pkl for build_graph.py --layers ...,local."""
-import json, math, pickle, sqlite3
+import json, math, os, pickle, sqlite3
 from collections import defaultdict
 import numpy as np, shapely
-from common import StateIndex, cell, data_path, STOP_PATCH
+from common import StateIndex, cell, data_path, STOP_PATCH, DATA_DIR
 
 MIN_STOP_SPREAD_KM = 3.0
 
@@ -49,8 +49,10 @@ def main():
             kept.append(dict(oid=oid, agency=agency, short=short, long=long_, ntd=ntd, geom=g, near=near, states=st))
         if n % 5000 == 0:
             print(n, len(kept), flush=True)
+    con.close()
     print('bus routes', n, 'kept', len(kept))
-    pickle.dump(kept, open('local_kept.pkl', 'wb'))
+    with open(os.path.join(DATA_DIR, 'local_kept.pkl'), 'wb') as f:
+        pickle.dump(kept, f)
 
 
 if __name__ == '__main__':

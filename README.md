@@ -30,7 +30,7 @@ python3 solve.py --graph graph2 --budget 1200 --out result2.pkl
 python3 solve.py --graph graph4 --budget 2400 --seed result2.pkl --out result4.pkl
 python3 solve.py --graph graph4 --budget 1500 --seed result2.pkl --out result7.pkl \
     --prefix "Montana,Washington,Oregon,Utah,Nevada,California,@Tucson,New Mexico,@El Paso,Texas"
-python3 report.py result4.pkl out.txt graph4.pkl   # itinerary txt/csv/geojson
+python3 report.py result4.pkl out.txt graph4       # itinerary txt/csv/geojson (graph defaults to the one in the result)
 python3 xlsx.py out.csv out.xlsx "title"           # spreadsheet template
 ```
 `--prefix` locks the first entries of the state order; `@Name` is a named stop target.
@@ -44,7 +44,7 @@ Data files are found by glob in `data/` (override with `BUS48_DATA=/path`).
    layered Dijkstra (each layer must reach a stop-adjacent node in the next state).
 5. Local search (or-opt + 2-opt on the state order) on the exact cost, dropping states
    that get covered incidentally, re-inserting any that get lost.
-6. `report2.py` relabels the node path into the fewest bus legs, splitting at turnarounds.
+6. `report.py` relabels the node path into the fewest bus legs, splitting at turnarounds.
 
 ## Known gaps
 - Carriers not in the NTAD atlas (Tufesa, Turimex, El Expreso, Omnibus…) are invisible.

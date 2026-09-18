@@ -164,9 +164,15 @@ def contract(graph):
 
 
 def save_graph(graph, cedges, name):
-    pickle.dump(graph, open(f'{name}.pkl', 'wb'))
-    pickle.dump(cedges, open(f'c{name}.pkl', 'wb'))
+    with open(f'{name}.pkl', 'wb') as f:
+        pickle.dump(graph, f)
+    with open(f'c{name}.pkl', 'wb') as f:
+        pickle.dump(cedges, f)
 
 
 def load_graph(name):
-    return pickle.load(open(f'{name}.pkl', 'rb')), pickle.load(open(f'c{name}.pkl', 'rb'))
+    with open(f'{name}.pkl', 'rb') as f:
+        graph = pickle.load(f)
+    with open(f'c{name}.pkl', 'rb') as f:
+        cedges = pickle.load(f)
+    return graph, cedges

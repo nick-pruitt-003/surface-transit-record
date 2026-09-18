@@ -264,9 +264,7 @@ def main():
     order = S.initial_order()
     if a.seed:
         seed = [x for x in pickle.load(open(a.seed, 'rb'))['order'] if x < N_STATES]
-        seed = S.apply_prefix(seed)
-        if S.exact(seed) < S.exact(S.apply_prefix(order)) + 1e9:   # seeds are trusted
-            order = seed
+        order = S.apply_prefix(seed)   # a seed is trusted over the hub ordering
     order = S.apply_prefix(order)
     order = S.ensure_covered(order)
     order, c, path = S.local_search(order, a.budget)

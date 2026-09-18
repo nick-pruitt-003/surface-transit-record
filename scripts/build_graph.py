@@ -56,8 +56,9 @@ def layer_amtrak(gb, states):
 
 def layer_local(gb):
     """Local transit routes selected by prep_local.py (local_kept.pkl)."""
-    import pickle
-    kept = pickle.load(open('local_kept.pkl', 'rb'))
+    import os, pickle
+    with open(os.path.join(DATA_DIR, 'local_kept.pkl'), 'rb') as f:
+        kept = pickle.load(f)
     for k in kept:
         ri = gb.add_route('LOCAL ' + str(k['agency']), k['short'], k['long'])
         g = k['geom']
@@ -71,7 +72,10 @@ def main():
     ap.add_argument('--out', required=True, help='basename, writes <out>.pkl and c<out>.pkl')
     ap.add_argument('--layers', default='intercity', help='comma list of intercity,amtrak,local')
     a = ap.parse_args()
-    layers = a.layers.split(',')
+    layers = [x.strip() for x in a.layers.split(',') if x.strip()]
+    bad = set(layers) - {'intercity', 'amtrak', 'local'}
+    if bad:
+        ap.error(f'unknown layer(s): {", ".join(sorted(bad))}')
     states = StateIndex(); gb = GraphBuilder()
     if 'intercity' in layers:
         layer_intercity(gb)
