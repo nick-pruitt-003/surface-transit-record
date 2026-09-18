@@ -183,6 +183,7 @@ class TimeRouter:
         self.dep = np.array([c[0] for c in conns]); self.arr = np.array([c[1] for c in conns])
         self.cfrom = np.array([c[2] for c in conns]); self.cto = np.array([c[3] for c in conns])
         self.ctrip = [c[4] for c in conns]
+        self._init_fast()
         bad = sum(1 for f in feeds for t in f.trips.values() if t.get('sane') is False)
         print(f'{self.N} stops, {sum(len(v) for v in self.foot.values())} footpaths, {len(conns)} connections over {days} days, {bad} trips rejected as implausible')
 
@@ -225,8 +226,14 @@ class TimeRouter:
         out = {s: (best[s], ltrip.get(s)) for s in tgt if best[s] < INF}
         return out, pred, best
 
+    def _route_py(self, start_stop, start_time, order):
+        saved, self._fast = self._fast, None
+        try: return self.route(start_stop, start_time, order)
+        finally: self._fast = saved
+
     def route(self, start_stop, start_time, order):
         """order: list of targets (state idx or '@name'). Returns (finish, legs)."""
+        if getattr(self, '_fast', None) is not None: return self._route_fast(start_stop, start_time, order)
         labels = {start_stop: (start_time, None)}; layers = []
         for t in order:
             tgt = self.target_set(t)
@@ -248,7 +255,106 @@ class TimeRouter:
             legs = seg[::-1] + legs; end = s
         return t_end, self._fill(legs)
 
+    def _init_fast(self):
+        """Flat arrays + compiled scan (csa.c) for finish(); falls back to Python when no compiler."""
+        import ctypes, subprocess
+        self._fast = None
+        here = os.path.dirname(os.path.abspath(__file__)); so = os.path.join(here, 'csa.so'); src = os.path.join(here, 'csa.c')
+        try:
+            if not os.path.exists(so) or os.path.getmtime(so) < os.path.getmtime(src):
+                subprocess.run(['cc', '-O3', '-shared', '-fPIC', src, '-o', so], check=True)
+            lib = ctypes.CDLL(so)
+        except Exception as e:
+            print('fast scan unavailable:', e); return
+        self.trip_ids = {}
+        ct = np.empty(len(self.ctrip), dtype=np.int32)
+        for k, key in enumerate(self.ctrip): ct[k] = self.trip_ids.setdefault(key, len(self.trip_ids))
+        ptr = np.zeros(self.N + 1, dtype=np.int32); to = []; w = []
+        for i in range(self.N):
+            for j, x in self.foot.get(i, ()): to.append(j); w.append(x)
+            ptr[i + 1] = len(to)
+        self._fa = dict(dep=np.ascontiguousarray(self.dep, dtype=np.float64), arr=np.ascontiguousarray(self.arr, dtype=np.float64),
+                        cfrom=np.ascontiguousarray(self.cfrom, dtype=np.int32), cto=np.ascontiguousarray(self.cto, dtype=np.int32), ctrip=ct,
+                        ptr=ptr, to=np.array(to, dtype=np.int32), w=np.array(w, dtype=np.float64))
+        D = ctypes.POINTER(ctypes.c_double); I = ctypes.POINTER(ctypes.c_int); B = ctypes.POINTER(ctypes.c_ubyte)
+        lib.csa_scan.argtypes = [ctypes.c_int, D, D, I, I, I, ctypes.c_int, ctypes.c_int, ctypes.c_int, I, I, D, D, I, B, ctypes.c_double, ctypes.c_double, I, I, D, I, D]
+        lib.csa_scan.restype = ctypes.c_int
+        self._ptrs = {k: v.ctypes.data_as(D if v.dtype == np.float64 else I) for k, v in self._fa.items()}
+        self._masks = {}; self._ct = (D, I, B); self._fast = lib
+
+    def _scan_fast(self, stops, times, trips, target, want_pred=False):
+        """One layer in C. Labels come in and go out as parallel arrays (stop, time, trip index or -1)."""
+        D, I, B = self._ct
+        mask = self._masks.get(target)
+        if mask is None:
+            mask = np.zeros(self.N, dtype=np.uint8); mask[list(self.target_set(target))] = 1; self._masks[target] = mask
+        best = np.full(self.N, np.inf); lt = np.full(self.N, -1, dtype=np.int32)
+        o = np.argsort(-times)                 # so the earliest label wins when a stop repeats
+        best[stops[o]] = times[o]; lt[stops[o]] = trips[o]
+        k0 = int(np.searchsorted(self._fa['dep'], times.min()))
+        p = self._ptrs
+        pred = None; pa = (None,) * 5
+        if want_pred:
+            nt = len(self.trip_ids)
+            pred = dict(conn=np.full(self.N, -1, dtype=np.int32), walk=np.full(self.N, -1, dtype=np.int32), walk_t=np.zeros(self.N),
+                        bstop=np.full(nt, -1, dtype=np.int32), bdep=np.zeros(nt), best=best)
+            pa = (pred['conn'].ctypes.data_as(I), pred['walk'].ctypes.data_as(I), pred['walk_t'].ctypes.data_as(D),
+                  pred['bstop'].ctypes.data_as(I), pred['bdep'].ctypes.data_as(D))
+        self._fast.csa_scan(len(self._fa['dep']), p['dep'], p['arr'], p['cfrom'], p['cto'], p['ctrip'], k0, self.N, len(self.trip_ids),
+                            p['ptr'], p['to'], p['w'], best.ctypes.data_as(D), lt.ctypes.data_as(I), mask.ctypes.data_as(B),
+                            float(MIN_TRANSFER), float(SCAN_SLACK), *pa)
+        hit = np.nonzero((mask == 1) & np.isfinite(best))[0]
+        if want_pred: return hit.astype(np.int64), best[hit], lt[hit], pred
+        return hit.astype(np.int64), best[hit], lt[hit]
+
+    def _route_fast(self, start_stop, start_time, order):
+        """route() on the compiled scan: same legs, reconstructed from predecessor arrays."""
+        stops = np.array([start_stop]); times = np.array([float(start_time)]); trips = np.array([-1], dtype=np.int32)
+        layers = []; self.last_outs = []
+        for t in order:
+            stops, times, trips, pred = self._scan_fast(stops, times, trips, t, want_pred=True)
+            if len(stops) == 0: return None, [('unreachable', t)]
+            layers.append(pred); self.last_outs.append((stops, times, trips))
+        i = int(np.argmin(times)); t_end = float(times[i]); end = int(stops[i]); legs = []
+        arr = self._fa['arr']
+        for pred in reversed(layers):
+            s = end; seg = []
+            while True:
+                if pred['walk'][s] >= 0:
+                    f = int(pred['walk'][s]); seg.append(('walk', f, s, float(pred['walk_t'][s]), float(pred['best'][s]))); s = f
+                elif pred['conn'][s] >= 0:
+                    k = int(pred['conn'][s]); key = self.ctrip[k]; ti = self._fa['ctrip'][k]
+                    b = int(pred['bstop'][ti]); seg.append(('ride', key, b, float(pred['bdep'][ti]), s, float(arr[k]))); s = b
+                else: break
+            legs = seg[::-1] + legs; end = s
+        merged = []
+        for l in legs:
+            if l[0] == 'ride' and merged and merged[-1][0] == 'ride' and merged[-1][1] == l[1]:
+                m = merged[-1]; merged[-1] = ('ride', m[1], m[2], m[3], l[4], l[5])
+            else: merged.append(l)
+        return t_end, merged
+
     def finish(self, start_stop, start_time, order, base=None):
+        if getattr(self, '_fast', None) is not None: return self._finish_fast(start_stop, start_time, order, base)
+        return self._finish_py(start_stop, start_time, order, base)
+
+    def _finish_fast(self, start_stop, start_time, order, base=None):
+        k = 0; lab = None
+        if base:
+            bo, bouts = base
+            while k < len(order) and k < len(bo) and k < len(bouts) and order[k] == bo[k]: k += 1
+            if k: lab = bouts[k - 1]
+        if lab is None: stops = np.array([start_stop]); times = np.array([float(start_time)]); trips = np.array([-1], dtype=np.int32)
+        elif isinstance(lab, tuple): stops, times, trips = lab
+        else:
+            stops = np.fromiter(lab.keys(), dtype=np.int64, count=len(lab)); times = np.array([v[0] for v in lab.values()], dtype=np.float64)
+            trips = np.array([self.trip_ids.get(v[1], -1) if v[1] is not None else -1 for v in lab.values()], dtype=np.int32)
+        for t in order[k:]:
+            stops, times, trips = self._scan_fast(stops, times, trips, t)
+            if len(stops) == 0: return None
+        return float(times.min())
+
+    def _finish_py(self, start_stop, start_time, order, base=None):
         """Finish time only. base=(order, outs) lets a shared prefix reuse cached layer labels."""
         labels = {start_stop: (start_time, None)}; k = 0
         if base:
