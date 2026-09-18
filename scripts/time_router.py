@@ -453,8 +453,13 @@ def load_feeds():
     ]
     # carriers whose merged-feed times are known to be Eastern (Amtrak-sourced thruway)
     feeds[2].agency_tz['BeeLine Express-Village Travel'] = ZoneInfo('America/New_York')
-    feeds.append(ExtraFeed(os.path.join(DATA_DIR, 'extra_trips.csv'), feeds))
-    return feeds
+    # extra agency feeds dropped into data/more_gtfs/ (local time zone from agency.txt, real calendars).
+    # They go after the manual-trip feed so feed indexes stored in older result pickles stay valid.
+    import glob
+    more = [Feed(z, os.path.splitext(os.path.basename(z))[0], 'agency', 'dates', max_speed=200)
+            for z in sorted(glob.glob(os.path.join(DATA_DIR, 'more_gtfs', '*.zip')))]
+    feeds.append(ExtraFeed(os.path.join(DATA_DIR, 'extra_trips.csv'), feeds + more))
+    return feeds + more
 
 
 def main():
