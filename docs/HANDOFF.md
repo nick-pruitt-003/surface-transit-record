@@ -105,7 +105,7 @@ Search notes:
 - Seeds without pins can start at ~340 h. That's normal, and prune/relocate brings them down.
 - The scan is in C (`scripts/csa.c` via ctypes): about 6 ms per `finish()`.
 
-## 7. Uncommitted changes (branch `pipeline`)
+## 7. Changes in commit 4dc5bbf+ (branch `pipeline`, not pushed)
 
 - `scripts/time_router.py`:
   - `keep_routes` per-feed route filter
