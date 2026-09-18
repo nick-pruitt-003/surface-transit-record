@@ -50,6 +50,23 @@ class Solver:
                 self.prefix.append(self.names.index(p))
         self.P = len(self.prefix)
         self.cache = {}
+        # for turnaround detection: cell of each contracted node, and how many
+        # distinct route groups (carrier + sorted endpoints) serve each cell
+        import re
+        from collections import defaultdict
+        def canon(ri):
+            car, short, long_ = graph['routes'][ri]; nm = (long_ or short or '')
+            parts = [p.strip() for p in re.split(r'\s*(?:->|<->|–|-)\s*', nm) if p.strip()]
+            return (car, ' | '.join(sorted(parts)) if len(parts) > 1 else nm)
+        gid = {}
+        for ri in range(len(graph['routes'])):
+            gid[ri] = gid.get(ri) or canon(ri)
+        self.node_cell = [keys[v][2] if keys[v][0] == 'r' else None for v in self.nodes]
+        groups = defaultdict(set)
+        for k in keys:
+            if k[0] == 'r': groups[k[2]].add(gid[k[1]])
+        self.cell_groups = {c: len(g) for c, g in groups.items()}
+        self.turn_penalty = 0.0; self.frequent = 4
 
     # --- shortest paths -------------------------------------------------
     def multi_source(self, src_idx, src_val, pred=False):
@@ -87,6 +104,21 @@ class Solver:
             path = seg[::-1] + path[1:] if path else seg[::-1]
             end = seg[-1]
         return total, path
+
+    def turnarounds(self, path):
+        """Apexes where the walk retraces its last 3 cells, on corridors with
+        fewer than self.frequent parallel route groups."""
+        cells = [c for c in (self.node_cell[v] for v in path) if c is not None]
+        cells = [c for i, c in enumerate(cells) if i == 0 or c != cells[i - 1]]
+        n = 0
+        for i in range(3, len(cells) - 3):
+            if cells[i - 1] == cells[i + 1] and cells[i - 2] == cells[i + 2] and cells[i - 3] == cells[i + 3]:
+                if self.cell_groups.get(cells[i], 0) < self.frequent: n += 1
+        return n
+
+    def penalised(self, order):
+        c, path = self.exact_full(order)
+        return c + self.turn_penalty * self.turnarounds(path), path
 
     def covered(self, path):
         p = np.array(path)
@@ -188,20 +220,26 @@ class Solver:
 
     def local_search(self, order, budget):
         order, c, path = self.prune(order)
-        print('start', round(c), 'km,', len(order), 'required')
+        if self.turn_penalty > 0: c, path = self.penalised(order)
+        print('start', round(c), 'km,', len(order), 'required, turnarounds', self.turnarounds(path))
         t0 = time.time(); improved = True; it = 0
         proxy = lambda o: sum(self.D[o[i], o[i + 1]] for i in range(len(o) - 1) if o[i] < N_STATES and o[i + 1] < N_STATES)
         while improved and time.time() - t0 < budget:
             improved = False; base = proxy(order)
             for o in sorted(self.moves(order), key=proxy):
                 if time.time() - t0 > budget or proxy(o) - base > 800: break
-                cc = self.exact(o); it += 1
+                if self.turn_penalty > 0:
+                    cc, _ = self.penalised(o)
+                else:
+                    cc = self.exact(o)
+                it += 1
                 if cc < c - 1:
                     c = cc; order = o; improved = True
                     print('  improve', round(c), 'km after', it, 'evals', round(time.time() - t0), 's'); break
             if improved:
                 self.cache.clear()   # bound memory; prefixes are recomputed on demand
                 order, c, path = self.prune(order)
+                if self.turn_penalty > 0: c, path = self.penalised(order)
                 if len(self.covered(path)) < N_STATES:
                     order = self.ensure_covered(order); c, path = self.exact_full(order)
         return order, c, path
@@ -212,10 +250,12 @@ def main():
     ap.add_argument('--graph', required=True); ap.add_argument('--budget', type=float, default=1200)
     ap.add_argument('--seed', help='result pickle whose state order seeds the search')
     ap.add_argument('--prefix', default='', help='comma list of states / @stop names locked at the front')
+    ap.add_argument('--turn-penalty', type=float, default=0.0, help='km-equivalent charged per reversal on a corridor with < 4 parallel services')
     ap.add_argument('--out', required=True)
     a = ap.parse_args()
     graph, cedges = load_graph(a.graph)
     S = Solver(graph, cedges, [x.strip() for x in a.prefix.split(',') if x.strip()])
+    S.turn_penalty = a.turn_penalty
     order = S.initial_order()
     if a.seed:
         seed = [x for x in pickle.load(open(a.seed, 'rb'))['order'] if x < N_STATES]
@@ -226,7 +266,7 @@ def main():
     order = S.ensure_covered(order)
     order, c, path = S.local_search(order, a.budget)
     c, path = S.exact_full(order)
-    print('FINAL', round(c), 'km required', len(order), 'covered', len(S.covered(path)))
+    print('FINAL', round(c), 'km required', len(order), 'covered', len(S.covered(path)), 'turnarounds', S.turnarounds(path))
     print(' > '.join(S.names[x] for x in order))
     pickle.dump(dict(order=order, cost=c, path=[S.nodes[v] for v in path], graph=a.graph), open(a.out, 'wb'))
 
