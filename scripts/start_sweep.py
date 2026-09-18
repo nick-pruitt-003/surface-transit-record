@@ -25,7 +25,8 @@ for d in range(7):
         t0 = (day + timedelta(hours=h)).timestamp()
         f, legs = R.route(start, t0, order)
         if f is None: print(day.strftime('%a'), h, 'unreachable', flush=True); continue
-        first = next(l[3] for l in legs if l[0] == 'ride')
+        first = next((leg[3] for leg in legs if leg[0] == 'ride'), None)
+        if first is None: print(day.strftime('%a'), h, 'no ride legs', flush=True); continue
         key = datetime.fromtimestamp(first, Z).strftime('%a %H:%M')
         hrs = round((f - first) / 3600, 1)
         if key not in best or hrs < best[key]: best[key] = hrs

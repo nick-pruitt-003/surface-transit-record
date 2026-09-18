@@ -300,9 +300,10 @@ class TimeRouter:
                         bstop=np.full(nt, -1, dtype=np.int32), bdep=np.zeros(nt), best=best)
             pa = (pred['conn'].ctypes.data_as(I), pred['walk'].ctypes.data_as(I), pred['walk_t'].ctypes.data_as(D),
                   pred['bstop'].ctypes.data_as(I), pred['bdep'].ctypes.data_as(D))
-        self._fast.csa_scan(len(self._fa['dep']), p['dep'], p['arr'], p['cfrom'], p['cto'], p['ctrip'], k0, self.N, len(self.trip_ids),
+        rc = self._fast.csa_scan(len(self._fa['dep']), p['dep'], p['arr'], p['cfrom'], p['cto'], p['ctrip'], k0, self.N, len(self.trip_ids),
                             p['ptr'], p['to'], p['w'], best.ctypes.data_as(D), lt.ctypes.data_as(I), mask.ctypes.data_as(B),
                             float(MIN_TRANSFER), float(SCAN_SLACK), *pa)
+        if rc != 0: raise MemoryError(f'csa_scan failed (rc={rc})')
         hit = np.nonzero((mask == 1) & np.isfinite(best))[0]
         if want_pred: return hit.astype(np.int64), best[hit], lt[hit], pred
         return hit.astype(np.int64), best[hit], lt[hit]
@@ -359,7 +360,7 @@ class TimeRouter:
         labels = {start_stop: (start_time, None)}; k = 0
         if base:
             bo, bouts = base
-            while k < len(order) and k < len(bo) and order[k] == bo[k]: k += 1
+            while k < len(order) and k < len(bo) and k < len(bouts) and order[k] == bo[k]: k += 1
             if k: labels = bouts[k - 1]
         for t in order[k:]:
             labels, _, _ = self.scan(labels, self.target_set(t))

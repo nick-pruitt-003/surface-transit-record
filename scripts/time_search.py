@@ -93,7 +93,7 @@ class Search:
         global _BASE
         self.R.route(self.start, self.t0, order); _BASE = (list(order), self.R.last_outs)
         if self.workers <= 1: return None
-        if pool: pool.close()
+        if pool: pool.close(); pool.join()
         import multiprocessing as mp
         return mp.get_context('fork').Pool(self.workers)
 
