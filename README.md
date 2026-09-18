@@ -20,20 +20,21 @@ itinerary (txt / csv / xlsx / geojson) that you then check against real timetabl
 
 ## Pipeline
 ```
-pip install shapely networkx scipy numpy openpyxl
+pip install shapely scipy numpy openpyxl
 cd scripts
-python3 build2.py                 # intercity bus graph  -> graph2.pkl / cgraph2.pkl
-python3 prep_local.py && python3 build3.py   # + local transit -> graph3 (optional)
-unzip -d amtrak ../data/amtrak_gtfs.zip && python3 build4.py   # + Amtrak -> graph4
-python3 solve3.py 1200 [seed.pkl]                 # bus only        -> result2.pkl
-python3 solve4.py 2400 result2.pkl                # bus + local     -> result3.pkl
-python3 solve5.py 2400 result2.pkl                # bus + Amtrak    -> result4.pkl
-python3 solve6.py 1500 result2.pkl "Montana,Washington,Oregon,Utah,Nevada,Arizona,New Mexico,Texas"
-                                                   # bus + Amtrak with a locked state prefix -> result6.pkl
-python3 report2.py result4.pkl out.txt graph4.pkl  # itinerary txt/csv/geojson
+python3 prep_amtrak_speeds.py                       # -> data/route_speeds.json (from the GTFS timetable)
+python3 build_graph.py --out graph2 --layers intercity
+python3 build_graph.py --out graph4 --layers intercity,amtrak
+python3 prep_local.py && python3 build_graph.py --out graph3 --layers intercity,local   # optional
+python3 solve.py --graph graph2 --budget 1200 --out result2.pkl
+python3 solve.py --graph graph4 --budget 2400 --seed result2.pkl --out result4.pkl
+python3 solve.py --graph graph4 --budget 1500 --seed result2.pkl --out result7.pkl \
+    --prefix "Montana,Washington,Oregon,Utah,Nevada,California,@Tucson,New Mexico,@El Paso,Texas"
+python3 report.py result4.pkl out.txt graph4.pkl   # itinerary txt/csv/geojson
 python3 xlsx.py out.csv out.xlsx "title"           # spreadsheet template
 ```
-First arg to the solvers is the local-search budget in seconds.
+`--prefix` locks the first entries of the state order; `@Name` is a named stop target.
+Data files are found by glob in `data/` (override with `BUS48_DATA=/path`).
 
 ## How the solver works
 1. Snap every route shape to a 0.01° grid; nodes are (route, cell); edges follow the shape.

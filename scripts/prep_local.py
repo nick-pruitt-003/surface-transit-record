@@ -1,39 +1,57 @@
-import sqlite3, json, pickle, numpy as np, shapely, struct
+"""Select local transit bus routes worth adding to the graph: those that cross a
+state line, or that come within a stop patch of two intercity stops >= 3 km apart.
+Writes local_kept.pkl for build_graph.py --layers ...,local."""
+import json, math, pickle, sqlite3
 from collections import defaultdict
-from shapely.strtree import STRtree
-from shapely.geometry import shape
-GRID=0.01
-def cell(lon,lat): return (round(lon/GRID),round(lat/GRID))
-stops=json.load(open('/Users/nick_pruitt/Downloads/NTAD_Intercity_Bus_Atlas_Stops_-6979428015416139090.geojson'))['features']
-cell_stops=defaultdict(set)
-for si,s in enumerate(stops):
-    lon,lat=s['geometry']['coordinates']; cx,cy=cell(lon,lat)
-    for dx in (-1,0,1):
-        for dy in (-1,0,1): cell_stops[(cx+dx,cy+dy)].add(si)
-sj=json.load(open('states.geojson')); skip={'Alaska','Hawaii','Puerto Rico','District of Columbia'}
-polys=[shape(f['geometry']) for f in sj['features'] if f['properties']['name'] not in skip]
-names=[f['properties']['name'] for f in sj['features'] if f['properties']['name'] not in skip]
-tree=STRtree(polys)
-c=sqlite3.connect('/Users/nick_pruitt/Downloads/NTAD_National_Transit_Map_Routes_-3744149803598222330.gpkg')
-def gpkb(b):
-    flags=b[3]; env=(flags>>1)&7; hl=8+{0:0,1:32,2:48,3:48,4:64}[env]
-    return shapely.from_wkb(b[hl:])
-kept=[]; n=0; nb=0
-for row in c.execute('select OBJECTID,SHAPE,ntd_id,agency_id,route_short_name,route_long_name,route_type from National_Transit_Map_Routes where route_type=\'3\''):
-    n+=1
-    try: g=gpkb(row[1])
-    except Exception as e: nb+=1; continue
-    g=shapely.simplify(g,0.002)
-    coords=shapely.get_coordinates(g)
-    if len(coords)<2: continue
-    cells=set(cell(x,y) for x,y in coords)
-    near=set()
-    for ce in cells: near|=cell_stops.get(ce,set())
-    # states touched: sample coords
-    samp=coords[::max(1,len(coords)//20)]
-    st=set(tree.query(shapely.points(samp[:,0],samp[:,1]),predicate='within')[1].tolist())
-    if len(near)>=2 or len(st)>=2:
-        kept.append(dict(oid=row[0],agency=row[3],short=row[4],long=row[5],ntd=row[2],geom=g,near=near,states=st))
-    if n%5000==0: print(n,len(kept),flush=True)
-print('bus routes',n,'bad',nb,'kept',len(kept))
-pickle.dump(kept,open('local_kept.pkl','wb'))
+import numpy as np, shapely
+from common import StateIndex, cell, data_path, STOP_PATCH
+
+MIN_STOP_SPREAD_KM = 3.0
+
+
+def gpkg_geom(blob):
+    flags = blob[3]; env = (flags >> 1) & 7
+    header = 8 + {0: 0, 1: 32, 2: 48, 3: 48, 4: 64}[env]
+    return shapely.from_wkb(blob[header:])
+
+
+def main():
+    stops = json.load(open(data_path('NTAD_Intercity_Bus_Atlas_Stops_*.geojson')))['features']
+    xy = np.array([s['geometry']['coordinates'] for s in stops])
+    cell_stops = defaultdict(set)
+    for si, s in enumerate(stops):
+        cx, cy = cell(*s['geometry']['coordinates'])
+        for dx in range(-STOP_PATCH, STOP_PATCH + 1):
+            for dy in range(-STOP_PATCH, STOP_PATCH + 1):
+                cell_stops[(cx + dx, cy + dy)].add(si)
+    states = StateIndex()
+    con = sqlite3.connect(data_path('NTAD_National_Transit_Map_Routes_*.gpkg'))
+    q = ("select OBJECTID, SHAPE, ntd_id, agency_id, route_short_name, route_long_name "
+         "from National_Transit_Map_Routes where route_type='3'")
+    kept = []; n = 0
+    for oid, blob, ntd, agency, short, long_ in con.execute(q):
+        n += 1
+        g = shapely.simplify(gpkg_geom(blob), 0.002)
+        coords = shapely.get_coordinates(g)
+        if len(coords) < 2:
+            continue
+        near = set()
+        for c in set(cell(x, y) for x, y in coords):
+            near |= cell_stops.get(c, set())
+        samp = coords[::max(1, len(coords) // 20)]
+        st = set(states.of_points(samp).tolist()) - {-1}
+        spread = 0.0
+        if len(near) >= 2:
+            p = xy[list(near)]; lat = math.cos(math.radians(p[:, 1].mean()))
+            d = np.sqrt(((p[:, None, 0] - p[None, :, 0]) * lat * 111) ** 2 + ((p[:, None, 1] - p[None, :, 1]) * 111) ** 2)
+            spread = d.max()
+        if len(st) >= 2 or spread >= MIN_STOP_SPREAD_KM:
+            kept.append(dict(oid=oid, agency=agency, short=short, long=long_, ntd=ntd, geom=g, near=near, states=st))
+        if n % 5000 == 0:
+            print(n, len(kept), flush=True)
+    print('bus routes', n, 'kept', len(kept))
+    pickle.dump(kept, open('local_kept.pkl', 'wb'))
+
+
+if __name__ == '__main__':
+    main()
