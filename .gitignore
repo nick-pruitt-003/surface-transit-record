@@ -1,0 +1,5 @@
+*.pkl
+*.log
+out/
+scripts/amtrak/
+data/NTAD_*
