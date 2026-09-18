@@ -19,7 +19,7 @@ for n, r in enumerate(reversed(rows), 1):
     new = [s for s in states if s not in seen]; seen.update(new)
     q = dict(r); q['Leg'] = n; q['Board at'], q['Alight at'] = r['Alight at'], r['Board at']
     q['States on this leg'] = '>'.join(states)
-    q['New states'] = ','.join(f'{s} @ {where[s]}' if where.get(s) else s for s in new)
+    q['New states'] = ','.join(new)   # forward report's step-off stops don't carry over; pick them while testing
     if ' | ' in (r['Route'] or ''): q['Route'] = ' | '.join(r['Route'].split(' | ')[::-1])
     out.append(q)
 w = csv.DictWriter(open(sys.argv[2], 'w', newline=''), fieldnames=list(rows[0].keys())); w.writeheader(); w.writerows(out)
