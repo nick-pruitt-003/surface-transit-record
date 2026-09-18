@@ -15,7 +15,7 @@ from zoneinfo import ZoneInfo
 import numpy as np
 from common import StateIndex, ABBR, DATA_DIR, hav
 
-MIN_TRANSFER = 15 * 60       # seconds between different vehicles at the same stop
+MIN_TRANSFER = int(os.environ.get('BUS48_MIN_TRANSFER', 15)) * 60       # seconds between different vehicles at the same stop
 SCAN_SLACK = 10 * 3600       # keep scanning this long past the first target arrival
 WALK_SPEED = 4.5 / 3.6       # m/s
 WALK_MAX_KM = 1.5
@@ -297,7 +297,10 @@ class ExtraFeed:
             for i, item in enumerate(r['stops'].split('|')):
                 nm, tm = item.split('@'); tm = tm.strip()
                 arr, dep = (tm.split('/') + [tm])[:2] if '/' in tm else (tm, tm)
-                hit = next((s for s in allstops if nm.strip().startswith('=') and s[0] == nm.strip()[1:]), None) or next((s for s in allstops if s[1].lower() == nm.strip().lower() and not s[0].startswith('amtrak:')), None) or next((s for s in allstops if s[1].lower() == nm.strip().lower()), None) or next((s for s in allstops if nm.strip().lower() in s[1].lower()), None)
+                if nm.strip().startswith('+'):   # new stop: +Name;lon;lat
+                    n2, lo, la = nm.strip()[1:].split(';'); hit = ('extra:' + n2, n2, float(lo), float(la))
+                else: hit = None
+                hit = hit or next((s for s in allstops if nm.strip().startswith('=') and s[0] == nm.strip()[1:]), None) or next((s for s in allstops if s[1].lower() == nm.strip().lower() and not s[0].startswith('amtrak:')), None) or next((s for s in allstops if s[1].lower() == nm.strip().lower()), None) or next((s for s in allstops if nm.strip().lower() in s[1].lower()), None)
                 if hit is None: print('extra trip: no stop named', nm); break
                 sid = f'x{k}_{i}'; self.stops[sid] = (hit[0], hit[1], hit[2], hit[3])
                 seq.append((i, sid, hms(arr + ':00'), hms(dep + ':00')))
