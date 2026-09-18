@@ -17,3 +17,8 @@ Advance Transit,Green Route Norwich VT -> Hanover,1111111,America/New_York,+King
 Dartmouth Coach,Hanover -> Boston South Station 13:40 (arrival assumed 16:25),1111111,America/New_York,=ibus:900@13:40|=ibus:3598@16:25
 On foot (jog),Hanover Inn -> Vermont end of Ledyard Bridge,1111111,America/New_York,=ibus:900@13:16|+Ledyard Bridge Vermont end;-72.3003;43.7036@13:27
 On foot (jog),Vermont end of Ledyard Bridge -> Hanover Inn,1111111,America/New_York,+Ledyard Bridge Vermont end;-72.3003;43.7036@13:28|=ibus:900@13:39
+Concord Coach Lines,Boston -> Portland 17:15,1111111,America/New_York,=ibus:3598@17:15|=ibus:1304@19:10
+Concord Coach Lines,Portland -> Boston 20:00,1111111,America/New_York,=ibus:1304@20:00|=ibus:3598@22:10
+MBTA Commuter Rail,Providence Line 885 South Station -> Providence,1111111,America/New_York,=ibus:3598@21:40|=amtrak:PVD@22:56
+MBTA Commuter Rail,Providence Line Providence -> South Station (arrival assumed),1111111,America/New_York,=amtrak:PVD@23:25|=ibus:3598@24:40
+MBTA subway,North Station -> South Station (Orange + Red Line; times assumed),1111111,America/New_York,=amtrak:BON@21:12|=ibus:3598@21:32
