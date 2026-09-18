@@ -59,7 +59,21 @@ class Search:
         return order, f, legs
 
     def all_states(self, legs):
-        return len(self.covered(legs)) >= N_STATES
+        return len(self.covered(legs) | {int(self.R.state[self.start])}) >= N_STATES
+
+    def missing(self, legs):
+        cov = self.covered(legs) | {int(self.R.state[self.start])}
+        return [s for s in range(N_STATES) if s not in cov]
+
+    def repair(self, order, pool):
+        """Insert each missing state at the position that finishes earliest."""
+        f, legs = self.evaluate(order)
+        for m in self.missing(legs):
+            cands = [order[:j] + [m] + order[j:] for j in range(self.P, len(order) + 1)]
+            fs = pool.map(_finish, cands) if pool else [_finish(o) for o in cands]
+            j = int(np.argmin(fs)); order = cands[j]
+        f, legs = self.evaluate(order)
+        return order, f, legs
 
     def moves(self, order):
         n = len(order); P = self.P; out = []
@@ -82,8 +96,7 @@ class Search:
         order = self.prefix + [x for x in order if x not in self.prefix]
         f, legs = self.evaluate(order)
         if not self.all_states(legs):
-            miss = [s for s in range(N_STATES) if s not in self.covered(legs)]
-            print('seed misses', [self.R.state_names[s] for s in miss]); order += miss; f, legs = self.evaluate(order)
+            print('seed misses', [self.R.state_names[s] for s in self.missing(legs)]); order, f, legs = self.repair(order, pool)
         print('start', round((f - self.t0) / 3600, 1), 'h, order', len(order))
         t_start = time.time(); improved = True; it = 0
         while improved and time.time() - t_start < budget:
@@ -96,10 +109,10 @@ class Search:
                 fs = pool.map(_finish, chunk) if pool else [_finish(o) for o in chunk]
                 it += len(chunk); j = int(np.argmin(fs))
                 if fs[j] < f - 60:
-                    f2, l2 = self.evaluate(chunk[j])
-                    if self.all_states(l2):
-                        order, f, legs = chunk[j], f2, l2; improved = True
-                        print('  improve', round((f - self.t0) / 3600, 1), 'h after', it, 'evals', round(time.time() - t_start), 's'); break
+                    o2, f2, l2 = self.repair(chunk[j], pool)
+                    if f2 < f - 60 and self.all_states(l2):
+                        order, f, legs = o2, f2, l2; improved = True
+                        print('  improve', round((f - self.t0) / 3600, 1), 'h after', it, 'evals', round(time.time() - t_start), 's', flush=True); break
             if improved:
                 order, f, legs = self.prune(order)
         if pool: pool.close()
