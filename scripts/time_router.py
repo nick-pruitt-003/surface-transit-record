@@ -15,6 +15,7 @@ from zoneinfo import ZoneInfo
 import numpy as np
 from common import StateIndex, ABBR, DATA_DIR, hav
 
+WALKIN_KM = float(os.environ.get('BUS48_WALKIN_KM', 0))   # 0 = a state needs a real stop
 MIN_TRANSFER = int(os.environ.get('BUS48_MIN_TRANSFER', 15)) * 60       # seconds between different vehicles at the same stop
 SCAN_SLACK = 10 * 3600       # keep scanning this long past the first target arrival
 WALK_SPEED = 4.5 / 3.6       # m/s
@@ -137,7 +138,8 @@ class TimeRouter:
                 seen.add(uid); self.stop_ids.append(uid); self.stop_name.append(nm); self.stop_xy.append((lon, lat))
         self.idx = {u: i for i, u in enumerate(self.stop_ids)}
         self.N = len(self.stop_ids)
-        states = StateIndex(); self.state_names = states.names
+        hi = os.path.join(DATA_DIR, 'states_500k.geojson')   # Census 1:500k borders; the coarse file misplaces border stops
+        states = StateIndex(hi if os.path.exists(hi) else None); self.state_names = states.names
         self.state = states.of_points(self.stop_xy)
         self.abbr = [ABBR[states.names[s]] if s >= 0 else None for s in self.state]
         # footpaths
@@ -152,6 +154,26 @@ class TimeRouter:
                     d = hav(self.stop_xy[i], self.stop_xy[j])
                     if d <= WALK_MAX_KM: self.foot[i].append((j, int(d * 1000 / WALK_SPEED) + (0 if d < 0.15 else 300)))
                     elif d <= LOCAL_MAX_KM: self.foot[i].append((j, LOCAL_FIXED + int(d * 1000 / LOCAL_SPEED)))
+        # walk-ins: a stop within WALKIN_KM of another state's border lets you step across and back
+        self.first_virtual = self.N
+        if WALKIN_KM > 0:
+            from shapely.geometry import Point
+            from shapely.ops import nearest_points
+            state = list(self.state); deg = WALKIN_KM / 80.0
+            for i in range(self.N):
+                if state[i] < 0: continue
+                pt = Point(self.stop_xy[i])
+                for j in states.tree.query(pt.buffer(deg)):
+                    j = int(j)
+                    if j == state[i]: continue
+                    q = nearest_points(states.polys[j], pt)[0]; d = hav(self.stop_xy[i], (q.x, q.y))
+                    if d > WALKIN_KM: continue
+                    v = len(self.stop_ids); w = 120 + int(d * 1000 / WALK_SPEED)
+                    self.stop_ids.append(f'walkin:{self.stop_ids[i]}:{ABBR[states.names[j]]}'); self.stop_name.append(f'{ABBR[states.names[j]]} state line (walk from {self.stop_name[i]})')
+                    self.stop_xy.append((q.x, q.y)); state.append(j); self.abbr.append(ABBR[states.names[j]])
+                    self.foot[i].append((v, w)); self.foot[v].append((i, w))
+            self.state = np.array(state, dtype=np.int32); self.idx = {u: k for k, u in enumerate(self.stop_ids)}; self.N = len(self.stop_ids)
+            print(self.N - self.first_virtual, 'walk-in border points within', WALKIN_KM, 'km')
         # connections
         conns = []; self.trip_info = {}
         for fi, f in enumerate(feeds):

@@ -30,6 +30,7 @@ class Search:
         """States with an alighting-capable stop anywhere along the ridden trips."""
         seen = set()
         for l in legs:
+            if l[0] == 'walk' and l[2] >= self.R.first_virtual: seen.add(int(self.R.state[l[2]]))   # border walk-in
             if l[0] != 'ride': continue
             _, trip, bs, bt, al, at = l
             fi, tid, _ = trip; f = self.R.feeds[fi]; t = f.trips[tid]
@@ -134,6 +135,7 @@ class Search:
         if not self.all_states(legs):
             print('seed misses', [self.R.state_names[s] for s in self.missing(legs)]); order, f, legs = self.repair(order, pool)
             pool = self.pool_for(order, pool)
+        order, f, legs = self.prune(order); pool = self.pool_for(order, pool)   # drop states the seed already covers in passing
         print('start', round((f - self.t0) / 3600, 1), 'h, order', len(order), flush=True)
         deadline = time.time() + budget
         order, f, legs, pool = self.descend(order, f, legs, deadline, pool)

@@ -4,5 +4,9 @@ Concord Coach Lines,Boston -> Portland 08:00,1111111,America/New_York,=ibus:3598
 Concord Coach Lines,Portland -> Boston 10:30,1111111,America/New_York,=ibus:1304@10:30|=ibus:3598@12:25
 Northwestern Stage Lines,NWL Boise -> Pasco (OR stop is really Hermiston; La Grande used as stand-in),1111111,America/Los_Angeles,=ibus:1465@07:15|=flix:1e6e4e25-e311-47fd-92cf-c4829424d136@10:35/10:40|=ibus:2048@13:10
 Northwestern Stage Lines,NWL Pasco -> Spokane 15:00,1111111,America/Los_Angeles,=ibus:2048@15:00|=ibus:9@17:05
-TARTA 18 + 500 ft walk (placeholder times),Toledo -> Michigan line,1111111,America/New_York,=ibus:2271@16:00|+Jackman Rd state line walk (TARTA 18);-83.599;41.7345@17:00
-TARTA 18 + 500 ft walk (placeholder times),Michigan line -> Toledo,1111111,America/New_York,+Jackman Rd state line walk (TARTA 18);-83.599;41.7345@18:00|=ibus:2271@19:00
+TARTA,Route 18 to Meijer Alexis then walk into Michigan,0000010,America/New_York,+TARTA downtown hub;-83.5317;41.6557@13:30|+Brooke Park & Jackman (TARTA 18);-83.5845;41.7289@13:57|+Michigan state line on Jackman Rd (walk);-83.5847;41.7342@14:05
+TARTA,Route 18 to Meijer Alexis then walk into Michigan,0000010,America/New_York,+TARTA downtown hub;-83.5317;41.6557@16:30|+Brooke Park & Jackman (TARTA 18);-83.5845;41.7289@16:57|+Michigan state line on Jackman Rd (walk);-83.5847;41.7342@17:05
+TARTA,Route 18 to Meijer Alexis then walk into Michigan,0000010,America/New_York,+TARTA downtown hub;-83.5317;41.6557@19:30|+Brooke Park & Jackman (TARTA 18);-83.5845;41.7289@19:57|+Michigan state line on Jackman Rd (walk);-83.5847;41.7342@20:05
+TARTA,Walk back from Michigan then Route 18 to Downtown,0000010,America/New_York,+Michigan state line on Jackman Rd (walk);-83.5847;41.7342@15:40|+Brooke Park & Jackman (TARTA 18);-83.5845;41.7289@15:48|+TARTA downtown hub;-83.5317;41.6557@16:15
+TARTA,Walk back from Michigan then Route 18 to Downtown,0000010,America/New_York,+Michigan state line on Jackman Rd (walk);-83.5847;41.7342@18:40|+Brooke Park & Jackman (TARTA 18);-83.5845;41.7289@18:48|+TARTA downtown hub;-83.5317;41.6557@19:15
+TARTA,Walk back from Michigan then Route 18 to Downtown,0000010,America/New_York,+Michigan state line on Jackman Rd (walk);-83.5847;41.7342@20:16|+Brooke Park & Jackman (TARTA 18);-83.5845;41.7289@20:24|+TARTA downtown hub;-83.5317;41.6557@20:51
