@@ -83,6 +83,7 @@ def main():
         layer_amtrak(gb, states)
     if 'local' in layers:
         layer_local(gb)
+    print('walk links', gb.link_nearby_stops())
     graph = gb.finish(states)
     print('nodes', len(graph['node_xy']), 'edges', len(graph['edges']), 'routes', len(graph['routes']), 'stops', len(graph['stops']))
     cedges = contract(graph)

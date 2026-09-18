@@ -9,6 +9,8 @@ from shapely.strtree import STRtree
 
 GRID = 0.01            # degrees; ~1.1 km. Route points are snapped to this grid.
 TRANSFER_COST = 5.0    # km-equivalent per stop-hub edge, i.e. 10 per transfer
+WALK_RADIUS_KM = 2.5   # stops this close are linked by a walk/taxi edge
+WALK_COST = 40.0       # km-equivalent for that walk (~30 min)
 STOP_PATCH = 1         # a stop links to route cells within +/- this many cells
 SKIP_STATES = {'Alaska', 'Hawaii', 'Puerto Rico', 'District of Columbia'}
 DATA_DIR = os.environ.get('BUS48_DATA', os.path.join(os.path.dirname(__file__), '..', 'data'))
@@ -122,6 +124,28 @@ class GraphBuilder:
                 if cell_hubs:
                     self.add_edge(i, self.nid(('c', ce), cell_xy(ce)), TRANSFER_COST, -1)
             prev = i
+
+    def link_nearby_stops(self):
+        """Walking edges between stop hubs within WALK_RADIUS_KM (Greyhound
+        depot to Amtrak station, airport stop to downtown stop, ...)."""
+        buckets = defaultdict(list)
+        for si, (_, _, _, lon, lat) in enumerate(self.stops):
+            buckets[(int(lon / 0.05), int(lat / 0.05))].append(si)
+        n = 0
+        for (bx, by), members in buckets.items():
+            cand = []
+            for dx in (-1, 0, 1):
+                for dy in (-1, 0, 1):
+                    cand += buckets.get((bx + dx, by + dy), [])
+            for si in members:
+                a = self.stops[si]
+                for sj in cand:
+                    if sj <= si:
+                        continue
+                    b = self.stops[sj]
+                    if hav((a[3], a[4]), (b[3], b[4])) <= WALK_RADIUS_KM:
+                        self.add_edge(self.node_key[('s', si)], self.node_key[('s', sj)], WALK_COST, -1); n += 1
+        return n
 
     def finish(self, states):
         keys = [None] * len(self.node_xy)
