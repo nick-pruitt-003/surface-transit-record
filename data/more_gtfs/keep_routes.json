@@ -1,0 +1,44 @@
+{
+  "mata": [
+    "42",
+    "30",
+    "28",
+    "12",
+    "04"
+  ],
+  "jta": [
+    "4"
+  ],
+  "metra": [
+    "UP-N"
+  ],
+  "tarta": [
+    "1800",
+    "1500",
+    "1600",
+    "2600"
+  ],
+  "transpo": [
+    "16",
+    "5"
+  ],
+  "jule": [
+    "PNK",
+    "S.P-B",
+    "AME"
+  ],
+  "svrta": [
+    "RobinsonW",
+    "RobinsonSat"
+  ],
+  "mlta": [
+    "Grey Line"
+  ],
+  "lake_erie": [],
+  "dart": [
+    "018",
+    "224",
+    "GREEN",
+    "ORANGE"
+  ]
+}

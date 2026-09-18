@@ -9,12 +9,17 @@ from zoneinfo import ZoneInfo
 import numpy as np
 from time_router import TimeRouter, load_feeds, N_STATES
 
-_R = None; _START = None; _T0 = None; _BASE = None
+_R = None; _START = None; _T0 = None; _BASE = None; _SELF = None
 
 
 def _finish(order):
     f = _R.finish(_START, _T0, order, _BASE)
     return f if f is not None else float('inf')
+
+def _drop_eval(order):
+    """Worker side of prune: finish time and whether the route still covers every state."""
+    f, legs = _SELF.evaluate(order)
+    return f, (f != float('inf') and _SELF.all_states(legs))
 
 
 class Search:
@@ -46,18 +51,20 @@ class Search:
         if f is None: return float('inf'), [l for l in legs if l[0] != 'unreachable']
         return f, legs
 
-    def prune(self, order):
+    def prune(self, order, pool=None):
+        """Drop states the route covers in passing. All single drops are tried at once (in the pool when
+        there is one) and the best harmless one is taken, instead of re-routing them one by one."""
         f, legs = self.evaluate(order)
         if f == float('inf'): return order, f, legs
-        changed = True
-        while changed:
-            changed = False
-            for j in range(self.P, len(order)):
-                o2 = order[:j] + order[j + 1:]
-                f2, l2 = self.evaluate(o2)
-                if f2 <= f and self.all_states(l2):
-                    print('  drop', self.R.state_names[order[j]], '->', round((f2 - self.t0) / 3600, 1), 'h')
-                    order, f, legs = o2, f2, l2; changed = True; break
+        while len(order) > self.P:
+            cands = [order[:j] + order[j + 1:] for j in range(self.P, len(order))]
+            res = pool.map(_drop_eval, cands) if pool else [_drop_eval(o) for o in cands]
+            ok = [(r[0], k) for k, r in enumerate(res) if r[1] and r[0] <= f]
+            if not ok: break
+            f2, k = min(ok)
+            print('  drop', self.R.state_names[order[self.P + k]], '->', round((f2 - self.t0) / 3600, 1), 'h')
+            order = cands[k]; f = f2
+        f, legs = self.evaluate(order)
         return order, f, legs
 
     def all_states(self, legs):
@@ -115,7 +122,7 @@ class Search:
                         order, f, legs = o2, f2, l2; improved = True
                         print('  improve', round((f - self.t0) / 3600, 1), 'h after', it, 'evals', flush=True); break
             if improved:
-                order, f, legs = self.prune(order); pool = self.pool_for(order, pool)
+                order, f, legs = self.prune(order, pool); pool = self.pool_for(order, pool)
         return order, f, legs, pool
 
     def perturb(self, order, k=3):
@@ -127,15 +134,15 @@ class Search:
         return o
 
     def run(self, order, budget):
-        global _R, _START, _T0
-        _R, _START, _T0 = self.R, self.start, self.t0
+        global _R, _START, _T0, _SELF
+        _R, _START, _T0, _SELF = self.R, self.start, self.t0, self
         order = self.prefix + [x for x in order if x not in self.prefix]
         pool = self.pool_for(order, None)
         f, legs = self.evaluate(order)
         if not self.all_states(legs):
             print('seed misses', [self.R.state_names[s] for s in self.missing(legs)]); order, f, legs = self.repair(order, pool)
             pool = self.pool_for(order, pool)
-        order, f, legs = self.prune(order); pool = self.pool_for(order, pool)   # drop states the seed already covers in passing
+        order, f, legs = self.prune(order, pool); pool = self.pool_for(order, pool)   # drop states the seed already covers in passing
         print('start', round((f - self.t0) / 3600, 1), 'h, order', len(order), flush=True)
         deadline = time.time() + budget
         order, f, legs, pool = self.descend(order, f, legs, deadline, pool)

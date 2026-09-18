@@ -15,6 +15,11 @@ from zoneinfo import ZoneInfo
 import numpy as np
 from common import StateIndex, ABBR, DATA_DIR, hav
 
+_P = lambda s: [frozenset(x.split('-')) for x in s.split()]
+RIVER_BORDERS = set(_P('KY-OH KY-IN KY-IL WV-OH IA-IL IA-WI MO-IL MO-KY MO-TN AR-TN AR-MS LA-MS MN-WI MN-ND IA-NE MO-NE IA-SD '
+                       'NJ-PA DE-NJ MD-VA MD-WV NH-VT OR-WA GA-SC OK-TX ID-OR ID-WA IL-IN AL-GA'))
+# walkable bridges Nick has accepted (stop-name substrings)
+RIVER_OK = {frozenset(('NH', 'VT')): ('Hanover', 'Ledyard', 'Tuck'), frozenset(('MN', 'ND')): ('Fargo', 'Moorhead')}
 WALKIN_KM = float(os.environ.get('BUS48_WALKIN_KM', 0))   # 0 = a state needs a real stop
 MIN_TRANSFER = int(os.environ.get('BUS48_MIN_TRANSFER', 15)) * 60       # seconds between different vehicles at the same stop
 SCAN_SLACK = 10 * 3600       # keep scanning this long past the first target arrival
@@ -35,7 +40,7 @@ class Feed:
     """One GTFS zip. tz_mode: 'agency' (times in agency tz, converted per date)
     or 'utc'. calendar_mode: 'dates' (honour calendar dates) or 'weekday'
     (only weekday pattern; for stale feeds)."""
-    def __init__(self, path, name, tz_mode, calendar_mode, skip_agencies=(), max_speed=130):
+    def __init__(self, path, name, tz_mode, calendar_mode, skip_agencies=(), max_speed=130, keep_routes=None):
         self.name = name; self.tz_mode = tz_mode; self.calendar_mode = calendar_mode; self.max_speed = max_speed
         z = zipfile.ZipFile(path)
         names = set(z.namelist())
@@ -54,6 +59,8 @@ class Feed:
             r = routes.get(t['route_id'], {})
             ag = self.agency.get(r.get('agency_id', ''), {}).get('agency_name', r.get('agency_id', ''))
             if ag in skip_agencies: continue
+            # big city feeds: keep only the listed routes (matched on id, short or long name)
+            if keep_routes is not None and not ({t['route_id'], r.get('route_short_name', ''), r.get('route_long_name', '')} & keep_routes): continue
             self.trips[t['trip_id']] = dict(service=t['service_id'], agency=ag, route=(r.get('route_long_name') or r.get('route_short_name') or ''), headsign=t.get('trip_headsign', ''), stops=[])
         for st in rd('stop_times.txt'):
             t = self.trips.get(st['trip_id'])
@@ -62,6 +69,9 @@ class Feed:
             if not a: continue
             t['stops'].append((int(st['stop_sequence']), st['stop_id'], hms(a), hms(d)))
         for t in self.trips.values(): t['stops'].sort()
+        if keep_routes is not None:   # unused stops only add footpaths
+            used = {sid for t in self.trips.values() for _, sid, _, _ in t['stops']}
+            self.stops = {k: v for k, v in self.stops.items() if k in used}
         self.agency_tz = {}
         if tz_mode == 'infer':
             # majority timezone of each agency's stops (by state), else feed tz
@@ -166,6 +176,9 @@ class TimeRouter:
                 for j in states.tree.query(pt.buffer(deg)):
                     j = int(j)
                     if j == state[i]: continue
+                    # borders that are rivers: a straight-line walk-in is fiction unless a walkable bridge is known
+                    pair = frozenset((ABBR[states.names[j]], ABBR[states.names[state[i]]]))
+                    if pair in RIVER_BORDERS and not any(k in self.stop_name[i] for k in RIVER_OK.get(pair, ())): continue
                     q = nearest_points(states.polys[j], pt)[0]; d = hav(self.stop_xy[i], (q.x, q.y))
                     if d > WALKIN_KM: continue
                     v = len(self.stop_ids); w = 120 + int(d * 1000 / WALK_SPEED)
@@ -174,10 +187,25 @@ class TimeRouter:
                     self.foot[i].append((v, w)); self.foot[v].append((i, w))
             self.state = np.array(state, dtype=np.int32); self.idx = {u: k for k, u in enumerate(self.stop_ids)}; self.N = len(self.stop_ids)
             print(self.N - self.first_virtual, 'walk-in border points within', WALKIN_KM, 'km')
+        # hand-measured walking links (real paths over bridges etc.): data/walk_links.csv from_uid,to_uid,minutes,note
+        wl = os.path.join(DATA_DIR, 'walk_links.csv')
+        if os.path.exists(wl):
+            ix = {u: k for k, u in enumerate(self.stop_ids)}
+            rows = list(csv.DictReader(open(wl)))
+            # a hand-made end point is reachable only by its measured link, never by the generic proxies
+            only = {ix[r['to_uid']] for r in rows if r['to_uid'].startswith('extra:') and r['to_uid'] in ix}
+            for k in list(self.foot):
+                self.foot[k] = [] if k in only else [(j, w) for j, w in self.foot[k] if j not in only]
+            for r in rows:
+                a, b = ix.get(r['from_uid']), ix.get(r['to_uid'])
+                if a is None or b is None: print('walk link: unknown stop', r['from_uid'], r['to_uid']); continue
+                w = int(float(r['minutes']) * 60); self.foot[a].append((b, w)); self.foot[b].append((a, w))
         # connections
         conns = []; self.trip_info = {}
         for fi, f in enumerate(feeds):
-            conns += f.connections(d0, days, self.idx, fi)
+            # start a day early: overnight trips that originate the previous service day (e.g. the 1:00 AM
+            # Barons bus through Huntington) would otherwise be missing on day 1
+            conns += f.connections(d0 - timedelta(days=1), days + 1, self.idx, fi)
             for tid, t in f.trips.items(): self.trip_info[(fi, tid)] = (t['agency'], t['route'], t['headsign'])
         conns.sort(key=lambda c: c[0])
         self.dep = np.array([c[0] for c in conns]); self.arr = np.array([c[1] for c in conns])
@@ -420,7 +448,7 @@ class ExtraFeed:
     another feed (or give =uid, e.g. =ibus:1304); the first match is used."""
     def __init__(self, path, others):
         self.name = 'extra'; self.stops = {}; self.trips = {}; self.tz_mode = 'agency'; self.calendar_mode = 'weekday'
-        self.cal = {}; self.cal_dates = {}; self.agency_tz = {}; self.max_speed = 130; self.tz = timezone.utc
+        self.cal = {}; self.cal_dates = {}; self.agency_tz = {}; self.max_speed = 160; self.tz = timezone.utc   # hand-entered times are trusted
         if not os.path.exists(path): return
         allstops = [(uid, nm, lon, lat) for f in others for (uid, nm, lon, lat) in f.stops.values()]
         for k, r in enumerate(csv.DictReader(open(path))):
@@ -456,8 +484,13 @@ def load_feeds():
     # extra agency feeds dropped into data/more_gtfs/ (local time zone from agency.txt, real calendars).
     # They go after the manual-trip feed so feed indexes stored in older result pickles stay valid.
     import glob
-    more = [Feed(z, os.path.splitext(os.path.basename(z))[0], 'agency', 'dates', max_speed=200)
-            for z in sorted(glob.glob(os.path.join(DATA_DIR, 'more_gtfs', '*.zip')))]
+    import json
+    kp = os.path.join(DATA_DIR, 'more_gtfs', 'keep_routes.json')
+    keep = json.load(open(kp)) if os.path.exists(kp) else {}
+    more = []
+    for z in sorted(glob.glob(os.path.join(DATA_DIR, 'more_gtfs', '*.zip'))):
+        nm = os.path.splitext(os.path.basename(z))[0]
+        more.append(Feed(z, nm, 'agency', 'dates', max_speed=200, keep_routes=set(keep[nm]) if nm in keep else None))
     feeds.append(ExtraFeed(os.path.join(DATA_DIR, 'extra_trips.csv'), feeds + more))
     return feeds + more
 
