@@ -1,7 +1,5 @@
 agency,route,days,tz,stops
 Northwestern Stage Lines,NWL 710 Spokane -> Pasco,1111111,America/Los_Angeles,Spokane@10:45|Ritzville@11:45/11:55|Pasco Bus Stop@13:10
-Concord Coach Lines,Boston -> Portland 08:00,1111111,America/New_York,=ibus:3598@08:00|=ibus:1304@09:55
-Concord Coach Lines,Portland -> Boston 10:30,1111111,America/New_York,=ibus:1304@10:30|=ibus:3598@12:25
 Northwestern Stage Lines,NWL Boise -> Pasco (OR stop is really Hermiston; La Grande used as stand-in),1111111,America/Los_Angeles,=ibus:1465@07:15|=flix:1e6e4e25-e311-47fd-92cf-c4829424d136@10:35/10:40|=ibus:2048@13:10
 Northwestern Stage Lines,NWL Pasco -> Spokane 15:00,1111111,America/Los_Angeles,=ibus:2048@15:00|=ibus:9@17:05
 TARTA,Route 18 to Meijer Alexis then walk into Michigan,0000010,America/New_York,+TARTA downtown hub;-83.5317;41.6557@13:30|+Brooke Park & Jackman (TARTA 18);-83.5845;41.7289@13:57|+Michigan state line on Jackman Rd (walk);-83.5847;41.7342@14:05
@@ -17,8 +15,6 @@ Advance Transit,Green Route Norwich VT -> Hanover,1111111,America/New_York,+King
 Dartmouth Coach,Hanover -> Boston South Station 13:40 (arrival assumed 16:25),1111111,America/New_York,=ibus:900@13:40|=ibus:3598@16:25
 On foot (jog),Hanover Inn -> Vermont end of Ledyard Bridge,1111111,America/New_York,=ibus:900@13:16|+Ledyard Bridge Vermont end;-72.3003;43.7036@13:27
 On foot (jog),Vermont end of Ledyard Bridge -> Hanover Inn,1111111,America/New_York,+Ledyard Bridge Vermont end;-72.3003;43.7036@13:28|=ibus:900@13:39
-Concord Coach Lines,Boston -> Portland 17:15,1111111,America/New_York,=ibus:3598@17:15|=ibus:1304@19:10
-Concord Coach Lines,Portland -> Boston 20:00,1111111,America/New_York,=ibus:1304@20:00|=ibus:3598@22:10
 MBTA Commuter Rail,Providence Line 885 South Station -> Providence,1111111,America/New_York,=ibus:3598@21:40|=amtrak:PVD@22:56
 MBTA Commuter Rail,Providence Line Providence -> South Station (arrival assumed),1111111,America/New_York,=amtrak:PVD@23:25|=ibus:3598@24:40
 MBTA subway,North Station -> South Station (Orange + Red Line; times assumed),1111111,America/New_York,=amtrak:BON@21:12|=ibus:3598@21:32

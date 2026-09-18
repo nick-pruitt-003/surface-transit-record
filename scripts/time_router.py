@@ -449,7 +449,7 @@ def load_feeds():
     feeds = [
         Feed(os.path.join(DATA_DIR, 'flix_gtfs.zip'), 'flix', 'utc', 'dates'),
         Feed(os.path.join(DATA_DIR, 'amtrak_gtfs.zip'), 'amtrak', 'agency', 'dates', max_speed=220),
-        Feed(os.path.join(DATA_DIR, 'intercity_merged_gtfs.zip'), 'ibus', 'infer', 'weekday', skip_agencies=('Greyhound-us', 'FlixBus-us')),
+        Feed(os.path.join(DATA_DIR, 'intercity_merged_gtfs.zip'), 'ibus', 'infer', 'weekday', skip_agencies=('Greyhound-us', 'FlixBus-us', 'Concord Coach Lines')),
     ]
     # carriers whose merged-feed times are known to be Eastern (Amtrak-sourced thruway)
     feeds[2].agency_tz['BeeLine Express-Village Travel'] = ZoneInfo('America/New_York')
