@@ -211,6 +211,7 @@ class TimeRouter:
             out, pred, best = self.scan(labels, tgt)
             if not out: return None, layers + [('unreachable', t)]
             layers.append((t, out, pred)); labels = out
+        self.last_outs = [out for _, out, _ in layers]
         # reconstruct backwards
         t_end, _ = min(labels.values(), key=lambda x: x[0]); end = min(labels, key=lambda s: labels[s][0])
         legs = []
@@ -222,6 +223,18 @@ class TimeRouter:
                 else: seg.append(('ride', p[1], p[2], p[3], s, None)); s = p[2]
             legs = seg[::-1] + legs; end = s
         return t_end, self._fill(legs)
+
+    def finish(self, start_stop, start_time, order, base=None):
+        """Finish time only. base=(order, outs) lets a shared prefix reuse cached layer labels."""
+        labels = {start_stop: (start_time, None)}; k = 0
+        if base:
+            bo, bouts = base
+            while k < len(order) and k < len(bo) and order[k] == bo[k]: k += 1
+            if k: labels = bouts[k - 1]
+        for t in order[k:]:
+            labels, _, _ = self.scan(labels, self.target_set(t))
+            if not labels: return None
+        return min(v[0] for v in labels.values())
 
     def _fill(self, legs):
         """Fill arrival times of rides from the connection arrays."""

@@ -9,11 +9,11 @@ from zoneinfo import ZoneInfo
 import numpy as np
 from time_router import TimeRouter, load_feeds, N_STATES
 
-_R = None; _START = None; _T0 = None
+_R = None; _START = None; _T0 = None; _BASE = None
 
 
 def _finish(order):
-    f, legs = _R.route(_START, _T0, order)
+    f = _R.finish(_START, _T0, order, _BASE)
     return f if f is not None else float('inf')
 
 
@@ -86,25 +86,24 @@ class Search:
                 out.append(order[:i] + order[i:j][::-1] + order[j:])
         return out
 
-    def run(self, order, budget):
-        global _R, _START, _T0
-        _R, _START, _T0 = self.R, self.start, self.t0
-        pool = None
-        if self.workers > 1:
-            import multiprocessing as mp
-            pool = mp.get_context('fork').Pool(self.workers)
-        order = self.prefix + [x for x in order if x not in self.prefix]
-        f, legs = self.evaluate(order)
-        if not self.all_states(legs):
-            print('seed misses', [self.R.state_names[s] for s in self.missing(legs)]); order, f, legs = self.repair(order, pool)
-        print('start', round((f - self.t0) / 3600, 1), 'h, order', len(order))
-        t_start = time.time(); improved = True; it = 0
-        while improved and time.time() - t_start < budget:
+    def pool_for(self, order, pool):
+        """Cache the incumbent's layer labels and fork a fresh pool so workers inherit them."""
+        global _BASE
+        self.R.route(self.start, self.t0, order); _BASE = (list(order), self.R.last_outs)
+        if self.workers <= 1: return None
+        if pool: pool.close()
+        import multiprocessing as mp
+        return mp.get_context('fork').Pool(self.workers)
+
+    def descend(self, order, f, legs, deadline, pool):
+        """First-improvement local search from (order, f, legs) until no move helps or time is up."""
+        improved = True; it = 0
+        while improved and time.time() < deadline:
             improved = False
             cands = self.moves(order); random.shuffle(cands)
             batch = max(1, self.workers * 2)
             for i in range(0, len(cands), batch):
-                if time.time() - t_start > budget: break
+                if time.time() > deadline: break
                 chunk = cands[i:i + batch]
                 fs = pool.map(_finish, chunk) if pool else [_finish(o) for o in chunk]
                 it += len(chunk); j = int(np.argmin(fs))
@@ -112,11 +111,44 @@ class Search:
                     o2, f2, l2 = self.repair(chunk[j], pool)
                     if f2 < f - 60 and self.all_states(l2):
                         order, f, legs = o2, f2, l2; improved = True
-                        print('  improve', round((f - self.t0) / 3600, 1), 'h after', it, 'evals', round(time.time() - t_start), 's', flush=True); break
+                        print('  improve', round((f - self.t0) / 3600, 1), 'h after', it, 'evals', flush=True); break
             if improved:
-                order, f, legs = self.prune(order)
+                order, f, legs = self.prune(order); pool = self.pool_for(order, pool)
+        return order, f, legs, pool
+
+    def perturb(self, order, k=3):
+        """Relocate k random states (after the prefix) to random positions."""
+        o = list(order)
+        for _ in range(k):
+            i = random.randrange(self.P, len(o)); x = o.pop(i)
+            o.insert(random.randrange(self.P, len(o) + 1), x)
+        return o
+
+    def run(self, order, budget):
+        global _R, _START, _T0
+        _R, _START, _T0 = self.R, self.start, self.t0
+        order = self.prefix + [x for x in order if x not in self.prefix]
+        pool = self.pool_for(order, None)
+        f, legs = self.evaluate(order)
+        if not self.all_states(legs):
+            print('seed misses', [self.R.state_names[s] for s in self.missing(legs)]); order, f, legs = self.repair(order, pool)
+            pool = self.pool_for(order, pool)
+        print('start', round((f - self.t0) / 3600, 1), 'h, order', len(order), flush=True)
+        deadline = time.time() + budget
+        order, f, legs, pool = self.descend(order, f, legs, deadline, pool)
+        best = (order, f, legs); kick = 0
+        while time.time() < deadline:      # iterated local search: kick the incumbent, descend, keep if better
+            kick += 1
+            o2 = self.perturb(best[0], 2 + kick % 3)
+            o2, f2, l2 = self.repair(o2, pool)
+            if not self.all_states(l2): continue
+            pool = self.pool_for(o2, pool)
+            print('kick', kick, 'from', round((f2 - self.t0) / 3600, 1), 'h', flush=True)
+            o2, f2, l2, pool = self.descend(o2, f2, l2, deadline, pool)
+            if f2 < best[1] - 60:
+                best = (o2, f2, l2); print('  new best', round((f2 - self.t0) / 3600, 1), 'h', flush=True)
         if pool: pool.close()
-        return order, f, legs
+        return best
 
 
 def main():
