@@ -12,7 +12,7 @@ from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
 from time_router import TimeRouter, load_feeds
 
-_R = None; _ST = None; _GW = None; _T0 = None
+_R = None; _ST = None; _GW = None; _T0 = None; _GW_STOP = None
 
 
 def _job(job):
