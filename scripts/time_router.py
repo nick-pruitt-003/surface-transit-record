@@ -22,7 +22,7 @@ RIVER_BORDERS = set(_P('KY-OH KY-IN KY-IL WV-OH IA-IL IA-WI MO-IL MO-KY MO-TN AR
 RIVER_OK = {frozenset(('NH', 'VT')): ('Hanover', 'Ledyard', 'Tuck'), frozenset(('MN', 'ND')): ('Fargo', 'Moorhead')}
 WALKIN_KM = float(os.environ.get('BUS48_WALKIN_KM', 0))   # 0 = a state needs a real stop
 MIN_TRANSFER = int(os.environ.get('BUS48_MIN_TRANSFER', 15)) * 60       # seconds between different vehicles at the same stop
-SCAN_SLACK = 10 * 3600       # keep scanning this long past the first target arrival
+SCAN_SLACK = float(os.environ.get("BUS48_SCAN_SLACK_H", 10)) * 3600   # keep scanning this long past the first target arrival; 24 lets a state be collected at a later, better-placed stop
 WALK_SPEED = 4.5 / 3.6       # m/s
 WALK_MAX_KM = 1.5
 LOCAL_MAX_KM = 10.0        # beyond walking: local transit / shuttle proxy
@@ -169,7 +169,7 @@ class TimeRouter:
         if WALKIN_KM > 0:
             from shapely.geometry import Point
             from shapely.ops import nearest_points
-            state = list(self.state); deg = WALKIN_KM / 80.0
+            state = list(self.state); deg = WALKIN_KM / 70.0   # 1 deg lon is ~73 km at 49 N
             for i in range(self.N):
                 if state[i] < 0: continue
                 pt = Point(self.stop_xy[i])
@@ -191,7 +191,7 @@ class TimeRouter:
         wl = os.path.join(DATA_DIR, 'walk_links.csv')
         if os.path.exists(wl):
             ix = {u: k for k, u in enumerate(self.stop_ids)}
-            rows = list(csv.DictReader(open(wl)))
+            with open(wl) as fh: rows = list(csv.DictReader(fh))
             # a hand-made end point is reachable only by its measured link, never by the generic proxies
             only = {ix[r['to_uid']] for r in rows if r['to_uid'].startswith('extra:') and r['to_uid'] in ix}
             for k in list(self.foot):
@@ -219,6 +219,11 @@ class TimeRouter:
         q = q.lower(); return [i for i, nm in enumerate(self.stop_name) if q in nm.lower()]
 
     def target_set(self, t):
+        if isinstance(t, str) and t.startswith('@~'):   # gateway: '@~lon,lat,km' = every stop within km of a point
+            lon, lat, km = map(float, t[2:].split(','))
+            xy = np.asarray(self.stop_xy, dtype=float)
+            d = np.hypot((xy[:, 0] - lon) * 111.3 * np.cos(np.radians(lat)), (xy[:, 1] - lat) * 111.3)
+            return set(np.where(d <= km)[0].tolist())
         if isinstance(t, str) and t.startswith('@'): return set(self.stops_matching(t[1:]))
         return set(np.where(self.state == t)[0].tolist())
 
@@ -363,16 +368,24 @@ class TimeRouter:
             else: merged.append(l)
         return t_end, merged
 
-    def finish(self, start_stop, start_time, order, base=None):
-        if getattr(self, '_fast', None) is not None: return self._finish_fast(start_stop, start_time, order, base)
-        return self._finish_py(start_stop, start_time, order, base)
+    def finish(self, start_stop, start_time, order, base=None, profile=False):
+        """Finish time; with profile=True returns (finish, mean of the per-target first arrivals)."""
+        if getattr(self, '_fast', None) is not None: return self._finish_fast(start_stop, start_time, order, base, profile)
+        f = self._finish_py(start_stop, start_time, order, base)
+        return (f, f) if profile else f
 
-    def _finish_fast(self, start_stop, start_time, order, base=None):
-        k = 0; lab = None
+    @staticmethod
+    def _lab_min(lab):
+        if isinstance(lab, tuple): return float(lab[1].min()) if len(lab[1]) else float('inf')
+        return min(v[0] for v in lab.values()) if lab else float('inf')
+
+    def _finish_fast(self, start_stop, start_time, order, base=None, profile=False):
+        k = 0; lab = None; mins = []
         if base:
             bo, bouts = base
             while k < len(order) and k < len(bo) and k < len(bouts) and order[k] == bo[k]: k += 1
             if k: lab = bouts[k - 1]
+            if profile: mins = [self._lab_min(bouts[i]) for i in range(k)]
         if lab is None: stops = np.array([start_stop]); times = np.array([float(start_time)]); trips = np.array([-1], dtype=np.int32)
         elif isinstance(lab, tuple): stops, times, trips = lab
         else:
@@ -380,8 +393,10 @@ class TimeRouter:
             trips = np.array([self.trip_ids.get(v[1], -1) if v[1] is not None else -1 for v in lab.values()], dtype=np.int32)
         for t in order[k:]:
             stops, times, trips = self._scan_fast(stops, times, trips, t)
-            if len(stops) == 0: return None
-        return float(times.min())
+            if len(stops) == 0: return (None, None) if profile else None
+            if profile: mins.append(float(times.min()))
+        f = float(times.min())
+        return (f, sum(mins) / len(mins)) if profile else f
 
     def _finish_py(self, start_stop, start_time, order, base=None):
         """Finish time only. base=(order, outs) lets a shared prefix reuse cached layer labels."""
