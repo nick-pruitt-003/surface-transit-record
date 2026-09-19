@@ -72,3 +72,14 @@ Groome,Cheyenne -> DEN (groometransportation.com/wyoming Sep 18 2026; daily; Che
 AE bus,Las Vegas NV -> El Paso (Nick screenshot Sep 18 2026; 09/29 departure; daily assumed; stop points approximate; times in Pacific: El Paso 6:29 AM MDT),1111111,America/Los_Angeles,+Las Vegas NV (AE bus);-115.1450;36.1680@18:00|+Kingman AZ (AE bus);-114.0530;35.1894@19:45|+Phoenix AZ (AE bus);-112.0740;33.4480@23:30|+Tucson AZ (AE bus);-110.9700;32.2217@25:30|+El Paso Via Internacional (AE bus);-106.4880;31.7580@29:29
 AE bus,Greeley -> El Paso (Nick screenshot Sep 18 2026; 09/29 departure; daily assumed; stop points approximate),1111111,America/Denver,+Greeley CO (AE bus);-104.7091;40.4233@18:01|+Longmont CO (AE bus);-105.1019;40.1672@19:00|=ibus:375@20:00|+Colorado Springs CO (AE bus);-104.8214;38.8339@21:15|=ibus:2325@22:00|=amtrak:LSV@25:00|+El Paso Via Internacional (AE bus);-106.4880;31.7580@32:01
 AE bus,Houston -> Lake City FL (Nick screenshot Sep 18 2026; 09/29 departure; daily assumed; Tallahassee 9:05 AM ET per Nick; Lake City 11:00 AM ET assumed),1111111,America/Chicago,+Houston Telephone Rd (AE bus);-95.3000;29.6950@19:30|=ibus:2707@22:35|+Baton Rouge LA (AE bus);-91.1540;30.4515@24:55|+Mobile AL (AE bus);-88.0430;30.6950@27:30|+Tallahassee FL (AE bus);-84.2807;30.4383@32:05|+Lake City FL (AE bus);-82.6390;30.1897@34:00
+Standing Rock Public Transit,SRPT 1 Mobridge -> Fort Yates (schedule at a glance Aug 2026; reservation),1111100,America/Chicago,=ibus:417@06:20|=ibus:1958@07:50
+Standing Rock Public Transit,SRPT 1 Fort Yates -> Mobridge,1111100,America/Chicago,=ibus:1958@16:30|=ibus:417@17:35
+Standing Rock Public Transit,SRPT 2 McLaughlin -> Fort Yates,1111100,America/Chicago,=ibus:881@07:10|=ibus:1958@07:50
+Standing Rock Public Transit,SRPT 2 Fort Yates -> McLaughlin,1111100,America/Chicago,=ibus:1958@16:30|=ibus:881@17:05
+Standing Rock Public Transit,SRPT 4 Mandan -> Fort Yates,1111100,America/Chicago,+Mandan (Spirit of Life);-100.8890;46.8270@06:23|=ibus:1958@07:45
+Standing Rock Public Transit,SRPT 4 Fort Yates -> Mandan,1111100,America/Chicago,=ibus:1958@16:30|+Mandan (Spirit of Life);-100.8890;46.8270@18:15
+Standing Rock Public Transit,SRPT 5 Fort Yates -> Bismarck,1111100,America/Chicago,=ibus:1958@08:15|+Mandan (Spirit of Life);-100.8890;46.8270@09:10|=ibus:289@10:00
+Standing Rock Public Transit,SRPT 5 Bismarck -> Fort Yates,1111100,America/Chicago,=ibus:289@14:00|+Mandan (Spirit of Life);-100.8890;46.8270@14:15|=ibus:1958@15:30
+Standing Rock Public Transit,SRPT 9 McLaughlin -> Mobridge,1111000,America/Chicago,=ibus:881@10:00|=ibus:417@10:45
+Standing Rock Public Transit,SRPT 9 Mobridge -> McLaughlin,1111000,America/Chicago,=ibus:417@14:00|=ibus:881@15:00
+Standing Rock Public Transit,SRPT 12 Fort Yates loop,1111000,America/Chicago,=ibus:1958@12:00|=ibus:881@12:45|=ibus:417@14:30|=ibus:1958@15:40
