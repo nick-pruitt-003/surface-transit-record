@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Route Search Live</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.css">
+<script src="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+<style>
+:root { --bg:#f6f5f2; --panel:#ffffff; --ink:#1d1d1b; --muted:#6b6a66; --line:#e2e0da; --best:#d4452b; --cur:#8a8a86; --good:#2f7d4f; }
+@media (prefers-color-scheme: dark) { :root { --bg:#151514; --panel:#1f1f1d; --ink:#ecebe6; --muted:#9a9993; --line:#33322f; --best:#ff6a4d; --cur:#77766f; --good:#5cc486; } }
+* { box-sizing: border-box; }
+body { margin:0; background:var(--bg); color:var(--ink); font:14px/1.4 -apple-system, system-ui, sans-serif; }
+header { display:flex; flex-wrap:wrap; gap:8px 20px; align-items:baseline; padding:12px 16px; border-bottom:1px solid var(--line); }
+header h1 { font-size:16px; margin:0; }
+.stat { display:flex; flex-direction:column; }
+.stat b { font-size:20px; font-variant-numeric: tabular-nums; }
+.stat span { color:var(--muted); font-size:12px; }
+#best b { color:var(--best); }
+main { display:grid; grid-template-columns: 1fr 360px; gap:0; height: calc(100vh - 70px); }
+#map { height:100%; }
+aside { border-left:1px solid var(--line); background:var(--panel); overflow:auto; padding:12px 14px; }
+h2 { font-size:12px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); margin:14px 0 6px; }
+#chart { width:100%; height:140px; }
+#log div { padding:3px 0; border-bottom:1px dashed var(--line); font-variant-numeric: tabular-nums; }
+#log .nb { color:var(--best); font-weight:600; }
+#legs div { padding:3px 0; font-size:12px; border-bottom:1px solid var(--line); }
+#legs .t { color:var(--muted); }
+.legend { display:flex; gap:14px; font-size:12px; color:var(--muted); }
+.sw { display:inline-block; width:18px; height:3px; vertical-align:middle; margin-right:4px; }
+#stale { color:var(--muted); font-size:12px; }
+@media (max-width: 800px) { main { grid-template-columns: 1fr; height:auto; } #map { height:55vh; } aside { border-left:0; } }
+</style>
+</head>
+<body>
+<header>
+  <h1 id="name">Route search</h1>
+  <div class="stat" id="best"><b>–</b><span>best (first bus → finish)</span></div>
+  <div class="stat" id="cur"><b>–</b><span>current attempt</span></div>
+  <div class="stat" id="rate"><b>–</b><span>route checks / s</span></div>
+  <div class="stat" id="kick"><b>–</b><span>kicks</span></div>
+  <div class="stat" id="left"><b>–</b><span>time left</span></div>
+  <div class="stat" id="phase"><b>–</b><span id="stale">phase</span></div>
+</header>
+<main>
+  <div id="map"></div>
+  <aside>
+    <div class="legend"><span><i class="sw" style="background:var(--best)"></i>best so far</span><span><i class="sw" style="background:var(--cur)"></i>current attempt</span></div>
+    <h2>Best over time</h2>
+    <svg id="chart" viewBox="0 0 340 140" preserveAspectRatio="none"></svg>
+    <h2>Feed</h2>
+    <div id="log"></div>
+    <h2 id="starth">Best route</h2>
+    <div id="legs"></div>
+  </aside>
+</main>
+<script>
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+// Vector map: MapLibre + OpenFreeMap (no API key)
+const dark = matchMedia('(prefers-color-scheme: dark)').matches;
+const map = new maplibregl.Map({ container: 'map', style: 'https://tiles.openfreemap.org/styles/' + (dark ? 'dark' : 'positron'),
+  center: [-96, 39], zoom: 3.2, attributionControl: { compact: true } });
+map.addControl(new maplibregl.NavigationControl({ showCompass: false }));
+let lastEvals = null, lastT = null, lastBestKey = '', lastCurKey = '', ready = false, pending = {};
+const empty = { type: 'FeatureCollection', features: [] };
+function fc(legs) {
+  return { type: 'FeatureCollection', features: (legs || []).map(l => ({ type: 'Feature',
+    properties: { walk: l.kind === 'walk', tip: `${l.dep} ${l.a[2]} → ${l.arr} ${l.b[2]}<br>${l.how}` },
+    geometry: { type: 'LineString', coordinates: [[l.a[0], l.a[1]], [l.b[0], l.b[1]]] } })) };
+}
+map.on('load', () => {
+  for (const [id, color, w] of [['cur', css('--cur'), 2], ['best', css('--best'), 4]]) {
+    map.addSource(id, { type: 'geojson', data: empty });
+    map.addLayer({ id, type: 'line', source: id, layout: { 'line-cap': 'round' },
+      paint: { 'line-color': color, 'line-width': w, 'line-opacity': .9, 'line-dasharray': ['case', ['get', 'walk'], ['literal', [1, 2]], ['literal', [1, 0]]] } });
+  }
+  const pop = new maplibregl.Popup({ closeButton: false, closeOnClick: false });
+  for (const id of ['best', 'cur']) {
+    map.on('mousemove', id, e => { map.getCanvas().style.cursor = 'pointer'; pop.setLngLat(e.lngLat).setHTML(e.features[0].properties.tip).addTo(map); });
+    map.on('mouseleave', id, () => { map.getCanvas().style.cursor = ''; pop.remove(); });
+  }
+  ready = true; for (const k in pending) draw(k, pending[k]);
+});
+function draw(id, legs) {
+  if (!ready) { pending[id] = legs; return; }
+  map.getSource(id).setData(fc(legs));
+  if (id === 'best' && legs && legs.length) {
+    const b = new maplibregl.LngLatBounds(); legs.forEach(l => { b.extend([l.a[0], l.a[1]]); b.extend([l.b[0], l.b[1]]); });
+    map.fitBounds(b, { padding: 30, duration: 600 });
+  }
+}
+function fmtLeft(s) { if (s <= 0) return '0:00'; const m = Math.floor(s / 60); return m + ':' + String(Math.floor(s % 60)).padStart(2, '0'); }
+function chart(hist) {
+  const svg = document.getElementById('chart'); svg.innerHTML = '';
+  const pts = hist.filter(h => h[1] != null || h[2] != null); if (pts.length < 2) return;
+  const ys = pts.flatMap(h => [h[1], h[2]]).filter(v => v != null);
+  let lo = Math.min(...ys), hi = Math.max(...ys); if (hi - lo < 2) { hi += 1; lo -= 1; }
+  const t1 = pts[pts.length - 1][0] || 1, X = t => 6 + t / t1 * 328, Y = v => 8 + (hi - v) / (hi - lo) * 118;
+  const path = (k, color, w) => {
+    const d = pts.filter(h => h[k] != null).map((h, i) => (i ? 'L' : 'M') + X(h[0]).toFixed(1) + ' ' + Y(h[k]).toFixed(1)).join(' ');
+    if (d) svg.insertAdjacentHTML('beforeend', `<path d="${d}" fill="none" stroke="${color}" stroke-width="${w}"/>`);
+  };
+  path(2, css('--cur'), 1); path(1, css('--best'), 2.5);
+  svg.insertAdjacentHTML('beforeend', `<text x="6" y="12" font-size="10" fill="${css('--muted')}">${hi.toFixed(1)} h</text><text x="6" y="136" font-size="10" fill="${css('--muted')}">${lo.toFixed(1)} h</text>`);
+}
+async function tick() {
+  let L_;
+  try { L_ = await (await fetch('live.json?' + Date.now())).json(); } catch (e) { document.getElementById('stale').textContent = 'waiting for a search…'; return; }
+  document.getElementById('name').textContent = L_.name || 'Route search';
+  document.querySelector('#best b').textContent = L_.best_h != null ? L_.best_h.toFixed(1) + ' h' : '–';
+  document.querySelector('#cur b').textContent = L_.current_h != null ? L_.current_h.toFixed(1) + ' h' : '–';
+  document.querySelector('#kick b').textContent = L_.kick || 0;
+  const el = (L_.now - L_.started), left = (L_.budget || 0) - el;
+  document.querySelector('#left b').textContent = L_.phase === 'done' ? 'done' : fmtLeft(left);
+  document.querySelector('#phase b').textContent = L_.phase || '–';
+  const age = Date.now() / 1000 - L_.now;
+  document.getElementById('stale').textContent = age > 15 && L_.phase !== 'done' ? `no update for ${Math.round(age)} s` : 'phase';
+  if (lastEvals != null && L_.now > lastT) document.querySelector('#rate b').textContent = Math.round((L_.evals - lastEvals) / (L_.now - lastT));
+  lastEvals = L_.evals; lastT = L_.now;
+  const ck = JSON.stringify(L_.current || []).length + ':' + (L_.current_h || '');
+  if (ck !== lastCurKey) { draw('cur', L_.current); lastCurKey = ck; }
+  const bk = JSON.stringify(L_.best || []).length + ':' + (L_.best_h || '');
+  if (bk !== lastBestKey) {
+    draw('best', L_.best); lastBestKey = bk;
+    document.getElementById('legs').innerHTML = (L_.best || []).filter(l => l.kind === 'ride').map(l =>
+      `<div><span class="t">${l.dep}</span> ${l.a[2]} → ${l.b[2]} <span class="t">${l.arr}</span></div>`).join('');
+    document.getElementById('starth').textContent = 'Best route' + (L_.start ? ' — start ' + L_.start : '');
+  }
+  document.getElementById('log').innerHTML = (L_.log || []).slice().reverse().map(([t, m]) =>
+    `<div class="${m.startsWith('NEW BEST') ? 'nb' : ''}">${fmtLeft(t)}  ${m}</div>`).join('');
+  chart(L_.history || []);
+}
+tick(); setInterval(tick, 2000);
+</script>
+</body>
+</html>

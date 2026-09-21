@@ -28,6 +28,12 @@ WALK_MAX_KM = 1.5
 LOCAL_MAX_KM = 10.0        # beyond walking: local transit / shuttle proxy
 LOCAL_FIXED = 30 * 60      # wait + boarding
 LOCAL_SPEED = 15 / 3.6     # m/s effective
+# more_gtfs feeds that are intercity carriers; every other feed there is city transit. The 1.5-10 km local-transit
+# proxy link is only built when one end is an intercity stop: city-to-city-stop hops are covered by the real
+# city routes, and building them for every pair of city stops multiplied the footpaths ~9x (Sep 21 2026).
+INTERCITY_MORE = {'concord_coach', 'bustang', 'gobus', 'kimball'}
+LOCAL_PROXY_ALL = os.environ.get('BUS48_LOCAL_PROXY', 'intercity') == 'all'
+STOP_TZ_LOCAL = os.environ.get('BUS48_STOP_TZ') == '1'
 N_STATES = 48
 STATE_TZ = {'AL':'America/Chicago','AZ':'America/Phoenix','AR':'America/Chicago','CA':'America/Los_Angeles','CO':'America/Denver','CT':'America/New_York','DE':'America/New_York','FL':'America/New_York','GA':'America/New_York','ID':'America/Boise','IL':'America/Chicago','IN':'America/Indiana/Indianapolis','IA':'America/Chicago','KS':'America/Chicago','KY':'America/New_York','LA':'America/Chicago','ME':'America/New_York','MD':'America/New_York','MA':'America/New_York','MI':'America/Detroit','MN':'America/Chicago','MS':'America/Chicago','MO':'America/Chicago','MT':'America/Denver','NE':'America/Chicago','NV':'America/Los_Angeles','NH':'America/New_York','NJ':'America/New_York','NM':'America/Denver','NY':'America/New_York','NC':'America/New_York','ND':'America/Chicago','OH':'America/New_York','OK':'America/Chicago','OR':'America/Los_Angeles','PA':'America/New_York','RI':'America/New_York','SC':'America/New_York','SD':'America/Chicago','TN':'America/Chicago','TX':'America/Chicago','UT':'America/Denver','VT':'America/New_York','VA':'America/New_York','WA':'America/Los_Angeles','WV':'America/New_York','WI':'America/Chicago','WY':'America/Denver'}
 
@@ -37,9 +43,9 @@ def hms(t):
 
 
 class Feed:
-    """One GTFS zip. tz_mode: 'agency' (times in agency tz, converted per date)
-    or 'utc'. calendar_mode: 'dates' (honour calendar dates) or 'weekday'
-    (only weekday pattern; for stale feeds)."""
+    """One GTFS zip. tz_mode: 'agency' (times in agency tz, or stop_timezone when
+    present — Amtrak), 'infer' (majority state tz per agency), or 'utc'.
+    calendar_mode: 'dates' (honour calendar dates) or 'weekday' (stale feeds)."""
     def __init__(self, path, name, tz_mode, calendar_mode, skip_agencies=(), max_speed=130, keep_routes=None):
         self.name = name; self.tz_mode = tz_mode; self.calendar_mode = calendar_mode; self.max_speed = max_speed
         z = zipfile.ZipFile(path)
@@ -48,11 +54,15 @@ class Feed:
         self.agency = {a.get('agency_id', ''): a for a in rd('agency.txt')}
         tzs = {a.get('agency_timezone') for a in self.agency.values()} - {None, ''}
         self.tz = ZoneInfo(next(iter(tzs))) if tz_mode == 'agency' and tzs else timezone.utc
-        self.stops = {}
+        self.stops = {}; self.stop_tz = {}
         for s in rd('stops.txt'):
             if s.get('location_type', '0') not in ('', '0'): continue
             try: self.stops[s['stop_id']] = (f"{name}:{s['stop_id']}", s['stop_name'], float(s['stop_lon']), float(s['stop_lat']))
-            except ValueError: pass
+            except ValueError: continue
+            tzname = (s.get('stop_timezone') or '').strip()
+            if tzname:
+                try: self.stop_tz[s['stop_id']] = ZoneInfo(tzname)
+                except Exception: pass
         routes = {r['route_id']: r for r in rd('routes.txt')}
         self.trips = {}
         for t in rd('trips.txt'):
@@ -72,6 +82,7 @@ class Feed:
         if keep_routes is not None:   # unused stops only add footpaths
             used = {sid for t in self.trips.values() for _, sid, _, _ in t['stops']}
             self.stops = {k: v for k, v in self.stops.items() if k in used}
+            self.stop_tz = {k: v for k, v in self.stop_tz.items() if k in used}
         self.agency_tz = {}
         if tz_mode == 'infer':
             # majority timezone of each agency's stops (by state), else feed tz
@@ -88,17 +99,33 @@ class Feed:
         self.cal = {c['service_id']: c for c in rd('calendar.txt')}
         self.cal_dates = defaultdict(dict)
         for c in rd('calendar_dates.txt'): self.cal_dates[c['service_id']][c['date']] = c['exception_type']
-        print(f'{name}: {len(self.stops)} stops, {len(self.trips)} trips, tz {self.tz}, calendar {calendar_mode}')
+        tz_note = f', {len(self.stop_tz)} stop_tz' if self.stop_tz else ''
+        print(f'{name}: {len(self.stops)} stops, {len(self.trips)} trips, tz {self.tz}{tz_note}, calendar {calendar_mode}')
+
+    def _tz_for(self, sid, trip):
+        """Timezone for a stop time: stop_timezone if set, else agency/feed tz (or UTC)."""
+        if self.tz_mode == 'utc': return None
+        # GTFS times are in agency_timezone even when stop_timezone is set, and Amtrak's feed follows that:
+        # CONO Effingham 23:01 / Memphis 29:42 in the file = 10:01 PM / 4:42 AM Central (Nick, Sep 21 2026).
+        # Reading them as stop-local put every western train 1-3 h late. Kept only behind BUS48_STOP_TZ=1.
+        if STOP_TZ_LOCAL and sid in self.stop_tz: return self.stop_tz[sid]
+        return self.agency_tz.get(trip['agency'], self.tz)
 
     def sane(self, t):
         """Reject trips whose timetable implies impossible speeds or negative
         segments (some merged-feed carriers carry placeholder times)."""
         if 'sane' in t: return t['sane']
         ok = True; st = t['stops']
+        # Fixed service day so DST-correct elapsed time across stop_timezone boundaries
+        d = date(2026, 9, 24); bases = {}
+        def base_for(tz):
+            if tz not in bases:
+                bases[tz] = datetime(d.year, d.month, d.day, tzinfo=timezone.utc).timestamp() if tz is None else (datetime(d.year, d.month, d.day, 12, tzinfo=tz) - timedelta(hours=12)).timestamp()
+            return bases[tz]
         for i in range(len(st) - 1):
-            d = hav(self.stops[st[i][1]][2:4], self.stops[st[i + 1][1]][2:4])
-            dt = st[i + 1][2] - st[i][3]
-            if dt < -60 or (d > 25 and d / max(dt, 1) * 3600 > self.max_speed): ok = False; break
+            dist = hav(self.stops[st[i][1]][2:4], self.stops[st[i + 1][1]][2:4])
+            dt = (base_for(self._tz_for(st[i + 1][1], t)) + st[i + 1][2]) - (base_for(self._tz_for(st[i][1], t)) + st[i][3])
+            if dt < -60 or (dist > 25 and dist / max(dt, 1) * 3600 > self.max_speed): ok = False; break
         t['sane'] = ok
         return ok
 
@@ -125,14 +152,14 @@ class Feed:
                 return bases[tz]
             for tid, t in self.trips.items():
                 if len(t['stops']) < 2 or not self.runs_on(t['service'], d): continue
-                tz = None if self.tz_mode == 'utc' else self.agency_tz.get(t['agency'], self.tz)
-                base = base_for(tz)
                 key = (trip_base, tid, di)
                 st = t['stops']
                 if not self.sane(t): continue
                 for i in range(len(st) - 1):
                     a = stop_index[self.stops[st[i][1]][0]]; b = stop_index[self.stops[st[i + 1][1]][0]]
-                    out.append((base + st[i][3], base + st[i + 1][2], a, b, key))
+                    dep = base_for(self._tz_for(st[i][1], t)) + st[i][3]
+                    arr = base_for(self._tz_for(st[i + 1][1], t)) + st[i + 1][2]
+                    out.append((dep, arr, a, b, key))
         return out
 
 
@@ -140,12 +167,13 @@ class TimeRouter:
     def __init__(self, feeds, d0, days):
         self.feeds = feeds; self.d0 = d0
         # stops
-        self.stop_ids = []; self.stop_name = []; self.stop_xy = []
+        self.stop_ids = []; self.stop_name = []; self.stop_xy = []; city = []
         seen = set()
         for f in feeds:
             for sid, (uid, nm, lon, lat) in f.stops.items():
                 if uid in seen: continue
                 seen.add(uid); self.stop_ids.append(uid); self.stop_name.append(nm); self.stop_xy.append((lon, lat))
+                city.append(getattr(f, 'city', False))
         self.idx = {u: i for i, u in enumerate(self.stop_ids)}
         self.N = len(self.stop_ids)
         hi = os.path.join(DATA_DIR, 'states_500k.geojson')   # Census 1:500k borders; the coarse file misplaces border stops
@@ -163,7 +191,8 @@ class TimeRouter:
                     if j == i: continue
                     d = hav(self.stop_xy[i], self.stop_xy[j])
                     if d <= WALK_MAX_KM: self.foot[i].append((j, int(d * 1000 / WALK_SPEED) + (0 if d < 0.15 else 300)))
-                    elif d <= LOCAL_MAX_KM: self.foot[i].append((j, LOCAL_FIXED + int(d * 1000 / LOCAL_SPEED)))
+                    elif d <= LOCAL_MAX_KM and (LOCAL_PROXY_ALL or not (city[i] and city[j])):
+                        self.foot[i].append((j, LOCAL_FIXED + int(d * 1000 / LOCAL_SPEED)))
         # walk-ins: a stop within WALKIN_KM of another state's border lets you step across and back
         self.first_virtual = self.N
         if WALKIN_KM > 0:
@@ -463,7 +492,7 @@ class ExtraFeed:
     another feed (or give =uid, e.g. =ibus:1304); the first match is used."""
     def __init__(self, path, others):
         self.name = 'extra'; self.stops = {}; self.trips = {}; self.tz_mode = 'agency'; self.calendar_mode = 'weekday'
-        self.cal = {}; self.cal_dates = {}; self.agency_tz = {}; self.max_speed = 160; self.tz = timezone.utc   # hand-entered times are trusted
+        self.cal = {}; self.cal_dates = {}; self.agency_tz = {}; self.stop_tz = {}; self.max_speed = 160; self.tz = timezone.utc   # hand-entered times are trusted
         if not os.path.exists(path): return
         allstops = [(uid, nm, lon, lat) for f in others for (uid, nm, lon, lat) in f.stops.values()]
         for k, r in enumerate(csv.DictReader(open(path))):
@@ -485,7 +514,7 @@ class ExtraFeed:
                 self.trips[f't{k}'] = dict(service=svc, agency=r['agency'], route=r['route'], headsign='', stops=seq)
                 self.agency_tz[r['agency']] = ZoneInfo(r['tz'])
         print(f'extra: {len(self.trips)} manual trips')
-    sane = Feed.sane; runs_on = Feed.runs_on; connections = Feed.connections
+    sane = Feed.sane; runs_on = Feed.runs_on; connections = Feed.connections; _tz_for = Feed._tz_for
 
 
 def load_feeds():
@@ -506,6 +535,7 @@ def load_feeds():
     for z in sorted(glob.glob(os.path.join(DATA_DIR, 'more_gtfs', '*.zip'))):
         nm = os.path.splitext(os.path.basename(z))[0]
         more.append(Feed(z, nm, 'agency', 'dates', max_speed=200, keep_routes=set(keep[nm]) if nm in keep else None))
+        more[-1].city = nm not in INTERCITY_MORE
     feeds.append(ExtraFeed(os.path.join(DATA_DIR, 'extra_trips.csv'), feeds + more))
     return feeds + more
 
