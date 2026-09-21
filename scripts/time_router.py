@@ -381,7 +381,7 @@ class TimeRouter:
 
     def _route_fast(self, start_stop, start_time, order):
         """route() on the compiled scan: same legs, reconstructed from predecessor arrays."""
-        stops = np.array([start_stop]); times = np.array([float(start_time)]); trips = np.array([-1], dtype=np.int32)
+        stops = np.atleast_1d(np.asarray(start_stop, dtype=np.int64)); times = np.full(len(stops), float(start_time)); trips = np.full(len(stops), -1, dtype=np.int32)
         layers = []; self.last_outs = []
         for t in order:
             stops, times, trips, pred = self._scan_fast(stops, times, trips, t, want_pred=True)
@@ -424,7 +424,8 @@ class TimeRouter:
             while k < len(order) and k < len(bo) and k < len(bouts) and order[k] == bo[k]: k += 1
             if k: lab = bouts[k - 1]
             if profile: mins = [self._lab_min(bouts[i]) for i in range(k)]
-        if lab is None: stops = np.array([start_stop]); times = np.array([float(start_time)]); trips = np.array([-1], dtype=np.int32)
+        if lab is None:   # start_stop may be one stop or an array of stops (free start: anywhere in a state)
+            stops = np.atleast_1d(np.asarray(start_stop, dtype=np.int64)); times = np.full(len(stops), float(start_time)); trips = np.full(len(stops), -1, dtype=np.int32)
         elif isinstance(lab, tuple): stops, times, trips = lab
         else:
             stops = np.fromiter(lab.keys(), dtype=np.int64, count=len(lab)); times = np.array([v[0] for v in lab.values()], dtype=np.float64)
