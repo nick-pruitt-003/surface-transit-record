@@ -257,14 +257,19 @@ class TimeRouter:
         if isinstance(t, str) and t.startswith('@'): return set(self.stops_matching(t[1:]))
         return set(np.where(self.state == t)[0].tolist())
 
-    def scan(self, labels, targets):
+    def _crosses(self, i, j):
+        """Footpath i -> j crosses a state line into a real stop (border walk-in stops are exempt)."""
+        return j < self.first_virtual and int(self.state[i]) != int(self.state[j])
+
+    def scan(self, labels, targets, guard=False):
         """CSA from initial labels {stop: (time, trip_key)}; returns arrival labels at
         targets and predecessor info for reconstruction."""
-        INF = float('inf'); N = self.N
+        INF = float('inf'); N = self.N; tgt_ = targets   # guard: a state target, collected by ride or walk-in only
         best = np.full(N, INF); pred = {}; ltrip = {}
         for s, (t, trip) in labels.items():
             if t < best[s]: best[s] = t; ltrip[s] = trip; pred[s] = None
             for j, w in self.foot[s]:
+                if guard and j in tgt_ and self._crosses(s, j): continue
                 if t + w < best[j]: best[j] = t + w; ltrip[j] = None; pred[j] = ('walk', s, t)
         t0 = min(best[s] for s in labels); start = int(np.searchsorted(self.dep, t0))
         reached = {}   # trip_key -> (board stop, board time)
@@ -285,6 +290,7 @@ class TimeRouter:
                 best[b] = at; ltrip[b] = trip; pred[b] = ('ride', trip, reached[trip][0], reached[trip][1], a, dt)
                 if b in tgt and at < target_best: target_best = at
                 for j, w in self.foot[b]:
+                    if guard and j in tgt and self._crosses(b, j): continue
                     if at + w < best[j]: best[j] = at + w; ltrip[j] = None; pred[j] = ('walk', b, at)
         out = {s: (best[s], ltrip.get(s)) for s in tgt if best[s] < INF}
         return out, pred, best
@@ -300,7 +306,7 @@ class TimeRouter:
         labels = {start_stop: (start_time, None)}; layers = []
         for t in order:
             tgt = self.target_set(t)
-            out, pred, best = self.scan(labels, tgt)
+            out, pred, best = self.scan(labels, tgt, guard=not isinstance(t, str))
             if not out:
                 self.last_outs = [o for _, o, _ in layers]
                 return None, layers + [('unreachable', t)]
@@ -332,17 +338,17 @@ class TimeRouter:
         self.trip_ids = {}
         ct = np.empty(len(self.ctrip), dtype=np.int32)
         for k, key in enumerate(self.ctrip): ct[k] = self.trip_ids.setdefault(key, len(self.trip_ids))
-        ptr = np.zeros(self.N + 1, dtype=np.int32); to = []; w = []
+        ptr = np.zeros(self.N + 1, dtype=np.int32); to = []; w = []; fx = []
         for i in range(self.N):
-            for j, x in self.foot.get(i, ()): to.append(j); w.append(x)
+            for j, x in self.foot.get(i, ()): to.append(j); w.append(x); fx.append(self._crosses(i, j))
             ptr[i + 1] = len(to)
         self._fa = dict(dep=np.ascontiguousarray(self.dep, dtype=np.float64), arr=np.ascontiguousarray(self.arr, dtype=np.float64),
                         cfrom=np.ascontiguousarray(self.cfrom, dtype=np.int32), cto=np.ascontiguousarray(self.cto, dtype=np.int32), ctrip=ct,
-                        ptr=ptr, to=np.array(to, dtype=np.int32), w=np.array(w, dtype=np.float64))
+                        ptr=ptr, to=np.array(to, dtype=np.int32), w=np.array(w, dtype=np.float64), fx=np.array(fx, dtype=np.uint8))
         D = ctypes.POINTER(ctypes.c_double); I = ctypes.POINTER(ctypes.c_int); B = ctypes.POINTER(ctypes.c_ubyte)
-        lib.csa_scan.argtypes = [ctypes.c_int, D, D, I, I, I, ctypes.c_int, ctypes.c_int, ctypes.c_int, I, I, D, D, I, B, ctypes.c_double, ctypes.c_double, I, I, D, I, D]
+        lib.csa_scan.argtypes = [ctypes.c_int, D, D, I, I, I, ctypes.c_int, ctypes.c_int, ctypes.c_int, I, I, D, B, D, I, B, ctypes.c_double, ctypes.c_double, I, I, D, I, D]
         lib.csa_scan.restype = ctypes.c_int
-        self._ptrs = {k: v.ctypes.data_as(D if v.dtype == np.float64 else I) for k, v in self._fa.items()}
+        self._ptrs = {k: v.ctypes.data_as(D if v.dtype == np.float64 else B if v.dtype == np.uint8 else I) for k, v in self._fa.items()}
         self._masks = {}; self._ct = (D, I, B); self._fast = lib
 
     def _scan_fast(self, stops, times, trips, target, want_pred=False):
@@ -350,7 +356,9 @@ class TimeRouter:
         D, I, B = self._ct
         mask = self._masks.get(target)
         if mask is None:
-            mask = np.zeros(self.N, dtype=np.uint8); mask[list(self.target_set(target))] = 1; self._masks[target] = mask
+            mask = np.zeros(self.N, dtype=np.uint8); ts_ = list(self.target_set(target))
+            mask[ts_] = 1 if isinstance(target, str) else 2; mask[self.first_virtual:] = np.minimum(mask[self.first_virtual:], 1)
+            self._masks[target] = mask
         best = np.full(self.N, np.inf); lt = np.full(self.N, -1, dtype=np.int32)
         o = np.argsort(-times)                 # so the earliest label wins when a stop repeats
         best[stops[o]] = times[o]; lt[stops[o]] = trips[o]
@@ -364,10 +372,10 @@ class TimeRouter:
             pa = (pred['conn'].ctypes.data_as(I), pred['walk'].ctypes.data_as(I), pred['walk_t'].ctypes.data_as(D),
                   pred['bstop'].ctypes.data_as(I), pred['bdep'].ctypes.data_as(D))
         rc = self._fast.csa_scan(len(self._fa['dep']), p['dep'], p['arr'], p['cfrom'], p['cto'], p['ctrip'], k0, self.N, len(self.trip_ids),
-                            p['ptr'], p['to'], p['w'], best.ctypes.data_as(D), lt.ctypes.data_as(I), mask.ctypes.data_as(B),
+                            p['ptr'], p['to'], p['w'], p['fx'], best.ctypes.data_as(D), lt.ctypes.data_as(I), mask.ctypes.data_as(B),
                             float(MIN_TRANSFER), float(SCAN_SLACK), *pa)
         if rc != 0: raise MemoryError(f'csa_scan failed (rc={rc})')
-        hit = np.nonzero((mask == 1) & np.isfinite(best))[0]
+        hit = np.nonzero((mask > 0) & np.isfinite(best))[0]
         if want_pred: return hit.astype(np.int64), best[hit], lt[hit], pred
         return hit.astype(np.int64), best[hit], lt[hit]
 
@@ -436,7 +444,7 @@ class TimeRouter:
             while k < len(order) and k < len(bo) and k < len(bouts) and order[k] == bo[k]: k += 1
             if k: labels = bouts[k - 1]
         for t in order[k:]:
-            labels, _, _ = self.scan(labels, self.target_set(t))
+            labels, _, _ = self.scan(labels, self.target_set(t), guard=not isinstance(t, str))
             if not labels: return None
         return min(v[0] for v in labels.values())
 

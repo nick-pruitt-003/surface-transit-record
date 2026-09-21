@@ -1,13 +1,14 @@
 /* Connection Scan inner loop for time_router.TimeRouter.finish().
    Mirrors TimeRouter.scan(): one-hop footpaths, MIN_TRANSFER between vehicles (0 to stay on a trip),
-   stop scanning SCAN_SLACK after the first target is reached. Build: cc -O3 -shared -fPIC csa.c -o csa.so */
+   stop scanning SCAN_SLACK after the first target is reached. is_target 2 = a state target's stop: a footpath that
+   crosses a state line (foot_x) can't land on it, so a state is collected by a ride (or a border walk-in stop, 1). Build: cc -O3 -shared -fPIC csa.c -o csa.so */
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
 
 int csa_scan(int n_conn, const double *dep, const double *arr, const int *cfrom, const int *cto, const int *ctrip,
              int start_k, int n_stops, int n_trips,
-             const int *foot_ptr, const int *foot_to, const double *foot_w,
+             const int *foot_ptr, const int *foot_to, const double *foot_w, const unsigned char *foot_x,
              double *best, int *ltrip, const unsigned char *is_target,
              double min_transfer, double slack,
              int *pconn, int *pwalk, double *pwalk_t, int *trip_bstop, double *trip_bdep)   /* may all be NULL */
@@ -20,6 +21,7 @@ int csa_scan(int n_conn, const double *dep, const double *arr, const int *cfrom,
         if (isinf(init[s])) continue;
         for (int e = foot_ptr[s]; e < foot_ptr[s + 1]; e++) {
             int j = foot_to[e]; double t = init[s] + foot_w[e];
+            if (foot_x[e] && is_target[j] == 2) continue;
             if (t < best[j]) { best[j] = t; ltrip[j] = -1; if (pconn) { pconn[j] = -1; pwalk[j] = s; pwalk_t[j] = init[s]; } }
         }
     }
@@ -41,6 +43,7 @@ int csa_scan(int n_conn, const double *dep, const double *arr, const int *cfrom,
             if (is_target[b] && at < target_best) target_best = at;
             for (int e = foot_ptr[b]; e < foot_ptr[b + 1]; e++) {
                 int j = foot_to[e]; double t = at + foot_w[e];
+                if (foot_x[e] && is_target[j] == 2) continue;
                 if (t < best[j]) { best[j] = t; ltrip[j] = -1; if (pconn) { pconn[j] = -1; pwalk[j] = b; pwalk_t[j] = at; } }
             }
         }

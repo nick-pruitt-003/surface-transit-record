@@ -3,7 +3,7 @@
 usage: python3 time_search.py --start Missoula --at 2026-09-21T07:00 --tz America/Denver \
          --seed ../out/start_newton.pkl [--prefix "Idaho,Washington"] --budget 900 --workers 8 --out ../out/time_best.pkl
 """
-import argparse, json, os, pickle, random, time, sys
+import argparse, itertools, json, os, pickle, random, time, sys
 from datetime import datetime
 from zoneinfo import ZoneInfo
 import numpy as np
@@ -87,7 +87,7 @@ class Search:
         except Exception:
             return 'move'
 
-    def live_trial(self, order, cand, f_try):
+    def live_trial(self, order, cand, f_try, label=None):
         """At most once a second: route the candidate being tested and show it (costs one route, ~0.1 s)."""
         if time.time() - self.__dict__.get('_trial_t', 0) < 1: return
         self._trial_t = time.time()
@@ -96,7 +96,7 @@ class Search:
             _, legs = self.evaluate(cand)
             L = self.__dict__.get('_live')
             if L is not None: L['tried'] = L.get('tried', 0) + 1
-            self.live(force=True, trying=self.legs_json(legs), trying_h=h, trying_note=self.move_label(order, cand))
+            self.live(force=True, trying=self.legs_json(legs), trying_h=h, trying_note=label or self.move_label(order, cand))
         except Exception as e:
             print('live view error (ignored):', e, flush=True)
 
@@ -236,6 +236,54 @@ class Search:
                 order, f, legs = self.prune(order, pool); pool = self.pool_for(order, pool); sc = _finish(order)
         return order, f, legs, pool
 
+    def joint(self, order, f, legs, deadline, pool, top=4):
+        """Pair/triple move for when single moves are stuck: find groups of 2-3 nearby targets whose joint removal
+        saves much more than removing any one of them (they hold a day together), then pull each group out and
+        re-insert its members one by one at their best positions (state or gateway). Returns (order, f, legs, improved)."""
+        fmap = (lambda os_: pool.map(_finish, os_)) if pool else (lambda os_: [_finish(o) for o in os_])
+        sc = _finish(order); P = self.P
+        free = [i for i in range(P, len(order)) if order[i] not in self.sticky]
+        drop = lambda g: [x for k, x in enumerate(order) if k not in g]
+        single = dict(zip(free, fmap([drop({i}) for i in free])))
+        groups = [set(c) for r in (2, 3) for c in itertools.combinations(free, r) if max(c) - min(c) <= 3]
+        self.live(force=True, phase='pair moves', note=f'stuck: testing {len(groups)} state groups')
+        if time.time() > deadline: return order, f, legs, False
+        gs = fmap([drop(g) for g in groups])
+        # joint hold = what the group saves beyond its best single member
+        ranked = sorted(((min(single[i] for i in g) - s, g) for s, g in zip(gs, groups)), key=lambda t: -t[0])
+        best = (sc, None)
+        for hold, g in [r for r in ranked if r[0] > 3600][:top]:
+            names = '+'.join(self._tname(order[i]) for i in sorted(g))
+            print(f'  pair move: {names} hold {hold / 3600:.1f} h together', flush=True)
+            members = [order[i] for i in sorted(g)]
+            for perm in (members, members[::-1]):
+                if time.time() > deadline: break
+                o = drop(g)
+                for x in perm:
+                    opts = [x] + (self.gateways.get(x, []) if not isinstance(x, str) else [])
+                    cands = [o[:j] + [y] + o[j:] for j in range(P, len(o) + 1) for y in opts]
+                    fs = fmap(cands); k = int(np.argmin(fs)); o = cands[k]
+                    self.live_trial(order, o, fs[k], label=f'pair move {names}: placing {self._tname(x)}')
+                s = _finish(o)
+                if s < best[0] - 60: best = (s, o)
+        if best[1] is None: return order, f, legs, False
+        o2, f2, l2 = self.repair(best[1], pool)
+        if _finish(o2) < sc - 60 and f2 <= f + 60 and self.all_states(l2):
+            print('  pair move improve', round((f2 - self.t0) / 3600, 1), 'h', flush=True)
+            self.live_point(current_h=round((f2 - self.t0) / 3600, 2))
+            self.live(force=True, current=self.legs_json(l2), note=f'pair move: {(f2 - self.t0) / 3600:.1f} h')
+            return o2, f2, l2, True
+        return order, f, legs, False
+
+    def local_opt(self, order, f, legs, deadline, pool):
+        """Single moves until stuck, then pair moves; repeat while pair moves help."""
+        while True:
+            order, f, legs, pool = self.descend(order, f, legs, deadline, pool)
+            if time.time() > deadline: return order, f, legs, pool
+            order, f, legs, ok = self.joint(order, f, legs, deadline, pool)
+            if not ok: return order, f, legs, pool
+            order, f, legs = self.prune(order, pool); pool = self.pool_for(order, pool)
+
     def latest_start(self, start, t_lo, order, span=24 * 3600, step=600):
         """Latest clock in [t_lo, t_lo + span) that still finishes as early as leaving at t_lo. Finish is
         non-decreasing in the start clock (timetables are FIFO), so a binary search over 10-min steps works."""
@@ -313,7 +361,7 @@ class Search:
         self.live_point(current_h=round((f - self.t0) / 3600, 2))
         self.live(force=True, budget=budget, phase='starting', current=self.legs_json(legs), note=f'seed: {(f - self.t0) / 3600:.1f} h')
         deadline = time.time() + budget
-        order, f, legs, pool = self.descend(order, f, legs, deadline, pool)
+        order, f, legs, pool = self.local_opt(order, f, legs, deadline, pool)
         el, f, legs, pool = self.adopt(order, pool)
         print('settled', round(el / 3600, 1), 'h from first bus', flush=True)
         self.live_point(best_h=round(el / 3600, 2))
@@ -332,7 +380,7 @@ class Search:
             print('kick', kick, 'from', round((f2 - self.t0) / 3600, 1), 'h', flush=True)
             self.live_point(current_h=round((f2 - self.t0) / 3600, 2))
             self.live(force=True, kick=kick, phase='kicked', current=self.legs_json(l2), note=f'kick {kick}: shake up, restart at {(f2 - self.t0) / 3600:.1f} h')
-            o2, f2, l2, pool = self.descend(o2, f2, l2, deadline, pool)
+            o2, f2, l2, pool = self.local_opt(o2, f2, l2, deadline, pool)
             e2, f2, l2, pool = self.adopt(o2, pool)
             if e2 < best[3] - 60 or (e2 <= best[3] + 60 and f2 <= best[1] + 60 and _finish(o2) < _finish(best[0]) - 60):
                 best = (o2, f2, l2, e2, self.start, self.t0); last_gain = time.time()
