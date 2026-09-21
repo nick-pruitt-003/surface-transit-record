@@ -81,11 +81,12 @@ def live_write(R, name, phase, chains, note, best_h=None):
     except Exception as e: print('live view error (ignored):', e)
 
 
-def build(R, F, state_stops, end, D, rng, topk, beam=30, label='', dist=None, near=2, oracle=None, dump=None, root=None, quiet=False):
+def build(R, F, state_stops, end, D, rng, topk, beam=30, label='', dist=None, near=2, oracle=None, dump=None, root=None, quiet=False, stop_at=None):
     """Beam search backwards (C reverse scan). A node: states picked (end first), states left, the latest time at
     each stop of the last state, and its through vehicles (staying aboard needs no transfer). Each step every node
     scans back once; its top-k unvisited states by latest time plus the `near` closest ones become children; the
     beam keeps the children with the best score = latest time minus the leftover-work estimate (strand_cost).
+    stop_at: give up after this many states are placed, for a lookahead that does not run to the start.
     Returns (order start..end, states nothing could reach)."""
     NEG = -np.inf; st_arr = {x: np.array(state_stops[x], dtype=np.int64) for x in state_stops}
     def sparse(ns):
@@ -125,7 +126,7 @@ def build(R, F, state_stops, end, D, rng, topk, beam=30, label='', dist=None, ne
         return cands, kids
 
     onode = nodes[0] if oracle else None
-    while nodes[0]['left']:
+    while nodes[0]['left'] and (stop_at is None or len(nodes[0]['picked']) < stop_at):
         step += 1; t_step = time.time(); children = []
         for nd in nodes:
             cands, kids = expand(nd); children += kids
