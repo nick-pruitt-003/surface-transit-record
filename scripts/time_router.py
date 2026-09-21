@@ -168,12 +168,12 @@ class TimeRouter:
         self.feeds = feeds; self.d0 = d0
         # stops
         self.stop_ids = []; self.stop_name = []; self.stop_xy = []; city = []
-        seen = set()
+        seen = set(); city_uids = {uid for f in feeds if getattr(f, 'city', False) for uid, *_ in f.stops.values()}
         for f in feeds:
             for sid, (uid, nm, lon, lat) in f.stops.items():
                 if uid in seen: continue
                 seen.add(uid); self.stop_ids.append(uid); self.stop_name.append(nm); self.stop_xy.append((lon, lat))
-                city.append(getattr(f, 'city', False))
+                city.append(uid in city_uids)
         self.idx = {u: i for i, u in enumerate(self.stop_ids)}
         self.N = len(self.stop_ids)
         hi = os.path.join(DATA_DIR, 'states_500k.geojson')   # Census 1:500k borders; the coarse file misplaces border stops
@@ -253,6 +253,7 @@ class TimeRouter:
             xy = np.asarray(self.stop_xy, dtype=float)
             d = np.hypot((xy[:, 0] - lon) * 111.3 * np.cos(np.radians(lat)), (xy[:, 1] - lat) * 111.3)
             return set(np.where(d <= km)[0].tolist())
+        if isinstance(t, str) and t.startswith('@#'): return {int(t[2:])}   # one exact stop index
         if isinstance(t, str) and t.startswith('@'): return set(self.stops_matching(t[1:]))
         return set(np.where(self.state == t)[0].tolist())
 

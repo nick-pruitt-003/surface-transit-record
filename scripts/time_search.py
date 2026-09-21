@@ -26,10 +26,11 @@ def _drop_eval(order):
 
 
 class Search:
-    def __init__(self, R, start, t0, prefix, workers, done=(), start_opts=()):
+    def __init__(self, R, start, t0, prefix, workers, done=(), start_opts=(), fixed_start=False):
         self.R = R; self.start = start; self.t0 = t0; self.workers = workers
         self.start_opts = [start] + [x for x in start_opts if x != start]   # stops the start may move to
         self.day0 = t0   # start windows are [day0 + k days, +24 h)
+        self.fixed_start = fixed_start   # keep start and clock as given (e.g. continuing after a forced ride)
         self.patience = 0   # seconds without a new best before stopping early (0 = use the whole budget)
         self.done = set(done)   # states already collected before the start
         self.prefix = []
@@ -217,6 +218,11 @@ class Search:
         Scored on hours from the first bus boarded to the finish. Returns (elapsed, stop, window start, finish, legs):
         the search keeps running from the window start so later moves may still use an earlier first bus."""
         R = self.R; best = None
+        if self.fixed_start:
+            f, legs = R.route(self.start, self.day0, order)
+            s0 = int(R.state[self.start])
+            if f is None or len(self.covered(legs) | self.done | ({s0} if s0 >= 0 else set())) < N_STATES: return None
+            return (f - self.day0, self.start, self.day0, f, legs)
         for st in self.start_opts:
             for k in range(7):
                 t_lo = self.day0 + k * 86400

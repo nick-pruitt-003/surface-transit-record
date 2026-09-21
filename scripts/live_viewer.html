@@ -55,6 +55,7 @@ h2 { font-size:12px; text-transform:uppercase; letter-spacing:.06em; color:var(-
   </aside>
 </main>
 <script>
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
 // Vector map: MapLibre + OpenFreeMap (no API key)
 const dark = matchMedia('(prefers-color-scheme: dark)').matches;
@@ -66,7 +67,7 @@ let lastEvals = null, lastT = null, lastBestKey = '', lastCurKey = '', ready = f
 const empty = { type: 'FeatureCollection', features: [] };
 function fc(legs) {
   return { type: 'FeatureCollection', features: (legs || []).map(l => ({ type: 'Feature',
-    properties: { walk: l.kind === 'walk', tip: `${l.dep} ${l.a[2]} → ${l.arr} ${l.b[2]}<br>${l.how}` },
+    properties: { walk: l.kind === 'walk', tip: `${esc(l.dep)} ${esc(l.a[2])} → ${esc(l.arr)} ${esc(l.b[2])}<br>${esc(l.how)}` },
     geometry: { type: 'LineString', coordinates: [[l.a[0], l.a[1]], [l.b[0], l.b[1]]] } })) };
 }
 map.on('load', () => {
@@ -121,17 +122,17 @@ async function tick() {
   document.getElementById('stale').textContent = age > 15 && L_.phase !== 'done' ? `no update for ${Math.round(age)} s` : 'phase';
   if (lastEvals != null && L_.now > lastT) document.querySelector('#rate b').textContent = Math.round((L_.evals - lastEvals) / (L_.now - lastT));
   lastEvals = L_.evals; lastT = L_.now;
-  const ck = JSON.stringify(L_.current || []).length + ':' + (L_.current_h || '');
+  const ck = JSON.stringify([L_.current || [], L_.current_h]);
   if (ck !== lastCurKey) { draw('cur', L_.current); lastCurKey = ck; }
-  const bk = JSON.stringify(L_.best || []).length + ':' + (L_.best_h || '');
+  const bk = JSON.stringify([L_.best || [], L_.best_h]);
   if (bk !== lastBestKey) {
     draw('best', L_.best); lastBestKey = bk;
     document.getElementById('legs').innerHTML = (L_.best || []).filter(l => l.kind === 'ride').map(l =>
-      `<div><span class="t">${l.dep}</span> ${l.a[2]} → ${l.b[2]} <span class="t">${l.arr}</span></div>`).join('');
+      `<div><span class="t">${esc(l.dep)}</span> ${esc(l.a[2])} → ${esc(l.b[2])} <span class="t">${esc(l.arr)}</span></div>`).join('');
     document.getElementById('starth').textContent = 'Best route' + (L_.start ? ' — start ' + L_.start : '');
   }
   document.getElementById('log').innerHTML = (L_.log || []).slice().reverse().map(([t, m]) =>
-    `<div class="${m.startsWith('NEW BEST') ? 'nb' : ''}">${fmtLeft(t)}  ${m}</div>`).join('');
+    `<div class="${m.startsWith('NEW BEST') ? 'nb' : ''}">${fmtLeft(t)}  ${esc(m)}</div>`).join('');
   chart(L_.history || []);
 }
 tick(); setInterval(tick, 2000);

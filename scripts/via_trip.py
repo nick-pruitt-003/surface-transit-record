@@ -136,7 +136,7 @@ def main():
     start_st = int(R.state[start])
     done = via_states | ({start_st} if start_st >= 0 else set())
     # also count states reached on the way to the board stop
-    to_board, legs_to_board = R.route(start, t0.timestamp(), [f'@{R.stop_name[board]}'])
+    to_board, legs_to_board = R.route(start, t0.timestamp(), [f'@#{board}'])
     if to_board is not None:
         # rough: states on rides to board
         for l in legs_to_board:
@@ -166,7 +166,7 @@ def main():
         seed = list(missing)
     seed = [x for x in seed if (isinstance(x, str) or x in missing)]
     print(f'\nsearching {len(missing)} remaining states from alight, budget {a.budget}s…', flush=True)
-    S = Search(R, alight, at, [], a.workers, done=done)
+    S = Search(R, alight, at, [], a.workers, done=done, fixed_start=True)
     order, f, legs = S.run(seed, a.budget)
     print('FINAL', round((f - t0.timestamp()) / 3600, 1), 'h (from original start)')
     print(R.describe(legs[:12]), '\n…' if len(legs) > 12 else '')
