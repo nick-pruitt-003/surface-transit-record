@@ -42,7 +42,14 @@ def strand_cost(left, here, dist):
 def state_times(R, F, state_stops, D0, cache):
     """Typical hours from each state to each other state on the real timetables: for 8 deadlines across the week,
     a reverse scan from every stop of y gives the latest you can leave each state x and still be in y; hours =
-    deadline - that, median over the deadlines (so waits for once-a-day departures count). Cached."""
+    deadline - that, median over the deadlines (so waits for once-a-day departures count). Cached.
+
+    Border walk-in points are left out of both ends. They are real ways to cross a state line, but a pair of them
+    sits either side of the same line, so counting them makes neighbouring states 0.0 h apart: before this, the
+    cheapest hop into most states was under 1 h and into several exactly 0, and a spanning tree over 28 states
+    came to 45 h. That tree was measuring which states touch, not what it takes to travel between them, and it
+    scored two chains the same however differently their remaining states were placed."""
+    state_stops = {x: [i for i in state_stops[x] if i < R.first_virtual] or state_stops[x] for x in state_stops}
     if os.path.exists(cache): return np.load(cache)
     T = np.full((N_STATES, N_STATES, 8), np.nan); t0 = time.time()
     st_arr = {x: np.array(state_stops[x], dtype=np.int64) for x in state_stops}
@@ -188,6 +195,9 @@ def main():
     ap.add_argument('--tries', type=int, default=1, help='builds per deadline: 1 greedy + randomized top-3')
     ap.add_argument('--strand-kmh', type=float, default=70, help='speed for the leftover-work estimate (lower = weigh stranding more)')
     ap.add_argument('--beam', type=int, default=30, help='partial chains kept per step')
+    ap.add_argument('--topk', type=int, default=3, help='states per node taken as children by latest time. The 237 '
+                    'route needs its 6th-ranked state at one step (CO out of Kansas) and its 5th at another (WI '
+                    'out of Wyoming), so 3 cannot rebuild it however wide the beam is.')
     ap.add_argument('--km-estimate', action='store_true', help='old leftover estimate: straight-line km at --strand-kmh')
     ap.add_argument('--strand-w', type=float, default=1.0, help='weight on the timetable leftover estimate')
     ap.add_argument('--dump-step', type=int, help='save the beam and the tracked chain at this step, then stop')
@@ -207,7 +217,7 @@ def main():
     km = lambda p, q: float(np.hypot((p[0] - q[0]) * 111.3 * np.cos(np.radians((p[1] + q[1]) / 2)), (p[1] - q[1]) * 111.3))
     dist = {x: {y: km(cen[x], cen[y]) for y in range(N_STATES)} for x in range(N_STATES)}
     dist['M'] = np.array([[dist[x][y] for y in range(N_STATES)] for x in range(N_STATES)])
-    if not a.km_estimate: dist['T'] = state_times(R, F, state_stops, D0.timestamp() - 7 * 86400, '../out/state_times.npy')
+    if not a.km_estimate: dist['T'] = state_times(R, F, state_stops, D0.timestamp() - 7 * 86400, '../out/state_times_real.npy')
     rng = random.Random(48); results = []; t_run = time.time(); oracle = None
     if a.track:
         d = pickle.load(open(a.track, 'rb')); st0 = R.stop_name.index(d['start'])
@@ -220,7 +230,7 @@ def main():
     for di in range(n_dl):
         D = (D0 + timedelta(hours=di * a.step)).timestamp()
         for tri in range(a.tries):
-            order, left, _ = build(R, F, state_stops, end, D, rng, 3, a.beam, f'{a.end} deadline {di + 1}/{n_dl}', dist, oracle=oracle, dump=(a.dump_step, f'{a.out}_dump{a.dump_step}.pkl') if a.dump_step else None)
+            order, left, _ = build(R, F, state_stops, end, D, rng, a.topk, a.beam, f'{a.end} deadline {di + 1}/{n_dl}', dist, oracle=oracle, dump=(a.dump_step, f'{a.out}_dump{a.dump_step}.pkl') if a.dump_step else None)
             print('    checking forward: insert leftovers, drop passing states, pick the start day and clock', flush=True)
             # forward: free start in the order's first state, end fixed; insert leftovers at their cheapest
             # spot, drop states covered in passing, then pick the start day and latest clock

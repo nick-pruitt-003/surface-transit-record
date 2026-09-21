@@ -156,3 +156,69 @@ Sep 19 afternoon:
 - New carriers: StarLine (NYC <-> JAX/Orlando/Tampa, Savannah 8 PM northbound), Savannah CAT, Vonlane + RedCoach Dallas->Houston, Jaguar (Columbus 22:30 -> Wheeling 00:35 -> NYC 07:30), Wonder Bus (Knoxville 18:00 -> Winchester 01:00 -> Martinsburg -> Hagerstown -> Chambersburg 02:20 -> NYC 07:00), Weirton Transit + PRT 29 (one trip each). None moved a sub-250 route.
 - 237.5 start: the latest_start sweep over WV stops gives 237.2 h real via the 1:00 AM Barons at Huntington (Charlotte -> Columbus trip) -> Columbus 4:50 -> the same 6:50 Detroit bus. Fixed departure: Columbus 6:50 Barons (and the City of New Orleans at Effingham, Thu 10:01 PM).
 - Near misses: a Wheeling ~3 AM westbound to Columbus would give 235.2 h, but Wheeling looks drop-off only westbound. Weirton 6:10 -> Pittsburgh 8:50 Greyhound -> Toledo 2:05 PM fails because Michigan can't be collected by the 3:05 PM bus (TARTA to the MI line is >= 1h10). The latest Pittsburgh departure that works is 1:25 AM.
+
+## 9. Sep 21: rebuilding out/, and why build_backward loses the 237 route
+
+`out/` is gitignored, so a fresh clone has no result pickles at all and nothing can be tracked or
+regression-checked. `scripts/rebuild_237.py` rebuilds both from the route written out in section 2:
+237.74 h from the 12:30 AM clock and 237.34 h from 12:54 AM, finishing Sat Oct 3 10:14 PM either way,
+all 48 states. Run it before `regress.py` on a new machine. Two details it has to get right:
+
+- The router's own visit order is `... UT > AZ > NV > CA > NM ...`, not `UT > NV > CA > AZ`. Arizona is
+  collected on the St George -> Las Vegas leg through the Virgin River Gorge, before Nevada.
+- `res_starttest.pkl` came out of a search, so its order is pruned and West Virginia is not in it: the
+  start stop is in WV and the first bus collects the state on the way out. This is not cosmetic. With WV
+  first the start stop is itself in layer 0 and the backward pass reads the latest start straight off
+  that layer; without it the start has to reach layer 0 by boarding, which costs one MIN_TRANSFER. That
+  is the whole difference between 00:59:20 and the 00:54 `regress.py` records.
+
+### Where the beam loses the route
+
+Test: `build_backward.py --end VT --from 2026-10-03T22:14 --tz America/New_York --step 168 --track
+../out/res_starttest.pkl`. The chain is dropped at step 19 (OK), 19.2 h below the beam cut. At that step
+the reference stands at OK on Wed 17:20 and the beam leader at TX on Thu 12:25: same number of states
+placed, and the sets differ by exactly one each, the reference still needing MS and the leader OK.
+
+Two defects found, both fixed:
+
+1. **The state-to-state matrix was measuring adjacency, not travel.** `state_times` scanned from every
+   stop of a state including its border walk-in points, and those come in pairs either side of a state
+   line, so neighbouring states came out 0.0 h apart. A spanning tree over 28 remaining states cost 45 h.
+   It now skips walk-in points (cache `out/state_times_real.npy`); the same tree costs 70 h and the step
+   19 gap narrows to 16.8 h.
+2. **Candidate generation was too narrow.** `--topk` was fixed at 3. Walking the reference's own
+   remaining picks (`scripts/tail_diag.py`) shows all of them rank 1 or 2 except Colorado out of Kansas
+   at rank 6 and Wisconsin out of Wyoming at rank 5, so no beam width could rebuild it. With `--topk 6`
+   step 21 goes from NOT CONSIDERED to considered.
+
+### What is still open, and what not to retry
+
+The selection gap at step 19 is not closed. The reference is 19.1 h further back than the leader there,
+and nothing tried charges the leader enough more to make up for it. Ruled out, with numbers:
+
+| Tried | Result |
+|---|---|
+| Beam 150 (and 100 earlier) | still ranks 151/150 at step 19 |
+| Doubling strand_cost | -12.9 h, worse: scaling amplifies the wrong sign |
+| Cheapest-entry sum over the matrix | -0.9 h, still the wrong sign |
+| At most 2 chains per current state | evicts the reference's own TX node at step 18 |
+| Sum of the dearest few reach values | not an estimate: see below |
+
+The last one is worth recording because it looked convincing. From one reverse scan a node knows the
+latest time it could still be in each state it has not placed; summing the furthest few of those and
+subtracting from the node's own time separated step 19 cleanly (rank 21/21 -> 4/21). It is arithmetic,
+not signal: each value is the node's own time minus a latest time, so summing n of them counts that time
+n times and the score pays a chain n-1 times over simply for being further back. At step 11, where the
+reference is ahead rather than behind, the same estimate is the worst of the six tested. Only the single
+furthest value is safe, and alone it is worth 9.5 h against the 19.1 h needed.
+
+Where the remaining signal has to come from: from Texas, Oklahoma on its own is cheap, and the reference
+pays 19 h there for the once-a-day chain out (Newton, the Southwest Chief, the morning OKC bus). The cost
+is in doing Oklahoma *and then* continuing west, so it is a property of the sequence, not of the state,
+and no per-state estimate off a single scan can see it. `tail_diag.py` puts the whole tail at 49 h of
+myopic loss over 28 steps, 24.6 h of it in those two steps alone.
+
+Diagnostics added: `dump_diag.py` (what the beam holds at a `--dump-step` dump and how it differs from
+the tracked chain), `est_probe.py` (candidate estimates against a dump, no router needed),
+`reach_probe.py` (scan-based estimates, and the bias above), `tail_diag.py` (the tracked chain's
+remaining picks, their rank, and what each costs).
