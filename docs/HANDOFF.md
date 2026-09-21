@@ -222,3 +222,49 @@ Diagnostics added: `dump_diag.py` (what the beam holds at a `--dump-step` dump a
 the tracked chain), `est_probe.py` (candidate estimates against a dump, no router needed),
 `reach_probe.py` (scan-based estimates, and the bias above), `tail_diag.py` (the tracked chain's
 remaining picks, their rank, and what each costs).
+
+### Sep 21 late: the backward builder's score has a ceiling at 267.7 h
+
+Root the search at the reference's own step 19 node, in Oklahoma, with 28 states left, from which a
+237.3 h completion is known to exist (`scripts/tail_track.py`, `scripts/rollout_probe.py`). It reaches:
+
+| beam | topk | lineage survival | reaches |
+|---|---|---|---|
+| 5 | 6 | - | 289.0 h |
+| 15 | 6 | - | 279.1 h |
+| 30 | 6 | - | 267.7 h |
+| 60 | 6 | - | 267.7 h |
+| 120 | 6 | - | 267.7 h |
+| 60 | 12 | - | 267.7 h |
+| 60 | 6 | 40 places | 267.7 h |
+
+Byte-identical past beam 30. Neither beam width, nor candidate width, nor reserving places for chains
+that would otherwise die moves it. **267.7 h is the scoring function's own optimum, and search effort is
+irrelevant to it.** Do not spend more on the search side.
+
+`tail_track` says why. From Oklahoma the reference's next two picks hold (Colorado at rank 6 survives, so
+`--topk 6` is doing its job), and it is lost four steps later at California, which backwards is boarding
+the Southwest Chief at Barstow. That costs 11.8 h against the myopic alternative. It then sits 5 to 25 h
+under the cut for fifteen consecutive steps and only collects its advantage at the very end, where it
+leads the beam by 30 to 47 h (OH +31.6, KY +47.3, WV +38.9).
+
+So the route needs the search to take a child 9 to 12 h worse than its best sibling, fifteen times
+running. Lineage survival does not give that: the reference's parent survives happily via a different
+child, and what has to survive is the losing sibling. Nothing short of exhaustive search picks a losing
+sibling fifteen times, so the fix has to be in the score, not in what survives it.
+
+What the score has to start doing: credit those fifteen choices. Two families are already ruled out by
+measurement, both because the two chains' remaining states differ by only one at the point of the cut:
+anything computed from the set of states left (spanning tree, cheapest-entry sum, any weighting of
+either), and anything computed per state from one reverse scan (the furthest-back state is worth 9.5 h
+against the 19.1 h needed). What is left is knowledge the route already has and the score does not:
+section 3's six once-daily anchors. A chain that has committed to one has locked in progress its clock
+does not show, and that is the quantity to put in the estimate.
+
+Worth considering: the forward search does reach 237 and the backward builder tops out at 267.7, so the
+builder's value may be as a seed generator for the forward search rather than as a route finder. "It does
+not count until it can rebuild 237" may be the wrong bar for this tool.
+
+`half_probe.py` is unsound as written and its verdict should be ignored: it ranks by pure lateness with no
+leftover estimate, which is weaker than the builder, and it cannot even reproduce the eastern half that
+the real builder tracks to within an hour. Fix it to score the way `build` does before believing it.
