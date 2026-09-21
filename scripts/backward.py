@@ -110,3 +110,63 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+
+class RevFast:
+    """backward_layer in C (csa.c csa_rev), for build_backward's many scans. Through vehicles are kept per trip:
+    ns = (ns_stop, ns_dep) arrays, the next layer's stop where staying aboard that trip needs no transfer."""
+    def __init__(self, R):
+        import ctypes
+        self.R = R; fa = R._fa; N = R.N
+        ptr = np.zeros(N + 1, dtype=np.int32); frm = []; w = []; x = []
+        rev = [[] for _ in range(N)]
+        for i in range(N):
+            for j, ww in R.foot.get(i, ()): rev[j].append((i, ww))
+        for s in range(N):
+            for j, ww in rev[s]: frm.append(j); w.append(ww); x.append(R._crosses(j, s))
+            ptr[s + 1] = len(frm)
+        self.rev = rev
+        self.ptr, self.frm = ptr, np.array(frm, dtype=np.int32)
+        self.w, self.x = np.array(w, dtype=np.float64), np.array(x, dtype=np.uint8)
+        self.nt = len(R.trip_ids)
+        D = ctypes.POINTER(ctypes.c_double); I = ctypes.POINTER(ctypes.c_int); B = ctypes.POINTER(ctypes.c_ubyte)
+        self.lib = R._fast; c = ctypes.c_int
+        self.lib.csa_rev.argtypes = [D, D, I, I, I, c, c, c, I, I, D, B, D, c, I, D, ctypes.c_double, D]
+        self.lib.csa_rev.restype = c
+        self.p = lambda a, T: a.ctypes.data_as(T); self.T = (D, I, B)
+        self.no_ns = (np.full(self.nt, -1, dtype=np.int32), np.full(self.nt, -np.inf))
+
+    def layer(self, nxt, guard, lo, ns=None):
+        """Returns (latest[N], ok_dep[n_trips], k0, k1)."""
+        D, I, B = self.T; fa = self.R._fa; p = self.p
+        latest = np.full(self.R.N, -np.inf)
+        for s, L in nxt.items(): latest[s] = max(latest[s], L)
+        hi = max(nxt.values())
+        k1 = int(np.searchsorted(fa['dep'], hi, side='right')) - 1; k0 = int(np.searchsorted(fa['dep'], lo))
+        ok = np.full(self.nt, -np.inf); ns_stop, ns_dep = ns if ns is not None else self.no_ns
+        if k1 >= k0:
+            rc = self.lib.csa_rev(p(fa['dep'], D), p(fa['arr'], D), p(fa['cfrom'], I), p(fa['cto'], I), p(fa['ctrip'], I), k0, k1,
+                                  self.R.N, p(self.ptr, I), p(self.frm, I), p(self.w, D), p(self.x, B), p(latest, D), int(guard),
+                                  p(ns_stop, I), p(ns_dep, D), float(MIN_TRANSFER), p(ok, D))
+            if rc != 0: raise MemoryError('csa_rev failed')
+        else:   # nothing to scan: still apply the walks into the next layer
+            for s, L in nxt.items():
+                for j, ww in self.rev[s]:
+                    if guard and self.R._crosses(j, s): continue
+                    latest[j] = max(latest[j], L - ww)
+        return latest, ok, k0, k1
+
+    def through(self, ok, k0, k1, mask):
+        """Boardings on usable trips at stops in mask (bool[N]). Returns (eff[N]: latest time you can be at a stop,
+        counting staying aboard a through vehicle; (ns_stop, ns_dep) for the next scan back)."""
+        fa = self.R._fa; eff = np.full(self.R.N, -np.inf); ns_stop, ns_dep = np.full(self.nt, -1, dtype=np.int32), np.full(self.nt, -np.inf)
+        if k1 < k0: return eff, (ns_stop, ns_dep)
+        sl = slice(k0, k1 + 1); tr = fa['ctrip'][sl]; dp = fa['dep'][sl]; fr = fa['cfrom'][sl]
+        sel = mask[fr] & (dp <= ok[tr])
+        if sel.any():
+            tr, dp, fr = tr[sel], dp[sel], fr[sel]
+            np.maximum.at(eff, fr, dp)
+            o = np.lexsort((dp, tr)); tr, dp, fr = tr[o], dp[o], fr[o]
+            last = np.r_[tr[1:] != tr[:-1], True]          # per trip, its latest boarding among the mask's stops
+            ns_stop[tr[last]] = fr[last]; ns_dep[tr[last]] = dp[last]
+        return eff, (ns_stop, ns_dep)

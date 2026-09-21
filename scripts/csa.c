@@ -51,3 +51,45 @@ int csa_scan(int n_conn, const double *dep, const double *arr, const int *cfrom,
     free(reached); free(init);
     return 0;
 }
+
+/* Reverse Connection Scan for backward.py / build_backward.py (mirrors backward.backward_layer).
+   latest[] comes in holding the next layer's latest times (-INF elsewhere) and goes out holding the latest time
+   at every stop from which the next layer is still reached. Walks: one hop onto a boarding or off a ride, over
+   the reversed footpaths (rev_*); rev_x marks a walk that crosses a state line, refused onto the next layer's
+   stops when guard is set. ns_stop/ns_dep: per trip, a next-layer stop where staying aboard needs no transfer.
+   ok_dep (out, -INF = never usable): per trip, the latest departure at which it still gets there in time. */
+int csa_rev(const double *dep, const double *arr, const int *cfrom, const int *cto, const int *ctrip, int k0, int k1,
+            int n_stops, const int *rev_ptr, const int *rev_from, const double *rev_w, const unsigned char *rev_x,
+            double *latest, int guard, const int *ns_stop, const double *ns_dep, double min_transfer, double *ok_dep)
+{
+    double *init = (double *)malloc(sizeof(double) * (size_t)n_stops), *board = (double *)malloc(sizeof(double) * (size_t)n_stops);
+    if (!init || !board) { free(init); free(board); return -1; }
+    memcpy(init, latest, sizeof(double) * (size_t)n_stops);
+    for (int s = 0; s < n_stops; s++) {
+        board[s] = -INFINITY;
+        if (isinf(init[s])) continue;
+        for (int e = rev_ptr[s]; e < rev_ptr[s + 1]; e++) {
+            if (guard && rev_x[e]) continue;
+            int j = rev_from[e]; double t = init[s] - rev_w[e];
+            if (t > latest[j]) latest[j] = t;
+        }
+    }
+    for (int k = k1; k >= k0; k--) {
+        int tr = ctrip[k];
+        if (isinf(ok_dep[tr])) {
+            int b = cto[k];
+            if (arr[k] <= latest[b] || (ns_stop[tr] == b && arr[k] <= ns_dep[tr])) ok_dep[tr] = dep[k]; else continue;
+        }
+        int a = cfrom[k]; double t = dep[k] - min_transfer;
+        if (t > board[a]) {
+            board[a] = t;
+            if (t > latest[a]) latest[a] = t;
+            for (int e = rev_ptr[a]; e < rev_ptr[a + 1]; e++) {
+                int j = rev_from[e]; double u = t - rev_w[e];
+                if (u > latest[j]) latest[j] = u;
+            }
+        }
+    }
+    free(init); free(board);
+    return 0;
+}
