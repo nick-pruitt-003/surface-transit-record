@@ -7,8 +7,8 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.css">
 <script src="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
 <style>
-:root { --bg:#f6f5f2; --panel:#ffffff; --ink:#1d1d1b; --muted:#6b6a66; --line:#e2e0da; --best:#d4452b; --cur:#8a8a86; --good:#2f7d4f; }
-@media (prefers-color-scheme: dark) { :root { --bg:#151514; --panel:#1f1f1d; --ink:#ecebe6; --muted:#9a9993; --line:#33322f; --best:#ff6a4d; --cur:#77766f; --good:#5cc486; } }
+:root { --bg:#f6f5f2; --panel:#ffffff; --ink:#1d1d1b; --muted:#6b6a66; --line:#e2e0da; --best:#d4452b; --cur:#8a8a86; --try:#c98a12; --good:#2f7d4f; }
+@media (prefers-color-scheme: dark) { :root { --bg:#151514; --panel:#1f1f1d; --ink:#ecebe6; --muted:#9a9993; --line:#33322f; --best:#ff6a4d; --cur:#77766f; --try:#f2b33d; --good:#5cc486; } }
 * { box-sizing: border-box; }
 body { margin:0; background:var(--bg); color:var(--ink); font:14px/1.4 -apple-system, system-ui, sans-serif; }
 header { display:flex; flex-wrap:wrap; gap:8px 20px; align-items:baseline; padding:12px 16px; border-bottom:1px solid var(--line); }
@@ -17,7 +17,7 @@ header h1 { font-size:16px; margin:0; }
 .stat b { font-size:20px; font-variant-numeric: tabular-nums; }
 .stat span { color:var(--muted); font-size:12px; }
 #best b { color:var(--best); }
-main { display:grid; grid-template-columns: 1fr 360px; gap:0; height: calc(100vh - 70px); }
+main { display:grid; grid-template-columns: 1fr 360px; gap:0; height: calc(100vh - 106px); }
 #map { height:100%; }
 aside { border-left:1px solid var(--line); background:var(--panel); overflow:auto; padding:12px 14px; }
 h2 { font-size:12px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); margin:14px 0 6px; }
@@ -29,6 +29,8 @@ h2 { font-size:12px; text-transform:uppercase; letter-spacing:.06em; color:var(-
 .legend { display:flex; gap:14px; font-size:12px; color:var(--muted); }
 .sw { display:inline-block; width:18px; height:3px; vertical-align:middle; margin-right:4px; }
 #stale { color:var(--muted); font-size:12px; }
+#trying { padding:8px 16px; border-bottom:1px solid var(--line); font-variant-numeric: tabular-nums; color:var(--muted); }
+#trying b { color:var(--try); font-weight:600; }
 @media (max-width: 800px) { main { grid-template-columns: 1fr; height:auto; } #map { height:55vh; } aside { border-left:0; } }
 </style>
 </head>
@@ -42,10 +44,11 @@ h2 { font-size:12px; text-transform:uppercase; letter-spacing:.06em; color:var(-
   <div class="stat" id="left"><b>–</b><span>time left</span></div>
   <div class="stat" id="phase"><b>–</b><span id="stale">phase</span></div>
 </header>
+<div id="trying">waiting for the first test…</div>
 <main>
   <div id="map"></div>
   <aside>
-    <div class="legend"><span><i class="sw" style="background:var(--best)"></i>best so far</span><span><i class="sw" style="background:var(--cur)"></i>current attempt</span></div>
+    <div class="legend"><span><i class="sw" style="background:var(--best)"></i>best so far</span><span><i class="sw" style="background:var(--cur)"></i>current attempt</span><span><i class="sw" style="background:var(--try)"></i>testing now</span></div>
     <h2>Best over time</h2>
     <svg id="chart" viewBox="0 0 340 140" preserveAspectRatio="none"></svg>
     <h2>Feed</h2>
@@ -63,7 +66,7 @@ const map = new maplibregl.Map({ container: 'map', style: 'https://tiles.openfre
   center: [-96, 39], zoom: 3.2, attributionControl: { compact: true } });
 map.addControl(new maplibregl.NavigationControl({ showCompass: false }));
 map.on('error', e => { document.getElementById('name').textContent = 'Map error: ' + (e.error && e.error.message || e); console.error(e.error || e); });
-let lastEvals = null, lastT = null, lastBestKey = '', lastCurKey = '', ready = false, pending = {};
+let lastTry = '', lastEvals = null, lastT = null, lastBestKey = '', lastCurKey = '', ready = false, pending = {};
 const empty = { type: 'FeatureCollection', features: [] };
 function fc(legs) {
   return { type: 'FeatureCollection', features: (legs || []).map(l => ({ type: 'Feature',
@@ -72,7 +75,7 @@ function fc(legs) {
 }
 map.on('load', () => {
   // line-dasharray can't vary per feature in MapLibre 4, so rides and walks are separate layers
-  for (const [id, color, w] of [['cur', css('--cur'), 2], ['best', css('--best'), 4]]) {
+  for (const [id, color, w] of [['try', css('--try'), 2], ['cur', css('--cur'), 2], ['best', css('--best'), 4]]) {
     map.addSource(id, { type: 'geojson', data: empty });
     map.addLayer({ id, type: 'line', source: id, filter: ['!', ['get', 'walk']], layout: { 'line-cap': 'round' },
       paint: { 'line-color': color, 'line-width': w, 'line-opacity': .9 } });
@@ -122,6 +125,13 @@ async function tick() {
   document.getElementById('stale').textContent = age > 15 && L_.phase !== 'done' ? `no update for ${Math.round(age)} s` : 'phase';
   if (lastEvals != null && L_.now > lastT) document.querySelector('#rate b').textContent = Math.round((L_.evals - lastEvals) / (L_.now - lastT));
   lastEvals = L_.evals; lastT = L_.now;
+  const tk = JSON.stringify([L_.trying || [], L_.trying_h, L_.trying_note]);
+  if (tk !== lastTry) {
+    draw('try', L_.trying); lastTry = tk;
+    const cmp = L_.trying_h != null && L_.current_h != null ? L_.trying_h - L_.current_h : null;
+    document.getElementById('trying').innerHTML = L_.trying_note ? `testing #${L_.tried || 0}: <b>${esc(L_.trying_note)}</b> → ${L_.trying_h != null ? L_.trying_h.toFixed(1) + ' h' : 'misses states'}`
+      + (cmp != null ? ` (${cmp <= 0 ? '' : '+'}${cmp.toFixed(1)} h vs current)` : '') : 'waiting for the first test…';
+  }
   const ck = JSON.stringify([L_.current || [], L_.current_h]);
   if (ck !== lastCurKey) { draw('cur', L_.current); lastCurKey = ck; }
   const bk = JSON.stringify([L_.best || [], L_.best_h]);

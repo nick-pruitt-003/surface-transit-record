@@ -8,6 +8,7 @@ from datetime import datetime
 from zoneinfo import ZoneInfo
 import numpy as np
 from time_router import TimeRouter, load_feeds, N_STATES
+from common import ABBR
 
 _R = None; _START = None; _T0 = None; _BASE = None; _SELF = None
 
@@ -62,6 +63,40 @@ class Search:
             self._live_t = time.time(); L['now'] = time.time()
             os.makedirs(os.path.dirname(self.LIVE_PATH), exist_ok=True)
             tmp = self.LIVE_PATH + '.tmp'; json.dump(L, open(tmp, 'w')); os.replace(tmp, self.LIVE_PATH)
+        except Exception as e:
+            print('live view error (ignored):', e, flush=True)
+
+    def _tname(self, x):
+        if isinstance(x, str): return 'a gateway' if x.startswith('@~') else x[1:][:28]
+        return ABBR.get(self.R.state_names[x], self.R.state_names[x]) if x < N_STATES else str(x)
+
+    def move_label(self, order, cand):
+        """Plain-words description of the local-search move that turns order into cand."""
+        try:
+            if len(order) == len(cand):
+                i = next(k for k in range(len(order)) if order[k] != cand[k])
+                j = max(k for k in range(len(order)) if order[k] != cand[k])
+                if cand[i:j + 1] == order[i:j + 1][::-1]:
+                    return f'reverse {self._tname(order[i])} ... {self._tname(order[j])}'
+                if i == j: return f'take {self._tname(order[i])} at {self._tname(cand[i])}'
+                for x in order[i:j + 1]:
+                    if [y for y in order if y != x] == [y for y in cand if y != x]:
+                        k = cand.index(x)
+                        return f'move {self._tname(x)} ' + (f'after {self._tname(cand[k - 1])}' if k else 'to the front')
+            return 'reshape'
+        except Exception:
+            return 'move'
+
+    def live_trial(self, order, cand, f_try):
+        """At most once a second: route the candidate being tested and show it (costs one route, ~0.1 s)."""
+        if time.time() - self.__dict__.get('_trial_t', 0) < 1: return
+        self._trial_t = time.time()
+        try:
+            h = None if f_try == float('inf') else round((f_try - self.t0) / 3600, 2)
+            _, legs = self.evaluate(cand)
+            L = self.__dict__.get('_live')
+            if L is not None: L['tried'] = L.get('tried', 0) + 1
+            self.live(force=True, trying=self.legs_json(legs), trying_h=h, trying_note=self.move_label(order, cand))
         except Exception as e:
             print('live view error (ignored):', e, flush=True)
 
@@ -188,6 +223,7 @@ class Search:
                 fs = pool.map(_finish, chunk) if pool else [_finish(o) for o in chunk]
                 it += len(chunk); j = int(np.argmin(fs))
                 self.live(evals=self.__dict__.get('_live', {}).get('evals', 0) + len(chunk), phase='descending')
+                self.live_trial(order, chunk[j], fs[j])
                 if fs[j] < sc - 60:
                     o2, f2, l2 = self.repair(chunk[j], pool)
                     s2 = _finish(o2)
