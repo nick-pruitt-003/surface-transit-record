@@ -505,6 +505,7 @@ class ExtraFeed:
         if not os.path.exists(path): return
         allstops = [(uid, nm, lon, lat) for f in others for (uid, nm, lon, lat) in f.stops.values()]
         for k, r in enumerate(csv.DictReader(open(path))):
+            if (r.get('agency') or '').startswith('#'): continue   # disabled row, kept for reference
             seq = []
             for i, item in enumerate(r['stops'].split('|')):
                 nm, tm = item.split('@'); tm = tm.strip()
