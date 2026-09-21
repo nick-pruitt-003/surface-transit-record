@@ -303,7 +303,7 @@ class TimeRouter:
     def route(self, start_stop, start_time, order):
         """order: list of targets (state idx or '@name'). Returns (finish, legs)."""
         if getattr(self, '_fast', None) is not None: return self._route_fast(start_stop, start_time, order)
-        labels = {start_stop: (start_time, None)}; layers = []
+        labels = {int(s): (start_time, None) for s in np.atleast_1d(np.asarray(start_stop, dtype=np.int64))}; layers = []
         for t in order:
             tgt = self.target_set(t)
             out, pred, best = self.scan(labels, tgt, guard=not isinstance(t, str))
@@ -439,7 +439,7 @@ class TimeRouter:
 
     def _finish_py(self, start_stop, start_time, order, base=None):
         """Finish time only. base=(order, outs) lets a shared prefix reuse cached layer labels."""
-        labels = {start_stop: (start_time, None)}; k = 0
+        labels = {int(s): (start_time, None) for s in np.atleast_1d(np.asarray(start_stop, dtype=np.int64))}; k = 0
         if base:
             bo, bouts = base
             while k < len(order) and k < len(bo) and k < len(bouts) and order[k] == bo[k]: k += 1

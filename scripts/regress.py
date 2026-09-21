@@ -76,7 +76,7 @@ def _():
     assert f < float('inf') and S.all_states(legs), [R.state_names[s] for s in S.missing(legs)]
 
 
-@check('backward report on the 237 result: every layer feasible, slack >= 0, latest start = 12:59 AM Thu')
+@check('backward report on the 237 result: every layer feasible, slack >= 0, latest start = 12:54 AM Thu')
 def _():
     d = pickle.load(open(OUT + 'res_starttest.pkl', 'rb')); order = d['order']; t0 = d['t0']
     start = R.stop_name.index(d['start'])
@@ -88,12 +88,12 @@ def _():
     for k in range(len(order) - 2, -2, -1):
         want = [start] if k < 0 else fw[k]
         latest, stay = B.backward_layer(R, rev, lat, not isinstance(order[k + 1], str), t0 if k < 0 else min(fw[k].values()), stays, want)
-        if k < 0: ls = max([latest[start]] + [t - tr.MIN_TRANSFER for t in stay.get(start, {}).values()]) + tr.MIN_TRANSFER; break
+        if k < 0: ls = max([latest[start]] + [t - tr.MIN_TRANSFER for t in stay.get(start, {}).values()]); break
         lat = {s: max([latest[s]] + list(stay.get(s, {}).values())) for s in fw[k]}
         lat = {s: v for s, v in lat.items() if v > float('-inf')}; stays = stay
         assert lat, f'layer {k} ({order[k]}) empty'
         assert max(v - fw[k][s] for s, v in lat.items()) >= -60, f'layer {k} negative slack'
-    assert datetime.fromtimestamp(ls, ET).strftime('%a %H:%M') == 'Thu 00:59', datetime.fromtimestamp(ls, ET)
+    assert datetime.fromtimestamp(ls, ET).strftime('%a %H:%M') == 'Thu 00:54', datetime.fromtimestamp(ls, ET)
 
 
 @check('move labels read correctly')

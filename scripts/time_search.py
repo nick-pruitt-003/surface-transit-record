@@ -340,6 +340,7 @@ class Search:
             f, legs = R.route(self.start, self.day0, order)
             s0 = int(R.state[self.start])
             if f is None or len(self.covered(legs) | self.done | ({s0} if s0 >= 0 else set())) < N_STATES: return None
+            if self.end_by is not None and f > self.end_by + 60: return None
             return (f - self.day0, self.start, self.day0, f, legs)
         for st in self.start_opts:
             for k in range(7):

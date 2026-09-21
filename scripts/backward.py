@@ -31,7 +31,7 @@ def backward_layer(R, rev, nxt, tgt_next_state, lo, nxt_stay=None, want=()):
     nxt: {stop: latest}; nxt_stay: {stop: {trip: departure}} = staying on a through vehicle there needs no
     transfer. Mirrors the forward rules: one walk hop around rides, MIN_TRANSFER to change vehicles, and a
     cross-state walk can't land on a state target's stop. Returns (latest list, stay for the stops in want)."""
-    nxt_stay = nxt_stay or {}; want = set(want); stay = {}
+    nxt_stay = nxt_stay or {}; want = None if want is None else set(want); stay = {}   # want None: every stop
     NEG = float('-inf'); latest = [NEG] * R.N; board = [NEG] * R.N
     for s, L in nxt.items():
         latest[s] = max(latest[s], L)
@@ -51,7 +51,7 @@ def backward_layer(R, rev, nxt, tgt_next_state, lo, nxt_stay=None, want=()):
             if A_[k] <= latest[b] or A_[k] <= nxt_stay.get(b, {}).get(tr, NEG): ok.add(tr)
             else: continue
         a = F_[k]
-        if a in want: stay.setdefault(a, {}).setdefault(tr, D_[k])   # descending scan: first seen = latest boarding
+        if want is None or a in want: stay.setdefault(a, {}).setdefault(tr, D_[k])   # descending scan: first seen = latest boarding
         t = D_[k] - MIN_TRANSFER
         # board[a]: latest to board at a itself. Walks chain only onto a boarding (one hop, like the forward
         # scan), never onto another walk, so they relax from board[a], not from latest[a].
@@ -97,7 +97,7 @@ def main():
         if not lat[k]: print(f'no stop of target {k} ({order[k]}) makes the deadline'); return
     name = lambda x: ABBR.get(R.state_names[x], R.state_names[x]) if not isinstance(x, str) else ('gateway' if x.startswith('@~') else x[1:])
     first_ok = lat_start > float('-inf')
-    print(f'latest start from {R.stop_name[start]}: ' + (R.fmt_time(lat_start + MIN_TRANSFER, start) if first_ok else 'none (deadline too early)'))
+    print(f'latest start from {R.stop_name[start]}: ' + (R.fmt_time(lat_start, start) if first_ok else 'none (deadline too early)'))
     print(f'\n  {"target":10s} {"stop":34s} {"earliest":>13s} {"latest":>13s} {"slack":>7s}')
     for k, x in enumerate(order):
         both = [(lat[k][s] - fw[k][s], s) for s in fw[k] if lat[k] and s in lat[k] and lat[k][s] >= fw[k][s] - 60]
