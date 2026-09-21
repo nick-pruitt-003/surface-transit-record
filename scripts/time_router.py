@@ -20,9 +20,9 @@ RIVER_BORDERS = set(_P('KY-OH KY-IN KY-IL WV-OH IA-IL IA-WI MO-IL MO-KY MO-TN AR
                        'NJ-PA DE-NJ MD-VA MD-WV NH-VT OR-WA GA-SC OK-TX ID-OR ID-WA IL-IN AL-GA'))
 # walkable bridges Nick has accepted (stop-name substrings)
 RIVER_OK = {frozenset(('NH', 'VT')): ('Hanover', 'Ledyard', 'Tuck'), frozenset(('MN', 'ND')): ('Fargo', 'Moorhead')}
-WALKIN_KM = float(os.environ.get('BUS48_WALKIN_KM', 0))   # 0 = a state needs a real stop
-MIN_TRANSFER = int(os.environ.get('BUS48_MIN_TRANSFER', 15)) * 60       # seconds between different vehicles at the same stop
-SCAN_SLACK = float(os.environ.get("BUS48_SCAN_SLACK_H", 10)) * 3600   # keep scanning this long past the first target arrival; 24 lets a state be collected at a later, better-placed stop
+WALKIN_KM = float(os.environ.get('BUS48_WALKIN_KM', 1.4))   # border walk-ins (Nick's rules); 0 = a state needs a real stop
+MIN_TRANSFER = int(os.environ.get('BUS48_MIN_TRANSFER', 5)) * 60       # seconds between different vehicles at the same stop
+SCAN_SLACK = float(os.environ.get("BUS48_SCAN_SLACK_H", 24)) * 3600   # keep scanning this long past the first target arrival; 24 lets a state be collected at a later, better-placed stop
 WALK_SPEED = 4.5 / 3.6       # m/s
 WALK_MAX_KM = 1.5
 LOCAL_MAX_KM = 10.0        # beyond walking: local transit / shuttle proxy
