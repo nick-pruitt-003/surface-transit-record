@@ -61,6 +61,7 @@ const dark = matchMedia('(prefers-color-scheme: dark)').matches;
 const map = new maplibregl.Map({ container: 'map', style: 'https://tiles.openfreemap.org/styles/' + (dark ? 'dark' : 'positron'),
   center: [-96, 39], zoom: 3.2, attributionControl: { compact: true } });
 map.addControl(new maplibregl.NavigationControl({ showCompass: false }));
+map.on('error', e => { document.getElementById('name').textContent = 'Map error: ' + (e.error && e.error.message || e); console.error(e.error || e); });
 let lastEvals = null, lastT = null, lastBestKey = '', lastCurKey = '', ready = false, pending = {};
 const empty = { type: 'FeatureCollection', features: [] };
 function fc(legs) {
@@ -69,13 +70,16 @@ function fc(legs) {
     geometry: { type: 'LineString', coordinates: [[l.a[0], l.a[1]], [l.b[0], l.b[1]]] } })) };
 }
 map.on('load', () => {
+  // line-dasharray can't vary per feature in MapLibre 4, so rides and walks are separate layers
   for (const [id, color, w] of [['cur', css('--cur'), 2], ['best', css('--best'), 4]]) {
     map.addSource(id, { type: 'geojson', data: empty });
-    map.addLayer({ id, type: 'line', source: id, layout: { 'line-cap': 'round' },
-      paint: { 'line-color': color, 'line-width': w, 'line-opacity': .9, 'line-dasharray': ['case', ['get', 'walk'], ['literal', [1, 2]], ['literal', [1, 0]]] } });
+    map.addLayer({ id, type: 'line', source: id, filter: ['!', ['get', 'walk']], layout: { 'line-cap': 'round' },
+      paint: { 'line-color': color, 'line-width': w, 'line-opacity': .9 } });
+    map.addLayer({ id: id + '-walk', type: 'line', source: id, filter: ['get', 'walk'],
+      paint: { 'line-color': color, 'line-width': w, 'line-opacity': .9, 'line-dasharray': [1, 2] } });
   }
   const pop = new maplibregl.Popup({ closeButton: false, closeOnClick: false });
-  for (const id of ['best', 'cur']) {
+  for (const id of ['best', 'cur', 'best-walk', 'cur-walk']) {
     map.on('mousemove', id, e => { map.getCanvas().style.cursor = 'pointer'; pop.setLngLat(e.lngLat).setHTML(e.features[0].properties.tip).addTo(map); });
     map.on('mouseleave', id, () => { map.getCanvas().style.cursor = ''; pop.remove(); });
   }
