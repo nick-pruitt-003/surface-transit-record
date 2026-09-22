@@ -46,7 +46,7 @@ of an order that works, or the answer is about the permutation and not about the
     python3 shape_probe.py
     python3 shape_probe.py --shapes control,reverse,east-first
 """
-import argparse, pickle
+import argparse, os, pickle
 from datetime import datetime
 from zoneinfo import ZoneInfo
 import numpy as np
@@ -68,6 +68,14 @@ def main():
     ap.add_argument('--span', type=float, default=260)
     ap.add_argument('--days', type=int, default=20)
     ap.add_argument('--shapes', default=','.join(HERE_SHAPES))
+    ap.add_argument('--rotations', action='store_true', help='the question the fixed ordering cannot ask. '
+                    'Asking which start suits the control ordering is circular, because that ordering is the '
+                    'shape built around Huntington and can only answer Huntington. A rotation enters the '
+                    'same geographic sequence at a different point and ends where that puts it, so it is a '
+                    'different shape with its own natural start and its own end. The deadline is shared, so '
+                    'the latest possible departure is directly comparable across all of them: the rotation '
+                    'with the latest departure is the fastest shape.')
+    ap.add_argument('--workers', type=int, default=0)
     ap.add_argument('--starts', type=int, default=0, help='report the best N start stops for this ordering. '
                     'test() already returns the latest possible departure from EVERY stop, so with the '
                     'deadline fixed, D - cur[s] is the elapsed time of a route starting at s and any stop '
@@ -198,6 +206,41 @@ def main():
             h = len(body) // 2
             return body[h:] + body[:h]
         raise SystemExit(f'unknown shape {name!r}; known: {", ".join(HERE_SHAPES)}')
+
+    if a.rotations:
+        full = body + [end_st]
+        n_ = len(full)
+
+        def one(k):
+            order = full[k:] + full[:k]
+            e_ = order[-1]
+            cur = latest_from({s: D for s in st_stops[e_]})
+            for y in reversed(order[:-1]):
+                nxt = {s: float(cur[s]) for s in st_stops[y] if cur[s] > -np.inf}
+                if not nxt: return k, order[0], e_, None, None
+                cur = latest_from(nxt)
+            j = int(np.argmax(cur))
+            return k, order[0], e_, float(cur[j]), j
+
+        import multiprocessing as mp
+        nw = a.workers or max(1, (os.cpu_count() or 2) - 1)
+        with mp.get_context('fork').Pool(nw) as pool:
+            rows = pool.map(one, range(n_))
+        ok_rows = [r for r in rows if r[3] is not None]
+        ok_rows.sort(key=lambda r: -r[3])
+        print(f'{n_} rotations of the control sequence, {nw} workers. Deadline is shared, so a later '
+              f'departure is a shorter route and these are directly comparable.\n')
+        print(f'  {"rot":>3s} {"first":5s} {"last":5s} {"latest departure":>18s} {"D-dep":>8s}  best start')
+        for k, f_, e_, c_, j_ in ok_rows:
+            print(f'  {k:3d} {ab(f_):5s} {ab(e_):5s} '
+                  f'{datetime.fromtimestamp(c_, tz).strftime("%a %d %b %H:%M"):>18s} '
+                  f'{(D - c_) / 3600:7.2f} h  {R.stop_name[j_][:40]}')
+        for k, f_, e_, c_, j_ in rows:
+            if c_ is None: print(f'  {k:3d} {ab(f_):5s} {ab(e_):5s} {"IMPOSSIBLE":>18s}')
+        print('\nD-dep is departure to DEADLINE, not to finish: a route landing early shows worse here than '
+              'it is. Comparable across rotations because the deadline is shared; not comparable to the '
+              "control's 237.34 h, which is measured to its own arrival.")
+        return
 
     print(f'start {a.start!r}: {len(starts)} stop(s) with that exact name; departing '
           f'{datetime.fromtimestamp(t0, tz):%a %H:%M}, deadline {datetime.fromtimestamp(D, tz):%a %H:%M}\n')
