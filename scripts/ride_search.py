@@ -88,6 +88,12 @@ def main():
                          "deadline tables. 'slack' is the default because it is measured better: 25 states "
                          "for 'rate', 28 for slack, 29 with --dedupe as well. It needs --end/--by and falls "
                          "back to 'rate' without them.")
+    ap.add_argument('--split', default='on', choices=('on', 'off'), help='keep the collecting-before-'
+                    'positioning split as the first sort key. It is on by default because that is what has '
+                    'been measured, not because it has been justified: no positioning ride can outrank a '
+                    'collecting one however much more slack it leaves, which is the second live item in '
+                    'CLAUDE.md and the shape that buries Spokane to Pasco and Saint George. `off` ranks '
+                    'purely by the mode\'s own key, and --track says which reproduces the control.')
     ap.add_argument('--width', type=int, default=12, help='rides tried per node')
     ap.add_argument('--mode', default='best', choices=('best', 'dfs'),
                     help="'best' expands the most promising node anywhere in the frontier; 'dfs' dives and "
@@ -349,10 +355,15 @@ def main():
         am I to losing the state I can least afford to lose. A long haul that collects four states shrinks
         the owed set and can raise it; a five minute hop that goes nowhere cannot.
 
-        The split between rides that collect and rides that do not is kept. The group ranks say it is not
-        what binds, and dropping it would let a hop that changes nothing outrank a real ride whenever both
-        are comfortable, which is the dithering the old comment warned about.
+        The split between rides that collect and rides that do not is the first key in every mode, so no
+        positioning ride can ever outrank a collecting one however much better it is. It was kept on an
+        argument, not a measurement: the group ranks looked fine and dropping it would let a hop that
+        changes nothing outrank a real ride whenever both are comfortable. That argument is exactly the
+        shape this project keeps getting burned by, a summary judgement in front of a number the tables can
+        give exactly, so `--split off` removes it and the control replay says which is right. Spokane to
+        Pasco, Saint George and Memphis to Holmes are the legs it can erase.
         """
+        grp = (lambda o: n_new(o) == 0) if a.split == 'on' else (lambda o: False)
         if a.order == 'slack' and L is not None:
             cap = ceiling(collected)
             capl = cap.tolist()                      # 1.15M numpy scalar reads per node is not affordable
@@ -365,13 +376,13 @@ def main():
                 if not owed_after: return endl[to] - at
                 return min(float(L[owed_after, to].min()), endl[to]) - at
 
-            opts.sort(key=lambda o: (n_new(o) == 0, -slack(o)))
+            opts.sort(key=lambda o: (grp(o), -slack(o)))
         elif a.order in ('rate', 'slack'):      # 'slack' lands here only backward, which has no tables
-            opts.sort(key=lambda o: (n_new(o) == 0, ((t - o[1]) if back else (o[1] - t)) / max(1, n_new(o))))
+            opts.sort(key=lambda o: (grp(o), ((t - o[1]) if back else (o[1] - t)) / max(1, n_new(o))))
         elif a.order == 'states':
-            opts.sort(key=lambda o: (n_new(o) == 0, -n_new(o), -o[1] if back else o[1]))
+            opts.sort(key=lambda o: (grp(o), -n_new(o), -o[1] if back else o[1]))
         else:
-            opts.sort(key=lambda o: (n_new(o) == 0, -o[1] if back else o[1]))
+            opts.sort(key=lambda o: (grp(o), -o[1] if back else o[1]))
         return opts
 
     def alight_ok(to, at, owed_after):
