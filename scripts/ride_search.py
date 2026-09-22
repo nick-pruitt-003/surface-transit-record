@@ -94,6 +94,11 @@ def main():
                     'collecting one however much more slack it leaves, which is the second live item in '
                     'CLAUDE.md and the shape that buries Spokane to Pasco and Saint George. `off` ranks '
                     'purely by the mode\'s own key, and --track says which reproduces the control.')
+    ap.add_argument('--pairrank', action='store_true', help='with --track and --pairs: also report where the '
+                    'pair margin would have ranked each control leg, over the whole option list. This is '
+                    'the diagnostic --rerank cannot be: it prices every option, which only 40 nodes can '
+                    'afford, and it answers whether the pair margin promotes the legs slack buries before '
+                    'anything is optimised to do it in the inner loop.')
     ap.add_argument('--rerank', type=int, default=0, help='re-rank this many of the top options by the pair '
                     'margin before --width cuts. Needs --pairs. The slack key asks how close a move leaves '
                     'the chain to losing the single state it can least afford; this asks the same question '
@@ -810,6 +815,43 @@ def main():
             raw_opts = rides_from(stop, t, aboard, collected, raw=True) if a.dedupe else opts
             n_new = lambda o: len(o[3] - collected)
             sort_opts(opts, collected, n_new, t)
+            # What rank would the pair margin have given this leg, over the WHOLE option list rather than a
+            # head? Asked here and not in the search because here it is affordable: 40 nodes, so even
+            # 17676 options at 30 us is half a second, against a search that has 40 ms a node.
+            #
+            # It is the experiment --rerank cannot run. Saint George is 21586th of 21638 under slack and
+            # 21574th with the group key removed entirely, so no head small enough to price in the inner
+            # loop reaches it, and re-ranking a head only ever reshuffles legs that were already inside the
+            # width. The question worth answering first is whether the pair margin would promote the legs
+            # slack buries at all. If it would not, the optimised version is not worth building.
+            pair_rank = None
+            if PT is not None and a.pairrank:
+                owed_node = [y for y in range(N_STATES) if y not in collected]
+                if len(owed_node) >= 2:
+                    blocks = {}
+                    common = None
+                    scored = []
+                    for o in opts:
+                        s_ = int(o.stop)
+                        b_ = blocks.get(s_)
+                        if b_ is None: b_ = blocks[s_] = np.asarray(PT.P[s_])
+                        oa = [y for y in owed_node if y not in o.got]
+                        if len(oa) < 2:
+                            w_ = np.inf
+                        elif len(oa) == len(owed_node):
+                            # the common case by far: a positioning ride leaves the owed set alone, so the
+                            # submatrix is the same one for every such option at this stop
+                            key_ = s_
+                            w_ = common[key_] if common and key_ in common else None
+                            if w_ is None:
+                                w_ = float(b_[np.ix_(owed_node, owed_node)].min())
+                                common = common or {}; common[key_] = w_
+                        else:
+                            w_ = float(b_[np.ix_(oa, oa)].min())
+                        scored.append((w_ - (float(o.time) - PT.D), o))
+                    order_ = sorted(range(len(scored)), key=lambda i: -scored[i][0])
+                    pair_rank = next((i + 1 for i, j in enumerate(order_)
+                                      if opts[j][0] == al and opts[j][2] == trip and opts[j].walk is None), None)
             # A control leg is a plain ride, so only a plain ride reproduces it. Before the walk field
             # existed a walk-in carried no trip and could never match here; now it carries the real one,
             # and without this the replay counts the ride-plus-detour variant as the same move. It showed
@@ -881,7 +923,10 @@ def main():
                 kind = 'positioning' if mine else 'collecting'
                 print(f'  leg {n:2d} {name:22s} -> {R.stop_name[al][:26]:26s} rank {rank:3d}/{len(opts):4d}'
                       f'  +{" ".join(ab(x) for x in sorted(got - collected)) or "-"}{flag}', flush=True)
-                print(f'         {kind:11s} {grank}/{len(peers)} within its own group', flush=True)
+                print(f'         {kind:11s} {grank}/{len(peers)} within its own group'
+                      + (f'; pair margin would rank it {pair_rank}/{len(opts)}'
+                         + ('  BETTER' if pair_rank < rank else '  worse' if pair_rank > rank else '  same')
+                         if pair_rank else ''), flush=True)
                 if a.anatomy: anatomy(opts, al, trip, n_new)
                 if rank > a.width: lost += 1
                 o_ = opts[rank - 1]
