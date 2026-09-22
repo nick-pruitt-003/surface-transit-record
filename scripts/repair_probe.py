@@ -99,17 +99,23 @@ def main():
     # What the route already holds by the time it reaches each layover. Without this the table is mostly
     # tautology: standing in Wisconsin, Wisconsin is collectable. The question worth asking is what a
     # window could add that the route does not have yet.
+    # Walk one pass over the legs in order, so a state taken on foot is in every later snapshot. The first
+    # version collected those into a `seen` set it then never used, and built the snapshots from rides
+    # alone: Mississippi, which this route takes by walking, was missing from every `have`, so the probe
+    # would have offered it back as something a window could add. The probe exists to find exactly that
+    # move, so getting it wrong here would have looked like a discovery.
     have = [None] * (len(rides) + 1)
-    seen = set()
-    if R.state[st0] >= 0: seen.add(int(R.state[st0]))
-    for _l in legs:
-        if _l[0] == 'walk' and _l[2] >= R.first_virtual and R.state[_l[2]] >= 0: seen.add(int(R.state[_l[2]]))
     running = set()
     if R.state[st0] >= 0: running.add(int(R.state[st0]))
-    for i, (_, _t, bs_, _bt, al_, _at) in enumerate(rides):
-        for s_ in (bs_, al_):
-            if R.state[s_] >= 0: running.add(int(R.state[s_]))
-        have[i + 1] = set(running)
+    ride_i = 0
+    for _l in legs:
+        if _l[0] == 'walk':
+            if _l[2] >= R.first_virtual and R.state[_l[2]] >= 0: running.add(int(R.state[_l[2]]))
+        elif _l[0] == 'ride':
+            for s_ in (_l[2], _l[4]):
+                if R.state[s_] >= 0: running.add(int(R.state[s_]))
+            ride_i += 1
+            if ride_i <= len(rides): have[ride_i] = set(running)
 
     print(f'{len(holes)} layovers where the route waits at the stop it arrived at\n', flush=True)
     print(f'{"after leg":>9}  {"stop":28s} {"window":>8}  states it could add that the route lacks there', flush=True)

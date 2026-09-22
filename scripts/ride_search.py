@@ -486,7 +486,7 @@ def main():
         spent = (t - T0) if not back else (T0 - t)
         if spent > limit[0]: return
         if len(collected) >= NEED and (END_ST is None or int(R.state[stop]) == END_ST):
-            limit[0] = spent; best[0] = (spent, list(path))
+            limit[0] = spent; best[0] = (spent, list(path), frozenset(collected))
             print(f'  [{time.time() - t_run:5.0f}s] FOUND {spent / 3600:.2f} h, {len(collected)} states, '
                   f'{len(path)} rides', flush=True)
             return
@@ -618,7 +618,7 @@ def main():
             heartbeat(len(q))
             if spent > limit[0]: continue
             if len(collected) >= NEED:
-                limit[0] = spent; best[0] = (spent, list(path))
+                limit[0] = spent; best[0] = (spent, list(path), frozenset(collected))
                 print(f'  [{time.time() - t_run:5.0f}s] FOUND {spent / 3600:.2f} h back to '
                       f'{R.stop_name[stop][:30]}, {len(collected)} states, {len(path)} rides', flush=True)
                 continue
@@ -786,7 +786,7 @@ def main():
             # prune the whole way on the assumption the chain still has to reach it, so accepting a chain
             # that is standing somewhere else contradicts the pruning that got it there.
             if len(collected) >= NEED and (END_ST is None or int(R.state[stop]) == END_ST):
-                limit[0] = spent; best[0] = (spent, list(path))
+                limit[0] = spent; best[0] = (spent, list(path), frozenset(collected))
                 print(f'  [{time.time() - t_run:5.0f}s] FOUND {spent / 3600:.2f} h, {len(collected)} states, '
                       f'{len(path)} rides', flush=True)
                 continue
@@ -860,9 +860,28 @@ def main():
         """
         legs_ = list(path_[::-1]) if back_ else list(path_)
         order_ = []
+
+        def add_(st_):
+            if st_ is not None and st_ >= 0 and st_ not in order_: order_.append(st_)
+
         for trip_, frm_, to_, bt_, at_, walk_ in legs_:
-            for st_ in (int(R.state[frm_]), int(R.state[to_]), walk_):
-                if st_ is not None and st_ >= 0 and st_ not in order_: order_.append(st_)
+            # Every state the ride is actually in, not just the two it stops at. The search credits a state
+            # when a ride passes through it, which is right, you are in it; deriving the order from
+            # endpoints alone dropped the rest. A chain reporting 31 states wrote an order of 17, and
+            # repair_probe then re-flew that 17-state ghost and offered back states the real chain already
+            # held. The pass-through states are recoverable from the trip itself.
+            add_(int(R.state[frm_]))
+            cs_ = trip_conns.get(trip_) if trip_ is not None else None
+            if cs_:
+                on_ = False
+                for kk_ in cs_:
+                    a_, b_ = int(R.cfrom[kk_]), int(R.cto[kk_])
+                    if a_ == frm_: on_ = True
+                    if on_:
+                        add_(int(R.state[a_])); add_(int(R.state[b_]))
+                    if b_ == to_ and on_: break
+            add_(int(R.state[to_]))
+            add_(walk_)
         st0_ = legs_[0][1] if legs_ else (START if START is not None else 0)
         t0_ = legs_[0][3] if legs_ else T0
         return dict(path=legs_, spent=spent_, collected=sorted(collected_), complete=complete_,
@@ -958,10 +977,15 @@ def main():
                 print(f'wrote {a.out}: the deepest chain, {len(co_)} states over {len(pa_)} rides, '
                       f'{sp_ / 3600:.1f} h. Not a route; the input repair_probe wants.')
         else:
-            spent, path = best[0]
+            spent, path, coll_ = best[0]
             print(f'best {spent / 3600:.2f} h, starting {R.fmt_time(D - spent, path[-1][1]) if path else "?"}')
             chk = confirm(path[::-1])
             if chk: print(f'  independent check: {chk[0]}' + (f', {chk[1]:.2f} h' if chk[1] is not None else ''))
+            agreed = bool(chk) and chk[0] == 'router confirms'
+            if a.out:
+                # Backward wrote nothing at all on success, so a route found this way was printed and lost.
+                pickle.dump(route_record(path, spent, coll_, agreed, back_=True), open(a.out, 'wb'))
+                print('wrote', a.out + ('' if agreed else '  (complete=False: the router did not confirm it)'))
             for trip, frm, to, bt, at, wy in path[::-1]:
                 info = R.trip_info.get(trip, ('', '')) if trip else ('', 'border walk-in')
                 print(f'   {R.fmt_time(bt, frm)} {R.stop_name[frm][:26]:26s} -> {R.fmt_time(at, to)} '
@@ -985,7 +1009,7 @@ def main():
             print(f'wrote {a.out}: the deepest chain, {len(co_)} states over {len(pa_)} rides, '
                   f'{sp_ / 3600:.1f} h. Not a route; the input repair_probe wants.')
     else:
-        spent, path = best[0]
+        spent, path, best_states = best[0]
         print(f'best {spent / 3600:.2f} h over {len(path)} rides')
         chk = confirm(path)
         if chk: print(f'  independent check: {chk[0]}' + (f', {chk[1]:.2f} h' if chk[1] is not None else ''))

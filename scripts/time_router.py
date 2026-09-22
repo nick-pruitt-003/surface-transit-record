@@ -635,7 +635,11 @@ def cached_router(date, days, cache_dir=None, verbose=True):
     # Nanosecond mtimes, because a second is long enough to edit a feed inside and integer seconds would
     # then serve the old world from cache.
     sig = [(os.path.relpath(f, here), os.path.getsize(f), os.stat(f).st_mtime_ns) for f in files if os.path.isfile(f)]
-    sig.append(hashlib.sha1(open(__file__, 'rb').read()).hexdigest())
+    # Both sources that decide what a router is. common.py carries StateIndex, ABBR and hav, so a change
+    # to how a stop is assigned a state, or to the distance function the footpaths are built from, changes
+    # every router without changing this file.
+    for src in (__file__, os.path.join(here, 'common.py')):
+        if os.path.isfile(src): sig.append(hashlib.sha1(open(src, 'rb').read()).hexdigest())
     sig.append((str(date), int(days)))
     # Every knob that changes what a router IS. All six are environment variables, so the same source and
     # the same feeds can still describe different worlds, and a cache that ignored them would hand back the
