@@ -94,6 +94,12 @@ def main():
                     'collecting one however much more slack it leaves, which is the second live item in '
                     'CLAUDE.md and the shape that buries Spokane to Pasco and Saint George. `off` ranks '
                     'purely by the mode\'s own key, and --track says which reproduces the control.')
+    ap.add_argument('--rerank', type=int, default=0, help='re-rank this many of the top options by the pair '
+                    'margin before --width cuts. Needs --pairs. The slack key asks how close a move leaves '
+                    'the chain to losing the single state it can least afford; this asks the same question '
+                    'about pairs, which is what the deep chains actually lose on. 0 is off, and off is the '
+                    'default until a replay says otherwise: a ranking change that reproduces fewer of the '
+                    'control\'s legs is a worse ranking however good its reasoning sounds.')
     ap.add_argument('--width', type=int, default=12, help='rides tried per node')
     ap.add_argument('--mode', default='best', choices=('best', 'dfs'),
                     help="'best' expands the most promising node anywhere in the frontier; 'dfs' dives and "
@@ -383,6 +389,25 @@ def main():
             opts.sort(key=lambda o: (grp(o), -n_new(o), -o[1] if back else o[1]))
         else:
             opts.sort(key=lambda o: (grp(o), -o[1] if back else o[1]))
+        # Re-rank the head by the pair margin. The slack key asks how close a move leaves the chain to
+        # losing the single state it can least afford; the pair table answers the same question one step
+        # deeper, and it is the deeper one the deep chains actually lose on. The run-1 chain was never
+        # short on any single state, it was short on CA-then-WA, and no amount of single-state slack could
+        # have seen that.
+        #
+        # Only the head, because PT.worst reads a 9 KB block per option and a node offers thousands. The
+        # primary sort has already put the plausible moves in front, so this re-orders the shortlist that
+        # --width will cut from rather than scoring the whole menu. Decorate-sort-undecorate, so each
+        # option is priced once rather than once per comparison.
+        if PT is not None and a.rerank:
+            k = min(a.rerank, len(opts))
+            dec = []
+            for o in opts[:k]:
+                owed_ = [y for y in range(N_STATES) if y not in collected and y not in o.got]
+                m_ = PT.worst(int(o.stop), float(o.time), owed_)[0] if len(owed_) >= 2 else float('inf')
+                dec.append((grp(o), -m_, o))
+            dec.sort(key=lambda d: d[:2])
+            opts[:k] = [d[2] for d in dec]
         return opts
 
     def alight_ok(to, at, owed_after):
