@@ -168,3 +168,43 @@ credit cannot draw.
 Falsification, stated before building it: if slack ranking is right, a run should pass 25 states and the
 chains it expands late should be ones with the West already collected. If it stalls at 25 like everything
 else, then the wall is not in the ranking at all and the next suspect is the pruning, not the priority.
+| `c_fwd48_states` | 26 min | deepest 25/48 | 8419 nodes in 1500 s (6/s) | 0 | none |  | rc=0 |
+
+## The wall, found: positioning moves are sorted to the back and then cut off
+
+`c_fwd48_states` stopped at 25/48 like everything else, five runs for five walls, so the ranking mattered
+less than any of the knobs suggested. The `--track` replay says why, and it is not a knob at all.
+
+Ranking the control's forty legs by where the search puts them:
+
+| leg | destination | rank | collects |
+|---|---|---|---|
+| 21 | Saint George | 486385 / 1156415 | nothing |
+| 6 | Holmes at Elvis Presley | 16727 / 375718 | nothing |
+| 10 | Des Moines | 6524 / 199476 | IA |
+| 7 | Airways Transit Center | 1293 / 25989 | nothing |
+| 31 | Houston 808 Jefferson St | 129 / **129** | nothing |
+| 23 | Bonneville Transit Center | 98 / 331320 | nothing |
+
+Median rank is 4, so most of the route is ranked fine. What is not fine is every leg that collects no new
+state, and leg 31 is ranked last out of its own list of 129. All three orderings share a first sort key:
+
+```python
+if   a.order == 'rate':   opts.sort(key=lambda o: (n_new(o) == 0, (o[1] - t) / max(1, n_new(o))))
+elif a.order == 'states': opts.sort(key=lambda o: (n_new(o) == 0, -n_new(o), -o[1]))
+else:                     opts.sort(key=lambda o: (n_new(o) == 0, -o[1]))
+```
+
+`n_new(o) == 0` is False before True, so every repositioning ride sorts behind every state-collecting ride,
+and then `opts[:a.width]` cuts. While any option collects a state, the search cannot reposition. The
+control needs to reposition at least five times, one of them the Memphis hop to Holmes that CLAUDE.md
+records as load-bearing for Mississippi five days later.
+
+This explains the whole night at once. Ordering did not move the wall because all three orderings carry
+the same key. Width cannot move it either, so `c_fwd48_w24` and `c_fwd48_w36` are already answered: no
+width reaches rank 486385. The states ladder did not bend because the requirement was never what bound.
+And 24 or 25 states is simply where the route first needs a move the search is forbidden to consider.
+
+It is also the same failure the file already lists four times: a reasonable-sounding rule, here "prefer
+moves that make progress", quietly deleting the sparse link the route depends on. A ride that collects
+nothing is not a wasted ride; it is how you stand in the right place at the right time.
