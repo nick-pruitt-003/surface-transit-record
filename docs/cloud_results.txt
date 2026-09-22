@@ -1,3 +1,4 @@
 M_SPF_WV rc=0 FINAL 260.4 h d17 Sat 17:08 START Spearfish first bus d6 Tue 19:45 END WV arrive d17 Sat 17:08 | record 238.83 h: misses by 21.6 h 
 K1_control rc=0 FINAL misses --end-by: best route reaches Pasco Bus Stop at d6 Tue 13:10 (23.8 h late) 
 K2_mi rc=0 FINAL misses --end-by: best route reaches Pasco Bus Stop at d6 Tue 13:10 (23.8 h late) 
+K3_ms rc=0 FINAL misses --end-by: best route reaches Pasco Bus Stop at d6 Tue 13:10 (23.8 h late) 
