@@ -458,3 +458,24 @@ route's spare time ends up on the Mississippi walk, which makes that walk the th
 
 The 3 min 370 m dash off route 34 onto the 05:32 should not be planned around either way: it depends on
 route 34 being exactly on time and leaves no margin at all.
+
+### The alight rule: Barstow and Conway are the tests (Sep 22)
+
+`ride_search.py` had to decide where a ride may be got off, and the first version used a guess: any stop in a
+state not yet collected, or any stop with at least six departing services. Nick named the two stops that test
+it, and the rule fails both.
+
+| stop the route must use | distinct services | old rule |
+|---|---|---|
+| Barstow Station (where FlixBus drops) | 8 | passes, but the Chief does not leave from here |
+| **Barstow Amtrak depot** | **2** | **fails**, and California is already collected by then, so the new-state clause does not save it either |
+| **Conway, AR** | **5** | **fails**, and survives only because Arkansas happens to be new there |
+
+So the search could never have boarded the Southwest Chief, and Conway is one reordering away from being
+invisible too. A busyness count is exactly the kind of aggregation that ruined every earlier estimate: the
+two stops a 48-state route cannot do without are a desert depot and a small Arkansas town.
+
+The rule is now exact and has no knob. Getting off at a stop is allowed when every state still owed remains
+collectible from there at that time, and the end remains reachable, both read straight off the deadline
+tables. Barstow and Conway both pass, because from either one everything still owed is still collectible.
+`--hub` survives only as the fallback for runs given no deadline.

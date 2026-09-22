@@ -35,7 +35,8 @@ def main():
     ap.add_argument('--target', type=float, default=238.0, help='hours the route must come in under')
     ap.add_argument('--states', type=int, default=N_STATES, help='how many states to require (fewer = a test case)')
     ap.add_argument('--horizon', type=float, default=24, help='hours ahead to look for a departure')
-    ap.add_argument('--hub', type=int, default=6, help='alight here if the stop has at least this many services')
+    ap.add_argument('--hub', type=int, default=6, help='fallback alight rule when no deadline is given: the stop '
+                    'has at least this many services. With --end/--by the deadline tables decide instead.')
     ap.add_argument('--span', type=float, default=260, help='hours the deadline tables scan back over')
     ap.add_argument('--budget', type=float, default=900); ap.add_argument('--nodes', type=int, default=2000000)
     ap.add_argument('--days', type=int, default=20); ap.add_argument('--out')
@@ -90,10 +91,27 @@ def main():
         print('  deadline tables built in %.0f s; latest start that still finishes: %s'
               % (time.time() - t_pre, R.fmt_time(float(ls), START) if ls > -np.inf else 'unreachable'), flush=True)
 
-    def rides_from(s, t, aboard):
+    def alight_ok(to, at, owed_after):
+        """Is getting off here survivable? Every state still owed has to remain collectible from this stop at
+        this time, and the end has to remain reachable. Exact, straight from the deadline tables.
+
+        This replaces counting services at the stop, which was a guess and a wrong one. The Barstow Amtrak
+        depot has two services, and California is already collected by the time the route reaches it, so no
+        rule built on busyness or on new states would ever stop there, and the Southwest Chief leaves from
+        nowhere else. Conway has five and survives only because Arkansas happens to be new there. Nick named
+        both as the tests, and the old rule failed both."""
+        if L is None: return nserv.get(to, 0) >= a.hub
+        if at > L_end[to]: return False
+        col = L[:, to]
+        for y in owed_after:
+            if at > col[y]: return False
+        return True
+
+    def rides_from(s, t, aboard, collected):
         """The menu at stop s at time t: (alight stop, alight time, trip, states it collects).
         Riding on the trip already boarded needs no transfer; anything else does."""
         out = []
+        all_states = range(N_STATES)
         for j, w in [(s, 0)] + [(j, w) for j, w in R.foot.get(s, ()) if w <= WALK_MAX_KM * 1000 / 1.25]:
             t_ok = t + w + (0 if j == s else 0)
             times = dep_times.get(j)
@@ -113,8 +131,10 @@ def main():
                 for kk in cs[p:]:
                     to = int(R.cto[kk]); st = int(R.state[to])
                     if st >= 0: got.add(st)
-                    if nserv.get(to, 0) >= a.hub or st >= 0:
-                        out.append((to, float(R.arr[kk]), key, frozenset(got)))
+                    at = float(R.arr[kk])
+                    owed = [y for y in all_states if y not in collected and y not in got]
+                    if alight_ok(to, at, owed):
+                        out.append((to, at, key, frozenset(got)))
         return out
 
     best = [None]; limit = [a.target * 3600]; seen_nodes = [0]; t_run = time.time()
@@ -140,11 +160,10 @@ def main():
         prev = dom.get(key)
         if prev is not None and prev <= spent: return
         dom[key] = spent
-        opts = rides_from(stop, t, aboard)
+        opts = rides_from(stop, t, aboard, collected)
         opts.sort(key=lambda o: (-len(o[3] - collected), o[1]))
         for to, at, trip, got in opts[:12]:
             new = collected | got
-            if len(new) == len(collected) and nserv.get(to, 0) < a.hub: continue
             path.append((trip, stop, to, t, at))
             dfs(to, at, new, trip, path)
             path.pop()
