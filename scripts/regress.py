@@ -96,6 +96,84 @@ def _():
     assert datetime.fromtimestamp(ls, ET).strftime('%a %H:%M') == 'Thu 00:54', datetime.fromtimestamp(ls, ET)
 
 
+@check('the load-bearing sparse stops survive every filter on the default path')
+def _():
+    """Four times this project has lost the route to a reasonable-sounding rule about what counts as a real
+    option, and each time the rule was found by hand, after days. Prose in CLAUDE.md does not fail a build,
+    so the geography the route cannot do without is asserted here instead.
+
+    None of these stops is busy. That is the point: busyness, averages and radii all delete them, and the
+    route dies quietly at 267 h or 25 states with nothing going red. A stop being sparse is exactly why it
+    is load-bearing, because the one service that calls there is the only way through."""
+    want = {
+        'Barstow': ('Barstow Amtrak', 'the Southwest Chief leaves from nowhere else; the depot has 2 services'),
+        'Conway': ('Conway', 'five services, and Arkansas is new there'),
+        'Holmes': ('HOLMES at ELVIS PRESLEY', 'Mississippi is taken on foot from here, 1.3 km to the line'),
+        'Carr': ('BELLEVUE BOULEVARD at CA', 'the local-transit hop out of Memphis that reaches Holmes'),
+    }
+    missing = [f'{k} ({why})' for k, (pat, why) in want.items() if not R.stops_matching(pat)]
+    assert not missing, 'stops absent from the router entirely: ' + '; '.join(missing)
+
+    # The Mississippi walk-in has to exist as a border link, not merely as a stop.
+    holmes = R.stops_matching('HOLMES at ELVIS PRESLEY')[0]
+    ms = R.state_names.index('Mississippi')
+    over = [j for j, w in R.foot.get(holmes, ()) if j >= R.first_virtual and R.state[j] == ms]
+    assert over, 'Holmes no longer steps over the Mississippi line on foot; MS becomes uncollectable there'
+
+    # The Memphis hop is a local-transit proxy link, longer than any plain walk. A cap written against walking
+    # speed hides it, which is the bug that cost Mississippi once already.
+    mem_hop = [w for j, w in R.foot.get(R.stops_matching('BELLEVUE BOULEVARD at CA')[0], ())]
+    assert mem_hop, 'Bellevue at Carr has no links at all'
+
+    # And the sparse stops must still be somewhere a search can choose to get off. Counting services is the
+    # rule that failed here before, so the assertion is the opposite one: these stops are allowed to be quiet.
+    import numpy as _np
+    deps = _np.bincount(R.cfrom, minlength=R.N)
+    for k, (pat, why) in want.items():
+        i = R.stops_matching(pat)[0]
+        n = int(deps[i])
+        assert n > 0, f'{k} has no departures at all'
+        if n < 6:
+            pass    # expected, and the reason --hub 6 was wrong; recorded rather than asserted away
+
+
+@check('nothing on the ride-search path picks stops by how busy they are')
+def _():
+    """`build_gateways` ranks stops by raw departure count, five per state inside a 6 km radius. That is the
+    same shape as the alight rule that lost the Barstow depot, and it is measurably blind in the same way:
+    of the three stops the control cannot do without, none is a gateway for its state.
+
+    The useful assertion is structural rather than numeric. The gateway list is fine where it is used, as a
+    relocation hint for the ordering search; it becomes dangerous the moment it constrains where the ride
+    search may stop. So this fails if `ride_search.py` ever starts using it. A count of services or
+    departures deciding what is a real option is the single most repeated mistake in this project."""
+    import numpy as _np, re
+    S = search_for(R, hun, t237)
+    gw = S.build_gateways()
+    deps = _np.bincount(R.cfrom, minlength=R.N)
+    blind = []
+    for pat in ('Barstow Amtrak', 'Conway', 'HOLMES at ELVIS PRESLEY'):
+        hits = R.stops_matching(pat)
+        if not hits: continue
+        i = hits[0]; y = int(R.state[i])
+        if y < 0: continue
+        lon, lat = R.stop_xy[i]
+        inside = False
+        for g in gw.get(y, []):
+            m = re.match(r'@~(-?[\d.]+),(-?[\d.]+),([\d.]+)', g)
+            if not m: continue
+            a, b, km = float(m.group(1)), float(m.group(2)), float(m.group(3))
+            if _np.hypot((lon - a) * 111.3 * _np.cos(_np.radians(lat)), (lat - b) * 111.3) <= km:
+                inside = True; break
+        if not inside: blind.append(f'{pat} ({int(deps[i])} departures)')
+    assert blind, ('every load-bearing stop is now inside a gateway radius, which would be a change in the '
+                   'data worth understanding before trusting it')
+
+    src = open('ride_search.py').read()
+    assert 'build_gateways' not in src, ('ride_search.py now uses build_gateways, which picks by departure '
+                                         'count and does not contain ' + '; '.join(blind))
+
+
 @check('move labels read correctly')
 def _():
     S = Search.__new__(Search); S.R = R; n = lambda a: R.state_names.index(a)

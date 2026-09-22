@@ -116,6 +116,29 @@ sparse rural link the route depends on. When a threshold seems unavoidable, make
 strict, so it can only let a dead branch live a little longer and never prune a live one: that is why the
 deadline tables use guard=False and why the scan cache rounds its clock up.
 
+## The live instances, not just the history
+
+The table above lists bugs that were fixed. Nick's audit found the same shape still sitting in the default
+path, which matters more, and the reply to it is that prose does not fail a build. `regress.py` now asserts
+the geography instead: the Barstow depot, Conway, Holmes and the Bellevue at Carr hop exist, Holmes still
+steps over the Mississippi line on foot, and nothing on the ride-search path picks stops by how busy they
+are. That last one fails if `build_gateways` is ever wired into `ride_search.py`, because it ranks by raw
+departure count and contains none of the three stops the control cannot do without.
+
+Still live and not yet addressed, in the order they are being worked:
+
+| what | where | what it can erase |
+|---|---|---|
+| ranking by hours per new state | `--order rate`, still the default, hardcoded in `overnight.sh` | the Silver Meteor, 14 h for four states, last of thirteen |
+| positioning rides sorted behind collecting ones | `sort_opts`, first key in every mode including slack | Spokane to Pasco, Saint George, Memphis to Holmes |
+| a flat 5 h credit per state on the frontier | `--credit` | a west-first chain loses to a cheap north-east one that looks ahead of pace |
+| the `--hub 6` alight fallback | `alight_ok` when no `--end`/`--by` is given | the Barstow depot has 2, Conway has 5 |
+| walk-only cap in the branching diagnostic | `branching.py` | local-proxy hops, which taints the "median 2 useful services" figure quoted above |
+| hand allowlist of routes per feed | `data/more_gtfs/keep_routes.json` | `lake_erie` entirely; `mata` is trimmed to routes 42 and 30, and Memphis is where the route walks to Mississippi |
+
+When adding a check here, make it able to fail. A first version of the gateway check asserted that a list
+was non-empty, which reads like a test and tests nothing.
+
 ## Diagnostics worth reusing
 
 Instrumenting against the known answer worked every time; running searches blind and reading the result did
