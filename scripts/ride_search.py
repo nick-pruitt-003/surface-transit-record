@@ -37,6 +37,10 @@ def main():
     ap.add_argument('--horizon', type=float, default=24, help='hours ahead to look for a departure')
     ap.add_argument('--hub', type=int, default=6, help='fallback alight rule when no deadline is given: the stop '
                     'has at least this many services. With --end/--by the deadline tables decide instead.')
+    ap.add_argument('--order', default='rate', choices=('rate', 'states', 'early'),
+                    help="which ride to try first: 'rate' hours per new state, 'states' most new states, "
+                         "'early' earliest arrival")
+    ap.add_argument('--width', type=int, default=12, help='rides tried per node')
     ap.add_argument('--span', type=float, default=260, help='hours the deadline tables scan back over')
     ap.add_argument('--budget', type=float, default=900); ap.add_argument('--nodes', type=int, default=2000000)
     ap.add_argument('--days', type=int, default=20); ap.add_argument('--out')
@@ -137,7 +141,7 @@ def main():
                         out.append((to, at, key, frozenset(got)))
         return out
 
-    best = [None]; limit = [a.target * 3600]; seen_nodes = [0]; t_run = time.time()
+    best = [None]; limit = [a.target * 3600]; seen_nodes = [0]; t_run = time.time(); deepest = [0]
     dom = {}                                   # (stop, collected) -> best time seen, exact pruning
     NEED = a.states
 
@@ -151,6 +155,10 @@ def main():
             print(f'  [{time.time() - t_run:5.0f}s] FOUND {spent / 3600:.2f} h, {len(collected)} states, '
                   f'{len(path)} rides', flush=True)
             return
+        if len(collected) > deepest[0]:
+            deepest[0] = len(collected)
+            print(f'  [{time.time() - t_run:5.0f}s] {len(collected)}/{NEED} states, {spent / 3600:6.1f} h spent, '
+                  f'at {R.stop_name[stop][:28]}, {len(path)} rides, {seen_nodes[0]} nodes', flush=True)
         if L is not None:
             if t > L_end[stop]: return                        # the end is no longer reachable from here
             col = L[:, stop]
@@ -161,8 +169,24 @@ def main():
         if prev is not None and prev <= spent: return
         dom[key] = spent
         opts = rides_from(stop, t, aboard, collected)
-        opts.sort(key=lambda o: (-len(o[3] - collected), o[1]))
-        for to, at, trip, got in opts[:12]:
+        # Order by hours per new state, not by how many states a ride collects. Sorting by states collected
+        # sends the search onto the longest transcontinental trains first: from Huntington it took Detroit,
+        # then New York, then Slidell, reaching 21 states in 6 rides having already spent 137 of its 238 h,
+        # which cannot finish. What the route needs is states cheaply, so price each ride by what it costs
+        # per state it adds, and let a positioning ride that adds none be judged on how little time it burns.
+        # A ride that collects nothing is still sometimes necessary (Spokane to Pasco collects nothing, and
+        # without it there is no way south), but it must never be tried first: scored on its own duration a
+        # five minute local hop beats every real ride, and the search dithers. So state-collecting rides are
+        # ordered ahead of positioning ones in every mode, and the modes differ only in how they rank within
+        # those two groups.
+        n_new = lambda o: len(o[3] - collected)
+        if a.order == 'rate':
+            opts.sort(key=lambda o: (n_new(o) == 0, (o[1] - t) / max(1, n_new(o))))
+        elif a.order == 'states':
+            opts.sort(key=lambda o: (n_new(o) == 0, -n_new(o), o[1]))
+        else:
+            opts.sort(key=lambda o: (n_new(o) == 0, o[1]))
+        for to, at, trip, got in opts[:a.width]:
             new = collected | got
             path.append((trip, stop, to, t, at))
             dfs(to, at, new, trip, path)
@@ -174,7 +198,8 @@ def main():
     if START is None: print('need --start'); return
     dfs(START, T0, frozenset({int(R.state[START])}) if R.state[START] >= 0 else frozenset(), None, [])
     el = time.time() - t_run
-    print(f'\n{seen_nodes[0]} nodes in {el:.0f} s ({seen_nodes[0] / max(el, 1):.0f}/s), {len(dom)} distinct (stop, states)')
+    print(f'\n{seen_nodes[0]} nodes in {el:.0f} s ({seen_nodes[0] / max(el, 1):.0f}/s), {len(dom)} distinct '
+          f'(stop, states); deepest {deepest[0]}/{NEED} states')
     if best[0] is None:
         print(f'nothing reached {NEED} states under {a.target} h in the budget')
     else:
