@@ -513,3 +513,56 @@ and most upstream stops add no new state, so the frozenset only has to be rebuil
 added and can be shared by reference in between. That replaces one allocation per upstream stop with one
 per new state. The forward side has the same shape and the same fix. Measure it the same way before
 believing it, and note that the honest test needs a run long enough to see more than 46 nodes.
+
+## 14. Repair: what the dead time could collect
+
+Nick's question, and the answer is yes. A constructive search cannot rank its way to the Memphis move: the
+ride to Holmes is one of 834 survivors at that node, collects nothing on arrival, and pays off five days
+later in Florida. As a repair it is trivial, because the chain already exists and the hole is visible.
+
+For a gap between where one ride drops you, at that time, and where the next picks you up, at that time:
+
+```
+one forward scan from (A, t_in)    earliest you can be at every stop
+one reverse scan from (B, t_out)   latest you can leave every stop and still make B
+state y fits  <=>  some stop of y has earliest <= latest
+```
+
+Two scans per gap, 0.0 s each, 37 gaps on the control. Nothing estimated, no threshold invented.
+
+`repair_probe.py --route ../out/res_starttest.pkl --drop 6-7` removes the Memphis excursion and asks what
+the reopened window offers:
+
+```
+ 5  Memphis -> Memphis (MA   3.8 h   AR MS
+```
+
+Mississippi and Arkansas, which is what the control collects there, recovered from the timetable on a route
+that no longer contained the move. Nick described the gap as four hours; it measures 3.8.
+
+Every other window on the control reports nothing, including Omaha at 4.8 h, Salt Lake City at 4.0 h,
+Minneapolis at 3.9 h and Barstow at 2.9 h. On an optimal route that is the right answer, and it says the
+probe is not simply spraying candidates. It also measures something about 237 that had only been asserted:
+all of its dead time except Memphis holds no state it lacks.
+
+### The modelling error worth remembering
+
+The first version required the next ride to board where the last one alighted, dismissing anything else as
+"not a clean layover". That excluded precisely the move it was written for, since the Memphis excursion
+lands at Holmes and boards the Jefferson bus at Airways Transit Center. Run on the intact control it printed
+`HOLMES 1.0 h TN MS` and looked correct, while being structurally unable to find the move on a route that
+did not already contain it. Only dropping the excursion separated the two.
+
+That is the fifth time a same-shaped assumption has hidden the thing the route depends on, and the first
+four are in CLAUDE.md. The gap's two ends are data; requiring them to be equal was a guess.
+
+### Why it is free, and why it is more than free
+
+A detour that returns before the next ride boards leaves every later leg bit-identical, so nothing
+downstream can break: elapsed time is unchanged by construction. What changes is the owed set, and that is
+where the gain lives. Collecting MS at Memphis is what frees the Houston to Tallahassee bus that skips
+Mississippi, which arrives early enough for the Silver Meteor and the accelerated finish. The operator is
+not a tidy-up pass, it is an enabler.
+
+Next: run it on what the search produces rather than on the control. A chain that stalls at 28 states owes
+20, and the question is how many of those its own dead time already holds.
