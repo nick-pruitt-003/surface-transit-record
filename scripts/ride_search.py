@@ -181,7 +181,9 @@ def main():
                 k = board_at[j][i]; i += 1
                 key = R.ctrip[k]
                 if key in seen: continue
-                if key != aboard and R.dep[k] < t_ok + MIN_TRANSFER: continue
+                # staying aboard is free only on the same trip at the same stop; if this came from a stop
+                # walked to, the chain got off and walked, so it pays the transfer like anything else
+                if not (key == aboard and j == s) and R.dep[k] < t_ok + MIN_TRANSFER: continue
                 seen.add(key)
                 cs = trip_conns[key]
                 p = next((n for n, kk in enumerate(cs) if kk == k), None)
@@ -214,7 +216,10 @@ def main():
         return out
 
     best = [None]; limit = [a.target * 3600]; seen_nodes = [0]; t_run = time.time(); deepest = [0]
-    dom = {}                                   # (stop, collected) -> best time seen, exact pruning
+    dom = {}       # (stop, collected, aboard) -> best time EXPANDED, read when popping
+    queued = {}    # the same key -> best time already SITTING in the frontier, read only when pushing.
+                   # These have to stay apart. Writing a pushed node's own time into dom would make it fail
+                   # its own check the moment it is popped, so every node would prune itself.
     NEED = a.states
 
     def dfs(stop, t, collected, aboard, path):
@@ -290,16 +295,23 @@ def main():
             if sp is not None: ns_stop[sp[0]] = sp[1]; ns_dep[sp[0]] = sp[2]
             return ns_stop, ns_dep
 
-        def still_collectable(stop, t, owed):
-            """Which owed states could still have been collected before standing here at t."""
-            if not owed: return True
+        def still_collectable(stop, t, owed, need_more):
+            """Could enough of the owed states still have been collected before standing here at t?
+
+            Enough, not all. Demanding every owed state is only right when all 48 are wanted; with --states N
+            fewer are needed and requiring the rest prunes chains that would have finished the test case."""
+            if need_more <= 0: return True
+            if not owed: return False
             lat, ok, k0, k1 = F.layer({int(stop): float(t)}, False, T_min, None)
             eff, _ = F.through(ok, k0, k1, np.ones(R.N, bool))
             vals = np.maximum(lat, eff)
+            cnt = 0
             for y in owed:
                 sa = st_arr.get(y)
-                if sa is None or float(vals[sa].max()) < T_min: return False
-            return True
+                if sa is not None and float(vals[sa].max()) >= T_min:
+                    cnt += 1
+                    if cnt >= need_more: return True
+            return False
 
         def rides_into(s_, t, aboard, collected):
             """Rides that could have dropped you here by t: (board stop, board time, trip, states collected)."""
@@ -314,7 +326,8 @@ def main():
                     k = arr_at[j][i]; i -= 1
                     key = R.ctrip[k]
                     if key in seen: continue
-                    if key != aboard and R.arr[k] > t_ok - MIN_TRANSFER: continue
+                    # same trip and same stop, or it pays the transfer (see the forward side)
+                    if not (key == aboard and j == s_) and R.arr[k] > t_ok - MIN_TRANSFER: continue
                     seen.add(key)
                     cs = trip_conns[key]
                     pos = next((n for n, kk in enumerate(cs) if kk == k), None)
@@ -361,7 +374,7 @@ def main():
             if prev is not None and prev <= spent: continue
             dom[key] = spent
             owed = [y for y in range(N_STATES) if y not in collected]
-            if not still_collectable(stop, t, owed): continue
+            if not still_collectable(stop, t, owed, NEED - len(collected)): continue
             opts = rides_into(stop, t, aboard, collected)
             n_new = lambda o: len(o[3] - collected)
             if a.order == 'rate': opts.sort(key=lambda o: (n_new(o) == 0, (t - o[1]) / max(1, n_new(o))))
@@ -372,8 +385,10 @@ def main():
                 sp2 = D - bt
                 if sp2 > limit[0]: continue
                 k2 = (frm, new, trip)
-                pv = dom.get(k2)
+                pv = dom.get(k2); qv = queued.get(k2)
                 if pv is not None and pv <= sp2: continue
+                if qv is not None and qv <= sp2: continue
+                queued[k2] = sp2
                 seq[0] += 1
                 heapq.heappush(q, (sp2 - a.credit * 3600 * len(new), sp2, seq[0], frm, bt, new, trip,
                                    path + ((trip, frm, stop, bt, t),)))
@@ -478,9 +493,11 @@ def main():
                 # Dominance when queuing, not only when popped. Many queued nodes share a stop, a set of
                 # states and a boarded trip, and only the earliest of those can ever matter; checking at push
                 # keeps the duplicates out of the frontier instead of carrying them until they surface.
-                k2 = (to, new, trip)
-                pv = dom.get(k2)
-                if pv is not None and pv <= at - T0: continue
+                k2 = (to, new, trip); sp_new = at - T0
+                pv = dom.get(k2); qv = queued.get(k2)
+                if pv is not None and pv <= sp_new: continue
+                if qv is not None and qv <= sp_new: continue
+                queued[k2] = sp_new
                 seq[0] += 1
                 heapq.heappush(q, (pri(at - T0, len(new)), at - T0, seq[0], to, at, new, trip,
                                    path + ((trip, stop, to, t, at),)))
