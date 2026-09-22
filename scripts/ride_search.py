@@ -368,6 +368,10 @@ def main():
         return menu.list() if menu is not None else out
 
     best = [None]; limit = [a.target * 3600]; seen_nodes = [0]; t_run = time.time(); deepest = [0]
+    # The deepest chain, win or not. A run that stalls at 31 of 48 is the interesting input for
+    # repair_probe: the question it answers is how many of the twenty it still owes are sitting in
+    # dead time the chain is already spending. Keeping only completed routes threw that away.
+    deep_path = [None]
     beat = [time.time()]
 
     def heartbeat(n_front):
@@ -419,7 +423,7 @@ def main():
                   f'{len(path)} rides', flush=True)
             return
         if len(collected) > deepest[0]:
-            deepest[0] = len(collected)
+            deepest[0] = len(collected); deep_path[0] = (spent, list(path), frozenset(collected))
             print(f'  [{time.time() - t_run:5.0f}s] {len(collected)}/{NEED} states, {spent / 3600:6.1f} h spent, '
                   f'at {R.stop_name[stop][:28]}, {len(path)} rides, {seen_nodes[0]} nodes', flush=True)
         if L is not None:
@@ -548,7 +552,7 @@ def main():
                       f'{R.stop_name[stop][:30]}, {len(collected)} states, {len(path)} rides', flush=True)
                 continue
             if len(collected) > deepest[0]:
-                deepest[0] = len(collected)
+                deepest[0] = len(collected); deep_path[0] = (spent, list(path), frozenset(collected))
                 print(f'  [{time.time() - t_run:5.0f}s] {len(collected)}/{NEED} states, {spent / 3600:6.1f} h back, '
                       f'at {R.stop_name[stop][:28]}, {len(path)} rides, {seen_nodes[0]} nodes, '
                       f'{len(q)} in frontier', flush=True)
@@ -708,7 +712,7 @@ def main():
                       f'{len(path)} rides', flush=True)
                 continue
             if len(collected) > deepest[0]:
-                deepest[0] = len(collected)
+                deepest[0] = len(collected); deep_path[0] = (spent, list(path), frozenset(collected))
                 print(f'  [{time.time() - t_run:5.0f}s] {len(collected)}/{NEED} states, {spent / 3600:6.1f} h spent, '
                       f'at {R.stop_name[stop][:28]}, {len(path)} rides, {seen_nodes[0]} nodes, '
                       f'{len(q)} in frontier', flush=True)
@@ -820,6 +824,11 @@ def main():
 
     if best[0] is None:
         print(f'nothing reached {NEED} states under {a.target} h in the budget')
+        if a.out and deep_path[0] is not None:
+            sp_, pa_, co_ = deep_path[0]
+            pickle.dump(dict(path=pa_, spent=sp_, collected=sorted(co_), complete=False), open(a.out, 'wb'))
+            print(f'wrote {a.out}: the deepest chain, {len(co_)} states over {len(pa_)} rides, '
+                  f'{sp_ / 3600:.1f} h. Not a route; the input repair_probe wants.')
     else:
         spent, path = best[0]
         print(f'best {spent / 3600:.2f} h over {len(path)} rides')
@@ -829,7 +838,9 @@ def main():
             info = R.trip_info.get(trip, ('', ''))
             print(f'   {R.fmt_time(t, s)} {R.stop_name[s][:26]:26s} -> {R.fmt_time(at, to)} {R.stop_name[to][:26]:26s} '
                   f'{(info[1] or info[0])[:24]}')
-        if a.out: pickle.dump(dict(path=path, spent=spent), open(a.out, 'wb')); print('wrote', a.out)
+        if a.out:
+            pickle.dump(dict(path=path, spent=spent, complete=True), open(a.out, 'wb'))
+            print('wrote', a.out)
 
 
 if __name__ == '__main__':
