@@ -5,3 +5,4 @@ K3_ms rc=0 FINAL misses --end-by: best route reaches Pasco Bus Stop at d6 Tue 13
 N_DIC_MI rc=0 FINAL 272.7 h d13 Tue 06:29 START Dickinson first bus d1 Thu 20:45 END MI arrive d13 Tue 06:29 | record 238.83 h: misses by 33.9 h 
 O_DIC_WV rc=0 FINAL 269.7 h d13 Tue 03:25 START Dickinson first bus d1 Thu 20:45 END WV arrive d13 Tue 03:25 | record 238.83 h: misses by 30.8 h 
 F_DIC_SD rc=0 FINAL 275.9 h d13 Tue 08:40 START Dickinson first bus d1 Thu 20:45 END SD arrive d13 Tue 08:40 | record 238.83 h: misses by 37.1 h 
+G_DIC_MN rc=0 FINAL 269.8 h d13 Tue 02:30 START Dickinson first bus d1 Thu 20:45 END MN arrive d13 Tue 02:30 | record 238.83 h: misses by 30.9 h 
