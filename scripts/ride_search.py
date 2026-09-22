@@ -57,9 +57,9 @@ def main():
                     'leg by leg, whether the menu offers them and where they rank. 237 is a control: the test '
                     'is that it reproduces, not that it is beaten.')
     ap.add_argument('--dedupe', action='store_true', help='drop options another option can already do '
-                    'everything of. Off by default: the rule is exact on paper but --track still loses the '
-                    'Memphis leg with it on, and until that is explained the default path stays the one '
-                    'the gate passes.')
+                    'everything of, which is most of them: the control\'s forty legs hold 3868010 options '
+                    'and 71693 survivors. Still opt-in, because making it the default changes what every '
+                    'search sees and that deserves its own measurement, not a coat-tail ride on this one.')
     ap.add_argument('--anatomy', action='store_true', help='with --track, break down each leg\'s option '
                     'list: how many options, how many distinct destinations, and how many survive exact '
                     'dominance. Answers whether a node with a million options has a million choices.')
@@ -157,6 +157,37 @@ def main():
         owed = [y for y in range(N_STATES) if y not in collected]
         if not owed: return L_end
         return np.minimum(L[owed].min(axis=0), L_end)
+
+    class Menu:
+        """The option list, deduplicated as it is built rather than afterwards.
+
+        `undominated` applied to a finished list saves the sort and the ranking, but not the building, and
+        building is where the profiler put 46% of the search. The fix is only a matter of when the test
+        runs: keep a front per destination and offer each candidate to it as the loops produce it, so the
+        million never exists. Same rule, same survivors.
+
+        It also moves the expensive part. A candidate's `frozenset(got)` was allocated a million times per
+        node; the live set answers the subset test just as well, so only the survivors are frozen, which is
+        about a thousand.
+        """
+        __slots__ = ('front', 'back')
+
+        def __init__(self, back=False):
+            self.front = defaultdict(list); self.back = back
+
+        def add(self, where, when_, trip, got):
+            fr = self.front[where]
+            for g, w, _ in fr:
+                if (w - MIN_TRANSFER >= when_ if self.back else w + MIN_TRANSFER <= when_) and got <= g:
+                    return
+            keep = frozenset(got)
+            fr[:] = [e for e in fr
+                     if not ((when_ - MIN_TRANSFER >= e[1] if self.back else when_ + MIN_TRANSFER <= e[1])
+                             and e[0] <= keep)]
+            fr.append((keep, when_, (where, when_, trip, keep)))
+
+        def list(self):
+            return [e[2] for fr in self.front.values() for e in fr]
 
     def undominated(cands, back=False):
         """Drop the options that another option can already do everything of.
@@ -279,7 +310,9 @@ def main():
     def rides_from(s, t, aboard, collected, cap=None, raw=False):
         """The menu at stop s at time t: (alight stop, alight time, trip, states it collects).
         Riding on the trip already boarded needs no transfer; anything else does."""
+        menu = Menu() if (a.dedupe and not raw) else None
         out = []
+        push = menu.add if menu is not None else (lambda w_, t_, k_, g_: out.append((w_, t_, k_, frozenset(g_))))
         all_states = range(N_STATES)
         if cap is None and L is not None: cap = ceiling(collected)
         # Every footpath the router built, with no second opinion. This line used to drop any link costing
@@ -317,7 +350,7 @@ def main():
                         if at > L_end[to]: continue
                     elif not alight_ok(to, at, [y for y in all_states if y not in collected and y not in got]):
                         continue
-                    out.append((to, at, key, frozenset(got)))
+                    push(to, at, key, got)
                     # Stepping over the line on foot is how the route takes Mississippi, but it is a move, not
                     # a freebie: you get off, walk out, and walk back, and only then carry on. Crediting it at
                     # every stop a ride passes, for nothing, let the search collect states it never visited in
@@ -329,8 +362,8 @@ def main():
                         if cap is not None and at2 > cap[to] and any(
                                 at2 > L[z][to] for z in all_states if z not in collected and z not in got and z != y):
                             continue
-                        out.append((to, at2, None, frozenset(got | {y})))
-        return undominated(out) if (a.dedupe and not raw) else out
+                        push(to, at2, None, got | {y})
+        return menu.list() if menu is not None else out
 
     best = [None]; limit = [a.target * 3600]; seen_nodes = [0]; t_run = time.time(); deepest = [0]
     beat = [time.time()]
@@ -461,7 +494,9 @@ def main():
 
         def rides_into(s_, t, aboard, collected):
             """Rides that could have dropped you here by t: (board stop, board time, trip, states collected)."""
+            menu = Menu(back=True) if a.dedupe else None
             out = []
+            push = menu.add if menu is not None else (lambda w_, t_, k_, g_: out.append((w_, t_, k_, frozenset(g_))))
             for j, w in [(s_, 0)] + list(R.foot.get(s_, ())):
                 t_ok = t - w
                 times = arr_times.get(j)
@@ -484,12 +519,12 @@ def main():
                         if st_ >= 0: got.add(st_)
                         bt = float(R.dep[kk])
                         if bt < T_min: break
-                        out.append((frm, bt, key, frozenset(got)))
+                        push(frm, bt, key, got)
                         for y2, w2 in walkin.get(frm, ()):
                             if y2 in got or y2 in collected: continue
                             if bt - 2 * w2 < T_min: continue
-                            out.append((frm, bt - 2 * w2, None, frozenset(got | {y2})))
-            return undominated(out, back=True) if a.dedupe else out
+                            push(frm, bt - 2 * w2, None, got | {y2})
+            return menu.list() if menu is not None else out
 
         start_c = set()
         if R.state[st_stops[END_ST][0]] >= 0: start_c.add(END_ST)
