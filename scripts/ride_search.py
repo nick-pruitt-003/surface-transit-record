@@ -406,6 +406,7 @@ def main():
         print(f'\nreplaying {len(rides)} rides of {a.track} through this search '
               f'(order {a.order}, width {a.width})\n', flush=True)
         stop, t, aboard = st0, d['t0'], None
+        gone = 0
         _ss = set()
         if R.state[st0] >= 0: _ss.add(int(R.state[st0]))
         collected = frozenset(_ss)
@@ -437,7 +438,7 @@ def main():
                        'trip offered but not to this stop' if offered else
                        'trip offered nowhere allowed, or not reachable from here')
                 print(f'  leg {n:2d} {name:22s} -> {R.stop_name[al][:26]:26s} MISSING: {why}', flush=True)
-                lost += 1
+                lost += 1; gone += 1
             else:
                 flag = '' if rank <= a.width else f'  <-- OUTSIDE --width {a.width}'
                 print(f'  leg {n:2d} {name:22s} -> {R.stop_name[al][:26]:26s} rank {rank:3d}/{len(opts):4d}'
@@ -448,6 +449,10 @@ def main():
         print(f'\n{len(rides) - lost}/{len(rides)} rides reproducible within --width {a.width}; '
               f'{len(collected)}/{N_STATES} states collected along the way')
         if lost == 0: print('the control replays end to end: every ride it takes is on the menu and inside the width.')
+        if gone:
+            print(f'FAIL: {gone} of the control\'s rides are not on the menu at all. A leg below --width is '
+                  f'fine, backtracking reaches it; a leg missing is a bug in the search.')
+            sys.exit(1)
         return
 
     def best_first(start_stop, t_start, start_collected):
@@ -544,6 +549,8 @@ def main():
         else:
             spent, path = best[0]
             print(f'best {spent / 3600:.2f} h, starting {R.fmt_time(D - spent, path[-1][1]) if path else "?"}')
+            chk = confirm(path[::-1])
+            if chk: print(f'  independent check: {chk[0]}' + (f', {chk[1]:.2f} h' if chk[1] is not None else ''))
             for trip, frm, to, bt, at in path[::-1]:
                 info = R.trip_info.get(trip, ('', '')) if trip else ('', 'border walk-in')
                 print(f'   {R.fmt_time(bt, frm)} {R.stop_name[frm][:26]:26s} -> {R.fmt_time(at, to)} '
@@ -557,11 +564,44 @@ def main():
     el = time.time() - t_run
     print(f'\n{seen_nodes[0]} nodes in {el:.0f} s ({seen_nodes[0] / max(el, 1):.0f}/s), {len(dom)} distinct '
           f'(stop, states); deepest {deepest[0]}/{NEED} states')
+    def confirm(path_):
+        """Hand the route back to the router and see if it agrees. The search must not be the only witness
+        to its own result.
+
+        Two bugs tonight produced routes that do not exist: states were credited at every stop a ride passed
+        without anyone getting off or any time being charged, and a chain was accepted for collecting all 48
+        while standing somewhere that was not the end. Neither could have survived this check, because the
+        router evaluates the state order independently and would not have reproduced the finish. Anything the
+        search believes and the router will not confirm is a bug in the search, and saying so loudly is worth
+        more than the result."""
+        if not path_: return None
+        rides_ = [x for x in path_ if x[0] is not None]
+        if not rides_: return None
+        st0_ = rides_[0][1]; t0_ = rides_[0][3]
+        order_ = []
+        for trip_, frm_, to_, bt_, at_ in path_:
+            for st_ in (int(R.state[frm_]), int(R.state[to_])):
+                if st_ >= 0 and st_ not in order_: order_.append(st_)
+        try:
+            import time_search as ts_
+            from time_search import Search as S_
+            SS = S_(R, st0_, t0_, [], 1)
+            ts_._R, ts_._START, ts_._T0, ts_._SELF, ts_._BASE, ts_._END = R, st0_, t0_, SS, None, None
+            f_, legs_ = SS.evaluate(order_)
+            if f_ == float('inf'): return ('the router cannot follow this order at all', None)
+            miss_ = [ab(x) for x in SS.missing(legs_)]
+            return (('router confirms' if not miss_ else 'router says it never reaches ' + ' '.join(miss_)),
+                    (f_ - t0_) / 3600)
+        except Exception as e:
+            return (f'could not be checked ({type(e).__name__}: {e})', None)
+
     if best[0] is None:
         print(f'nothing reached {NEED} states under {a.target} h in the budget')
     else:
         spent, path = best[0]
         print(f'best {spent / 3600:.2f} h over {len(path)} rides')
+        chk = confirm(path)
+        if chk: print(f'  independent check: {chk[0]}' + (f', {chk[1]:.2f} h' if chk[1] is not None else ''))
         for trip, s, to, t, at in path[:60]:
             info = R.trip_info.get(trip, ('', ''))
             print(f'   {R.fmt_time(t, s)} {R.stop_name[s][:26]:26s} -> {R.fmt_time(at, to)} {R.stop_name[to][:26]:26s} '

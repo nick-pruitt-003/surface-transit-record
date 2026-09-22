@@ -78,6 +78,26 @@ It needs no leftover estimate. Both clocks live on the node: elapsed, and time t
 scan per state gives `L[y][stop]`, the latest you can be there and still collect y and finish, so a branch
 dies on a fact rather than an estimate, and `alight_ok` decides where to get off the same way.
 
+## Two gates, because one technique found every real bug and the others found none
+
+Every serious defect was found by replaying the control through the search. Running searches blind and
+reading the output found nothing, for hours. So:
+
+1. **`python3 ride_search.py ... --track ../out/res_starttest.pkl` after any change to the search.** It
+   exits non-zero when a leg of the control is not on the menu at all. A leg ranked below `--width` is
+   fine, backtracking reaches it. A leg missing is a bug, not a note.
+2. **The search never reports its own result.** `confirm()` rebuilds the state order from the path and
+   hands it to `Search.evaluate`, and the run prints whether the router agrees. Two bugs in one night
+   produced routes that do not exist: states credited at every stop a ride passed, with nobody getting off
+   and no time charged, and a chain accepted for collecting all 48 while parked somewhere that was not the
+   end. Neither survives an independent evaluation. The search proposes, the router disposes.
+
+And the rule those bugs came from, stated as a test to apply before writing a line: **if the timetable can
+answer this exactly, do not put a number in front of it.** Every magic threshold this session hid the
+sparse rural link the route depends on. When a threshold seems unavoidable, make it permissive rather than
+strict, so it can only let a dead branch live a little longer and never prune a live one: that is why the
+deadline tables use guard=False and why the scan cache rounds its clock up.
+
 ## Diagnostics worth reusing
 
 Instrumenting against the known answer worked every time; running searches blind and reading the result did
