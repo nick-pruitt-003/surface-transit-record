@@ -45,6 +45,11 @@ def main():
                     help="'best' expands the most promising node anywhere in the frontier; 'dfs' dives and "
                          "backtracks, which cannot recover from a bad first guess inside ten minutes")
     ap.add_argument('--queue', type=int, default=200000, help='frontier cap for --mode best')
+    ap.add_argument('--credit', type=float, default=5.0, help='hours a collected state is worth when ordering '
+                    'the frontier. Ranking by state count alone plateaus: every node at 23 states has to be '
+                    'expanded before any at 22, and there are combinatorially many. The reference route '
+                    'averages 237/48 = 4.94 h per state, so crediting about that much turns the priority into '
+                    'hours per state, which is the thing being minimised.')
     ap.add_argument('--span', type=float, default=260, help='hours the deadline tables scan back over')
     ap.add_argument('--budget', type=float, default=900); ap.add_argument('--nodes', type=int, default=2000000)
     ap.add_argument('--track', help='reference route pickle: replay its rides through this search and report, '
@@ -325,10 +330,12 @@ def main():
         whole budget. Pruning and dominance are unchanged and still exact."""
         import heapq
         q = []; seq = [0]
-        heapq.heappush(q, (-len(start_collected), t_start - T0, 0, start_stop, t_start, start_collected, None, ()))
+        pri = lambda spent, n: spent - a.credit * 3600 * n
+        heapq.heappush(q, (pri(t_start - T0, len(start_collected)), t_start - T0, 0, start_stop, t_start,
+                           start_collected, None, ()))
         while q:
             if time.time() - t_run > a.budget or seen_nodes[0] > a.nodes: break
-            nstates, spent, _, stop, t, collected, aboard, path = heapq.heappop(q)
+            _f, spent, _, stop, t, collected, aboard, path = heapq.heappop(q)
             seen_nodes[0] += 1
             if spent > limit[0]: continue
             if len(collected) >= NEED:
@@ -354,7 +361,8 @@ def main():
             for to, at, trip, got in opts[:a.width]:
                 new = collected | got
                 seq[0] += 1
-                heapq.heappush(q, (-len(new), at - T0, seq[0], to, at, new, trip, path + ((trip, stop, to, t, at),)))
+                heapq.heappush(q, (pri(at - T0, len(new)), at - T0, seq[0], to, at, new, trip,
+                                   path + ((trip, stop, to, t, at),)))
             if len(q) > a.queue: q = heapq.nsmallest(a.queue // 2, q); heapq.heapify(q)
 
     sys.setrecursionlimit(20000)
