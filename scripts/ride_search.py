@@ -46,6 +46,13 @@ class Opt(NamedTuple):
     trip: object        # the trip ridden, never a marker
     got: frozenset      # states this move collects, including the walked-into one
     walk: object = None # the state stepped into on foot, or None
+    far: int = -1       # the ride's OWN other end: where it was boarded going forward, where it was left
+                        # going backward. Not the node's stop: rides_from will board at a footpath
+                        # neighbour of where the chain stands, and rides_into will drop it at one, so the
+                        # node's stop and the ride's endpoint are different places whenever the chain
+                        # walked. Recording only the node's stop is how a chain holding 31 states wrote an
+                        # order of 23: the pass-through states of a leg boarded after a walk cannot be
+                        # recovered from a trip that never touches the stop the leg claims to start at.
 
 
 def final_stop(legs):
@@ -215,7 +222,7 @@ def main():
         def __init__(self, back=False):
             self.front = defaultdict(list); self.back = back
 
-        def add(self, where, when_, trip, got, walk=None):
+        def add(self, where, when_, trip, got, walk=None, far=-1):
             fr = self.front[where]
             for g, w, _ in fr:
                 if (w - MIN_TRANSFER >= when_ if self.back else w + MIN_TRANSFER <= when_) and got <= g:
@@ -224,7 +231,7 @@ def main():
             fr[:] = [e for e in fr
                      if not ((when_ - MIN_TRANSFER >= e[1] if self.back else when_ + MIN_TRANSFER <= e[1])
                              and e[0] <= keep)]
-            fr.append((keep, when_, Opt(where, when_, trip, keep, walk)))
+            fr.append((keep, when_, Opt(where, when_, trip, keep, walk, far)))
 
         def list(self):
             return [e[2] for fr in self.front.values() for e in fr]
@@ -353,7 +360,7 @@ def main():
         menu = Menu() if (a.dedupe and not raw) else None
         out = []
         push = menu.add if menu is not None else (
-            lambda w_, t_, k_, g_, wk_=None: out.append(Opt(w_, t_, k_, frozenset(g_), wk_)))
+            lambda w_, t_, k_, g_, wk_=None, fr_=-1: out.append(Opt(w_, t_, k_, frozenset(g_), wk_, fr_)))
         all_states = range(N_STATES)
         if cap is None and L is not None: cap = ceiling(collected)
         # Plain lists for the two deadline arrays, and only once `cap` is actually filled in: reading them
@@ -414,7 +421,7 @@ def main():
                             if at > endl[to]: continue
                     elif not alight_ok(to, at, [y for y in all_states if y not in collected and y not in got]):
                         continue
-                    push(to, at, key, got)
+                    push(to, at, key, got, None, j)
                     # Stepping over the line on foot is how the route takes Mississippi, but it is a move, not
                     # a freebie: you get off, walk out, and walk back, and only then carry on. Crediting it at
                     # every stop a ride passes, for nothing, let the search collect states it never visited in
@@ -431,7 +438,7 @@ def main():
                         if cap is not None and at2 > capl[to] and any(
                                 at2 > L[z][to] for z in all_states if z not in collected and z not in got and z != y):
                             continue
-                        push(to, at2, key, got | {y}, y)
+                        push(to, at2, key, got | {y}, y, j)
         return menu.list() if menu is not None else out
 
     best = [None]; limit = [a.target * 3600]; seen_nodes = [0]; t_run = time.time(); deepest = [0]
@@ -517,9 +524,9 @@ def main():
         n_new = lambda o: len(o[3] - collected)
         sort_opts(opts, collected, n_new, t)
         for o in opts[:a.width]:
-            to, at, trip, got, walk = o
+            to, at, trip, got, walk, far = o
             new = collected | got
-            path.append((trip, stop, to, t, at, walk))
+            path.append((trip, stop, to, t, at, walk, far))
             dfs(to, at, new, trip, path)
             path.pop()
 
@@ -572,7 +579,7 @@ def main():
             menu = Menu(back=True) if a.dedupe else None
             out = []
             push = menu.add if menu is not None else (
-                lambda w_, t_, k_, g_, wk_=None: out.append(Opt(w_, t_, k_, frozenset(g_), wk_)))
+                lambda w_, t_, k_, g_, wk_=None, fr_=-1: out.append(Opt(w_, t_, k_, frozenset(g_), wk_, fr_)))
             for j, w in [(s_, 0)] + list(R.foot.get(s_, ())):
                 t_ok = t - w
                 times = arr_times.get(j)
@@ -595,11 +602,11 @@ def main():
                         if st_ >= 0: got.add(st_)
                         bt = float(R.dep[kk])
                         if bt < T_min: break
-                        push(frm, bt, key, got)
+                        push(frm, bt, key, got, None, j)
                         for y2, w2 in walkin.get(frm, ()):
                             if y2 in got or y2 in collected: continue
                             if bt - 2 * w2 < T_min: continue
-                            push(frm, bt - 2 * w2, key, got | {y2}, y2)
+                            push(frm, bt - 2 * w2, key, got | {y2}, y2, j)
             return menu.list() if menu is not None else out
 
         start_c = set()
@@ -636,7 +643,7 @@ def main():
             n_new = lambda o: len(o[3] - collected)
             sort_opts(opts, collected, n_new, t, back=True)
             for o in opts[:a.width]:
-                frm, bt, trip, got, walk = o
+                frm, bt, trip, got, walk, far = o
                 new = collected | got
                 sp2 = D - bt
                 if sp2 > limit[0]: continue
@@ -647,7 +654,7 @@ def main():
                 queued[k2] = sp2
                 seq[0] += 1
                 heapq.heappush(q, (sp2 - a.credit * 3600 * len(new), sp2, seq[0], frm, bt, new, trip,
-                                   path + ((trip, frm, stop, bt, t, walk),)))
+                                   path + ((trip, frm, stop, bt, t, walk, far),)))
 
     if a.track:
         import pickle as _pk
@@ -808,7 +815,7 @@ def main():
             n_new = lambda o: len(o[3] - collected)
             sort_opts(opts, collected, n_new, t)
             for o in opts[:a.width]:
-                to, at, trip, got, walk = o
+                to, at, trip, got, walk, far = o
                 new = collected | got
                 # Dominance when queuing, not only when popped. Many queued nodes share a stop, a set of
                 # states and a boarded trip, and only the earliest of those can ever matter; checking at push
@@ -820,7 +827,7 @@ def main():
                 queued[k2] = sp_new
                 seq[0] += 1
                 heapq.heappush(q, (pri(at - T0, len(new)), at - T0, seq[0], to, at, new, trip,
-                                   path + ((trip, stop, to, t, at, walk),)))
+                                   path + ((trip, stop, to, t, at, walk, far),)))
             if len(q) > a.queue:
                 # Drop only what is provably dead: a node whose clock has passed the limit, or passed the
                 # latest it could still collect something it owes. Both are facts. The old rule kept the best
@@ -871,12 +878,19 @@ def main():
             # repair_probe then re-flew that 17-state ghost and offered back states the real chain already
             # held. The pass-through states are recoverable from the trip itself.
             add_(int(R.state[frm_]))
+            # Walk the trip from the stop the ride was actually boarded at. `frm_` is where the CHAIN
+            # stood, and rides_from boards at footpath neighbours of that, so a leg taken after a walk
+            # names a stop its own trip never visits: the loop below would never start, and the leg would
+            # contribute only its two endpoints. That is the remaining gap that left a 31-state chain
+            # writing an order of 23.
+            start_ = far_ if far_ is not None and far_ >= 0 else frm_
+            add_(int(R.state[start_]))
             cs_ = trip_conns.get(trip_) if trip_ is not None else None
             if cs_:
                 on_ = False
                 for kk_ in cs_:
                     a_, b_ = int(R.cfrom[kk_]), int(R.cto[kk_])
-                    if a_ == frm_: on_ = True
+                    if a_ == start_: on_ = True
                     if on_:
                         add_(int(R.state[a_])); add_(int(R.state[b_]))
                     if b_ == to_ and on_: break
@@ -933,7 +947,7 @@ def main():
         if not rides_: return None
         st0_ = rides_[0][1]; t0_ = rides_[0][3]
         order_ = []
-        for trip_, frm_, to_, bt_, at_, walk_ in path_:
+        for trip_, frm_, to_, bt_, at_, walk_, far_ in path_:
             for st_ in (int(R.state[frm_]), int(R.state[to_]), walk_):
                 if st_ is not None and st_ >= 0 and st_ not in order_: order_.append(st_)
         try:
@@ -986,7 +1000,7 @@ def main():
                 # Backward wrote nothing at all on success, so a route found this way was printed and lost.
                 pickle.dump(route_record(path, spent, coll_, agreed, back_=True), open(a.out, 'wb'))
                 print('wrote', a.out + ('' if agreed else '  (complete=False: the router did not confirm it)'))
-            for trip, frm, to, bt, at, wy in path[::-1]:
+            for trip, frm, to, bt, at, wy, _far in path[::-1]:
                 info = R.trip_info.get(trip, ('', '')) if trip else ('', 'border walk-in')
                 print(f'   {R.fmt_time(bt, frm)} {R.stop_name[frm][:26]:26s} -> {R.fmt_time(at, to)} '
                       f'{R.stop_name[to][:26]:26s} {(info[1] or info[0])[:24]}'
@@ -1014,7 +1028,7 @@ def main():
         chk = confirm(path)
         if chk: print(f'  independent check: {chk[0]}' + (f', {chk[1]:.2f} h' if chk[1] is not None else ''))
         agreed = bool(chk) and chk[0] == 'router confirms'
-        for trip, s, to, t, at, wy in path[:60]:
+        for trip, s, to, t, at, wy, _far in path[:60]:
             info = R.trip_info.get(trip, ('', ''))
             print(f'   {R.fmt_time(t, s)} {R.stop_name[s][:26]:26s} -> {R.fmt_time(at, to)} {R.stop_name[to][:26]:26s} '
                   f'{(info[1] or info[0])[:24]}' + (f' + walk into {ab(wy)}' if wy is not None else ''))
