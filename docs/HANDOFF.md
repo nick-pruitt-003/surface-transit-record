@@ -410,3 +410,29 @@ search 48 levels from scratch. Hold the 237 route fixed except for k consecutive
 window exhaustively with the limit set to the current best. At k of 6 to 8 that is a few thousand nodes per
 window and it is exact within the window, which is a strictly stronger version of what the forward search's
 relocate move does by sampling.
+
+### Empire Builder: tested and ruled out (Sep 22)
+
+`anchors.py` put the Empire Builder at the top of the western anchors, 8 states in one ride, and it was in
+neither section 3 nor section 4. Nick's framing was right and is what made it testable: it is not a redesign,
+it is a leg swap, on at Minneapolis or Fargo and off at Spokane or Pasco, replacing legs 15 to 18.
+
+Minneapolis is the only boarding that works at all. The westbound passes Fargo at 05:13 CT, nine hours before
+the route reaches Fargo at 14:35.
+
+| | |
+|---|---|
+| MSP dep 24:13 ET (23:13 CT) -> Spokane 55:49 -> Pasco arr 58:40 ET (07:40 PT) | 34.5 h riding |
+| the current Minneapolis -> Pasco chain | 32.4 h, so the train is slower |
+| arrival at Pasco | 07:40 against 13:10, 5.5 h earlier |
+| what leaves Pasco southbound | 13:25 and 14:25 PT only (flix feed, stored UTC as 20:25 and 21:25) |
+
+So the 5.5 h is spent waiting: the next bus to Salt Lake City is 13:25 either way. Against that the swap costs
+**Wyoming** (Gillette, on the Minneapolis -> Billings bus) and **Wisconsin** (the Eau Claire round trip leaves
+Minneapolis 00:15, and the Builder leaves 23:13 the evening before, so the two cannot both be done). Montana,
+Idaho and Washington are collected either way, at Havre, Sandpoint and Spokane. Section 8 already prices
+Wyoming alone at 24 h. Strictly worse on every axis; do not rerun.
+
+The wider lesson for the search: no window reordering could ever have found or refuted this, because using the
+Builder needs IL, WI, MN, ND, MT, ID, WA and OR contiguous, and they sit ten places apart in the route. Leg
+swaps around a named service have to be tested directly.
