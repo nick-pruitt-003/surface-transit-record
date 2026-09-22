@@ -48,11 +48,29 @@ def _row(y):
     return y, out
 
 
-def fingerprint(R, F, D, span):
+def fingerprint(R, F, D, span, L_end, L):
     h = hashlib.sha1()
     fa = R._fa
     for arr in (fa['dep'], fa['arr'], fa['cfrom'], fa['cto'], fa['ctrip'], np.asarray(R.state), F.ptr, F.frm, F.w, F.x):
         h.update(np.ascontiguousarray(arr).tobytes())
+    # L_end and L are the seeds of every _row scan, so hashing them closes a whole class of key gap at once
+    # instead of enumerating config and hoping the list is complete. Two gaps it closes, found by review:
+    #
+    #   --end. END_ST appeared nowhere in the key, so `--end ME` with the same dates produced the same key
+    #   and loaded the Vermont table. Every P value then reads "collect y, then z, then reach Vermont" while
+    #   pruning a search that has to reach Maine, and the cache hit returns before L_end is even looked at.
+    #
+    #   BUS48_MIN_TRANSFER. It is applied inside csa_rev at scan time rather than baked into dep/arr/F.w, so
+    #   a router rebuilt at a different transfer time yields byte-identical arrays and the old key. A table
+    #   built at 5 min and served to a search running at 3 is up to 120 s STRICTER per seam, and the
+    #   control's tightest margin is 108 s at Trinidad CO. That run prunes the 237 route and nothing about
+    #   the invocation looks like a table change, so no gate re-runs.
+    #
+    # Both are cheap to hash because both callers already hold L: it is the same tables the search prunes
+    # with. Anything that moves a scan (the end state, the transfer time, the span, the deadline, the walk
+    # speed, the feed set) moves L, and therefore moves the key.
+    for arr in (L_end, L):
+        h.update(np.ascontiguousarray(np.asarray(arr, dtype=np.float64)).tobytes())
     h.update(repr((float(D), float(span), N_STATES, BUILD_VERSION)).encode())
     # backward.py and csa.c are the scan; this file's source is not hashed, so a fix to the validation below
     # does not throw away ten minutes of tables. Bump BUILD_VERSION when _row or the P layout changes.
@@ -70,19 +88,20 @@ class PairTables:
         for s in range(R.N):
             if R.state[s] >= 0: st_stops[int(R.state[s])].append(s)
         cache_dir = cache_dir or os.path.join(HERE, '..', 'out')
-        key = fingerprint(R, F, D, span)
+        # Required, not optional, because they are now part of the key. Building them here instead would
+        # mean paying for them before every cache hit, which is most of what the cache saves, and both
+        # callers already have them in hand: they are the tables the search prunes with.
+        if L is None or L_end is None:
+            raise ValueError('pass L_end and L. They are what the cache key is built from, because they '
+                             'are what encodes the end state, the transfer time, the span and the '
+                             'deadline. Without them the key cannot tell a Vermont table from a Maine one.')
+        key = fingerprint(R, F, D, span, L_end, L)
         path = os.path.join(cache_dir, f'pairs_{key}.npy')
         if os.path.exists(path):
             self.P = np.load(path, mmap_mode='r')
             if verbose: print(f'pair tables from cache ({os.path.basename(path)})', flush=True)
             return
         t0 = time.time()
-        if L is None or L_end is None:
-            L_end = _latest_from(F, D, span, {s: D for s in st_stops[_end_state(R)]}) if L_end is None else L_end
-            L = np.full((N_STATES, R.N), -np.inf)
-            for y in range(N_STATES):
-                nxt = {s: float(L_end[s]) for s in st_stops[y] if L_end[s] > -np.inf}
-                if nxt: L[y] = _latest_from(F, D, span, nxt)
         _W.update(F=F, D=float(D), span=span, L=L, st_stops=st_stops)
         yz = np.full((N_STATES, N_STATES, R.N), -np.inf, dtype=np.float32)
         import multiprocessing as mp
@@ -186,10 +205,6 @@ def leg_states(R, leg, trip_conns):
     if R.state[to] >= 0: out.add(int(R.state[to]))
     if walk is not None and walk >= 0: out.add(int(walk))
     return out
-
-
-def _end_state(R):
-    raise ValueError('pass L_end and L, or build through main(), which knows the end state')
 
 
 def main():

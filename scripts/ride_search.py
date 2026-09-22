@@ -922,6 +922,13 @@ def main():
         import heapq
         q = []; seq = [0]
         pri = lambda spent, n: spent - a.credit * 3600 * n
+        # The root goes through the same test as every other push. It will not be dead, but "every node in
+        # the frontier was tested" is the invariant the sweep's zero is supposed to prove, and an exception
+        # carved out for one node makes that zero mean something slightly weaker than it reads.
+        if a.pairs == 'push' and pair_dead(start_stop, t_start, start_collected):
+            print('  the start is already jointly dead, which is a statement about the deadline, not the '
+                  'search', flush=True)
+            return
         heapq.heappush(q, (pri(t_start - T0, len(start_collected)), t_start - T0, 0, start_stop, t_start,
                            start_collected, None, ()))
         while q:
@@ -1003,7 +1010,10 @@ def main():
                             swept_pairs += 1
                             continue
                     alive.append(it)
-                if PT is not None:
+                # Only when the test above actually ran. Under --pairs report it is skipped, and printing
+                # "0 of N were jointly dead pairs" there is a clean bill of health from a check that never
+                # happened. 448d830 fixed exactly this shape for the end-of-run line and missed this one.
+                if PT is not None and a.pairs != 'report':
                     print(f'  sweep: {swept_pairs} of {before} were jointly dead pairs', flush=True)
                 q = alive; heapq.heapify(q)
                 print(f'  [{time.time() - t_run:5.0f}s] frontier swept {before} -> {len(q)} '
@@ -1027,35 +1037,54 @@ def main():
         if not q: print('  queue empty at exit'); return
         hist = defaultdict(int)
         for e in q: hist[len(e[5])] += 1
-        top = max(hist)
         print(f'  queue at exit: {len(q)} nodes, depth ' +
               ' '.join(f'{d}:{hist[d]}' for d in sorted(hist, reverse=True)[:12]), flush=True)
         if L is None: return
-        deep = [e for e in q if len(e[5]) == top]
-        live = []
-        for e in deep:
+        # Every bucket, not just the deepest. The first version took top = max(hist) and examined only
+        # nodes at that depth, which answered "is the best number real" and not the question worth asking,
+        # which is how far up the queue is alive at all. It reported the single 31-state node as dead and
+        # said nothing about the sixteen at 30 or the thirteen at 29, so a queue whose entire top third was
+        # doomed read the same as one with a live layer the ranking never picked.
+        per = {}                    # depth -> (total, per-state live, pair live)
+        live_by_d = defaultdict(list)
+        for e in q:
             stop_, t_, coll_ = e[3], e[4], e[5]
-            if t_ > L_end[stop_]: continue
+            d_ = len(coll_)
+            tot, ps, pr = per.get(d_, (0, 0, 0))
+            if t_ > L_end[stop_]: per[d_] = (tot + 1, ps, pr); continue
             col_ = L[:, stop_]
             owed_ = [y for y in range(N_STATES) if y not in coll_]
-            if any(t_ > col_[y] for y in owed_): continue
-            live.append((stop_, t_, owed_))
-        print(f'  of the {len(deep)} nodes at {top} states, {len(live)} can still collect everything they '
-              f'owe, which the push-side test guarantees and is therefore not evidence', flush=True)
-        if PT is not None:
-            # The number the per-state line cannot give. Run it whether or not the prune is switched on at a
-            # search site, because a census that says "all live" while every one of them owes an
-            # uncollectable pair is the exact failure this whole table was built to expose.
-            pl = [x for x in live if not PT.dead(int(x[0]), float(x[1]), x[2])]
-            print(f'  {len(pl)} of those {len(live)} also survive the pair test; the other '
-                  f'{len(live) - len(pl)} owe two states they cannot collect in either order', flush=True)
-            for stop_, t_, owed_ in live:
-                if PT.dead(int(stop_), float(t_), owed_):
-                    m_, y_, z_ = PT.worst(int(stop_), float(t_), owed_)
-                    print(f'    e.g. {R.stop_name[stop_][:30]:30s} {ab(y_)} & {ab(z_)} miss by '
-                          f'{-m_ / 3600:.1f} h', flush=True)
+            if any(t_ > col_[y] for y in owed_): per[d_] = (tot + 1, ps, pr); continue
+            alive = PT is None or len(owed_) < 2 or not PT.dead(int(stop_), float(t_), owed_)
+            if alive: live_by_d[d_].append((stop_, t_, owed_))
+            per[d_] = (tot + 1, ps + 1, pr + (1 if alive else 0))
+        if PT is None:
+            print('  per-state live by depth ' + ' '.join(f'{d}:{per[d][1]}/{per[d][0]}'
+                  for d in sorted(per, reverse=True)[:12]), flush=True)
+            print('  (no pair table; the per-state number is what the push side already guarantees and is '
+                  'therefore not evidence. --pairs report builds the table and prunes nothing.)', flush=True)
+        else:
+            print('  pair-live by depth ' + ' '.join(f'{d}:{per[d][2]}/{per[d][0]}'
+                  for d in sorted(per, reverse=True)[:12]), flush=True)
+            deadest = [d for d in sorted(per, reverse=True) if per[d][1] and not per[d][2]]
+            wall = max(live_by_d) if live_by_d else None
+            ps_top = max((d for d in per if per[d][1]), default=None)
+            print(f'  deepest node the per-state test keeps: {ps_top}; deepest that survives the pair '
+                  f'test: {wall if wall is not None else "none"}'
+                  + (f'. The {len(deadest)} deeper buckets are bookkeeping.' if deadest else ''), flush=True)
+            # Name the tightest real casualty at the deepest bucket the per-state test still believed in.
+            for d_ in sorted(per, reverse=True):
+                if per[d_][1] and not per[d_][2]:
+                    for e in q:
+                        if len(e[5]) != d_: continue
+                        owed_ = [y for y in range(N_STATES) if y not in e[5]]
+                        if len(owed_) < 2 or not PT.dead(int(e[3]), float(e[4]), owed_): continue
+                        m_, y_, z_ = PT.worst(int(e[3]), float(e[4]), owed_)
+                        print(f'    at {d_} states, e.g. {R.stop_name[e[3]][:30]:30s} {ab(y_)} & {ab(z_)} '
+                              f'miss by {-m_ / 3600:.1f} h', flush=True)
+                        break
                     break
-        for stop_, t_, owed_ in live[:5]:
+        for stop_, t_, owed_ in (live_by_d[max(live_by_d)] if live_by_d else [])[:5]:
             print(f'    {R.stop_name[stop_][:30]:30s} owes {" ".join(ab(y) for y in owed_[:18])}', flush=True)
 
     def confirm(path_):
