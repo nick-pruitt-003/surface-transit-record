@@ -28,6 +28,10 @@ def main():
 
     # one entry per trip pattern: the states it runs through, and how many times it departs over the window
     pat = collections.defaultdict(lambda: [0, None, None])
+    # Count the departures actually in the calendar, not the trip entities in the feed. R.trip_info holds one
+    # entry per feed trip however many days it runs, so dividing by the window understated everything: the
+    # Empire Builder, which runs daily, came out at 0.43 a day.
+    dated = collections.Counter(R.ctrip[k] for k in range(len(R.dep)))
     for (fi, tid), info in R.trip_info.items():
         f = R.feeds[fi]; t = f.trips.get(tid)
         if t is None: continue
@@ -40,7 +44,7 @@ def main():
         uniq = list(dict.fromkeys(sts))
         if len(uniq) < a.min_states: continue
         key = (info[1] or '', tuple(uniq))
-        pat[key][0] += 1
+        pat[key][0] += dated.get((fi, tid), 0)
         pat[key][1] = info[0] if pat[key][1] is None else pat[key][1]
         pat[key][2] = (R.stop_name[ids[0]], R.stop_name[ids[-1]])
     rows = []

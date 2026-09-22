@@ -41,6 +41,10 @@ def main():
                     help="which ride to try first: 'rate' hours per new state, 'states' most new states, "
                          "'early' earliest arrival")
     ap.add_argument('--width', type=int, default=12, help='rides tried per node')
+    ap.add_argument('--mode', default='best', choices=('best', 'dfs'),
+                    help="'best' expands the most promising node anywhere in the frontier; 'dfs' dives and "
+                         "backtracks, which cannot recover from a bad first guess inside ten minutes")
+    ap.add_argument('--queue', type=int, default=200000, help='frontier cap for --mode best')
     ap.add_argument('--span', type=float, default=260, help='hours the deadline tables scan back over')
     ap.add_argument('--budget', type=float, default=900); ap.add_argument('--nodes', type=int, default=2000000)
     ap.add_argument('--track', help='reference route pickle: replay its rides through this search and report, '
@@ -78,8 +82,12 @@ def main():
     # virtual border points at and beyond first_virtual, so read them off rather than invent a rule.
     walkin = {}
     for i in range(R.N):
-        got = {int(R.state[j]) for j, w in R.foot.get(i, ()) if j >= R.first_virtual and R.state[j] >= 0}
-        if got: walkin[i] = frozenset(got)
+        near = {}
+        for j, w in R.foot.get(i, ()):
+            if j >= R.first_virtual and R.state[j] >= 0:
+                y = int(R.state[j])
+                if y not in near or w < near[y]: near[y] = float(w)
+        if near: walkin[i] = tuple(sorted(near.items()))
     print(f'  {len(walkin)} stops can step over a state line on foot', flush=True)
 
     # Both clocks on the same node. Going forward the search knows how long it has been out; these tables give
@@ -97,7 +105,14 @@ def main():
         t_pre = time.time()
 
         def latest_from(nxt):
-            lat, ok, k0, k1 = F.layer(nxt, True, D - a.span * 3600, None)
+            # guard=False on purpose. The guard blocks a walk that crosses a state line into the target's
+            # stop, which is a rule about how a search layer may collect a state, not about what is
+            # physically possible. These tables are a feasibility bound: being too permissive only means a
+            # dead branch survives a little longer, but being too strict prunes the answer. With the guard on
+            # it refused the Hanover to Vermont line walk the route ends on, which put L_end[Hanover] one
+            # minute before the route's own arrival there, and that one minute compounded backwards into four
+            # hours by Houston and made Maine look uncollectable from Texas onwards.
+            lat, ok, k0, k1 = F.layer(nxt, False, D - a.span * 3600, None)
             eff, _ = F.through(ok, k0, k1, np.ones(R.N, bool))
             return np.maximum(lat, eff)
 
@@ -109,6 +124,17 @@ def main():
         ls = L_end[START] if START is not None else -np.inf
         print('  deadline tables built in %.0f s; latest start that still finishes: %s'
               % (time.time() - t_pre, R.fmt_time(float(ls), START) if ls > -np.inf else 'unreachable'), flush=True)
+
+    def ceiling(collected):
+        """Per stop, the latest you could get off there and still owe nothing you cannot collect.
+
+        The same test as looping every owed state for every candidate, but done once for the node instead of
+        once per ride: one node offered 1674890 candidate alights, and at up to 48 checks each that was tens
+        of millions of comparisons per node, which took the search from 103 nodes/s to 2. numpy takes the
+        column-wise minimum over the owed rows in about a millisecond and the answer is identical."""
+        owed = [y for y in range(N_STATES) if y not in collected]
+        if not owed: return L_end
+        return np.minimum(L[owed].min(axis=0), L_end)
 
     def alight_ok(to, at, owed_after):
         """Is getting off here survivable? Every state still owed has to remain collectible from this stop at
@@ -126,11 +152,12 @@ def main():
             if at > col[y]: return False
         return True
 
-    def rides_from(s, t, aboard, collected):
+    def rides_from(s, t, aboard, collected, cap=None):
         """The menu at stop s at time t: (alight stop, alight time, trip, states it collects).
         Riding on the trip already boarded needs no transfer; anything else does."""
         out = []
         all_states = range(N_STATES)
+        if cap is None and L is not None: cap = ceiling(collected)
         # Every footpath the router built, with no second opinion. This line used to drop any link costing
         # more than a made-up 1200, which is seconds, so it silently hid every local-transit hop longer than
         # twenty minutes: Memphis to Bellevue at Carr, Salt Lake City Intermodal to the Salt Lake Express
@@ -157,11 +184,27 @@ def main():
                 for kk in cs[p:]:
                     to = int(R.cto[kk]); st = int(R.state[to])
                     if st >= 0: got.add(st)
-                    got |= walkin.get(to, frozenset())   # stepping over the line on foot counts, and is how MS is got
                     at = float(R.arr[kk])
-                    owed = [y for y in all_states if y not in collected and y not in got]
-                    if alight_ok(to, at, owed):
-                        out.append((to, at, key, frozenset(got)))
+                    if cap is not None:
+                        # the ride's own new states are not owed after it, so they may exceed the ceiling
+                        if at > cap[to] and any(at > L[y][to] for y in all_states
+                                                if y not in collected and y not in got): continue
+                        if at > L_end[to]: continue
+                    elif not alight_ok(to, at, [y for y in all_states if y not in collected and y not in got]):
+                        continue
+                    out.append((to, at, key, frozenset(got)))
+                    # Stepping over the line on foot is how the route takes Mississippi, but it is a move, not
+                    # a freebie: you get off, walk out, and walk back, and only then carry on. Crediting it at
+                    # every stop a ride passes, for nothing, let the search collect states it never visited in
+                    # zero time. Charge both directions, leave the vehicle, and offer it as its own option.
+                    for y, w in walkin.get(to, ()):
+                        if y in got or y in collected: continue
+                        at2 = at + 2 * w
+                        if cap is not None and (at2 > L_end[to] or at2 > L[y][to]): continue
+                        if cap is not None and at2 > cap[to] and any(
+                                at2 > L[z][to] for z in all_states if z not in collected and z not in got and z != y):
+                            continue
+                        out.append((to, at2, None, frozenset(got | {y})))
         return out
 
     best = [None]; limit = [a.target * 3600]; seen_nodes = [0]; t_run = time.time(); deepest = [0]
@@ -187,7 +230,7 @@ def main():
             col = L[:, stop]
             for y in range(N_STATES):
                 if y not in collected and t > col[y]: return  # y can no longer be collected before finishing
-        key = (stop, collected)
+        key = (stop, collected, aboard)   # still aboard a through trip is not the same as standing here
         prev = dom.get(key)
         if prev is not None and prev <= spent: return
         dom[key] = spent
@@ -228,9 +271,15 @@ def main():
         print(f'\nreplaying {len(rides)} rides of {a.track} through this search '
               f'(order {a.order}, width {a.width})\n', flush=True)
         stop, t, aboard = st0, d['t0'], None
-        _ss = set(walkin.get(st0, ()))
+        _ss = set()
         if R.state[st0] >= 0: _ss.add(int(R.state[st0]))
         collected = frozenset(_ss)
+        # the reference takes some states on foot (Mississippi at Holmes, Vermont at Hanover); those are walk
+        # legs, and this replay follows rides, so read them off the route's own legs
+        by_walk = {}
+        for _l in legs:
+            if _l[0] == 'walk' and _l[2] >= R.first_virtual and R.state[_l[2]] >= 0:
+                by_walk.setdefault(_l[1], set()).add(int(R.state[_l[2]]))
         lost = 0
         for n, l in enumerate(rides, 1):
             _, trip, bs, bt, al, at = l
@@ -259,20 +308,65 @@ def main():
                 print(f'  leg {n:2d} {name:22s} -> {R.stop_name[al][:26]:26s} rank {rank:3d}/{len(opts):4d}'
                       f'  +{" ".join(ab(x) for x in sorted(got - collected)) or "-"}{flag}', flush=True)
                 if rank > a.width: lost += 1
-            collected = collected | got
+            collected = collected | got | frozenset(by_walk.get(al, ()))
             stop, t, aboard = al, at, trip
         print(f'\n{len(rides) - lost}/{len(rides)} rides reproducible within --width {a.width}; '
               f'{len(collected)}/{N_STATES} states collected along the way')
         if lost == 0: print('the control replays end to end: every ride it takes is on the menu and inside the width.')
         return
 
+    def best_first(start_stop, t_start, start_collected):
+        """Expand the most promising node in the whole frontier, not the deepest.
+
+        Depth-first commits to its first guess: ordered by hours per new state it dives to 21 states having
+        spent 141 of its 238 h, which cannot finish, and then has to climb out of that subtree before trying
+        anything else. Ten minutes is nowhere near enough. Best-first keeps every node it has reached and
+        always grows the one that looks closest to done, so a bad opening costs one expansion instead of the
+        whole budget. Pruning and dominance are unchanged and still exact."""
+        import heapq
+        q = []; seq = [0]
+        heapq.heappush(q, (-len(start_collected), t_start - T0, 0, start_stop, t_start, start_collected, None, ()))
+        while q:
+            if time.time() - t_run > a.budget or seen_nodes[0] > a.nodes: break
+            nstates, spent, _, stop, t, collected, aboard, path = heapq.heappop(q)
+            seen_nodes[0] += 1
+            if spent > limit[0]: continue
+            if len(collected) >= NEED:
+                limit[0] = spent; best[0] = (spent, list(path))
+                print(f'  [{time.time() - t_run:5.0f}s] FOUND {spent / 3600:.2f} h, {len(collected)} states, '
+                      f'{len(path)} rides', flush=True)
+                continue
+            if len(collected) > deepest[0]:
+                deepest[0] = len(collected)
+                print(f'  [{time.time() - t_run:5.0f}s] {len(collected)}/{NEED} states, {spent / 3600:6.1f} h spent, '
+                      f'at {R.stop_name[stop][:28]}, {len(path)} rides, {seen_nodes[0]} nodes, '
+                      f'{len(q)} in frontier', flush=True)
+            if L is not None and t > L_end[stop]: continue
+            key = (stop, collected, aboard)   # still aboard a through trip is not the same as standing here
+            prev = dom.get(key)
+            if prev is not None and prev <= spent: continue
+            dom[key] = spent
+            opts = rides_from(stop, t, aboard, collected)
+            n_new = lambda o: len(o[3] - collected)
+            if a.order == 'rate': opts.sort(key=lambda o: (n_new(o) == 0, (o[1] - t) / max(1, n_new(o))))
+            elif a.order == 'states': opts.sort(key=lambda o: (n_new(o) == 0, -n_new(o), o[1]))
+            else: opts.sort(key=lambda o: (n_new(o) == 0, o[1]))
+            for to, at, trip, got in opts[:a.width]:
+                new = collected | got
+                seq[0] += 1
+                heapq.heappush(q, (-len(new), at - T0, seq[0], to, at, new, trip, path + ((trip, stop, to, t, at),)))
+            if len(q) > a.queue: q = heapq.nsmallest(a.queue // 2, q); heapq.heapify(q)
+
     sys.setrecursionlimit(20000)
     if back:
-        print('backward mode needs the reverse connection index; not built yet, running forward from --start')
+        print('--dir backward is not implemented: it needs a reverse connection index. Run forward with '
+              '--start/--at and --end/--by.')
+        return
     if START is None: print('need --start'); return
-    start_states = set(walkin.get(START, ()))
+    start_states = set()      # a walk-in at the start is a move like any other, and costs its time
     if R.state[START] >= 0: start_states.add(int(R.state[START]))
-    dfs(START, T0, frozenset(start_states), None, [])
+    if a.mode == 'best': best_first(START, T0, frozenset(start_states))
+    else: dfs(START, T0, frozenset(start_states), None, [])
     el = time.time() - t_run
     print(f'\n{seen_nodes[0]} nodes in {el:.0f} s ({seen_nodes[0] / max(el, 1):.0f}/s), {len(dom)} distinct '
           f'(stop, states); deepest {deepest[0]}/{NEED} states')

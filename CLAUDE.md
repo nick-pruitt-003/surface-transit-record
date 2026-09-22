@@ -45,6 +45,20 @@ it. That frees the Houston to Tallahassee bus that *skips* Mississippi, which ar
 Silver Meteor and the fast finish. Collect MS the modal way on the Gulf corridor and the ending is gone. A
 border walk-in in Tennessee is load-bearing for a connection in Florida five days later.
 
+## Give the deadline its slack
+
+`--by` is the latest acceptable finish, which is **start + target**, not the reference route's own finish
+time. Passing the reference's finish (22:14) gives a zero-slack deadline, and then a one minute difference
+in how a walk is modelled is fatal: the Hanover to Vermont line link came out 15 min against the route's
+14, so L_end[Hanover] sat one minute before the route's own arrival, the Dartmouth Coach was excluded, and
+that compounded backwards into four hours by Houston, where Maine then looked uncollectable from Texas
+onward. With the correct deadline (00:54 + 238 h = 22:54) all 40 rides of the control are on the menu.
+
+Feasibility tables are built with guard=False on purpose. The guard blocks a walk crossing a state line
+into the target's stop, which is a rule about how a search layer may collect a state, not about what is
+physically possible. A bound that is too permissive only lets a dead branch live a little longer; one that
+is too strict prunes the answer.
+
 ## Search designs, and why the earlier ones failed
 
 Searching **orderings of the 48 states** (`build_backward.py`, `dfs_backward.py`) is the wrong space. Its

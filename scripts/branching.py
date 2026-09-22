@@ -21,7 +21,7 @@ from collections import defaultdict
 from datetime import datetime
 from zoneinfo import ZoneInfo
 import numpy as np
-from time_router import TimeRouter, load_feeds, WALK_MAX_KM
+from time_router import TimeRouter, load_feeds, WALK_MAX_KM, WALK_SPEED
 import time_search as ts
 from time_search import Search
 from common import ABBR
@@ -67,7 +67,11 @@ def main():
         collected |= states_of((trip[0], trip[1]))
         if n + 1 >= len(rides): break
         here, now = al, at
-        near = [here] + [j for j, w in R.foot.get(here, ()) if w <= WALK_MAX_KM * 1000 / 1.25]
+        # foot weights are seconds, and include the 300 s penalty time_router adds beyond 150 m. The old
+        # bound compared them against a made-up 1200, which hid every local-transit hop over twenty minutes,
+        # the same bug that hid Memphis, Salt Lake City and Barstow from ride_search.
+        walk_cap = WALK_MAX_KM * 1000 / WALK_SPEED + 300
+        near = [here] + [j for j, w in R.foot.get(here, ()) if w <= walk_cap]
         seen_trip = set(); svc = {}
         for s in near:
             for k in dep_idx.get(s, ()):
