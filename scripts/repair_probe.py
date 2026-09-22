@@ -31,7 +31,7 @@ Run it against the control and it should rediscover Memphis:
 """
 import argparse, pickle, time
 import numpy as np
-from time_router import TimeRouter, load_feeds, MIN_TRANSFER, N_STATES
+from time_router import TimeRouter, load_feeds, cached_router, MIN_TRANSFER, N_STATES
 import backward as B
 import time_search as ts
 from time_search import Search
@@ -50,7 +50,7 @@ def main():
     a = ap.parse_args()
 
     d = pickle.load(open(a.route, 'rb'))
-    R = TimeRouter(load_feeds(), __import__('datetime').datetime.fromtimestamp(d['t0']).date(), a.days)
+    R = cached_router(__import__('datetime').datetime.fromtimestamp(d['t0']).date(), a.days)
     ab = lambda x: ABBR[R.state_names[x]] if x >= 0 else '--'
     st0 = R.stop_name.index(d['start'])
     S = Search(R, st0, d['t0'], [], 1)

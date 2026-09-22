@@ -155,6 +155,32 @@ That is why `--dedupe` is opt-in rather than the default, and the mitigation is 
 Turning it on by default needs either a proof that the case cannot arise in this feed set or a check that
 would notice it.
 
+## Where a check belongs, now that the world is cached
+
+A built router is pickled by `cached_router` and reloads in 2 s against 63 s to build, keyed on every file
+under `data/`, the dates, and the source of `time_router.py`. That changes where checks can live: geography
+assertions used to be exiled to the slow suite because they needed a router, and now they do not.
+
+| tier | cost | what belongs |
+|---|---|---|
+| A0 | milliseconds, no router | `Menu`, dominance, slack arithmetic, leg tuple layouts, `got` emptiness. Synthetic fixtures of a few connections, not Amtrak. |
+| A1 | seconds, warm router | Holmes stepping over the Mississippi line, the Bellevue hop costing over twenty minutes, sparse stops surviving the filters. |
+| B, `regress.py` | ~15 s warm | Oracles and wiring: the 237 route evaluates, calendars and agency time, busyness stays off the search path. |
+| C, `--track` | minutes | The control replay. The gate for any change to the search. |
+| D | hours | Full searches. Never the inner loop. |
+
+Two rules the day produced.
+
+**Put a fixed bug in the cheapest tier that can see it.** Both of today's escapes were A0 shapes. `if not
+got` never fired because `got` holds every state a ride passes through, and a three-stop synthetic trip
+would have caught it in milliseconds; instead it cost a profile, a push and a restart on another machine.
+The ride-versus-walk tuple index is the same: `('ride', trip, board, dep, alight, arr)` against
+`('walk', from, to, t0, t1)`, so the destination is index 4 on one and index 2 on the other.
+
+**A green `regress.py` does not mean the new loops are safe.** It passed 8/8 on a version where every
+candidate died on a `None` subscript, because it never exercises generation. Only the control replay caught
+that. B is an oracle suite, not a generation gate, and reading it as one is how a broken build looks fine.
+
 ## Diagnostics worth reusing
 
 Instrumenting against the known answer worked every time; running searches blind and reading the result did

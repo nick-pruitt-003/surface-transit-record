@@ -21,7 +21,7 @@ from collections import defaultdict
 from datetime import datetime
 from zoneinfo import ZoneInfo
 import numpy as np
-from time_router import TimeRouter, load_feeds, MIN_TRANSFER, N_STATES, WALK_MAX_KM
+from time_router import TimeRouter, load_feeds, cached_router, MIN_TRANSFER, N_STATES, WALK_MAX_KM
 import backward as B
 from common import ABBR
 
@@ -111,7 +111,7 @@ def main():
     back = a.dir == 'backward'
     when = datetime.fromisoformat(a.by if back else a.at).replace(tzinfo=ZoneInfo(a.tz))
     T0 = when.timestamp()
-    R = TimeRouter(load_feeds(), (when.date() if not back else (when - __import__('datetime').timedelta(days=12)).date()), a.days)
+    R = cached_router((when.date() if not back else (when - __import__('datetime').timedelta(days=12)).date()), a.days)
     ab = lambda x: ABBR[R.state_names[x]] if x >= 0 else '--'
     print(f'{a.dir} from {when:%a %Y-%m-%d %H:%M}, limit {a.target} h, {a.states} states required', flush=True)
 

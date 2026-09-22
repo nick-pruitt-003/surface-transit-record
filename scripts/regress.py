@@ -9,7 +9,7 @@ from datetime import datetime
 from zoneinfo import ZoneInfo
 import numpy as np
 import time_router as tr
-from time_router import TimeRouter, load_feeds, N_STATES
+from time_router import TimeRouter, load_feeds, cached_router, N_STATES
 import time_search as ts
 from time_search import Search
 import backward as B
@@ -35,7 +35,7 @@ def search_for(R, start, t0):
 
 
 print('settings: MIN_TRANSFER', tr.MIN_TRANSFER // 60, 'min, WALKIN_KM', tr.WALKIN_KM, ', SCAN_SLACK', tr.SCAN_SLACK / 3600, 'h')
-R = TimeRouter(load_feeds(), datetime(2026, 9, 23).date(), 18)
+R = cached_router(datetime(2026, 9, 23).date(), 18)
 t237 = datetime(2026, 9, 24, 0, 30, tzinfo=ET).timestamp()
 hun = R.stops_matching('Huntington Bus Stop')[0]
 
