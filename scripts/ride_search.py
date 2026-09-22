@@ -69,6 +69,14 @@ def main():
     trip_conns = defaultdict(list)
     for k in range(len(R.dep)): trip_conns[R.ctrip[k]].append(k)
     for v in trip_conns.values(): v.sort(key=lambda k: R.dep[k])
+    # Where each connection sits in its own trip. Both directions need this to know where boarding or
+    # alighting happens along a trip, and both were finding it by walking the trip's connection list from
+    # the front for every candidate. On a long-distance train that is a few hundred comparisons, paid once
+    # per arrival considered, per node; backward crawled at one node a second because of it. The position
+    # never changes, so record it once here and the lookup becomes an array index.
+    conn_pos = np.empty(len(R.dep), dtype=np.int32)
+    for v in trip_conns.values():
+        for n_, k_ in enumerate(v): conn_pos[k_] = n_
     board_at = defaultdict(list)          # stop -> connections departing it, by time
     for k in range(len(R.dep)): board_at[int(R.cfrom[k])].append(k)
     for v in board_at.values(): v.sort(key=lambda k: R.dep[k])
@@ -186,8 +194,7 @@ def main():
                 if not (key == aboard and j == s) and R.dep[k] < t_ok + MIN_TRANSFER: continue
                 seen.add(key)
                 cs = trip_conns[key]
-                p = next((n for n, kk in enumerate(cs) if kk == k), None)
-                if p is None: continue
+                p = int(conn_pos[k])
                 got = set()
                 for kk in cs[p:]:
                     to = int(R.cto[kk]); st = int(R.state[to])
@@ -364,9 +371,8 @@ def main():
                     if not (key == aboard and j == s_) and R.arr[k] > t_ok - MIN_TRANSFER: continue
                     seen.add(key)
                     cs = trip_conns[key]
-                    pos = next((n for n, kk in enumerate(cs) if kk == k), None)
-                    if pos is None: continue
-                    got = {int(R.state[j])} if R.state[j] >= 0 else set()
+                    pos = int(conn_pos[k])
+                    got ={int(R.state[j])} if R.state[j] >= 0 else set()
                     for n in range(pos, -1, -1):
                         kk = cs[n]
                         frm = int(R.cfrom[kk]); st_ = int(R.state[frm])

@@ -40,22 +40,30 @@ note ""
 note "| run | wall | deepest | nodes | FOUND | best | independent check | rc |"
 note "|---|---|---|---|---|---|---|---|"
 
+# Forward first, and all of it, before any backward run. Backward moves at about one node a second here
+# (56 nodes in 93 s, measured twice), so a 25 minute backward run sees a few hundred nodes and cannot say
+# anything about breadth; forward does 274 a second and every question below is answerable there. Spending
+# the night the other way round would have bought five starved runs. Backward stays in the queue, at the
+# end, because "it is still slow at 25 minutes" is itself worth recording.
+
 # A: does superset dominance break the plateau at all
-eval run a_back48 1500 --dir backward --states 48
 eval run a_fwd48  1500 $FWD --states 48
 
 # B: where is the wall
 eval run b_fwd30  900  $FWD --states 30
 eval run b_fwd36  900  $FWD --states 36
 eval run b_fwd42  1200 $FWD --states 42
-eval run b_back30 900  --dir backward --states 30
-eval run b_back36 1200 --dir backward --states 36
+eval run b_fwd45  1200 $FWD --states 45
 
 # C: which knob moves it, tested at the wall
 eval run c_fwd48_w24   1500 $FWD --states 48 --width 24
-eval run c_back48_w24  1500 --dir backward --states 48 --width 24
+eval run c_fwd48_w36   1500 $FWD --states 48 --width 36
 eval run c_fwd48_early 1200 $FWD --states 48 --order early
-eval run c_back48_early 1200 --dir backward --states 48 --order early
+eval run c_fwd48_states 1200 $FWD --states 48 --order states
+
+# D: backward, last, for the record
+eval run d_back48 1500 --dir backward --states 48
+eval run d_back48_w24 1200 --dir backward --states 48 --width 24
 
 note ""
 note "Queue finished $(date -u '+%Y-%m-%d %H:%M UTC')."
