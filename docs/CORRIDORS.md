@@ -32,6 +32,10 @@ the Silver Meteor's four states. Gate it with the control replay; it must not re
 
 ## Salt Lake City exits (exit_probe.py)
 
+Scope, from adversarial review: every verdict below is on each exit's **earliest** route only. A slower exit
+that collects a different set can be pair-live where the earliest one is dead, so read "dead" as "dead on
+earliest", not "dead in the timetable".
+
 From a node at Salt Lake City, the earliest route to each of Pocatello, Boise, Pasco, Saint George, Las
 Vegas, West Wendover, Cheyenne and Denver, crediting states passed, then the pair test. On the live
 `--pairs push` chain (Salt Lake City 117.3 h, 27 held, arrived from Cheyenne adding CO IA NE, pair margin
@@ -90,8 +94,9 @@ From the control's node before Florida (Magnolia Park, Houston, Thu 18:18, 185.8
 that day with the same held set: route into Florida through each gateway, credit states passed, pair test
 where Florida is collected.
 
-- **Pensacola loop (in at Pensacola, back to Mobile): dead at every start time, -10.8 h.** Structural, not a
-  timing miss.
+- **Pensacola loop (in at Pensacola, back to Mobile): dead on its earliest route at every start time, -10.8 h.**
+  Consistent across the day, so not a timing miss; but a slower loop that collects something else on the way
+  was not searched, so this is "dead on earliest", not "dead in the timetable".
 - Tallahassee, Lake City, Jacksonville: all alive for departures up to 18:18 (margins +0.2 to +15.0 h;
   Tallahassee fastest, 17 h at the control's time). All three die from 20:00 on, together, because the whole
   chain is out of time rather than because of the gateway.
