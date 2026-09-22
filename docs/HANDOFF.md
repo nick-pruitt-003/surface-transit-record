@@ -436,3 +436,25 @@ Wyoming alone at 24 h. Strictly worse on every axis; do not rerun.
 The wider lesson for the search: no window reordering could ever have found or refuted this, because using the
 Builder needs IL, WI, MN, ND, MT, ID, WA and OR contiguous, and they sit ten places apart in the route. Leg
 swaps around a named service have to be tested directly.
+
+### Memphis: the slack is fixed, you only choose where it sits (Sep 22)
+
+Both links out are once a day with no alternative: Memphis -> Conway 08:30 -> 11:10, and Conway -> Kansas
+City 11:20 -> 19:25 on a ten minute connection. So the 6.1 h wait at Kansas City is slack that can only be
+spent in Kansas City. The 08:30 is hard, the 04:42 Amtrak arrival is hard, and the CROSSTOWN's 60 min
+headway means the spare hour lands in one lump in one of two places.
+
+Nothing but route 34 reaches the Bellevue/Carr stops from downtown, and it lands 370 m away at 05:29
+against a 05:32 departure, so the choice is forced:
+
+| | getting to Bellevue/Carr | at Holmes for the 1.3 km each way |
+|---|---|---|
+| rt 34 at 05:20, then the 06:32 CROSSTOWN | relaxed, about 57 min sitting | **30 min**, so a jog |
+| walk the 3.5 km from the Amtrak door, 05:32 CROSSTOWN | 50 min for about 4 km, brisk, no margin | **90 min**, a walk |
+
+Nick's call is the first: push it a headway and get breakfast near the transfer, since 2.6 km in 30 min is
+inside the 1.3 km in 12 to 13 he has already accepted. Worth recording that this is the third time the
+route's spare time ends up on the Mississippi walk, which makes that walk the thing to verify on the ground.
+
+The 3 min 370 m dash off route 34 onto the 05:32 should not be planned around either way: it depends on
+route 34 being exactly on time and leaves no margin at all.
