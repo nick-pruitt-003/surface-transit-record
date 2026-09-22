@@ -12,6 +12,15 @@ the route, the rules, and everything tested and ruled out. Read it before propos
 - Defaults are 5 min transfers, 1.4 km walk-ins, 24 h slack.
 - Never seed new end points from old routes.
 - `out/` is gitignored, so a fresh checkout has no result pickles. `scripts/rebuild_237.py` rebuilds them.
+- **Long runs do not survive the session going quiet.** This container is reclaimed after a period of
+  inactivity, so a queue launched with `nohup` and left alone dies: measured at about eight minutes after
+  the last tool call, three times. `setsid` does not help and neither does moving the process out of the
+  Bash call's cgroup, though that is worth doing anyway (a process started from a tool call lives in that
+  call's cgroup, and the cgroup is torn down when the call's container is recycled). What works is an
+  hourly check-in that restarts the queue and then actively supervises it, plus a queue that **resumes**:
+  `overnight.sh` skips any run whose log already holds a summary line, so a restart continues instead of
+  redoing the first run for ever. Budget accordingly, and remember every run pays about 3.5 min of GTFS
+  loading before it searches.
 - Don't write `pkill -f <script>` in a command whose own text contains that script name. It matches the
   shell running it and kills the command before it runs. Use `pgrep -f "ride_sea[r]ch"` instead. Cost me
   three commands before I noticed.

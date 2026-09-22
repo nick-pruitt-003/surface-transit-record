@@ -15,12 +15,35 @@ FWD="--start \"Huntington Bus Stop\" --at 2026-09-24T00:54"
 
 note () { echo "$1" >> "$NOTES"; }
 
+# A process started from a Claude Bash call lives in that call's cgroup, and the cgroup is torn down when
+# the call's container is recycled, taking every process in it. That is what killed two queues five minutes
+# after launch, with no OOM and no signal in any log: the first died at 344 s, the second at 226 s, and the
+# memory cgroup showed no limit and failcnt 0. nohup does not help, because this is not SIGHUP. setsid on
+# the queue itself is not enough either, because each run spawns a fresh python that inherits the cgroup it
+# was spawned from. So every run moves itself and its children to the root cgroup before waiting on them.
+detach () {
+  local p c
+  for p in "$@" $(pgrep -P "$1" 2>/dev/null); do
+    for c in /sys/fs/cgroup/*/tasks; do [ -w "$c" ] && echo "$p" > "$c" 2>/dev/null; done
+  done
+}
+
 run () {              # run <name> <budget_s> <extra args...>
   local name=$1 budget=$2; shift 2
   local log=$OUT/on_$name.log
+  # Resume rather than restart. The container is reclaimed when the session goes quiet, so the queue does
+  # not survive the night on its own: it is restarted by an hourly check-in, and without this every restart
+  # would redo the first run for ever and never reach the rest. A log with a summary line in it is a run
+  # that finished, so skip it.
+  if [ -f "$log" ] && grep -q "nodes in .* s" "$log"; then
+    echo "=== $name already done, skipping ===" >&2; return
+  fi
   local t0=$(date -u +%s)
   echo "=== $name starting $(date -u +%H:%M:%S) ===" >&2
-  timeout $((budget + 600)) python3 -u ride_search.py $COMMON --budget "$budget" "$@" > "$log" 2>&1
+  timeout $((budget + 600)) python3 -u ride_search.py $COMMON --budget "$budget" "$@" > "$log" 2>&1 &
+  local pid=$!
+  sleep 1; detach $pid            # the python under timeout is a child, so detach picks it up too
+  wait $pid
   local rc=$? t1=$(date -u +%s)
   local deep=$(grep -oE 'deepest [0-9]+/[0-9]+' "$log" | tail -1)
   local nodes=$(grep -oE '^[0-9]+ nodes in [0-9]+ s \([0-9]+/s\)' "$log" | tail -1)
