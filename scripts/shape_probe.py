@@ -68,6 +68,11 @@ def main():
     ap.add_argument('--span', type=float, default=260)
     ap.add_argument('--days', type=int, default=20)
     ap.add_argument('--shapes', default=','.join(HERE_SHAPES))
+    ap.add_argument('--starts', type=int, default=0, help='report the best N start stops for this ordering. '
+                    'test() already returns the latest possible departure from EVERY stop, so with the '
+                    'deadline fixed, D - cur[s] is the elapsed time of a route starting at s and any stop '
+                    'under the control\'s 237.34 h is a start that beats it. One chain answers it for all '
+                    '19776 stops; it was being read one element at a time.')
     ap.add_argument('--trace', action='store_true', help='with --true-order, print the margin at every step of the control chain so a slack loss can be localised instead of reported as one number at the end')
     ap.add_argument('--true-order', action='store_true', help='derive the order from the route\'s own legs rather than the pickle\'s target list. The difference between the two IS the strictness this test adds, and until it is measured an IMPOSSIBLE verdict may be a fact about the test rather than about the timetable.')
     a = ap.parse_args()
@@ -215,6 +220,23 @@ def main():
             continue
         m = (best - t0) / 3600
         when = datetime.fromtimestamp(best, tz).strftime('%a %d %b %H:%M')
+        if a.starts:
+            el = (D - np.asarray(cur)) / 3600.0
+            ok_ = np.isfinite(el) & (el > 0)
+            idx = np.argsort(el)
+            print(f'\n  best starts for the {name} ordering, by elapsed time (D - latest departure).')
+            print(f'  A bound, not a route: the scans are permissive at every seam, so these are lower '
+                  f'bounds on elapsed and a stop listed here still has to be flown to be believed.')
+            print(f'  {"stop":38s} {"latest departure":>18s} {"elapsed":>9s}')
+            shown = 0
+            for j in idx:
+                if not ok_[j]: continue
+                print(f'  {R.stop_name[int(j)][:38]:38s} '
+                      f'{datetime.fromtimestamp(float(cur[j]), tz).strftime("%a %d %b %H:%M"):>18s} '
+                      f'{el[j]:8.2f} h' + ('   BEATS THE CONTROL' if el[j] < 237.34 else ''))
+                shown += 1
+                if shown >= a.starts: break
+            print()
         print(f'{name:16s} {when:>26s} {m:+9.2f} h   '
               f'{"feasible" if m >= 0 else "IMPOSSIBLE, must have left " + f"{-m:.2f} h earlier"}')
 
