@@ -84,6 +84,32 @@ def main():
     nserv = {s: len({R.trip_info.get(R.ctrip[k], ('', ''))[1] for k in v}) for s, v in board_at.items()}
     print(f'  indexed {len(R.dep)} connections over {len(trip_conns)} trips in {time.time() - t_build:.0f} s', flush=True)
 
+    width = a.width
+
+    def shortlist(opts, n_new):
+        """The first `--width` options, plus a reserve of positioning rides when the cut left none.
+
+        Ordering rides that collect a state ahead of rides that collect none is right, and the comment
+        below says why: scored on its own duration a five minute local hop beats every real ride. Cutting
+        the positioning rides off is not right, and it is what `opts[:width]` was doing, because the sort
+        puts every one of them behind every collecting ride. The replay of the control measures the damage.
+        Median rank over its forty legs is 4, but Saint George is option 486385 of 1156415, the Memphis hop
+        to Holmes 16727 of 375718, and the Houston leg is 129 of 129, last in its own list. All three are
+        rides that collect nothing, and the route cannot be flown without them: the Memphis hop is what
+        collects Mississippi on foot at Holmes, which frees the bus that skips Mississippi and makes the
+        fast finish possible five days later.
+
+        So the cut keeps its preference and loses its veto. The options are already sorted with collecting
+        rides first, so the positioning ones are a contiguous tail; if the width cut did not reach them,
+        take the best `--width` of them as well. This only ever adds branches, never removes one, which is
+        the permissive direction the project rule asks for when a threshold cannot be avoided.
+        """
+        head = opts[:width]
+        if len(opts) <= width: return head
+        z = next((i for i, o in enumerate(opts) if n_new(o) == 0), len(opts))
+        if z < width: return head                      # the cut already reaches them
+        return head + opts[z:z + width]
+
     START = R.stops_matching(a.start)[0] if a.start else None
     inv = {v: k for k, v in ABBR.items()}
 
@@ -304,7 +330,7 @@ def main():
             opts.sort(key=lambda o: (n_new(o) == 0, -n_new(o), o[1]))
         else:
             opts.sort(key=lambda o: (n_new(o) == 0, o[1]))
-        for to, at, trip, got in opts[:a.width]:
+        for to, at, trip, got in shortlist(opts, n_new):
             new = collected | got
             path.append((trip, stop, to, t, at))
             dfs(to, at, new, trip, path)
@@ -420,7 +446,7 @@ def main():
             if a.order == 'rate': opts.sort(key=lambda o: (n_new(o) == 0, (t - o[1]) / max(1, n_new(o))))
             elif a.order == 'states': opts.sort(key=lambda o: (n_new(o) == 0, -n_new(o), -o[1]))
             else: opts.sort(key=lambda o: (n_new(o) == 0, -o[1]))
-            for frm, bt, trip, got in opts[:a.width]:
+            for frm, bt, trip, got in shortlist(opts, n_new):
                 new = collected | got
                 sp2 = D - bt
                 if sp2 > limit[0]: continue
@@ -536,7 +562,7 @@ def main():
             if a.order == 'rate': opts.sort(key=lambda o: (n_new(o) == 0, (o[1] - t) / max(1, n_new(o))))
             elif a.order == 'states': opts.sort(key=lambda o: (n_new(o) == 0, -n_new(o), o[1]))
             else: opts.sort(key=lambda o: (n_new(o) == 0, o[1]))
-            for to, at, trip, got in opts[:a.width]:
+            for to, at, trip, got in shortlist(opts, n_new):
                 new = collected | got
                 # Dominance when queuing, not only when popped. Many queued nodes share a stop, a set of
                 # states and a boarded trip, and only the earliest of those can ever matter; checking at push
