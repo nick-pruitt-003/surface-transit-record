@@ -159,3 +159,65 @@ push never queues it. The control loses 0 of 63 nodes under the same tables. The
 
 The brief's four runs are re-running on e19c68d with `--pairs push` on the three forward runs; backward has
 no pair check and runs as before.
+
+## The full-depth census: the unpruned baseline's honest depth was 21, not 30
+
+The push-vs-pop entry above was read with the census as it then was, which examined only `top = max(hist)`
+and told you nothing about the buckets below it. Widened to every bucket, the same 200 s baseline
+(`--pairs report`, prune switched off, run-1 settings) says something much stronger:
+
+```
+queue at exit:      879 nodes, depth 31:2 30:28 29:12 28:24 27:31 26:94 25:80 24:84 23:37 22:61 21:277 20:16
+pair-live by depth:            31:0/2 30:0/28 29:0/12 28:0/24 27:0/31 26:0/94 25:0/80 24:0/84 23:0/37 22:0/61 21:12/277 20:6/16
+deepest node the per-state test keeps: 31; deepest that survives the pair test: 21.
+```
+
+Every node from 22 states to 31 was jointly dead. All 458 of them. The run printed `deepest 30/48` and its
+honest depth was **21**, a nine-state gap between what the search believed and what was true.
+
+| | reported deepest | honest deepest |
+|---|---|---|
+| no prune (`--pairs report`) | 30 | **21** |
+| `--pairs push` | 27 | **26** |
+
+So the prune does not merely tidy up after the search, it moves the real frontier from 21 to 26. The budget
+that went into 458 doomed nodes goes into chains that can still finish.
+
+The twelve survivors at 21 states are Indianapolis, Ligonier, Effingham, Fort Wayne and Goshen, all in
+Indiana and Illinois, all owing the same eighteen states, and that set is the entire West plus the far
+Northeast. **The live frontier is exactly the chains that have not yet committed East.** Every chain that
+went East first is in the dead 458, which is the corridor argument arriving from a third instrument that was
+not built to produce it.
+
+### Pair-margin ranking: measured, and it is not the answer
+
+`--rerank N` re-orders the top N options by the pair margin before `--width` cuts. Replays against the
+control at N=24 and N=60 are **identical on every leg**, and both report 31/40 against slack's 30/40.
+
+The +1 is Fargo moving 13/36 to 11/36, across the width line. It is real, and it is incidental:
+
+| leg | slack | rerank |
+|---|---|---|
+| 13 Fargo +ND | 13/36 | 11/36 |
+| 14 Minneapolis +MN | 2/154 | 1/154 |
+| 17 Billings +WY MT | 2/150 | 1/150 |
+| **19 Pasco** | **4/53** | **11/53** |
+| 20 Salt Lake City +UT OR | 1/20 | 3/20 |
+| 21 Saint George | 21586/21638 | 21586/21638 |
+
+It **demotes the Pasco leg**, the corridor `CORRIDORS.md` measures as forced in all 36 start cases, and
+leaves Saint George exactly where it was. The reason is in CORRIDORS.md already: the control's Pasco leg
+sits at +1.9 h with the whole East still owed, so it is one of the *tightest* moves on the route, and a
+ranker preferring margin walks away from it. Forcedness and comfort are not the same quantity, and the pair
+margin measures comfort.
+
+There is also no N that would help. Legs with few options have all their action inside the top 24, and the
+legs that need help have thousands, so no head small enough to price in an inner loop reaches them.
+
+Two notes on method, both of which nearly cost a wrong conclusion:
+
+- 31/40 is the exact number that rose spuriously once before, on a refactor that was meant to change
+  nothing. Reporting the tally without diffing which leg moved would have sold a reshuffle as progress.
+- The falsification was stated before the run ("it should promote Spokane to Pasco and Saint George") and
+  the run falsified it. The caveat that killed it was in CORRIDORS.md, written down, and read, one turn
+  before the prediction was made anyway.
