@@ -268,3 +268,33 @@ not count until it can rebuild 237" may be the wrong bar for this tool.
 `half_probe.py` is unsound as written and its verdict should be ignored: it ranks by pure lateness with no
 leftover estimate, which is weaker than the builder, and it cannot even reproduce the eastern half that
 the real builder tracks to within an hour. Fix it to score the way `build` does before believing it.
+
+## 10. Sep 22: the four local hops, and what the route stands on
+
+The 237 route has four legs whose access is a *modelled* link rather than a service: `LOCAL_MAX_KM` builds a
+proxy for any 1.5 to 10 km gap at a flat 30 min plus 15 km/h. Each was checked against the real feeds.
+
+| leg | hop | verdict |
+|---|---|---|
+| 6 | 3.5 km Memphis Amtrak -> Bellevue at Carr | **weakest.** No MATA route reaches the Bellevue/Carr stops from downtown. Route 34 (05:20 from 2nd St at Beale, 993 m from the Amtrak door) reaches Lamar Ave at Minna Pl at 05:29, 370 m short, 3 min before the CROSSTOWN. Otherwise it is a 3.5 km walk in the 50 min the timetable allows. |
+| 19 | 9.9 km SLC Intermodal -> Salt Lake Express shop | **fictional, and fixable.** The shop is out by the airport; the nearest UTA stop is 350 m from it. FrontRunner leaves Salt Lake Central, 50 m from where the Greyhound drops you, every 30 min, and the same 06:30 Salt Lake Express calls at Provo/Orem (Exit 263) at 07:50, 110 m from Provo Central Station. 06:06 -> 07:11 leaves 39 min; 06:36 -> 07:41 leaves 9. Same bus, same St George 12:20: no time saved, and about 4 h of slack gained on an overnight Greyhound. |
+| 21 | 8.7 km Las Vegas Airport -> Downtown (1st St) | **real.** RTC RED LINE 14:06 from Harry Reid Zero Level (83 m from the stop) reaches Bonneville Transit Center 14:50, 126 m from the FlixBus stop, 15 min before it leaves. Route 108 is a second option. |
+| 22 | 2.8 km Barstow Station -> Barstow Amtrak | **real.** VVTA route 1 at 18:18 (80 m from the FlixBus drop) reaches Hutchinson St at N 1st Ave 18:29, 420 m from the depot, over 2 h before the Chief. The 19:28 is a backup, and 2.8 km in 2 h 52 min is a walk anyway. Note route 1's last Barstow Station trip is 17:10 on a Sunday, before the 17:55 arrival, so a Sunday Barstow is walk-only. The Chief calls only at the depot; "Barstow Amtrak Bus Stop", 70 m from the FlixBus stop, is a thruway bus stop and a decoy. |
+
+Memphis has slack that has not been used. The CROSSTOWN runs Bellevue/Carr at 04:32, 05:32, 06:32, 07:02,
+07:32, and back from Holmes at 07:07, 07:37, 08:07. The 07:37 back reaches Airways at 08:08, still 22 min
+before the 08:30 Jefferson Lines. So either keep the 05:32 out and take the 07:37 back, which turns 60 min at
+the Mississippi line into 90, or take the 06:32 out and the 07:37 back, which gives 1 h 50 min to cover the
+3.5 km into Bellevue/Carr and leaves 30 min for the 1.3 km walk each way.
+
+### The proxies are load-bearing
+
+`BUS48_LOCAL_MAX_KM=0` drops every proxy and keeps only real timetables and walks. The same 48-state order
+then still collects every state, but takes **285.7 h instead of 237.7 h**. Without them the router does find
+real access everywhere it needs it (TRAX to the Salt Lake Express airport stop, RTC to the Las Vegas
+terminal, MATA through Mississippi Blvd), but the timings cascade and the route loses the Southwest Chief at
+Barstow, going via Raton and Trinidad instead.
+
+That 48 h is the greedy cost of the *same state order*, not proof that no proxy-free route is quick. But it
+does mean the 237 h figure currently rests on links nobody runs, so before an attempt the open question is
+whether a search with `BUS48_LOCAL_MAX_KM=0` finds something near 240. That has not been run.

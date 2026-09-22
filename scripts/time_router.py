@@ -25,7 +25,10 @@ MIN_TRANSFER = int(os.environ.get('BUS48_MIN_TRANSFER', 5)) * 60       # seconds
 SCAN_SLACK = float(os.environ.get("BUS48_SCAN_SLACK_H", 24)) * 3600   # keep scanning this long past the first target arrival; 24 lets a state be collected at a later, better-placed stop
 WALK_SPEED = 4.5 / 3.6       # m/s
 WALK_MAX_KM = 1.5
-LOCAL_MAX_KM = 10.0        # beyond walking: local transit / shuttle proxy
+# Beyond walking: a local transit / shuttle proxy, which is a modelled link and not a service anyone runs.
+# Set BUS48_LOCAL_MAX_KM=0 to drop them and keep only real timetables plus walks, which is what a route has
+# to stand on before it can be attempted.
+LOCAL_MAX_KM = float(os.environ.get('BUS48_LOCAL_MAX_KM', 10.0))
 LOCAL_FIXED = 30 * 60      # wait + boarding
 LOCAL_SPEED = 15 / 3.6     # m/s effective
 # more_gtfs feeds that are intercity carriers; every other feed there is city transit. The 1.5-10 km local-transit
