@@ -140,3 +140,22 @@ from it, alighting at `to` at the recorded time) and refuses the pickle otherwis
 more than one stop (Huntington Bus Stop is 755 and 3322), so names resolve to all exact matches and the
 control is evaluated from each (both finish at 237.74 h). `check_path` was only exercised on a pickle that
 fits; its refusal path was last seen firing on a false positive, since fixed, not on a true mismatch.
+
+## The prune in the search (e19c68d), 200 s each, run-1 settings
+
+| | `--pairs push` | `--pairs pop` |
+|---|---|---|
+| nodes expanded | 5632 (28/s) | 7150 (36/s) |
+| killed by the pair test | 8310 | 1496 |
+| `deepest` printed | 27 | 29, Truckee Amtrak, 132.7 h |
+| deepest bucket still queued at exit | 1 node at 26, survives the pair test | 11 nodes at 28, **0** survive (Truckee: ND & LA miss by 26.1 h) |
+| FOUND | none | none |
+
+Pop prints `deepest` before its pair test runs, so its 29 is a dead chain, and its deep bucket was all
+zombies. Push tests before a node is queued, so everything it holds is live under the pair test and its
+honest frontier after 200 s is 26 states. Pop still opened with the Northeast dive (Springfield at 1 s);
+push never queues it. The control loses 0 of 63 nodes under the same tables. The frontier sweep never ran
+(queue far below 200 k), so its `0 jointly dead` invariant was not exercised.
+
+The brief's four runs are re-running on e19c68d with `--pairs push` on the three forward runs; backward has
+no pair check and runs as before.
