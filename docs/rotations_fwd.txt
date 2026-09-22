@@ -1,0 +1,130 @@
+router from cache in 2.1 s (router_818f0611326121c1.pkl)
+control order: 48 states, WV KY OH MI IN IL TN MS AR MO IA NE SD ND MN WI WY MT ID WA OR UT AZ NV CA NM CO KS OK TX LA AL FL GA SC NC VA MD DE PA NJ NY CT RI MA ME NH VT
+
+gate rotation 0 from Huntington 00:54: 237.3 (expected 237.34 +/- 0.01)
+gate record order from White River Junction 04:20: 239.1 (expected 239.08 +/- 0.01)
+phase 1: 19437 start stops across 48 rotations, at one departure, 2 workers; 8500 from checkpoint, 10937 to go
+  phase 1: 9000/19437 (13.2/s, 13 min left)
+  phase 1: 9500/19437 (12.3/s, 13 min left)
+  phase 1: 10000/19437 (12.7/s, 12 min left)
+  phase 1: 10500/19437 (13.3/s, 11 min left)
+  phase 1: 11000/19437 (13.6/s, 10 min left)
+  phase 1: 11500/19437 (13.9/s, 10 min left)
+  phase 1: 12000/19437 (14.1/s, 9 min left)
+  phase 1: 12500/19437 (14.3/s, 8 min left)
+  phase 1: 13000/19437 (14.2/s, 8 min left)
+  phase 1: 13500/19437 (14.0/s, 7 min left)
+  phase 1: 14000/19437 (14.2/s, 6 min left)
+  phase 1: 14500/19437 (14.3/s, 6 min left)
+  phase 1: 15000/19437 (14.3/s, 5 min left)
+  phase 1: 15500/19437 (14.3/s, 5 min left)
+  phase 1: 16000/19437 (14.3/s, 4 min left)
+  phase 1: 16500/19437 (14.3/s, 3 min left)
+  phase 1: 17000/19437 (14.3/s, 3 min left)
+  phase 1: 17500/19437 (14.2/s, 2 min left)
+  phase 1: 18000/19437 (14.3/s, 2 min left)
+  phase 1: 18500/19437 (14.3/s, 1 min left)
+  phase 1: 19000/19437 (14.2/s, 1 min left)
+  phase 1: 19437/19437 (14.3/s, 0 min left)
+  rot  0 start: chose Huntington 237.34 h, runner-up Huntington Bus Stop 237.34 h, gap 0  TIE
+  rot  1 start: chose Ashland 256.23 h, runner-up Berea (Kiln Time) 256.23 h, gap 0  TIE
+  rot  2 start: chose Cleveland (E 12th St) 266.10 h, runner-up Sandusky Bus Stop 266.10 h, gap 0  TIE
+  rot  3 start: chose Holland Bus Stop 270.72 h, runner-up Southfield Bus Stop 270.72 h, gap 0  TIE
+  rot  4 start: chose Lafayette Bus Stop 279.02 h, runner-up Terre Haute Greyhound Station 279.02 h, gap 0  TIE
+  rot  5 start: chose Moline Center Station (Metroli 283.10 h, runner-up Rochelle (Petro Rochelle Trave 283.10 h, gap 0  TIE
+  rot  6 start: chose Memphis Bus Station 261.52 h, runner-up Memphis 261.52 h, gap 0  TIE
+  rot  7 start: chose Tupelo (Brothers Quick Stop) 272.18 h, runner-up Tupelo (Brothers Quick Stop) 272.18 h, gap 0  TIE
+  rot  8 start: chose Bryant-Little Rock (Gassy's) 273.32 h, runner-up Clarksville 273.32 h, gap 0  TIE
+  rot  9 start: chose Kansas City Bus Station 252.02 h, runner-up Kansas City 252.02 h, gap 0  TIE
+  rot 10 start: chose Clarinda 261.10 h, runner-up Shenandoah 261.10 h, gap 0  TIE
+  rot 11 start: chose Grand Island Bus Station 274.02 h, runner-up Lexington (Phillips 66) 274.02 h, gap 0  TIE
+  rot 12 start: chose Aberdeen 284.60 h, runner-up Brookings 284.60 h, gap 0  TIE
+  rot 13 start: chose Fargo Amtrak Station 296.77 h, runner-up Grand Forks Amtrak Station 296.77 h, gap 0  TIE
+  rot 14 start: chose Saint Paul Union Depot 278.68 h, runner-up Minneapolis Bus Station 278.68 h, gap 0  TIE
+  rot 15 start: chose Wisconsin Dells (McDonald's Co 279.63 h, runner-up Eau Claire (McDonald's) 279.63 h, gap 0  TIE
+  rot 16 start: chose Cheyenne (Sinclair) 290.18 h, runner-up Alpine Junction 290.18 h, gap 0  TIE
+  rot 17 start: chose Basin 285.27 h, runner-up Billings 285.27 h, gap 0  TIE
+  rot 18 start: chose Boise (Chevron) 289.52 h, runner-up American Falls 289.52 h, gap 0  TIE
+  rot 19 start: chose Seattle Tacoma Intl Airport 297.52 h, runner-up Ellensburg (Central Washington 297.52 h, gap 0  TIE
+  rot 20 start: chose Hood River (Mount Hood Railroa 300.60 h, runner-up La Grande Bus Station 300.60 h, gap 0  TIE
+  rot 21 start: chose Cedar City (Sunoco) 281.68 h, runner-up Green River 281.68 h, gap 0  TIE
+  rot 22 start: chose Tucson Bus Station 290.77 h, runner-up Phoenix Bus Station 290.77 h, gap 0  TIE
+  rot 23 start: chose Las Vegas North (E Craig Rd) 302.35 h, runner-up Las Vegas Bus Terminal 302.35 h, gap 0  TIE
+  rot 24 start: chose Needles Amtrak 278.52 h, runner-up Goshen (Goshen Travel Plaza) 302.52 h, gap 24
+  rot 25 start: chose Albuquerque Bus Station 284.02 h, runner-up Lordsburg Amtrak 284.02 h, gap 0  TIE
+  rot 26 start: chose Springfield Truck Stop (Valero 296.70 h, runner-up Lamar (Pilot) 296.70 h, gap 0  TIE
+  rot 27 start: chose Topeka (BP To Go) 282.02 h, runner-up Wichita Bus Stop 282.02 h, gap 0  TIE
+  rot 28 start: chose Ardmore (McDonald's) 286.40 h, runner-up Sallisaw Best Mart 286.40 h, gap 0  TIE
+  rot 29 start: chose Texarkana (Travel Stop) 294.73 h, runner-up Hillsboro 294.73 h, gap 0  TIE
+  rot 30 start: chose New Orleans Bus Station 297.68 h, runner-up Gray (Terrabone Casino) 297.68 h, gap 0  TIE
+  rot 31 start: chose Alexander City (Barber Shop) 307.93 h, runner-up Gadsden (U-Haul) 307.93 h, gap 0  TIE
+  rot 32 start: chose Ft Lauderdale Broward Park & R 315.18 h, runner-up Bartow (Polk Courthouse Garage 315.18 h, gap 0  TIE
+  rot 33 start: chose Atlanta Bus Station 316.93 h, runner-up Thomasville Travel Center 316.93 h, gap 0  TIE
+  rot 34 start: chose Myrtle Beach Bus Station 324.77 h, runner-up Orangeburg (Xpress Travel Cent 324.77 h, gap 0  TIE
+  rot 35 start: chose Rocky Mount Bus Stop 306.60 h, runner-up Rocky Mount 306.60 h, gap 0  TIE
+  rot 36 start: chose Fredericksburg (Old Salem Chur 310.88 h, runner-up Colonial Heights (Temple Ave) 310.88 h, gap 0  TIE
+  rot 37 start: chose Baltimore Downtown Bus Station 313.93 h, runner-up Silver Spring Bus Station 313.93 h, gap 0  TIE
+  rot 38 start: chose Wilmington Bus Station 317.97 h, runner-up Delaware Welcome Center (North 317.97 h, gap 0  TIE
+  rot 39 start: chose Scranton 319.13 h, runner-up Scranton Bus Station 319.13 h, gap 0  TIE
+  rot 40 start: chose Ridgewood NJ (Southbound) 319.53 h, runner-up Union City, NJ (733 32nd St) ( 319.53 h, gap 0  TIE
+  rot 41 start: chose NYC Downtown (Canal St / Lucky 320.10 h, runner-up Brooklyn (3 Av/38th St) 320.10 h, gap 0  TIE
+  rot 42 start: chose New Haven Bus Stop 320.92 h, runner-up New Britain (Jimmy'S Food Mart 320.92 h, gap 0  TIE
+  rot 43 start: chose Providence (Canal St & Smith S 321.93 h, runner-up Kingston Amtrak Station 321.93 h, gap 0  TIE
+  rot 44 start: chose Greenfield John Olver Transit  324.22 h, runner-up Springfield Union Station 324.22 h, gap 0  TIE
+  rot 45 start: chose City of Portland 324.70 h, runner-up Lewiston (Bates Coll) 324.70 h, gap 0  TIE
+  rot 46 start: chose Hanover (Hanover Inn) 279.27 h, runner-up Hanover (Hanover Inn) 279.27 h, gap 0  TIE
+  rot 47 start: chose White River Junction Bus Stati 281.06 h, runner-up White River Junction Amtrak St 281.06 h, gap 0  TIE
+phase 1 done: 48 rotations have a start that completes at all
+phase 2: 576 evaluations, 48 rotations x 12 departures
+
+  rot first last    elapsed         departing  start stop
+    0 WV    VT      237.34 h  Thu 24 Sep 00:54  Huntington
+    9 MO    AR      252.02 h  Thu 24 Sep 00:54  Kansas City Bus Station
+    6 TN    IL      255.52 h  Thu 24 Sep 06:54  Memphis Bus Station
+    1 KY    WV      256.23 h  Thu 24 Sep 00:54  Ashland
+   10 IA    MO      257.10 h  Thu 24 Sep 04:54  Clarinda
+    2 OH    KY      260.10 h  Thu 24 Sep 06:54  Cleveland (E 12th St)
+    4 IN    MI      263.02 h  Thu 24 Sep 16:54  Lafayette Bus Stop
+    3 MI    OH      266.72 h  Thu 24 Sep 04:54  Holland Bus Stop
+    7 MS    TN      268.18 h  Thu 24 Sep 04:54  Tupelo (Brothers Quick Stop)
+    8 AR    MS      269.32 h  Thu 24 Sep 04:54  Bryant-Little Rock (Gassy's)
+   21 UT    OR      269.68 h  Thu 24 Sep 12:54  Cedar City (Sunoco)
+    5 IL    IN      271.10 h  Thu 24 Sep 12:54  Moline Center Station (Metrolink)
+   11 NE    IA      272.02 h  Thu 24 Sep 02:54  Grand Island Bus Station
+   25 NM    CA      272.02 h  Thu 24 Sep 12:54  Albuquerque Bus Station
+   16 WY    WI      274.18 h  Thu 24 Sep 16:54  Cheyenne (Sinclair)
+   12 SD    NE      274.60 h  Thu 24 Sep 10:54  Aberdeen
+   30 LA    TX      275.68 h  Thu 24 Sep 22:54  New Orleans Bus Station
+   15 WI    MN      277.63 h  Thu 24 Sep 02:54  Wisconsin Dells (McDonald's Commerce S
+   28 OK    KS      278.40 h  Thu 24 Sep 08:54  Ardmore (McDonald's)
+   24 CA    NV      278.52 h  Thu 24 Sep 00:54  Needles Amtrak
+   14 MN    ND      278.68 h  Thu 24 Sep 00:54  Saint Paul Union Depot
+   46 NH    ME      279.27 h  Thu 24 Sep 00:54  Hanover (Hanover Inn)
+   47 VT    NH      281.06 h  Thu 24 Sep 00:54  White River Junction Bus Station
+   18 ID    MT      281.52 h  Thu 24 Sep 08:54  Boise (Chevron)
+   27 KS    CO      282.02 h  Thu 24 Sep 00:54  Topeka (BP To Go)
+   13 ND    SD      282.77 h  Thu 24 Sep 14:54  Fargo Amtrak Station
+   17 MT    WY      285.27 h  Thu 24 Sep 00:54  Basin
+   23 NV    AZ      286.35 h  Thu 24 Sep 16:54  Las Vegas North (E Craig Rd)
+   29 TX    OK      286.73 h  Thu 24 Sep 08:54  Texarkana (Travel Stop)
+   20 OR    WA      288.60 h  Thu 24 Sep 12:54  Hood River (Mount Hood Railroad)
+   22 AZ    UT      290.77 h  Thu 24 Sep 00:54  Tucson Bus Station
+   31 AL    LA      291.93 h  Thu 24 Sep 16:54  Alexander City (Barber Shop)
+   32 FL    AL      293.18 h  Thu 24 Sep 22:54  Ft Lauderdale Broward Park & Ride
+   26 CO    NM      294.70 h  Thu 24 Sep 02:54  Springfield Truck Stop (Valero)
+   33 GA    FL      294.93 h  Thu 24 Sep 22:54  Atlanta Bus Station
+   19 WA    ID      297.52 h  Thu 24 Sep 00:54  Seattle Tacoma Intl Airport
+   34 SC    GA      302.77 h  Thu 24 Sep 22:54  Myrtle Beach Bus Station
+   35 NC    SC      306.60 h  Thu 24 Sep 00:54  Rocky Mount Bus Stop
+   45 ME    MA      308.70 h  Thu 24 Sep 16:54  City of Portland
+   36 VA    NC      308.88 h  Thu 24 Sep 02:54  Fredericksburg (Old Salem Church Rd Pa
+   37 MD    VA      309.93 h  Thu 24 Sep 04:54  Baltimore Downtown Bus Station
+   42 CT    NY      310.92 h  Thu 24 Sep 10:54  New Haven Bus Stop
+   43 RI    CT      311.93 h  Thu 24 Sep 10:54  Providence (Canal St & Smith St)
+   38 DE    MD      311.97 h  Thu 24 Sep 06:54  Wilmington Bus Station
+   41 NY    NJ      312.10 h  Thu 24 Sep 08:54  NYC Downtown (Canal St / Lucky Star)
+   40 NJ    PA      313.53 h  Thu 24 Sep 06:54  Ridgewood NJ (Southbound)
+   39 PA    DE      317.13 h  Thu 24 Sep 02:54  Scranton
+   44 MA    RI      318.22 h  Thu 24 Sep 06:54  Greenfield John Olver Transit Ctr
+
+Elapsed is arrival minus departure, from the router, with no deadline involved. Comparable across shapes, unlike the backward table. The start stop per rotation comes from the backward chain and the departure from the sweep, so a shape could do better with a start stop or a departure minute neither of those offered: these are achieved times, not optima.
