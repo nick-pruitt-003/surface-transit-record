@@ -78,3 +78,4 @@ second falling to 25 while the frontier stays flat near 1700 and the kept set cr
 out of frontier, it is spending ever more per node, and the plateau is at 24 rather than the 25 recorded
 earlier. Worth pointing the profiler at a forward run too, since the assumption that forward is fast holds
 only for its first minute.
+| `a_fwd48` | 27 min | deepest 25/48 | 13248 nodes in 1502 s (9/s) | 0 | none |  | rc=0 |
