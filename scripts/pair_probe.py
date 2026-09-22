@@ -28,7 +28,7 @@ import numpy as np
 from time_router import cached_router, N_STATES
 import backward as B
 from common import ABBR
-from pair_tables import resolve_stop, check_path
+from pair_tables import resolve_stop, check_path, leg_states
 
 
 def main():
@@ -112,9 +112,8 @@ def main():
             trip, frm, to, bt, at = leg[:5]
             # from 2f4d0de a walk-in names the state it took, and may also carry the ride that brought it
             walk = leg[5] if len(leg) > 5 else None
-            if walk is not None and walk >= 0:
-                have.add(int(walk))
-                if trip is not None: have |= passed(trip, bt, at)
+            if len(leg) > 5 and (walk is not None and walk >= 0 or len(leg) > 6):
+                have |= leg_states(R, leg, trip_conns)    # new layouts say exactly what the leg covered
             elif trip is None:
                 # the pickle does not say which state a walk-in took before 2f4d0de; the one it took is the
                 # one the final set holds and nothing else explains, so read it off that

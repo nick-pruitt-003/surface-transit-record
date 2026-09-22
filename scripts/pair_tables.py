@@ -150,6 +150,12 @@ def check_path(R, path, start=None):
             continue
         cs = by_trip.get(trip)
         if not cs: bad.append(f'leg {i}: trip {trip} not in this router'); continue
+        seg = leg[6] if len(leg) > 6 else None
+        if seg:
+            # connection indices are router-local as well: both must be in range and on this trip
+            if not all(0 <= int(k) < len(R.dep) and R.ctrip[int(k)] == trip for k in seg):
+                bad.append(f'leg {i}: its connections {tuple(seg)} are not trip {trip} in this router')
+                continue
         # frm is where the node stood; ride_search boards at it or at any stop a footpath reaches from it
         # (leg 1 of the run-1 chain stands at Huntington 755 and boards at Huntington 3322)
         near = {frm} | {j for j, _w in R.foot.get(frm, ())}
@@ -159,6 +165,27 @@ def check_path(R, path, start=None):
         if not any(int(R.cto[k]) == to and (walked or abs(float(R.arr[k]) - at) < 1) for k in cs):
             bad.append(f'leg {i}: trip {trip} does not reach {R.stop_name[to][:24]} at the recorded time')
     return bad
+
+
+def leg_states(R, leg, trip_conns):
+    """Every state a leg is in. From 9081646 a leg carries seg = (board connection, alight connection) and
+    that stretch is exact, loops included; older legs fall back to the trip's connections by time."""
+    trip, frm, to, bt, at = leg[:5]
+    walk = leg[5] if len(leg) > 5 else None
+    seg = leg[6] if len(leg) > 6 else None
+    out = set()
+    if trip is not None:
+        if seg:
+            lo_, hi_ = sorted((float(R.dep[seg[0]]), float(R.dep[seg[1]])))
+            ks = [k for k in trip_conns.get(trip, ()) if lo_ <= R.dep[k] <= hi_]
+        else:
+            ks = [k for k in trip_conns.get(trip, ()) if bt <= R.dep[k] and R.arr[k] <= at]
+        for k in ks:
+            for s_ in (int(R.cfrom[k]), int(R.cto[k])):
+                if R.state[s_] >= 0: out.add(int(R.state[s_]))
+    if R.state[to] >= 0: out.add(int(R.state[to]))
+    if walk is not None and walk >= 0: out.add(int(walk))
+    return out
 
 
 def _end_state(R):
@@ -254,11 +281,7 @@ def main():
         for i, leg in enumerate(d['path'], 1):
             trip, frm, to, bt, at = leg[:5]
             if not have and R.state[frm] >= 0: have.add(int(R.state[frm]))
-            if trip is not None:
-                have |= {int(R.state[R.cto[k]]) for k in trip_conns.get(trip, ()) if bt <= R.dep[k] and R.arr[k] <= at
-                         and R.state[R.cto[k]] >= 0}
-            if len(leg) > 5 and leg[5] is not None and leg[5] >= 0: have.add(int(leg[5]))
-            if R.state[to] >= 0: have.add(int(R.state[to]))
+            have |= leg_states(R, leg, trip_conns)
             col = set(d['collected']) if i == len(d['path']) else have
             owed = [y for y in range(N_STATES) if y not in col]
             m, y, z = PT.worst(to, at, owed)
