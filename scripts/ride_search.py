@@ -56,6 +56,10 @@ def main():
     ap.add_argument('--track', help='reference route pickle: replay its rides through this search and report, '
                     'leg by leg, whether the menu offers them and where they rank. 237 is a control: the test '
                     'is that it reproduces, not that it is beaten.')
+    ap.add_argument('--dedupe', action='store_true', help='drop options another option can already do '
+                    'everything of. Off by default: the rule is exact on paper but --track still loses the '
+                    'Memphis leg with it on, and until that is explained the default path stays the one '
+                    'the gate passes.')
     ap.add_argument('--anatomy', action='store_true', help='with --track, break down each leg\'s option '
                     'list: how many options, how many distinct destinations, and how many survive exact '
                     'dominance. Answers whether a node with a million options has a million choices.')
@@ -154,6 +158,41 @@ def main():
         if not owed: return L_end
         return np.minimum(L[owed].min(axis=0), L_end)
 
+    def undominated(cands, back=False):
+        """Drop the options that another option can already do everything of.
+
+        A node's menu is mostly the same decision written out many times: three nested loops, over footpath
+        neighbours, over trips leaving each, and over every downstream stop of each trip. One node on the
+        control offered 1674890 options for 1135 distinct destinations.
+
+        The test has to respect the fact that a node carries the trip it is aboard. A chain still on trip T
+        can ride on without paying anything; a chain that reached the same stop on something else has to pay
+        MIN_TRANSFER to board T. So arriving earlier with at least as many states is NOT enough to dominate:
+        the earlier arrival has to be early enough to have boarded whatever the later one was going to stay
+        on. That is exactly MIN_TRANSFER of slack, and with it the rule is safe, because anything the
+        discarded option could do next the survivor can do too.
+
+          forward:   A beats B at the same stop when got_A covers got_B and at_A + MIN_TRANSFER <= at_B
+          backward:  A beats B at the same stop when got_A covers got_B and bt_A - MIN_TRANSFER >= bt_B
+
+        Backward mirrors it because there a later boarding time is the better one: it leaves the start of
+        the route later, which is what backward is maximising.
+        """
+        front = defaultdict(list)          # stop -> [(states gained, time, option)]
+        for o in cands:
+            where, when_ = o[0], o[1]
+            got = o[3]
+            fr = front[where]
+            beaten = False
+            for g, w, _ in fr:
+                if (w - MIN_TRANSFER >= when_ if back else w + MIN_TRANSFER <= when_) and got <= g:
+                    beaten = True; break
+            if beaten: continue
+            fr[:] = [(g, w, oo) for g, w, oo in fr
+                     if not ((when_ - MIN_TRANSFER >= w if back else when_ + MIN_TRANSFER <= w) and g <= got)]
+            fr.append((got, when_, o))
+        return [oo for fr in front.values() for _g, _w, oo in fr]
+
     def anatomy(opts, al, trip, n_new):
         """How much of a node's option list is choice and how much is the same choice written out again.
 
@@ -170,16 +209,8 @@ def main():
         """
         by_to = defaultdict(list)
         for o in opts: by_to[o[0]].append(o)
-        kept, ctrl_rank = 0, None
-        survivors = []
-        for to, group in by_to.items():
-            group.sort(key=lambda o: o[1])            # earliest arrival first
-            front = []
-            for o in group:
-                g = o[3]
-                if any(g <= k for k in front): continue   # an earlier arrival already held these states
-                front = [k for k in front if not (k <= g)]
-                front.append(g); survivors.append(o); kept += 1
+        survivors = undominated(opts)
+        kept, ctrl_rank = len(survivors), None
         for i, o in enumerate(sorted(survivors, key=lambda o: (n_new(o) == 0, o[1])), 1):
             if o[0] == al and o[2] == trip: ctrl_rank = i; break
         print(f'         anatomy: {len(opts)} options -> {len(by_to)} destinations -> {kept} after exact '
@@ -299,7 +330,7 @@ def main():
                                 at2 > L[z][to] for z in all_states if z not in collected and z not in got and z != y):
                             continue
                         out.append((to, at2, None, frozenset(got | {y})))
-        return out
+        return undominated(out) if a.dedupe else out
 
     best = [None]; limit = [a.target * 3600]; seen_nodes = [0]; t_run = time.time(); deepest = [0]
     beat = [time.time()]
@@ -458,7 +489,7 @@ def main():
                             if y2 in got or y2 in collected: continue
                             if bt - 2 * w2 < T_min: continue
                             out.append((frm, bt - 2 * w2, None, frozenset(got | {y2})))
-            return out
+            return undominated(out, back=True) if a.dedupe else out
 
         start_c = set()
         if R.state[st_stops[END_ST][0]] >= 0: start_c.add(END_ST)
@@ -548,6 +579,18 @@ def main():
                        'trip offered but not to this stop' if offered else
                        'trip offered nowhere allowed, or not reachable from here')
                 print(f'  leg {n:2d} {name:22s} -> {R.stop_name[al][:26]:26s} MISSING: {why}', flush=True)
+                # Dominance may legitimately substitute a different ride to the same stop, and this gate
+                # matches on trip identity, so say what did survive there and whether it actually covers
+                # the control's ride. A survivor arriving at least MIN_TRANSFER earlier holding at least as
+                # many states can do anything the control's ride could do next; anything else is a real loss.
+                here = [o for o in opts if o[0] == al]
+                print(f'         {len(here)} survivor(s) reach that stop; control wanted {R.fmt_time(at, al)}'
+                      f' +{" ".join(ab(x) for x in sorted(got - collected)) or "-"}', flush=True)
+                for o in sorted(here, key=lambda o: o[1])[:4]:
+                    cov = (o[1] + MIN_TRANSFER <= at) and (got - collected) <= (o[3] - collected)
+                    print(f'           {R.fmt_time(o[1], al)} +'
+                          f'{" ".join(ab(x) for x in sorted(o[3] - collected)) or "-"}'
+                          f'  {"covers it" if cov else "does NOT cover it"}', flush=True)
                 lost += 1; gone += 1
             else:
                 flag = '' if rank <= a.width else f'  <-- OUTSIDE --width {a.width}'
