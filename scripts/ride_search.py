@@ -225,8 +225,31 @@ def main():
         if now - beat[0] < 30: return
         beat[0] = now
         print(f'  [{now - t_run:5.0f}s] still {deepest[0]}/{NEED}, {seen_nodes[0]} nodes '
-              f'({seen_nodes[0] / max(now - t_run, 1):.0f}/s), {n_front} in frontier, {len(dom)} seen',
+              f'({seen_nodes[0] / max(now - t_run, 1):.0f}/s), {n_front} in frontier, {sum(len(v) for v in dom_stop.values())} kept',
               flush=True)
+    # Dominance by proof, not by coincidence. Keying on an identical set of collected states only ever
+    # merges two chains that happen to hold exactly the same 48-bit set, so twenty states reached in a
+    # different order never merge and the frontier fills with permutations of the same progress: backward
+    # sat at 20/48 for ten minutes at full CPU with 3.9 GB of them. What actually licenses discarding a
+    # chain is that another one at the same stop, no later, holds AT LEAST its states, because anything the
+    # weaker chain can still do the stronger one can do too. States live in a 48-bit int here so the
+    # superset test is one AND.
+    dom_stop = defaultdict(list)   # stop -> [(states bitmask, elapsed)]
+
+    def bits(cs):
+        m = 0
+        for y in cs: m |= 1 << y
+        return m
+
+    def dominated(stop, mask, spent):
+        for m, sp in dom_stop[stop]:
+            if sp <= spent and (m & mask) == mask: return True
+        return False
+
+    def remember(stop, mask, spent):
+        lst = [(m, sp) for m, sp in dom_stop[stop] if not ((mask & m) == m and spent <= sp)]
+        lst.append((mask, spent)); dom_stop[stop] = lst
+
     dom = {}       # (stop, collected, aboard) -> best time EXPANDED, read when popping
     queued = {}    # the same key -> best time already SITTING in the frontier, read only when pushing.
                    # These have to stay apart. Writing a pushed node's own time into dom would make it fail
@@ -381,10 +404,9 @@ def main():
                 print(f'  [{time.time() - t_run:5.0f}s] {len(collected)}/{NEED} states, {spent / 3600:6.1f} h back, '
                       f'at {R.stop_name[stop][:28]}, {len(path)} rides, {seen_nodes[0]} nodes, '
                       f'{len(q)} in frontier', flush=True)
-            key = (stop, collected, aboard)
-            prev = dom.get(key)
-            if prev is not None and prev <= spent: continue
-            dom[key] = spent
+            mk = bits(collected)
+            if dominated(stop, mk, spent): continue
+            remember(stop, mk, spent)
             owed = [y for y in range(N_STATES) if y not in collected]
             if not still_collectable(stop, t, owed, NEED - len(collected)): continue
             opts = rides_into(stop, t, aboard, collected)
@@ -500,10 +522,9 @@ def main():
                       f'at {R.stop_name[stop][:28]}, {len(path)} rides, {seen_nodes[0]} nodes, '
                       f'{len(q)} in frontier', flush=True)
             if L is not None and t > L_end[stop]: continue
-            key = (stop, collected, aboard)   # still aboard a through trip is not the same as standing here
-            prev = dom.get(key)
-            if prev is not None and prev <= spent: continue
-            dom[key] = spent
+            mk = bits(collected)
+            if dominated(stop, mk, spent): continue
+            remember(stop, mk, spent)
             opts = rides_from(stop, t, aboard, collected)
             n_new = lambda o: len(o[3] - collected)
             if a.order == 'rate': opts.sort(key=lambda o: (n_new(o) == 0, (o[1] - t) / max(1, n_new(o))))
@@ -575,7 +596,7 @@ def main():
     if a.mode == 'best': best_first(START, T0, frozenset(start_states))
     else: dfs(START, T0, frozenset(start_states), None, [])
     el = time.time() - t_run
-    print(f'\n{seen_nodes[0]} nodes in {el:.0f} s ({seen_nodes[0] / max(el, 1):.0f}/s), {len(dom)} distinct '
+    print(f'\n{seen_nodes[0]} nodes in {el:.0f} s ({seen_nodes[0] / max(el, 1):.0f}/s), {sum(len(v) for v in dom_stop.values())} kept '
           f'(stop, states); deepest {deepest[0]}/{NEED} states')
     def confirm(path_):
         """Hand the route back to the router and see if it agrees. The search must not be the only witness
