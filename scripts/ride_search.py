@@ -276,7 +276,7 @@ def main():
             if at > col[y]: return False
         return True
 
-    def rides_from(s, t, aboard, collected, cap=None):
+    def rides_from(s, t, aboard, collected, cap=None, raw=False):
         """The menu at stop s at time t: (alight stop, alight time, trip, states it collects).
         Riding on the trip already boarded needs no transfer; anything else does."""
         out = []
@@ -330,7 +330,7 @@ def main():
                                 at2 > L[z][to] for z in all_states if z not in collected and z not in got and z != y):
                             continue
                         out.append((to, at2, None, frozenset(got | {y})))
-        return undominated(out) if a.dedupe else out
+        return undominated(out) if (a.dedupe and not raw) else out
 
     best = [None]; limit = [a.target * 3600]; seen_nodes = [0]; t_run = time.time(); deepest = [0]
     beat = [time.time()]
@@ -563,12 +563,34 @@ def main():
         for n, l in enumerate(rides, 1):
             _, trip, bs, bt, al, at = l
             opts = rides_from(stop, t, aboard, collected)
+            raw_opts = rides_from(stop, t, aboard, collected, raw=True) if a.dedupe else opts
             n_new = lambda o: len(o[3] - collected)
             sort_opts(opts, collected, n_new, t)
             rank = next((i + 1 for i, o in enumerate(opts) if o[0] == al and o[2] == trip), None)
             got = next((o[3] for o in opts if o[0] == al and o[2] == trip), frozenset())
             info = R.trip_info.get(trip, ('', ''))
             name = (info[1] or info[0])[:22]
+            if rank is None and a.dedupe:
+                # With dominance on, the menu is allowed to carry a different ride in place of the
+                # control's, and the whole claim of the filter is that the substitute can do everything the
+                # original could. So ask that, rather than asking for the original by name: a survivor at
+                # the same stop, at least MIN_TRANSFER earlier, holding at least as many states, leaves
+                # every later leg of the control available. Requiring trip identity would fail a menu that
+                # is strictly better, which is how this gate read the Memphis leg as missing.
+                want = next((o for o in raw_opts if o[0] == al and o[2] == trip), None)
+                if want is not None:
+                    cover = [(i + 1, o) for i, o in enumerate(opts)
+                             if o[0] == al and o[1] + MIN_TRANSFER <= want[1] and (want[3] - collected) <= (o[3] - collected)]
+                    if cover:
+                        rank, (r_, sub) = cover[0][0], cover[0]
+                        got = sub[3]
+                        print(f'  leg {n:2d} {name:22s} -> {R.stop_name[al][:26]:26s} rank {rank:3d}/{len(opts):4d}'
+                              f'  covered by an earlier ride at {R.fmt_time(sub[1], al)}'
+                              + ('' if rank <= a.width else f'  <-- OUTSIDE --width {a.width}'), flush=True)
+                        if rank > a.width: lost += 1
+                        collected = collected | got | frozenset(by_walk.get(al, ()))
+                        stop, t, aboard = al, at, trip
+                        continue
             if rank is None:
                 # why not: was the trip offered at all, and would getting off there have been allowed?
                 offered = any(o[2] == trip for o in opts)
