@@ -72,17 +72,21 @@ note "|---|---|---|---|---|---|---|---|"
 # A: does superset dominance break the plateau at all
 eval run a_fwd48  1500 $FWD --states 48
 
-# B: where is the wall
+# B: where is the wall. It does not bend. a_fwd48, b_fwd30 and b_fwd36 all stop at 24 or 25 states, all at
+# White River Junction, all 80.7 h and eleven rides in, all reached inside ten seconds. b_fwd30 needed six
+# more states and did not find one in 11530 nodes. The requirement is not what binds, so b_fwd42 and
+# b_fwd45 are dropped: they would spend forty minutes confirming a wall now seen three times.
 eval run b_fwd30  900  $FWD --states 30
 eval run b_fwd36  900  $FWD --states 36
-eval run b_fwd42  1200 $FWD --states 42
-eval run b_fwd45  1200 $FWD --states 45
 
-# C: which knob moves it, tested at the wall
+# C: which knob moves it. These are now the runs that matter. What binds is the opening dive: ordering by
+# time per new state takes the cheap Northeast states first and strands the chain beside the finish at 80 h
+# with half the country uncollected. --order early and --order states change that dive; --width does not,
+# so it goes last.
+eval run c_fwd48_early 1500 $FWD --states 48 --order early
+eval run c_fwd48_states 1500 $FWD --states 48 --order states
 eval run c_fwd48_w24   1500 $FWD --states 48 --width 24
 eval run c_fwd48_w36   1500 $FWD --states 48 --width 36
-eval run c_fwd48_early 1200 $FWD --states 48 --order early
-eval run c_fwd48_states 1200 $FWD --states 48 --order states
 
 # D: backward, last, for the record
 eval run d_back48 1500 --dir backward --states 48

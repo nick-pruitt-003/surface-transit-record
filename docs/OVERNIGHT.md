@@ -104,3 +104,24 @@ pruning, so it reports how far one doomed chain got. A run that says 25/48 may n
 past 12. Second, the ladder runs still queued (`b_fwd36`, `b_fwd42`, `b_fwd45`) will almost certainly repeat
 the same 24 at the same stop, and the runs that matter are the ordering ones, `c_fwd48_early` and
 `c_fwd48_states`, which change the dive itself.
+| `b_fwd36` | 16 min | deepest 24/36 | 11512 nodes in 901 s (13/s) | 0 | none |  | rc=0 |
+
+## Overnight queue, started 2026-09-22 08:19 UTC
+
+Head: 9445381. One search at a time. 237.3 h is the control: the test is
+that a run reproduces it, not that it beats it.
+
+| run | wall | deepest | nodes | FOUND | best | independent check | rc |
+|---|---|---|---|---|---|---|---|
+
+### Queue re-pointed at the ordering runs, 08:19 UTC
+
+`b_fwd36` made it three for three: 11512 nodes in 901 s, deepest 24/36, same stop and clock as the other
+two. `b_fwd42` and `b_fwd45` are dropped rather than run, because forty minutes spent confirming a wall
+seen three times buys nothing, and the night has room for about two runs an hour.
+
+What replaces them is the pair that tests the diagnosis instead of the symptom. `--order early` and
+`--order states` change the opening dive; `--width` only widens a dive that is going the wrong way, so it
+now sits behind them. If the diagnosis is right, an ordering that does not front-load the Northeast should
+get past 25 states, and if neither does, the dive is not the whole story and the next thing to look at is
+why the frontier never recovers once the greedy chain has poisoned it.
