@@ -6,7 +6,10 @@ expects Las Cruces before the Sunland Park locals.
 
 Both halves come from the timetable rather than a list of carriers:
 
-  reach[s]   the greatest distance spanned by any trip serving s. New Mexico sorts to Deming and Lordsburg
+  reach[s]   the greatest distance spanned by any trip serving s OR any stop walkable from s. The
+             footpath closure is the point: Sunland Park's own service is 13 km of local bus, and it walks
+             to the Sunset Limited at El Paso at 3099 km, plus a border walk-in into Texas. Scoring it by
+             what stops there would bury it. New Mexico sorts to Deming and Lordsburg
              Amtrak at 3099 km (the Sunset Limited), Albuquerque and Gallup at 2832 (the Southwest Chief),
              Las Cruces at 1128 and 923, then a cliff to Las Cruces MVITT at 37, Sunland Park at 26 and 13,
              and the city bus stops at 0.
@@ -43,7 +46,7 @@ def build(R, cache_dir=None, verbose=True):
     for arr in (R._fa['cfrom'], R._fa['cto'], np.asarray(R.state)):
         h.update(np.ascontiguousarray(arr).tobytes())
     h.update(np.asarray(R.stop_xy, float).tobytes())
-    h.update(repr(('start-order-v1', INTERCITY_KM)).encode())
+    h.update(repr(('start-order-v2-walkreach', INTERCITY_KM)).encode())
     path = os.path.join(cache_dir, f'startorder_{h.hexdigest()[:16]}.npz')
     if os.path.exists(path):
         z = np.load(path)
@@ -71,6 +74,20 @@ def build(R, cache_dir=None, verbose=True):
         a, b = int(cf[k]), int(ct[k])
         if v > reach[a]: reach[a] = v
         if v > reach[b]: reach[b] = v
+
+    # Reach is about trips serving THIS stop, which scores Sunland Park at 13 km of local bus. It has a
+    # border walk-in into Texas and can walk to a stop on a 3099 km trip, the Sunset Limited at El Paso.
+    # Clovis, at 597 km of its own service, has one foot-neighbour with no reach at all. So what matters is
+    # what you can reach ON FOOT from here, not what stops here: the same error as scoring the Memphis
+    # walk-in by when it touches Mississippi rather than by what it opens up. The footpath closure fixes it
+    # with no new constant.
+    walk_reach = reach.copy()
+    for i, nb in R.foot.items():
+        m = reach[i]
+        for j, _w in nb:
+            if reach[j] > m: m = reach[j]
+        walk_reach[i] = m
+    reach = walk_reach
 
     # nearest stop in a DIFFERENT state, per stop. Equirectangular about the mean latitude is accurate
     # enough over the distances that decide an ordering, and lets one KD-tree answer it.
