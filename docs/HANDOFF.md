@@ -479,3 +479,37 @@ The rule is now exact and has no knob. Getting off at a stop is allowed when eve
 collectible from there at that time, and the end remains reachable, both read straight off the deadline
 tables. Barstow and Conway both pass, because from either one everything still owed is still collectible.
 `--hub` survives only as the fallback for runs given no deadline.
+
+## 13. Where backward's second actually goes
+
+Backward runs at about one node a second, against 274 for forward. Two guesses at the cause were wrong and
+both were measured before shipping, which is the only reason they did not end up in the tree:
+
+| tried | result |
+|---|---|
+| cache the per-node reverse scan on (stop, clock rounded up to the half hour) | 43 nodes at 62 s either way, identical at every heartbeat. Not shipped. |
+| `conn_pos`: index each connection's position in its trip instead of walking the trip list to find it | 56 nodes in 93 s against 57 in 92 s. Shipped as a simplification, not as a fix. |
+
+The scan cache deserves one caveat rather than a verdict: a 90 s backward run sees about 46 nodes, no stop
+repeats in 46 nodes, so the cache could not hit even once. It was measured on a sample too small to say
+anything. If backward ever runs fast enough to revisit a stop, try it again.
+
+A profile of a 90 s backward run (`cProfile`, sorted by internal time) says where the second goes. Search
+phase only, 96 s for 46 nodes:
+
+| where | calls | tottime | per call | share |
+|---|---|---|---|---|
+| `ride_search.py:rides_into` | 42 | 44.1 s | 1.05 s | ~46% |
+| `backward.py:through`, from `still_collectable` | ~42 of 91 | ~24 s | 0.57 s | ~25% |
+
+Building the menu costs twice what the feasibility scan does, and the scan was what both guesses attacked.
+`rides_into` is a triple loop: footpath neighbours of the stop, times every arrival inside `--horizon`
+hours at each, times every upstream stop of each trip found. At a hub that is on the order of a hundred
+thousand emitted options, each carrying a freshly built `frozenset(got)`, which are then sorted so that
+`--width` of them survive.
+
+The next thing to try, exact and behaviour-identical: `got` grows monotonically as the loop walks upstream
+and most upstream stops add no new state, so the frozenset only has to be rebuilt when a state is actually
+added and can be shared by reference in between. That replaces one allocation per upstream stop with one
+per new state. The forward side has the same shape and the same fix. Measure it the same way before
+believing it, and note that the honest test needs a run long enough to see more than 46 nodes.
