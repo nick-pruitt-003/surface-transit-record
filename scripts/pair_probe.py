@@ -25,9 +25,10 @@ from collections import defaultdict
 from datetime import datetime
 from zoneinfo import ZoneInfo
 import numpy as np
-from time_router import TimeRouter, load_feeds, N_STATES
+from time_router import cached_router, N_STATES
 import backward as B
 from common import ABBR
+from pair_tables import resolve_stop, check_path
 
 
 def main():
@@ -56,7 +57,7 @@ def main():
     tz = ZoneInfo(a.tz)
     T0 = datetime.fromisoformat(a.at).replace(tzinfo=tz).timestamp()
     D = datetime.fromisoformat(a.by).replace(tzinfo=tz).timestamp()
-    R = TimeRouter(load_feeds(), datetime.fromisoformat(a.at).date(), a.days)
+    R = cached_router(datetime.fromisoformat(a.at).date(), a.days)
     ab = lambda x: ABBR[R.state_names[x]]
     inv = {v: k for k, v in ABBR.items()}
     END_ST = R.state_names.index(inv[a.end])
@@ -99,6 +100,11 @@ def main():
     for path_ in a.route:
         d = pickle.load(open(path_, 'rb'))
         path = d['path']
+        bad = check_path(R, path, d.get('start'))
+        if bad:
+            print(f'REFUSED {path_}: its stop indices do not fit this router ({len(bad)} problems)')
+            for b in bad[:5]: print('   ', b)
+            continue
         final = frozenset(d['collected']) if 'collected' in d else None
         st0 = path[0][1]
         have = {int(R.state[st0])} if R.state[st0] >= 0 else set()
@@ -132,11 +138,16 @@ def main():
         # this read Houston as the final leg and Hanover as Detroit, and every control node looked dead.
         import time_search as ts_
         from time_search import Search
-        hun = R.stops_matching(a.control_start)[0]
         tc = datetime.fromisoformat(a.control_at).replace(tzinfo=tz).timestamp()
-        S = Search(R, hun, tc, [], 1)
-        ts_._R, ts_._START, ts_._T0, ts_._SELF, ts_._BASE, ts_._END = R, hun, tc, S, None, None
-        fin, legs = S.evaluate(d['order'])
+        tried = []
+        for hun_ in resolve_stop(R, a.control_start):   # every exact match, not the first; keep the fastest
+            S = Search(R, hun_, tc, [], 1)
+            ts_._R, ts_._START, ts_._T0, ts_._SELF, ts_._BASE, ts_._END = R, hun_, tc, S, None, None
+            fin_, legs_ = S.evaluate(d['order'])
+            tried.append((fin_, hun_, legs_))
+        fin, hun, legs = min(tried, key=lambda x: x[0])
+        print(f'control start {a.control_start!r}: stops ' + ', '.join(f'{h} finishes {(f - tc) / 3600:.2f} h'
+              for f, h, _ in tried) + f'; using {hun}', flush=True)
         print(f'control re-evaluated: finishes {(fin - tc) / 3600:.2f} h after its own start', flush=True)
         have = {int(R.state[hun])} if R.state[hun] >= 0 else set()
         for i, l in enumerate(legs, 1):
@@ -161,7 +172,19 @@ def main():
               flush=True)
     if a.nodes:
         for n in pickle.load(open(a.nodes, 'rb')):
-            s = n['stop'] if isinstance(n['stop'], int) else R.stop_name.index(n['stop'])
+            # An int is router-local and a name can be ambiguous, so neither is taken on trust: an int needs
+            # the name it had when written, and a name must match exactly one stop.
+            if isinstance(n['stop'], int):
+                s = n['stop']
+                if n.get('stop_name') != (R.stop_name[s] if 0 <= s < R.N else None):
+                    raise SystemExit(f'--nodes: stop {s} is {R.stop_name[s] if 0 <= s < R.N else "out of range"!r} '
+                                     f'here but {n.get("stop_name")!r} in the file; pass stop_name, or a name')
+            else:
+                ex = resolve_stop(R, n['stop'])
+                if len(ex) > 1:
+                    raise SystemExit(f'--nodes: {n["stop"]!r} is {len(ex)} stops here ({ex}); pass the index '
+                                     f'with stop_name')
+                s = ex[0]
             nodes.append((n.get('label', 'node'), s, float(n['t']), frozenset(n['collected'])))
     if not nodes:
         print('no nodes to test: pass --route, --control or --nodes'); return

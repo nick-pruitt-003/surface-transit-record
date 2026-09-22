@@ -120,3 +120,23 @@ Three consequences, for whoever picks this up:
 Logs are in `out/` (gitignored): `long_slack_1h_precommit6a4bd70.log`, `long_slack_1h_at023b4a2_partial.log`,
 `long_slack_1h_18861ed_stopped2650s.log`, `deep31.log`, `prof_*.log`, `pair_probe2.log`, and the chain
 `deep31.pkl`.
+
+## Addendum: full pair tables, and where the chain actually died
+
+`scripts/pair_tables.py` builds every pair table once (48 x 47 scans, 427 s on 6 workers, 174 MB cached in
+`out/pairs_<key>.npy`, keyed on every array the scans read plus the deadline and span) and answers a node in
+one 9 KB read: `PairTables(R, D, span, L_end, L).dead(stop, t, owed)`. Running it validates itself:
+
+- The 237 control, every node from leg 1 (63 nodes): **0 killed**, tightest AL & FL at Oklahoma City, +0.11 h.
+- The run-1 chain dies at **ride 10, Springfield MA, holding 23 states** (CA & WA miss by 5.8 h), not at
+  Denver. It was alive at New York (+2.2 h) and the Northeast leg from there lost it. Every node from ride
+  10 to the 31-state Salt Lake City one, and the 83000 nodes explored below them, were already dead.
+
+Not yet wired into `ride_search.py`; that edit belongs with whoever holds the file.
+
+Two reading hazards fixed in both probes, from review: a pickle's stop indices are router-local, so
+`check_path` verifies every leg against this router by trip key (boarding at `frm` or anywhere walkable
+from it, alighting at `to` at the recorded time) and refuses the pickle otherwise; and 2955 stop names map to
+more than one stop (Huntington Bus Stop is 755 and 3322), so names resolve to all exact matches and the
+control is evaluated from each (both finish at 237.74 h). `check_path` was only exercised on a pickle that
+fits; its refusal path was last seen firing on a false positive, since fixed, not on a true mismatch.
