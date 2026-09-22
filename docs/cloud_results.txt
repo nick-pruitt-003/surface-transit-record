@@ -2,3 +2,4 @@ M_SPF_WV rc=0 FINAL 260.4 h d17 Sat 17:08 START Spearfish first bus d6 Tue 19:45
 K1_control rc=0 FINAL misses --end-by: best route reaches Pasco Bus Stop at d6 Tue 13:10 (23.8 h late) 
 K2_mi rc=0 FINAL misses --end-by: best route reaches Pasco Bus Stop at d6 Tue 13:10 (23.8 h late) 
 K3_ms rc=0 FINAL misses --end-by: best route reaches Pasco Bus Stop at d6 Tue 13:10 (23.8 h late) 
+N_DIC_MI rc=0 FINAL 272.7 h d13 Tue 06:29 START Dickinson first bus d1 Thu 20:45 END MI arrive d13 Tue 06:29 | record 238.83 h: misses by 33.9 h 
