@@ -230,7 +230,7 @@ def main():
     km = lambda p, q: float(np.hypot((p[0] - q[0]) * 111.3 * np.cos(np.radians((p[1] + q[1]) / 2)), (p[1] - q[1]) * 111.3))
     dist = {x: {y: km(cen[x], cen[y]) for y in range(N_STATES)} for x in range(N_STATES)}
     dist['M'] = np.array([[dist[x][y] for y in range(N_STATES)] for x in range(N_STATES)])
-    if not a.km_estimate: dist['T'] = state_times(R, F, state_stops, D0.timestamp() - 7 * 86400, f'../out/state_times_real_p{int(a.times_pct)}{a.times_sym}.npy')
+    if not a.km_estimate: dist['T'] = state_times(R, F, state_stops, D0.timestamp() - 7 * 86400, f'../out/state_times_real_p{f"{a.times_pct:g}".replace(".", "p")}{a.times_sym}.npy')
     rng = random.Random(48); results = []; t_run = time.time(); oracle = None
     if a.track:
         d = pickle.load(open(a.track, 'rb')); st0 = R.stop_name.index(d['start'])

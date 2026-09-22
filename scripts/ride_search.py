@@ -227,7 +227,7 @@ def main():
         seen_nodes[0] += 1
         spent = (t - T0) if not back else (T0 - t)
         if spent > limit[0]: return
-        if len(collected) >= NEED:
+        if len(collected) >= NEED and (END_ST is None or int(R.state[stop]) == END_ST):
             limit[0] = spent; best[0] = (spent, list(path))
             print(f'  [{time.time() - t_run:5.0f}s] FOUND {spent / 3600:.2f} h, {len(collected)} states, '
                   f'{len(path)} rides', flush=True)
@@ -468,7 +468,10 @@ def main():
             _f, spent, _, stop, t, collected, aboard, path = heapq.heappop(q)
             seen_nodes[0] += 1
             if spent > limit[0]: continue
-            if len(collected) >= NEED:
+            # Collecting every state is not the same as finishing. With an end given, the deadline tables
+            # prune the whole way on the assumption the chain still has to reach it, so accepting a chain
+            # that is standing somewhere else contradicts the pruning that got it there.
+            if len(collected) >= NEED and (END_ST is None or int(R.state[stop]) == END_ST):
                 limit[0] = spent; best[0] = (spent, list(path))
                 print(f'  [{time.time() - t_run:5.0f}s] FOUND {spent / 3600:.2f} h, {len(collected)} states, '
                       f'{len(path)} rides', flush=True)

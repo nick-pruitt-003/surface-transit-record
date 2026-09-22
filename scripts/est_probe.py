@@ -54,8 +54,11 @@ def main(path):
     here_on, here_ld = on['picked'][-1], lead['picked'][-1]
     only_on = sorted(on['left'] - lead['left']); only_ld = sorted(lead['left'] - on['left'])
     print('the two differ by one state each:')
-    for x in only_on: print(f'  only the tracked node still needs {AB[x]}: cheapest hop to it {T[x][list(on["left"])].min():.1f} h')
-    for x in only_ld: print(f'  only the leader  still needs {AB[x]}: cheapest hop to it {T[x][list(lead["left"])].min():.1f} h')
+    def cheapest(x, left):
+        rest = [y for y in left if y != x]          # a state is not its own nearest neighbour
+        return f'{T[x][rest].min():.1f} h' if rest else 'n/a'
+    for x in only_on: print(f'  only the tracked node still needs {AB[x]}: cheapest hop to it {cheapest(x, on["left"])}')
+    for x in only_ld: print(f'  only the leader  still needs {AB[x]}: cheapest hop to it {cheapest(x, lead["left"])}')
 
     print('\nmatrix                            tracked   leader   leader-tracked   keeps tracked?')
     for m in mats:

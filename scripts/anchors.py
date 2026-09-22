@@ -31,7 +31,12 @@ def main():
     # Count the departures actually in the calendar, not the trip entities in the feed. R.trip_info holds one
     # entry per feed trip however many days it runs, so dividing by the window understated everything: the
     # Empire Builder, which runs daily, came out at 0.43 a day.
-    dated = collections.Counter(R.ctrip[k] for k in range(len(R.dep)))
+    # A connection's trip key is (feed, trip id, day index), and there is one connection per consecutive
+    # stop pair, so a forty-stop train contributes thirty-nine entries a day. Counting whole keys and then
+    # looking one up by (feed, trip id) matched nothing and gave zero; counting raw entries counted
+    # connections and pushed every long train past the rarity filter. Dedupe the dated keys first, then
+    # count how many days each feed trip actually runs.
+    dated = collections.Counter((fi_, tid_) for fi_, tid_, _day in set(R.ctrip))
     for (fi, tid), info in R.trip_info.items():
         f = R.feeds[fi]; t = f.trips.get(tid)
         if t is None: continue
