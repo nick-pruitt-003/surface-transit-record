@@ -43,6 +43,15 @@ link the route actually depends on.** Four times in one session:
 | alight rule "stop has >= 6 services" | the Barstow Amtrak depot has 2, and the Southwest Chief leaves from nowhere else |
 | footpath filter `w <= WALK_MAX_KM * 1000 / 1.25` (a made-up 1200 against a value in seconds) | every local-transit hop over 20 min: Memphis to Bellevue at Carr, SLC to the Salt Lake Express shop, Barstow Station to the depot |
 | collecting states only where a ride stops | Mississippi, which the route takes on foot from Holmes at Elvis Presley |
+| ranking candidate rides by hours per new state | the Silver Meteor, 14 h for GA SC NC VA, ranked last of 13 collecting options; and Saint George, 486373rd of 1156403 positioning ones |
+
+The fifth entry is the one that cost a whole night, so state it on its own: **hours per new state is a
+local measure and this route's value is not local.** A long-haul ride that collects four states in fourteen
+hours loses on that ratio to any short hop that grabs one state in twenty minutes, and a repositioning ride
+that is the only way south loses to a five minute local hop that achieves nothing. Measured against the
+control, the ranking disagrees at twelve of its forty legs. Rank by what the deadline tables already know,
+`min over owed y of (L[y][to] - at)`, which is how close a move leaves the chain to losing the state it can
+least afford, not by how efficient the next hour looks.
 
 The stops a 48-state route cannot do without are a two-service desert depot, a five-service town in Arkansas,
 and a 1.3 km walk to a state line. Nothing built on busyness, averages or radii will keep them. Ask the
