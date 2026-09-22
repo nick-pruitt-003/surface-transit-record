@@ -43,6 +43,9 @@ def main():
     ap.add_argument('--route', default='../out/res_starttest.pkl')
     ap.add_argument('--min-window', type=float, default=30, help='minutes; shorter layovers are reported '
                     'but not scanned, since nothing fits')
+    ap.add_argument('--drop', type=int, default=None, help='pretend the route never took this ride, so the '
+                    'layover around it reopens. The honest test of the operator: drop the Memphis detour '
+                    'and it should offer Mississippi back.')
     ap.add_argument('--days', type=int, default=20)
     a = ap.parse_args()
 
@@ -54,6 +57,11 @@ def main():
     ts._R, ts._START, ts._T0, ts._SELF, ts._BASE, ts._END = R, st0, d['t0'], S, None, None
     _, legs = S.evaluate(d['order'])
     rides = [l for l in legs if l[0] == 'ride']
+    if a.drop is not None and 1 <= a.drop <= len(rides):
+        gone_ = rides[a.drop - 1]
+        print(f'pretending the route never took leg {a.drop}, {R.stop_name[gone_[2]][:24]} -> '
+              f'{R.stop_name[gone_[4]][:24]}', flush=True)
+        rides = rides[:a.drop - 1] + rides[a.drop:]
     print(f'{len(rides)} rides over {len(d["order"])} states\n', flush=True)
 
     # Where the route stands still. A layover is arriving somewhere and leaving it later, and the gap is
@@ -73,8 +81,23 @@ def main():
         gap = bt2 - at
         if gap > 0: holes.append((i + 1, al, at, bt2, gap))
 
+    # What the route already holds by the time it reaches each layover. Without this the table is mostly
+    # tautology: standing in Wisconsin, Wisconsin is collectable. The question worth asking is what a
+    # window could add that the route does not have yet.
+    have = [None] * (len(rides) + 1)
+    seen = set()
+    if R.state[st0] >= 0: seen.add(int(R.state[st0]))
+    for _l in legs:
+        if _l[0] == 'walk' and _l[2] >= R.first_virtual and R.state[_l[2]] >= 0: seen.add(int(R.state[_l[2]]))
+    running = set()
+    if R.state[st0] >= 0: running.add(int(R.state[st0]))
+    for i, (_, _t, bs_, _bt, al_, _at) in enumerate(rides):
+        for s_ in (bs_, al_):
+            if R.state[s_] >= 0: running.add(int(R.state[s_]))
+        have[i + 1] = set(running)
+
     print(f'{len(holes)} layovers where the route waits at the stop it arrived at\n', flush=True)
-    print(f'{"after leg":>9}  {"stop":28s} {"window":>8}  what could be collected in it', flush=True)
+    print(f'{"after leg":>9}  {"stop":28s} {"window":>8}  states it could add that the route lacks there', flush=True)
 
     total_free = set()
     for n, X, t_in, t_out, gap in sorted(holes, key=lambda h: -h[4]):
@@ -90,10 +113,11 @@ def main():
         eff, _ = rev.through(ok, k0, k1, np.ones(R.N, bool))
         back = np.maximum(latest, eff)
 
+        already = have[n] if have[n] is not None else set()
         fits = []
         for y in range(N_STATES):
             sa = st_arr.get(y)
-            if sa is None: continue
+            if sa is None or y in already: continue      # standing in it is not a discovery
             if np.any(np.isfinite(best[sa]) & (best[sa] <= back[sa])):
                 fits.append(y)
         total_free |= set(fits)
