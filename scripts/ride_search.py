@@ -824,7 +824,7 @@ def main():
             # loop reaches it, and re-ranking a head only ever reshuffles legs that were already inside the
             # width. The question worth answering first is whether the pair margin would promote the legs
             # slack buries at all. If it would not, the optimised version is not worth building.
-            pair_rank = None
+            pair_rank = None; pair_margin = None
             if PT is not None and a.pairrank:
                 owed_node = [y for y in range(N_STATES) if y not in collected]
                 if len(owed_node) >= 2:
@@ -852,6 +852,14 @@ def main():
                     order_ = sorted(range(len(scored)), key=lambda i: -scored[i][0])
                     pair_rank = next((i + 1 for i, j in enumerate(order_)
                                       if opts[j][0] == al and opts[j][2] == trip and opts[j].walk is None), None)
+                    # The level as well as the rank, because the obvious fix is probably wrong. The
+                    # control's Pasco leg sits at +1.9 h with the whole East still owed, so it takes a
+                    # TIGHT move through the corridor the local agent measured as forced. A ranker that
+                    # simply prefers a comfortable margin would steer away from it. Printing what the
+                    # control took against the best that was on offer is how that gets caught here rather
+                    # than after a night of running.
+                    if pair_rank:
+                        pair_margin = scored[order_[pair_rank - 1]][0], scored[order_[0]][0]
             # A control leg is a plain ride, so only a plain ride reproduces it. Before the walk field
             # existed a walk-in carried no trip and could never match here; now it carries the real one,
             # and without this the replay counts the ride-plus-detour variant as the same move. It showed
@@ -926,6 +934,8 @@ def main():
                 print(f'         {kind:11s} {grank}/{len(peers)} within its own group'
                       + (f'; pair margin would rank it {pair_rank}/{len(opts)}'
                          + ('  BETTER' if pair_rank < rank else '  worse' if pair_rank > rank else '  same')
+                         + (f', leaves {pair_margin[0] / 3600:+.1f} h vs best on offer '
+                            f'{pair_margin[1] / 3600:+.1f} h' if pair_margin else '')
                          if pair_rank else ''), flush=True)
                 if a.anatomy: anatomy(opts, al, trip, n_new)
                 if rank > a.width: lost += 1
