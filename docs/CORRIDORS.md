@@ -79,3 +79,24 @@ arrives at 14:50.
 Amtrak trips carry no name in the router (`trip_info` is empty for them); the first version of this check
 matched on names and silently filed every Meteor route under "without". It now reads route names from the
 Amtrak feed.
+
+## Florida: through Tallahassee, Lake City or Jacksonville; never the Pensacola loop (florida_probe.py)
+
+Nick's rule, which replaces "the Silver Meteor" as the Florida finding: the bus and the Floridian are not much
+slower than the Meteor, but no successful Florida route avoids Jacksonville, Lake City or Tallahassee, and the
+panhandle loop (Mobile - Pensacola - Mobile) does not connect.
+
+From the control's node before Florida (Magnolia Park, Houston, Thu 18:18, 185.8 h, 30 held) and every 2 h
+that day with the same held set: route into Florida through each gateway, credit states passed, pair test
+where Florida is collected.
+
+- **Pensacola loop (in at Pensacola, back to Mobile): dead at every start time, -10.8 h.** Structural, not a
+  timing miss.
+- Tallahassee, Lake City, Jacksonville: all alive for departures up to 18:18 (margins +0.2 to +15.0 h;
+  Tallahassee fastest, 17 h at the control's time). All three die from 20:00 on, together, because the whole
+  chain is out of time rather than because of the gateway.
+- Plain "via Pensacola" is alive only as a pass-through: it is the control's own eastbound I-10 bus, which
+  crosses into Florida at Pensacola and stays aboard to Tallahassee. Ride through Pensacola, never turn there.
+
+The Silver Meteor section above stands as a measurement but not as a rule: it is one of several ways out of
+the Florida gateways, decisive only mid-afternoon.
