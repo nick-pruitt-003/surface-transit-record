@@ -107,13 +107,17 @@ def main():
                     'everything of, which is most of them: the control\'s forty legs hold 3868010 options '
                     'and 71693 survivors. Still opt-in, because making it the default changes what every '
                     'search sees and that deserves its own measurement, not a coat-tail ride on this one.')
-    ap.add_argument('--pairs', default=None, choices=('pop', 'push'), help='kill a node when two states it '
+    ap.add_argument('--pairs', default=None, choices=('report', 'pop', 'push'), help='kill a node when two states it '
                     'still owes cannot both be collected, in either order, and still finish. The per-state '
                     'test L[y][stop] >= t is what the search already has, and the run-1 chain passed it at '
                     'every leg while being dead from Springfield MA onward. The pair test is the same scans '
                     'seeded one step deeper and is just as exact. `pop` tests a node when it comes off the '
                     'frontier, `push` tests it before it goes on; which is cheaper is a measurement, not a '
-                    'guess, so both exist. Needs --end and --by, like the per-state tables.')
+                    'guess, so both exist. `report` builds the table and prunes nothing, which is the '
+                    'baseline arm: the exit census then says how many of the deep bucket were jointly dead '
+                    'all along, measured on a run the prune did not touch. Without it the baseline and the '
+                    'pruned runs are not read with the same instrument. Needs --end and --by, like the '
+                    'per-state tables.')
     ap.add_argument('--anatomy', action='store_true', help='with --track, break down each leg\'s option '
                     'list: how many options, how many distinct destinations, and how many survive exact '
                     'dominance. Answers whether a node with a million options has a million choices.')
@@ -982,7 +986,7 @@ def main():
                     # The pair test is a fact about this node too, so the sweep may use it. With --pairs push
                     # nothing here can fail it and this number should read 0; if it does not, a node entered
                     # the frontier without being tested and that is the bug, not the sweep.
-                    if PT is not None:
+                    if PT is not None and a.pairs != 'report':
                         owed2 = [y for y in range(N_STATES) if y not in col2]
                         if len(owed2) >= 2 and PT.dead(int(st2), float(t2), owed2):
                             swept_pairs += 1
@@ -1131,7 +1135,9 @@ def main():
     print(f'\n{seen_nodes[0]} nodes in {el:.0f} s ({seen_nodes[0] / max(el, 1):.0f}/s), {sum(len(v) for v in dom_stop.values())} kept '
           f'(stop, states); deepest {deepest[0]}/{NEED} states')
     if PT is not None:
-        print(f'pair prune at {a.pairs}: {pair_kills[0]} nodes killed for owing an uncollectable pair')
+        print('pair table built, prune switched off (--pairs report); the census below is the measurement'
+              if a.pairs == 'report' else
+              f'pair prune at {a.pairs}: {pair_kills[0]} nodes killed for owing an uncollectable pair')
     census(last_q[0] or [])
     if best[0] is None:
         print(f'nothing reached {NEED} states under {a.target} h in the budget')
