@@ -79,3 +79,28 @@ out of frontier, it is spending ever more per node, and the plateau is at 24 rat
 earlier. Worth pointing the profiler at a forward run too, since the assumption that forward is fast holds
 only for its first minute.
 | `a_fwd48` | 27 min | deepest 25/48 | 13248 nodes in 1502 s (9/s) | 0 | none |  | rc=0 |
+| `b_fwd30` | 17 min | deepest 24/30 | 11530 nodes in 900 s (13/s) | 0 | none |  | rc=0 |
+
+### The states ladder answers a different question than it asked
+
+`b_fwd30` was meant to find where the wall bends when fewer states are required. It does not bend:
+
+| run | required | deepest | when | where | budget spent after |
+|---|---|---|---|---|---|
+| `a_fwd48` | 48 | 25 | ~10 s | White River Junction, 80.7 h, 11 rides | 13248 nodes, nothing better |
+| `b_fwd30` | 30 | 24 | 9 s | White River Junction, 80.7 h, 11 rides | 11530 nodes, nothing better |
+
+Same stop, same depth, same clock, same ride count. `b_fwd30` needed six more states and could not find them
+in fifteen minutes. Lowering the requirement changes nothing, so the requirement is not what binds.
+
+What binds is the opening dive. `--order rate` sorts candidates by time per new state, and the cheapest
+states per hour are the small ones stacked along the Northeast corridor, so the search takes them first and
+arrives beside the finish at 80 h holding 24 states. From there the remaining half of the country cannot be
+collected and returned from inside the limit, so every continuation dies on the deadline tables. The 237
+control does the Northeast **last**, for exactly this reason.
+
+Two consequences. First, `deepest` is not a progress measure: it is printed when a node is popped, before
+pruning, so it reports how far one doomed chain got. A run that says 25/48 may never have had a live chain
+past 12. Second, the ladder runs still queued (`b_fwd36`, `b_fwd42`, `b_fwd45`) will almost certainly repeat
+the same 24 at the same stop, and the runs that matter are the ordering ones, `c_fwd48_early` and
+`c_fwd48_states`, which change the dive itself.
