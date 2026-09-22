@@ -352,3 +352,61 @@ The list also turned up a lead that is in neither section 3 nor section 4:
 Eight states in one ride, covering the northern tier the 237 route currently spends legs 15 to 18 and about
 two days crossing by Jefferson Lines via Billings, Spokane and Pasco. It does not collect SD, WY, NE or IA,
 which the Jefferson runs do, so it is not a drop-in. It has not been tested.
+
+## 12. Sep 22: depth-first with backtracking, and the number that decides it
+
+Nick's shape: the timetables are a menu, the search works against a time limit, and when the options taken
+get it too far it backs up a step and tries the next one, then a step further back. That is branch and
+bound (`scripts/dfs_backward.py`), and it fixes the exact flaw that defeated every estimate.
+
+A beam prunes **relatively**: it keeps whichever chains look best against each other now, which is why it
+throws away a route that is behind for fifteen steps and only wins at the end. Backtracking prunes
+**absolutely**: a branch dies only when what it has spent plus a floor on what is left would pass the limit.
+Being behind some other chain is not a reason, so the 237 route is never discarded. It also changes what is
+needed from the estimate, from one that ranks correctly, which five attempts failed at, to one that merely
+never sits above the truth. That is a far easier target, and the reach floor that was useless for ranking is
+a perfectly good bound.
+
+First run, end VT, limit 238 h, topk 6: **6163 nodes in 903 s (7/s), 5112 branches cut, nothing found.**
+
+### The bound is 35% of the truth, and it needs about 85%
+
+`scripts/bound_probe.py` walks the reference chain and compares each candidate floor with the remaining time
+along that same chain. (Measure the remainder against this chain's own end, not the forward route's clock: a
+strict sequential backward chain is a stronger requirement than the route, which collects states in passing,
+so its latest times run earlier and `total - spent` goes negative near the start. An earlier version of the
+probe did that and reported false inadmissibility.)
+
+| step | at | true left | tree | reach | hybrid | best/true |
+|---|---|---|---|---|---|---|
+| 1 | VT | 259.9 | 90.2 | 73.6 | 88.5 | 35% |
+| 9 | PA | 244.2 | 83.2 | 67.6 | 83.0 | 34% |
+| 17 | AL | 211.6 | 70.9 | 66.8 | 73.7 | 35% |
+| 25 | NV | 136.2 | 58.7 | 54.9 | 60.9 | 45% |
+| 33 | WI | 75.2 | 36.6 | 21.8 | 42.0 | 56% |
+| 41 | MS | 30.0 | 15.5 | 20.8 | 11.4 | 69% |
+
+The arithmetic that matters: with a limit of 238 h and a floor of 90 h, nothing is cut until 148 h have been
+spent, which is around step 21. The top twenty levels are unprunable, and 6^20 is 3.6e15. At a 60% bound
+pruning would start near step 17, still 1.7e13. At **85%** it starts around step 6, and 6^7 is 280000, which
+is searchable. So the bound has to roughly triple. That is the whole problem, stated as a number.
+
+Two smaller results: `win`, counting a state the scan could not reach as at least a window away, is worth
+nothing, because from anywhere in the country every state is reachable inside 110 h, so it equals `reach`
+everywhere. And `hybrid`, the spanning tree with the current state's edges replaced by measured ones, is not
+better than the plain tree (88.5 against 90.2 at the root).
+
+### Where a tighter bound would come from
+
+Not from another matrix: section 11 ruled that family out. The standard answer to this is abstraction.
+Partition the 48 states into about eight regions, precompute the true minimum time to traverse each region
+and to move between them by time of day, and bound by the cheapest region ordering (8! = 40320, trivial to
+enumerate). Because regions partition the states the bound stays admissible, and because it uses real
+traversal costs rather than best-case pairwise hops it should be far tighter than 35%. That is a
+substantial build and it has not been started.
+
+The cheaper use of the same idea, which is worth doing first: **bounded backtracking over a window.** Do not
+search 48 levels from scratch. Hold the 237 route fixed except for k consecutive states and search that
+window exhaustively with the limit set to the current best. At k of 6 to 8 that is a few thousand nodes per
+window and it is exact within the window, which is a strictly stronger version of what the forward search's
+relocate move does by sampling.
