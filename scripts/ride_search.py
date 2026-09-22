@@ -37,9 +37,10 @@ def main():
     ap.add_argument('--horizon', type=float, default=24, help='hours ahead to look for a departure')
     ap.add_argument('--hub', type=int, default=6, help='fallback alight rule when no deadline is given: the stop '
                     'has at least this many services. With --end/--by the deadline tables decide instead.')
-    ap.add_argument('--order', default='rate', choices=('rate', 'states', 'early'),
+    ap.add_argument('--order', default='rate', choices=('rate', 'states', 'early', 'slack'),
                     help="which ride to try first: 'rate' hours per new state, 'states' most new states, "
-                         "'early' earliest arrival")
+                         "'early' earliest arrival, 'slack' how much room the move leaves against the "
+                         "deadline tables. 'slack' needs --end/--by and falls back to 'rate' without them.")
     ap.add_argument('--width', type=int, default=12, help='rides tried per node')
     ap.add_argument('--mode', default='best', choices=('best', 'dfs'),
                     help="'best' expands the most promising node anywhere in the frontier; 'dfs' dives and "
@@ -149,6 +150,49 @@ def main():
         owed = [y for y in range(N_STATES) if y not in collected]
         if not owed: return L_end
         return np.minimum(L[owed].min(axis=0), L_end)
+
+    def sort_opts(opts, collected, n_new, t, back=False):
+        """Order a node's candidate rides, by slack when asked for it and by the old keys otherwise.
+
+        Slack is how much room a move leaves before the first state it can no longer collect: for a ride
+        that puts you at `to` at `at`, the minimum over everything still owed of `L[y][to] - at`, read
+        straight off the deadline tables rather than estimated. `ceiling` already returns that minimum per
+        stop for the node's owed set, in one numpy pass, so the whole list costs one column-wise min plus a
+        subtraction per option.
+
+        It is here because hours per new state, the old key, is a local measure and this route's value is
+        not local. Measured against the control it disagrees at twelve of forty legs. The Silver Meteor
+        carries Georgia, South Carolina, North Carolina and Virginia in fourteen hours and ranks last of
+        thirteen collecting options, beaten by every short hop that takes one state in twenty minutes.
+        Saint George, which is the only way south, ranks 486373rd of 1156403 positioning ones because it
+        is scored on how little time it burns. Slack asks a different question: after this ride, how close
+        am I to losing the state I can least afford to lose. A long haul that collects four states shrinks
+        the owed set and can raise it; a five minute hop that goes nowhere cannot.
+
+        The split between rides that collect and rides that do not is kept. The group ranks say it is not
+        what binds, and dropping it would let a hop that changes nothing outrank a real ride whenever both
+        are comfortable, which is the dithering the old comment warned about.
+        """
+        if a.order == 'slack' and L is not None:
+            cap = ceiling(collected)
+            capl = cap.tolist()                      # 1.15M numpy scalar reads per node is not affordable
+            endl = L_end.tolist()
+
+            def slack(o):
+                to, at, _trip, got = o
+                if not (got - collected): return capl[to] - at      # owed unchanged, the node's own ceiling
+                owed_after = [y for y in range(N_STATES) if y not in collected and y not in got]
+                if not owed_after: return endl[to] - at
+                return min(float(L[owed_after, to].min()), endl[to]) - at
+
+            opts.sort(key=lambda o: (n_new(o) == 0, -slack(o)))
+        elif a.order in ('rate', 'slack'):      # 'slack' lands here only backward, which has no tables
+            opts.sort(key=lambda o: (n_new(o) == 0, ((t - o[1]) if back else (o[1] - t)) / max(1, n_new(o))))
+        elif a.order == 'states':
+            opts.sort(key=lambda o: (n_new(o) == 0, -n_new(o), -o[1] if back else o[1]))
+        else:
+            opts.sort(key=lambda o: (n_new(o) == 0, -o[1] if back else o[1]))
+        return opts
 
     def alight_ok(to, at, owed_after):
         """Is getting off here survivable? Every state still owed has to remain collectible from this stop at
@@ -298,12 +342,7 @@ def main():
         # ordered ahead of positioning ones in every mode, and the modes differ only in how they rank within
         # those two groups.
         n_new = lambda o: len(o[3] - collected)
-        if a.order == 'rate':
-            opts.sort(key=lambda o: (n_new(o) == 0, (o[1] - t) / max(1, n_new(o))))
-        elif a.order == 'states':
-            opts.sort(key=lambda o: (n_new(o) == 0, -n_new(o), o[1]))
-        else:
-            opts.sort(key=lambda o: (n_new(o) == 0, o[1]))
+        sort_opts(opts, collected, n_new, t)
         for to, at, trip, got in opts[:a.width]:
             new = collected | got
             path.append((trip, stop, to, t, at))
@@ -417,9 +456,7 @@ def main():
             if not still_collectable(stop, t, owed, NEED - len(collected)): continue
             opts = rides_into(stop, t, aboard, collected)
             n_new = lambda o: len(o[3] - collected)
-            if a.order == 'rate': opts.sort(key=lambda o: (n_new(o) == 0, (t - o[1]) / max(1, n_new(o))))
-            elif a.order == 'states': opts.sort(key=lambda o: (n_new(o) == 0, -n_new(o), -o[1]))
-            else: opts.sort(key=lambda o: (n_new(o) == 0, -o[1]))
+            sort_opts(opts, collected, n_new, t, back=True)
             for frm, bt, trip, got in opts[:a.width]:
                 new = collected | got
                 sp2 = D - bt
@@ -461,9 +498,7 @@ def main():
             _, trip, bs, bt, al, at = l
             opts = rides_from(stop, t, aboard, collected)
             n_new = lambda o: len(o[3] - collected)
-            if a.order == 'rate': opts.sort(key=lambda o: (n_new(o) == 0, (o[1] - t) / max(1, n_new(o))))
-            elif a.order == 'states': opts.sort(key=lambda o: (n_new(o) == 0, -n_new(o), o[1]))
-            else: opts.sort(key=lambda o: (n_new(o) == 0, o[1]))
+            sort_opts(opts, collected, n_new, t)
             rank = next((i + 1 for i, o in enumerate(opts) if o[0] == al and o[2] == trip), None)
             got = next((o[3] for o in opts if o[0] == al and o[2] == trip), frozenset())
             info = R.trip_info.get(trip, ('', ''))
@@ -545,9 +580,7 @@ def main():
             remember(stop, mk, spent)
             opts = rides_from(stop, t, aboard, collected)
             n_new = lambda o: len(o[3] - collected)
-            if a.order == 'rate': opts.sort(key=lambda o: (n_new(o) == 0, (o[1] - t) / max(1, n_new(o))))
-            elif a.order == 'states': opts.sort(key=lambda o: (n_new(o) == 0, -n_new(o), o[1]))
-            else: opts.sort(key=lambda o: (n_new(o) == 0, o[1]))
+            sort_opts(opts, collected, n_new, t)
             for to, at, trip, got in opts[:a.width]:
                 new = collected | got
                 # Dominance when queuing, not only when popped. Many queued nodes share a stop, a set of
