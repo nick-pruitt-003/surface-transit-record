@@ -43,6 +43,9 @@ def main():
     ap.add_argument('--width', type=int, default=12, help='rides tried per node')
     ap.add_argument('--span', type=float, default=260, help='hours the deadline tables scan back over')
     ap.add_argument('--budget', type=float, default=900); ap.add_argument('--nodes', type=int, default=2000000)
+    ap.add_argument('--track', help='reference route pickle: replay its rides through this search and report, '
+                    'leg by leg, whether the menu offers them and where they rank. 237 is a control: the test '
+                    'is that it reproduces, not that it is beaten.')
     ap.add_argument('--days', type=int, default=20); ap.add_argument('--out')
     a = ap.parse_args()
     back = a.dir == 'backward'
@@ -66,6 +69,18 @@ def main():
 
     START = R.stops_matching(a.start)[0] if a.start else None
     inv = {v: k for k, v in ABBR.items()}
+
+    # A state is collected by a ride OR by a border walk-in (Nick's rule 1 and 4). Counting only the states a
+    # ride's stops sit in misses every state taken on foot, and the reference route takes Mississippi that way:
+    # it rides to Holmes at Elvis Presley and walks 1.3 km to the line. Without this the search never collects
+    # MS, MS stays owed for the rest of the route, and alight_ok then correctly refuses every stop east of
+    # Texas because Mississippi can no longer be reached. time_router already built exactly these links, to the
+    # virtual border points at and beyond first_virtual, so read them off rather than invent a rule.
+    walkin = {}
+    for i in range(R.N):
+        got = {int(R.state[j]) for j, w in R.foot.get(i, ()) if j >= R.first_virtual and R.state[j] >= 0}
+        if got: walkin[i] = frozenset(got)
+    print(f'  {len(walkin)} stops can step over a state line on foot', flush=True)
 
     # Both clocks on the same node. Going forward the search knows how long it has been out; these tables give
     # it the other half, how long it has left. One reverse scan from the end at its deadline gives the latest
@@ -116,7 +131,14 @@ def main():
         Riding on the trip already boarded needs no transfer; anything else does."""
         out = []
         all_states = range(N_STATES)
-        for j, w in [(s, 0)] + [(j, w) for j, w in R.foot.get(s, ()) if w <= WALK_MAX_KM * 1000 / 1.25]:
+        # Every footpath the router built, with no second opinion. This line used to drop any link costing
+        # more than a made-up 1200, which is seconds, so it silently hid every local-transit hop longer than
+        # twenty minutes: Memphis to Bellevue at Carr, Salt Lake City Intermodal to the Salt Lake Express
+        # shop, Barstow Station to the depot. Those are the hops the reference route cannot do without, and
+        # losing the Memphis one cost it Mississippi, after which alight_ok correctly refused every stop from
+        # Kansas onward because Mississippi could no longer be collected. time_router already decides what is
+        # walkable and what needs local transit; deciding again here only throws its answer away.
+        for j, w in [(s, 0)] + list(R.foot.get(s, ())):
             t_ok = t + w + (0 if j == s else 0)
             times = dep_times.get(j)
             if not times: continue
@@ -135,6 +157,7 @@ def main():
                 for kk in cs[p:]:
                     to = int(R.cto[kk]); st = int(R.state[to])
                     if st >= 0: got.add(st)
+                    got |= walkin.get(to, frozenset())   # stepping over the line on foot counts, and is how MS is got
                     at = float(R.arr[kk])
                     owed = [y for y in all_states if y not in collected and y not in got]
                     if alight_ok(to, at, owed):
@@ -192,11 +215,64 @@ def main():
             dfs(to, at, new, trip, path)
             path.pop()
 
+    if a.track:
+        import pickle as _pk
+        import time_search as ts
+        from time_search import Search
+        d = _pk.load(open(a.track, 'rb'))
+        st0 = R.stop_name.index(d['start'])
+        S = Search(R, st0, d['t0'], [], 1)
+        ts._R, ts._START, ts._T0, ts._SELF, ts._BASE, ts._END = R, st0, d['t0'], S, None, None
+        _, legs = S.evaluate(d['order'])
+        rides = [l for l in legs if l[0] == 'ride']
+        print(f'\nreplaying {len(rides)} rides of {a.track} through this search '
+              f'(order {a.order}, width {a.width})\n', flush=True)
+        stop, t, aboard = st0, d['t0'], None
+        _ss = set(walkin.get(st0, ()))
+        if R.state[st0] >= 0: _ss.add(int(R.state[st0]))
+        collected = frozenset(_ss)
+        lost = 0
+        for n, l in enumerate(rides, 1):
+            _, trip, bs, bt, al, at = l
+            opts = rides_from(stop, t, aboard, collected)
+            n_new = lambda o: len(o[3] - collected)
+            if a.order == 'rate': opts.sort(key=lambda o: (n_new(o) == 0, (o[1] - t) / max(1, n_new(o))))
+            elif a.order == 'states': opts.sort(key=lambda o: (n_new(o) == 0, -n_new(o), o[1]))
+            else: opts.sort(key=lambda o: (n_new(o) == 0, o[1]))
+            rank = next((i + 1 for i, o in enumerate(opts) if o[0] == al and o[2] == trip), None)
+            got = next((o[3] for o in opts if o[0] == al and o[2] == trip), frozenset())
+            info = R.trip_info.get(trip, ('', ''))
+            name = (info[1] or info[0])[:22]
+            if rank is None:
+                # why not: was the trip offered at all, and would getting off there have been allowed?
+                offered = any(o[2] == trip for o in opts)
+                owed = [y for y in range(N_STATES) if y not in collected]
+                ok = alight_ok(al, at, [y for y in owed if y != int(R.state[al])])
+                bad = [ab(y) for y in owed if y != int(R.state[al]) and L is not None and at > L[y][al]]
+                why = (('alight_ok rejected the stop; no longer collectable from there: ' + ' '.join(bad)) if not ok else
+                       'trip offered but not to this stop' if offered else
+                       'trip offered nowhere allowed, or not reachable from here')
+                print(f'  leg {n:2d} {name:22s} -> {R.stop_name[al][:26]:26s} MISSING: {why}', flush=True)
+                lost += 1
+            else:
+                flag = '' if rank <= a.width else f'  <-- OUTSIDE --width {a.width}'
+                print(f'  leg {n:2d} {name:22s} -> {R.stop_name[al][:26]:26s} rank {rank:3d}/{len(opts):4d}'
+                      f'  +{" ".join(ab(x) for x in sorted(got - collected)) or "-"}{flag}', flush=True)
+                if rank > a.width: lost += 1
+            collected = collected | got
+            stop, t, aboard = al, at, trip
+        print(f'\n{len(rides) - lost}/{len(rides)} rides reproducible within --width {a.width}; '
+              f'{len(collected)}/{N_STATES} states collected along the way')
+        if lost == 0: print('the control replays end to end: every ride it takes is on the menu and inside the width.')
+        return
+
     sys.setrecursionlimit(20000)
     if back:
         print('backward mode needs the reverse connection index; not built yet, running forward from --start')
     if START is None: print('need --start'); return
-    dfs(START, T0, frozenset({int(R.state[START])}) if R.state[START] >= 0 else frozenset(), None, [])
+    start_states = set(walkin.get(START, ()))
+    if R.state[START] >= 0: start_states.add(int(R.state[START]))
+    dfs(START, T0, frozenset(start_states), None, [])
     el = time.time() - t_run
     print(f'\n{seen_nodes[0]} nodes in {el:.0f} s ({seen_nodes[0] / max(el, 1):.0f}/s), {len(dom)} distinct '
           f'(stop, states); deepest {deepest[0]}/{NEED} states')
