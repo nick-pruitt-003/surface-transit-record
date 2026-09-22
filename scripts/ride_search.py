@@ -107,6 +107,13 @@ def main():
                     'everything of, which is most of them: the control\'s forty legs hold 3868010 options '
                     'and 71693 survivors. Still opt-in, because making it the default changes what every '
                     'search sees and that deserves its own measurement, not a coat-tail ride on this one.')
+    ap.add_argument('--pairs', default=None, choices=('pop', 'push'), help='kill a node when two states it '
+                    'still owes cannot both be collected, in either order, and still finish. The per-state '
+                    'test L[y][stop] >= t is what the search already has, and the run-1 chain passed it at '
+                    'every leg while being dead from Springfield MA onward. The pair test is the same scans '
+                    'seeded one step deeper and is just as exact. `pop` tests a node when it comes off the '
+                    'frontier, `push` tests it before it goes on; which is cheaper is a measurement, not a '
+                    'guess, so both exist. Needs --end and --by, like the per-state tables.')
     ap.add_argument('--anatomy', action='store_true', help='with --track, break down each leg\'s option '
                     'list: how many options, how many distinct destinations, and how many survive exact '
                     'dominance. Answers whether a node with a million options has a million choices.')
@@ -193,6 +200,31 @@ def main():
         ls = L_end[START] if START is not None else -np.inf
         print('  deadline tables built in %.0f s; latest start that still finishes: %s'
               % (time.time() - t_pre, R.fmt_time(float(ls), START) if ls > -np.inf else 'unreachable'), flush=True)
+
+    # One step deeper than L. L asks whether each owed state is still collectable on its own; the pair table
+    # asks whether each owed PAIR is collectable in one order or the other. Same reverse scans, seeded from
+    # y's stops with L[z] instead of L_end, so nothing here is estimated either. It matters because the
+    # per-state test is structurally unable to see a chain that owes CA and WA from Springfield MA: each is
+    # individually reachable, neither after the other.
+    PT = None
+    if a.pairs:
+        if L is None:
+            sys.exit('--pairs needs the deadline tables, which need --end and --by')
+        from pair_tables import PairTables
+        PT = PairTables(R, D, a.span, L_end=L_end, L=L)
+    pair_kills = [0]
+
+    def pair_dead(stop, t, collected):
+        """Is this node owing a pair it can no longer collect in either order? Counted, so a check that
+        never fires says so instead of looking like it is working. The pop-side owed-state kill was deleted
+        for exactly that reason: its counter read 0 of 13404."""
+        if PT is None: return False
+        owed = [y for y in range(N_STATES) if y not in collected]
+        if len(owed) < 2: return False
+        if PT.dead(int(stop), float(t), owed):
+            pair_kills[0] += 1
+            return True
+        return False
 
     def ceiling(collected):
         """Per stop, the latest you could get off there and still owe nothing you cannot collect.
@@ -656,6 +688,49 @@ def main():
                 heapq.heappush(q, (sp2 - a.credit * 3600 * len(new), sp2, seq[0], frm, bt, new, trip,
                                    path + ((trip, frm, stop, bt, t, walk, seg),)))
 
+    def route_record(path_, spent_, collected_, complete_, back_=False):
+        """A chain in the shape everything downstream already reads.
+
+        repair_probe and Search.evaluate want (start, t0, order); the search's own path is a list of legs.
+        The first version of the stalled-chain writer emitted only the legs, so the pickle written for the
+        repair test could not be read by the repair test: producer and consumer written an hour apart and
+        never run against each other. `complete` still says whether this is a route or a chain that stalled,
+        because a caller that cannot tell those apart will eventually treat one as the other.
+        """
+        legs_ = list(path_[::-1]) if back_ else list(path_)
+        order_ = []
+
+        def add_(st_):
+            if st_ is not None and st_ >= 0 and st_ not in order_: order_.append(st_)
+
+        for trip_, frm_, to_, bt_, at_, walk_, seg_ in legs_:
+            # Every state the ride is actually in, not just the two it stops at. The search credits a state
+            # when a ride passes through it, which is right, you are in it; deriving the order from
+            # endpoints alone dropped the rest. A chain reporting 31 states wrote an order of 17, and
+            # repair_probe then re-flew that 17-state ghost and offered back states the real chain already
+            # held. The pass-through states are recoverable from the trip itself.
+            add_(int(R.state[frm_]))
+            # The ride is in every state it passes through, and `seg` says exactly which stretch it rode.
+            # Two earlier versions got this wrong in the same direction, each time crediting too little:
+            # first by taking only the two endpoint stops, then by walking the trip from the stop the leg
+            # names, which a ride boarded after a walk never departs from. Connection indices have neither
+            # problem, and unlike matching on stops they are still right on a trip that loops back through
+            # a stop it has already visited.
+            cs_ = trip_conns.get(trip_) if trip_ is not None else None
+            if cs_ and seg_:
+                bk_, ak_ = seg_
+                i0, i1 = int(conn_pos[bk_]), int(conn_pos[ak_])
+                if i0 > i1: i0, i1 = i1, i0
+                for kk_ in cs_[i0:i1 + 1]:
+                    add_(int(R.state[int(R.cfrom[kk_])])); add_(int(R.state[int(R.cto[kk_])]))
+            add_(int(R.state[to_]))
+            add_(walk_)
+        st0_ = legs_[0][1] if legs_ else (START if START is not None else 0)
+        t0_ = legs_[0][3] if legs_ else T0
+        return dict(path=legs_, spent=spent_, collected=sorted(collected_), complete=complete_,
+                    start=R.stop_name[st0_], t0=float(t0_), order=order_,
+                    service_date=str(R.d0) if hasattr(R, 'd0') else None)
+
     if a.track:
         import pickle as _pk
         import time_search as ts
@@ -680,6 +755,15 @@ def main():
             if _l[0] == 'walk' and _l[2] >= R.first_virtual and R.state[_l[2]] >= 0:
                 by_walk.setdefault(_l[1], set()).add(int(R.state[_l[2]]))
         lost = 0
+        tightest = [np.inf, '']
+        # The result-writing path has no gate of its own, and that is how be64aa9 shipped: a `far` field
+        # added to the legs the search pushes but not to the ones it writes, so every `--out` raised
+        # ValueError, with regress green and --track green. The replay is already walking real legs through
+        # the real menu, so build the same leg tuples best_first pushes and hand them to route_record at the
+        # end. The assertion is the one route_record exists to satisfy: the state order it derives is exactly
+        # the set of states the chain was credited with. Only the options the menu actually returned go in,
+        # so this measures the writer and not the replay's bookkeeping.
+        rec_path = []; rec_got = set(_ss)
         for n, l in enumerate(rides, 1):
             _, trip, bs, bt, al, at = l
             opts = rides_from(stop, t, aboard, collected)
@@ -714,6 +798,8 @@ def main():
                               f'  covered by an earlier ride at {R.fmt_time(sub[1], al)}'
                               + ('' if rank <= a.width else f'  <-- OUTSIDE --width {a.width}'), flush=True)
                         if rank > a.width: lost += 1
+                        rec_path.append((sub[2], stop, sub[0], t, sub[1], sub.walk, sub.seg))
+                        rec_got |= set(sub[3]) | ({sub.walk} if sub.walk is not None else set())
                         collected = collected | got | frozenset(by_walk.get(al, ()))
                         stop, t, aboard = al, at, trip
                         continue
@@ -758,8 +844,49 @@ def main():
                 print(f'         {kind:11s} {grank}/{len(peers)} within its own group', flush=True)
                 if a.anatomy: anatomy(opts, al, trip, n_new)
                 if rank > a.width: lost += 1
+                o_ = opts[rank - 1]
+                rec_path.append((o_[2], stop, o_[0], t, o_[1], o_.walk, o_.seg))
+                rec_got |= set(o_[3]) | ({o_.walk} if o_.walk is not None else set())
             collected = collected | got | frozenset(by_walk.get(al, ()))
             stop, t, aboard = al, at, trip
+            # The prune has to be gated by the control like everything else in the search, and the search
+            # sites live in best_first, which --track never reaches. So test the control's own nodes here: a
+            # pruning rule that kills a node of the 237 route is not a prune, it is a bug, and it would
+            # otherwise only show up as a long run that quietly finds nothing.
+            if PT is not None:
+                owed_ = [y for y in range(N_STATES) if y not in collected]
+                if len(owed_) >= 2:
+                    m_, y_, z_ = PT.worst(int(stop), float(t), owed_)
+                    if m_ < 0:
+                        print(f'         PAIR-DEAD after this leg: {ab(y_)} & {ab(z_)} miss by '
+                              f'{-m_ / 3600:.1f} h', flush=True)
+                        pair_kills[0] += 1
+                    elif m_ < tightest[0]:
+                        tightest[0] = m_; tightest[1] = f'leg {n} {R.stop_name[stop][:24]} {ab(y_)}&{ab(z_)}'
+        if PT is not None:
+            print(f'\npair test against the control: {pair_kills[0]} of its {len(rides)} nodes killed; '
+                  f'tightest margin {tightest[0] / 3600:+.2f} h ({tightest[1]})', flush=True)
+            if pair_kills[0]:
+                print('FAIL: the pair prune kills the control. It is not a prune, it is a bug.', flush=True)
+                sys.exit(1)
+        if rec_path:
+            rec = route_record(rec_path, rec_path[-1][4] - rec_path[0][3], rec_got, False)
+            miss = sorted(set(rec_got) - set(rec['order'])); extra = sorted(set(rec['order']) - set(rec_got))
+            print(f'\nrecord round-trip over {len(rec_path)} real legs: collected {len(rec_got)} | '
+                  f'order {len(rec["order"])}'
+                  + ('  MATCH' if not miss and not extra else
+                     '  dropped ' + ' '.join(ab(y) for y in miss) + '  invented ' + ' '.join(ab(y) for y in extra)),
+                  flush=True)
+            try:
+                pickle.dumps(rec)
+            except Exception as e:
+                print(f'FAIL: route_record output is not picklable, so every --out would raise: {e}', flush=True)
+                sys.exit(1)
+            if miss or extra:
+                print('FAIL: the written record does not agree with what the chain was credited with. The '
+                      'search proposes, the router disposes, and the writer must not lose the argument.',
+                      flush=True)
+                sys.exit(1)
         print(f'\n{len(rides) - lost}/{len(rides)} rides reproducible within --width {a.width}; '
               f'{len(collected)}/{N_STATES} states collected along the way')
         if lost == 0: print('the control replays end to end: every ride it takes is on the menu and inside the width.')
@@ -808,6 +935,7 @@ def main():
             # anything that passed at push passes at pop. That was worth measuring rather than assuming, and
             # the counter said 0 of 13404 pops: the check was redundant and is gone.
             if L is not None and t > L_end[stop]: continue
+            if a.pairs == 'pop' and pair_dead(stop, t, collected): continue
             mk = bits(collected)
             if dominated(stop, mk, spent): continue
             remember(stop, mk, spent)
@@ -824,6 +952,11 @@ def main():
                 pv = dom.get(k2); qv = queued.get(k2)
                 if pv is not None and pv <= sp_new: continue
                 if qv is not None and qv <= sp_new: continue
+                # Tested before it goes on the frontier, so a jointly dead chain is never counted as depth.
+                # That is the point of the push site and the reason the two are not interchangeable: at pop
+                # the node has already been popped, already raised `deepest`, and already sat in the queue
+                # that the exit census reads.
+                if a.pairs == 'push' and pair_dead(to, at, new): continue
                 queued[k2] = sp_new
                 seq[0] += 1
                 heapq.heappush(q, (pri(at - T0, len(new)), at - T0, seq[0], to, at, new, trip,
@@ -838,6 +971,7 @@ def main():
                 # rather than quietly discard a branch that might have been the answer.
                 before = len(q)
                 alive = []
+                swept_pairs = 0
                 for it in q:
                     _f2, sp2, sq2, st2, t2, col2, ab2, pa2 = it
                     if sp2 > limit[0]: continue
@@ -845,7 +979,17 @@ def main():
                         if t2 > L_end[st2]: continue
                         cl = L[:, st2]
                         if any(t2 > cl[y] for y in range(N_STATES) if y not in col2): continue
+                    # The pair test is a fact about this node too, so the sweep may use it. With --pairs push
+                    # nothing here can fail it and this number should read 0; if it does not, a node entered
+                    # the frontier without being tested and that is the bug, not the sweep.
+                    if PT is not None:
+                        owed2 = [y for y in range(N_STATES) if y not in col2]
+                        if len(owed2) >= 2 and PT.dead(int(st2), float(t2), owed2):
+                            swept_pairs += 1
+                            continue
                     alive.append(it)
+                if PT is not None:
+                    print(f'  sweep: {swept_pairs} of {before} were jointly dead pairs', flush=True)
                 q = alive; heapq.heapify(q)
                 print(f'  [{time.time() - t_run:5.0f}s] frontier swept {before} -> {len(q)} '
                       f'(only provably dead nodes dropped)', flush=True)
@@ -855,49 +999,6 @@ def main():
                     break
 
     sys.setrecursionlimit(20000)
-
-    def route_record(path_, spent_, collected_, complete_, back_=False):
-        """A chain in the shape everything downstream already reads.
-
-        repair_probe and Search.evaluate want (start, t0, order); the search's own path is a list of legs.
-        The first version of the stalled-chain writer emitted only the legs, so the pickle written for the
-        repair test could not be read by the repair test: producer and consumer written an hour apart and
-        never run against each other. `complete` still says whether this is a route or a chain that stalled,
-        because a caller that cannot tell those apart will eventually treat one as the other.
-        """
-        legs_ = list(path_[::-1]) if back_ else list(path_)
-        order_ = []
-
-        def add_(st_):
-            if st_ is not None and st_ >= 0 and st_ not in order_: order_.append(st_)
-
-        for trip_, frm_, to_, bt_, at_, walk_, seg_ in legs_:
-            # Every state the ride is actually in, not just the two it stops at. The search credits a state
-            # when a ride passes through it, which is right, you are in it; deriving the order from
-            # endpoints alone dropped the rest. A chain reporting 31 states wrote an order of 17, and
-            # repair_probe then re-flew that 17-state ghost and offered back states the real chain already
-            # held. The pass-through states are recoverable from the trip itself.
-            add_(int(R.state[frm_]))
-            # The ride is in every state it passes through, and `seg` says exactly which stretch it rode.
-            # Two earlier versions got this wrong in the same direction, each time crediting too little:
-            # first by taking only the two endpoint stops, then by walking the trip from the stop the leg
-            # names, which a ride boarded after a walk never departs from. Connection indices have neither
-            # problem, and unlike matching on stops they are still right on a trip that loops back through
-            # a stop it has already visited.
-            cs_ = trip_conns.get(trip_) if trip_ is not None else None
-            if cs_ and seg_:
-                bk_, ak_ = seg_
-                i0, i1 = int(conn_pos[bk_]), int(conn_pos[ak_])
-                if i0 > i1: i0, i1 = i1, i0
-                for kk_ in cs_[i0:i1 + 1]:
-                    add_(int(R.state[int(R.cfrom[kk_])])); add_(int(R.state[int(R.cto[kk_])]))
-            add_(int(R.state[to_]))
-            add_(walk_)
-        st0_ = legs_[0][1] if legs_ else (START if START is not None else 0)
-        t0_ = legs_[0][3] if legs_ else T0
-        return dict(path=legs_, spent=spent_, collected=sorted(collected_), complete=complete_,
-                    start=R.stop_name[st0_], t0=float(t0_), order=order_,
-                    service_date=str(R.d0) if hasattr(R, 'd0') else None)
 
     def census(q):
         """What was still in the queue when the budget ran out.
@@ -926,6 +1027,19 @@ def main():
             live.append((stop_, t_, owed_))
         print(f'  of the {len(deep)} nodes at {top} states, {len(live)} can still collect everything they '
               f'owe, which the push-side test guarantees and is therefore not evidence', flush=True)
+        if PT is not None:
+            # The number the per-state line cannot give. Run it whether or not the prune is switched on at a
+            # search site, because a census that says "all live" while every one of them owes an
+            # uncollectable pair is the exact failure this whole table was built to expose.
+            pl = [x for x in live if not PT.dead(int(x[0]), float(x[1]), x[2])]
+            print(f'  {len(pl)} of those {len(live)} also survive the pair test; the other '
+                  f'{len(live) - len(pl)} owe two states they cannot collect in either order', flush=True)
+            for stop_, t_, owed_ in live:
+                if PT.dead(int(stop_), float(t_), owed_):
+                    m_, y_, z_ = PT.worst(int(stop_), float(t_), owed_)
+                    print(f'    e.g. {R.stop_name[stop_][:30]:30s} {ab(y_)} & {ab(z_)} miss by '
+                          f'{-m_ / 3600:.1f} h', flush=True)
+                    break
         for stop_, t_, owed_ in live[:5]:
             print(f'    {R.stop_name[stop_][:30]:30s} owes {" ".join(ab(y) for y in owed_[:18])}', flush=True)
 
@@ -979,6 +1093,11 @@ def main():
         el2 = time.time() - t_run
         print(f'\n{seen_nodes[0]} nodes in {el2:.0f} s ({seen_nodes[0] / max(el2, 1):.0f}/s); '
               f'deepest {deepest[0]}/{NEED} states')
+        if PT is not None:
+            # The backward search has no pair site wired, so this reads 0 and says so rather than implying
+            # the prune ran. Wiring it needs the mirrored table (collect y then z going backwards is not the
+            # same question), which is its own measurement.
+            print(f'pair prune is not wired into the backward search; {pair_kills[0]} kills')
         census(last_q[0] or [])
         if best[0] is None:
             print(f'nothing reached {NEED} states under {a.target} h in the budget')
@@ -1011,6 +1130,8 @@ def main():
     el = time.time() - t_run
     print(f'\n{seen_nodes[0]} nodes in {el:.0f} s ({seen_nodes[0] / max(el, 1):.0f}/s), {sum(len(v) for v in dom_stop.values())} kept '
           f'(stop, states); deepest {deepest[0]}/{NEED} states')
+    if PT is not None:
+        print(f'pair prune at {a.pairs}: {pair_kills[0]} nodes killed for owing an uncollectable pair')
     census(last_q[0] or [])
     if best[0] is None:
         print(f'nothing reached {NEED} states under {a.target} h in the budget')
