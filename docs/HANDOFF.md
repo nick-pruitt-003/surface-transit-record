@@ -799,3 +799,49 @@ it prints anything would make that impossible rather than leaving it to memory.
 Writing the falsification down before the run caught every single error today. It is also the one control
 that lives entirely in whether the author remembers to apply it, which is the worst place for a control to
 live.
+
+## 17. Sep 22: a faster arrival on foot made a state uncollectable
+
+The scan's footpath relaxation was gated on a connection improving `best[b]`. Walks do not chain (one hop),
+so a walk-derived label could suppress the onward walk that a ride arriving at the same stop would license.
+
+Memphis, Tue 6 Oct, standing at Airways Transit Center at 20:05 owing only Mississippi:
+
+```
+HOLMES at ELVIS PRESLEY                            Tue 21:02:13   <- a 57 min local proxy link
+the MATA bus that serves Holmes arrives             Tue 21:07:26   <- five minutes LATER
+MS state line (walk from HOLMES at ELVIS PRESLEY)  unreached
+```
+
+`at < best[b]` failed for that connection, so the whole arrival block was skipped and with it the 1142 s
+footpath over the state line. Holmes reached, Mississippi not. The scan rode Flix to Batesville instead,
+arriving 22:50 rather than 21:26.
+
+Everything else checked out and was eliminated first: the footpath exists in `R.foot` AND in the flattened
+C arrays (1142 s, `fx=0` so unguarded), 62 of 403 virtual stops are reachable so they are not excluded
+wholesale, 402 of 403 appear as foot targets, `keep_routes.json` carries the MATA routes, and the walk-in
+guard cannot fire because `mask[first_virtual:]` is clamped to 1 and `_crosses` returns False for any
+`j >= first_virtual`. Three wrong hypotheses (the guard, the route trim, a missing edge) before the
+predecessor arrays gave it up: `pred_conn = -1, pred_walk = 3877`.
+
+The fix keeps a separate `ride[]` label, the earliest arrival BY A CONNECTION, and gates the relaxation on
+that. `best[b] <= ride[b]` always holds, so every case that relaxed before still relaxes and this only adds
+the shadowed ones.
+
+**What it is worth.** Route X (Sheridan WY to the Mississippi line at Southaven) is 238.07 h with the
+Memphis ending and 239.50 h with the Flix-to-Batesville one. The timetabled record is 238.83 h. So this one
+gate is the difference between beating the record by 0.76 h and missing it by 0.67. The 237.34 h control
+ends the same way, Hanover then 0.9 km on foot to the Vermont line, which is why neither of the two best
+routes known could be found by machine.
+
+Gates after the change, all unchanged: `regress.py` 8/8, the control replay 30/40 within `--width 12`, the
+record round-trip `collected 46 | order 46 MATCH`, the control at 237.34 h and `hun_ms_meteor` at 237.74 h.
+Additive where it was broken, neutral everywhere else, which is the signature a fix of this shape should
+have.
+
+**Rebuild `csa.so` by hand after pulling.** `cached_router` keys on `time_router.py` and `data/`, not on
+`csa.c`, so a cached router reloads against a stale shared object and the fix silently does nothing:
+`cc -O3 -shared -fPIC csa.c -o csa.so`. That is the same class of bug as the pair-table cache key fixed
+earlier the same day, a key that does not cover everything that changes the answer, and it should be closed
+by hashing `csa.c` into the router fingerprint. `pair_tables.fingerprint` already hashes it, so every pair
+table on disk is invalidated by this commit and will rebuild.
