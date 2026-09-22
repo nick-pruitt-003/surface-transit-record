@@ -56,6 +56,28 @@ from common import ABBR
 
 HERE_SHAPES = ('control', 'reverse', 'east-first', 'west-first', 'halves-swapped')
 
+_RW = {}      # worker state, inherited by fork rather than pickled, as pair_tables._W is
+
+
+def _latest(F, D, span, nxt):
+    lat, ok, k0, k1 = F.layer(nxt, False, D - span * 3600, None)
+    eff, _ = F.through(ok, k0, k1, np.ones(F.R.N, bool))
+    return np.maximum(lat, eff)
+
+
+def _rot(k):
+    """one rotation: its chain, and the stop it could leave latest from"""
+    full, st, D, F, span = _RW['full'], _RW['st_stops'], _RW['D'], _RW['F'], _RW['span']
+    order = full[k:] + full[:k]
+    e_ = order[-1]
+    cur = _latest(F, D, span, {s: D for s in st[e_]})
+    for y in reversed(order[:-1]):
+        nxt = {s: float(cur[s]) for s in st[y] if cur[s] > -np.inf}
+        if not nxt: return k, order[0], e_, None, None
+        cur = _latest(F, D, span, nxt)
+    j = int(np.argmax(cur))
+    return k, order[0], e_, float(cur[j]), j
+
 
 def main():
     ap = argparse.ArgumentParser()
@@ -211,25 +233,24 @@ def main():
         full = body + [end_st]
         n_ = len(full)
 
-        def one(k):
-            order = full[k:] + full[:k]
-            e_ = order[-1]
-            cur = latest_from({s: D for s in st_stops[e_]})
-            for y in reversed(order[:-1]):
-                nxt = {s: float(cur[s]) for s in st_stops[y] if cur[s] > -np.inf}
-                if not nxt: return k, order[0], e_, None, None
-                cur = latest_from(nxt)
-            j = int(np.argmax(cur))
-            return k, order[0], e_, float(cur[j]), j
-
+        _RW.update(full=full, st_stops=st_stops, D=D, F=F, span=a.span)
         import multiprocessing as mp
         nw = a.workers or max(1, (os.cpu_count() or 2) - 1)
         with mp.get_context('fork').Pool(nw) as pool:
-            rows = pool.map(one, range(n_))
+            rows = pool.map(_rot, range(n_))
         ok_rows = [r for r in rows if r[3] is not None]
         ok_rows.sort(key=lambda r: -r[3])
-        print(f'{n_} rotations of the control sequence, {nw} workers. Deadline is shared, so a later '
-              f'departure is a shorter route and these are directly comparable.\n')
+        print(f'{n_} rotations of the control sequence, {nw} workers.\n')
+        print('  D-dep is an UPPER BOUND on each rotation\'s minimum elapsed, and NOT a ranking. A route')
+        print('  exists from that stop departing then and finishing by the deadline, so its elapsed is at')
+        print('  most D-dep. But the deadline is a fixed wall-clock instant, so a rotation whose services')
+        print('  only permit a 05:00 start is charged for the misalignment with 22:54 as well as for its')
+        print('  own duration, and that charge can approach a day. So:')
+        print('     under 237.34 h  ->  a genuinely faster shape, definitive')
+        print('     over  237.34 h  ->  nothing follows; it may be fast and badly aligned')
+        print('  This run can rule shapes IN and cannot rule any OUT, which is the opposite of the')
+        print('  fixed-ordering tests. Removing the bias needs a sweep of deadlines, or Search.evaluate')
+        print('  forward from a start, which returns the real finish with no deadline involved.\n')
         print(f'  {"rot":>3s} {"first":5s} {"last":5s} {"latest departure":>18s} {"D-dep":>8s}  best start')
         for k, f_, e_, c_, j_ in ok_rows:
             print(f'  {k:3d} {ab(f_):5s} {ab(e_):5s} '
@@ -237,9 +258,7 @@ def main():
                   f'{(D - c_) / 3600:7.2f} h  {R.stop_name[j_][:40]}')
         for k, f_, e_, c_, j_ in rows:
             if c_ is None: print(f'  {k:3d} {ab(f_):5s} {ab(e_):5s} {"IMPOSSIBLE":>18s}')
-        print('\nD-dep is departure to DEADLINE, not to finish: a route landing early shows worse here than '
-              'it is. Comparable across rotations because the deadline is shared; not comparable to the '
-              "control's 237.34 h, which is measured to its own arrival.")
+        print('\nSorted by D-dep, which is not a ranking of the shapes. See the note above.')
         return
 
     print(f'start {a.start!r}: {len(starts)} stop(s) with that exact name; departing '
