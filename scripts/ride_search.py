@@ -458,6 +458,7 @@ def main():
                                         np.array([-1], dtype=np.int32), a.end, want_pred=True)
         best_ = pred['best']; conn_ = pred['conn']; walk_ = pred['walk']; bstop_ = pred['bstop']
         ct = R._fa['ctrip']
+        capg = ceiling(collected)       # one numpy min over the owed rows, the same call sort_opts makes
         out = set()
         for y in range(N_STATES):
             if y in collected: continue
@@ -466,34 +467,30 @@ def main():
             v = best_[sa]
             fin = np.isfinite(v)
             if not fin.any(): continue
-            # One argmin per KIND of collection, not one overall. A state is collected by riding into it or
-            # by walking over the line into it, and a389a55 already settled that a walk-in is its own kind
-            # of move rather than a ride in a costume. A single argmin makes the two compete for one slot,
-            # and at Memphis the walk loses by sixty seconds: Marks Amtrak is reachable at 06:25 and the MS
-            # line beyond HOLMES at ELVIS PRESLEY at 06:26, so the whole Memphis manoeuvre was discarded on
-            # a tiebreak. That manoeuvre is the one CLAUDE.md calls load-bearing, whose payoff is a
-            # connection in Florida five days later.
+            # Score a way of collecting y by the slack it LEAVES, not by when it first touches y. Arrival
+            # time measures the wrong end of the detour: you have to come back and carry on. Marks Amtrak
+            # is reachable from Memphis at 06:25 and the MS line beyond Holmes at 06:26, so arrival calls
+            # Marks the winner by a minute, and corridor_probe measures the two moves at 12.3 h against
+            # 2.5 h. The difference is entirely in the return, which arrival time cannot see.
             #
-            # The alternative considered and measured: take every reachable stop of every owed state rather
-            # than an argmin at all, which removes the summary entirely. It costs 80-122 ms a node against
-            # 33-41, and promotes up to 112 rides at a single node, which would swallow a width of 12 whole
-            # and bury Saint George again. Splitting by kind costs one extra argmin and is the distinction
-            # the data actually turns on.
-            for mask in (sa < R.first_virtual, sa >= R.first_virtual):
-                m = fin & mask
-                if not m.any(): continue
-                s_ = int(sa[int(np.argmin(np.where(m, v, np.inf)))])
-                first = None
-                for _ in range(400):        # a chain longer than this is a predecessor loop, not a route
-                    if walk_[s_] >= 0:
-                        s_ = int(walk_[s_])
-                    elif conn_[s_] >= 0:
-                        k_ = int(conn_[s_])
-                        first = (R.ctrip[k_], s_)   # overwritten each step back, so it ends on the earliest
-                        s_ = int(bstop_[int(ct[k_])])
-                    else:
-                        break
-                if first: out.add(first)
+            # cap[s] - best[s] is exactly that: the node's own ceiling at s, which is the latest you could
+            # be at s and still collect everything owed and finish, minus when you would get there. Marks
+            # is a once-a-day Delta stop so its ceiling is early and the slack is tiny; Holmes has MATA
+            # service back to Airways so it is large. Same table the search already prunes with, no new
+            # quantity and no threshold.
+            sc = capg[sa] - v
+            s_ = int(sa[int(np.argmax(np.where(fin, sc, -np.inf)))])
+            first = None
+            for _ in range(400):            # a chain longer than this is a predecessor loop, not a route
+                if walk_[s_] >= 0:
+                    s_ = int(walk_[s_])
+                elif conn_[s_] >= 0:
+                    k_ = int(conn_[s_])
+                    first = (R.ctrip[k_], s_)       # overwritten each step back, so it ends on the earliest
+                    s_ = int(bstop_[int(ct[k_])])
+                else:
+                    break
+            if first: out.add(first)
         return out
 
     def alight_ok(to, at, owed_after):
