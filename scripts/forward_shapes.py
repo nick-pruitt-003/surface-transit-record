@@ -55,10 +55,12 @@ def main():
     ap.add_argument('--rot', type=int, default=None, help='just this rotation')
     ap.add_argument('--start-stop', default=None, help='force the start stop by exact name, for checking '
                     'the harness against a known answer')
-    ap.add_argument('--starts', default='../out/rot2.log', help='the rotation table, read for the best '
-                    'start stop per shape. Picking the start stop WITHIN a shape is exact on the backward '
-                    'chain, because the deadline is shared there; it is only the comparison ACROSS shapes '
-                    'that the fixed deadline biases.')
+    ap.add_argument('--starts', default=None, help='optional backward rotation table to read a start stop '
+                    'per shape from, skipping phase 1. Off by default and it should usually stay off: the '
+                    'only such table produced so far was biased by its fixed wall-clock deadline (46 of 48 '
+                    'rotations IMPOSSIBLE for alignment rather than duration), and out/ is gitignored so it '
+                    'never exists on a fresh checkout. Without it, every stop of each first state is '
+                    'evaluated, which is what optimising the start per state means.')
     ap.add_argument('--hours', type=float, default=24, help='sweep departures over this many hours')
     ap.add_argument('--step', type=float, default=2, help='hours between swept departures')
     ap.add_argument('--workers', type=int, default=0)
@@ -106,7 +108,7 @@ def main():
 
     # Best start stop per rotation, from the backward table when it exists. Exact within a shape.
     best_stop = {}; multi = {}
-    if os.path.exists(a.starts):
+    if a.starts and os.path.exists(a.starts):
         for line in open(a.starts):
             p = line.split()
             if len(p) >= 6 and p[0].isdigit() and p[-1] != 'IMPOSSIBLE':
