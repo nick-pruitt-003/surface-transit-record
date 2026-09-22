@@ -107,6 +107,7 @@ def main():
         D = datetime.fromisoformat(a.by).replace(tzinfo=ZoneInfo(a.tz)).timestamp()
         F = B.RevFast(R)
         st_stops = {x: [i for i in range(R.N) if R.state[i] == x] for x in range(N_STATES)}
+        st_arr = {x: np.array(v, dtype=np.int64) for x, v in st_stops.items() if v}
         t_pre = time.time()
 
         def latest_from(nxt):
@@ -263,6 +264,120 @@ def main():
             dfs(to, at, new, trip, path)
             path.pop()
 
+    def backward_search():
+        """The mirror: stand at the end at its deadline, take rides that ARRIVE by now, ride back to where
+        they started, and make the start as late as possible.
+
+        Forward and backward differ in one way that is not cosmetic. Forward has both anchors, a start time
+        and a deadline, so `L[y][stop]` can be precomputed once: the latest you could be somewhere and still
+        collect y and finish. Backward deliberately leaves the start free, which is the whole reason to run
+        it, so there is no second anchor to precompute against. The same question is still answerable
+        exactly, just not in advance: one reverse scan from where the chain stands says the latest you could
+        be at every stop and still get here in time, and a state is still collectible if any of its stops
+        clears the earliest start the limit allows. One scan covers all 48 states, and it is a fact rather
+        than an estimate, same as forward."""
+        import heapq
+        T_min = D - a.target * 3600        # no start earlier than this can come in under the limit
+        arr_at = defaultdict(list)
+        for k in range(len(R.dep)): arr_at[int(R.cto[k])].append(k)
+        for v in arr_at.values(): v.sort(key=lambda k: R.arr[k])
+        arr_times = {s_: [R.arr[k] for k in v] for s_, v in arr_at.items()}
+        print(f'  indexed arrivals at {len(arr_at)} stops; no start before '
+              f'{R.fmt_time(T_min, st_stops[END_ST][0])}', flush=True)
+
+        def dense(sp):
+            ns_stop = np.full(F.nt, -1, dtype=np.int32); ns_dep = np.full(F.nt, -np.inf)
+            if sp is not None: ns_stop[sp[0]] = sp[1]; ns_dep[sp[0]] = sp[2]
+            return ns_stop, ns_dep
+
+        def still_collectable(stop, t, owed):
+            """Which owed states could still have been collected before standing here at t."""
+            if not owed: return True
+            lat, ok, k0, k1 = F.layer({int(stop): float(t)}, False, T_min, None)
+            eff, _ = F.through(ok, k0, k1, np.ones(R.N, bool))
+            vals = np.maximum(lat, eff)
+            for y in owed:
+                sa = st_arr.get(y)
+                if sa is None or float(vals[sa].max()) < T_min: return False
+            return True
+
+        def rides_into(s_, t, aboard, collected):
+            """Rides that could have dropped you here by t: (board stop, board time, trip, states collected)."""
+            out = []
+            for j, w in [(s_, 0)] + list(R.foot.get(s_, ())):
+                t_ok = t - w
+                times = arr_times.get(j)
+                if not times: continue
+                i = bisect.bisect_right(times, t_ok) - 1
+                seen = set()
+                while i >= 0 and times[i] >= t_ok - a.horizon * 3600:
+                    k = arr_at[j][i]; i -= 1
+                    key = R.ctrip[k]
+                    if key in seen: continue
+                    if key != aboard and R.arr[k] > t_ok - MIN_TRANSFER: continue
+                    seen.add(key)
+                    cs = trip_conns[key]
+                    pos = next((n for n, kk in enumerate(cs) if kk == k), None)
+                    if pos is None: continue
+                    got = {int(R.state[j])} if R.state[j] >= 0 else set()
+                    for n in range(pos, -1, -1):
+                        kk = cs[n]
+                        frm = int(R.cfrom[kk]); st_ = int(R.state[frm])
+                        if st_ >= 0: got.add(st_)
+                        bt = float(R.dep[kk])
+                        if bt < T_min: break
+                        out.append((frm, bt, key, frozenset(got)))
+                        for y2, w2 in walkin.get(frm, ()):
+                            if y2 in got or y2 in collected: continue
+                            if bt - 2 * w2 < T_min: continue
+                            out.append((frm, bt - 2 * w2, None, frozenset(got | {y2})))
+            return out
+
+        start_c = set()
+        if R.state[st_stops[END_ST][0]] >= 0: start_c.add(END_ST)
+        seeds = [(int(x), D) for x in st_stops[END_ST]]
+        q = []; seq = [0]
+        for st0_, t0_ in seeds:
+            heapq.heappush(q, (-(D - t0_) + a.credit * 3600 * len(start_c), D - t0_, seq[0], st0_, t0_,
+                               frozenset(start_c), None, ()))
+            seq[0] += 1
+        while q:
+            if time.time() - t_run > a.budget or seen_nodes[0] > a.nodes: break
+            _f, spent, _, stop, t, collected, aboard, path = heapq.heappop(q)
+            seen_nodes[0] += 1
+            if spent > limit[0]: continue
+            if len(collected) >= NEED:
+                limit[0] = spent; best[0] = (spent, list(path))
+                print(f'  [{time.time() - t_run:5.0f}s] FOUND {spent / 3600:.2f} h back to '
+                      f'{R.stop_name[stop][:30]}, {len(collected)} states, {len(path)} rides', flush=True)
+                continue
+            if len(collected) > deepest[0]:
+                deepest[0] = len(collected)
+                print(f'  [{time.time() - t_run:5.0f}s] {len(collected)}/{NEED} states, {spent / 3600:6.1f} h back, '
+                      f'at {R.stop_name[stop][:28]}, {len(path)} rides, {seen_nodes[0]} nodes, '
+                      f'{len(q)} in frontier', flush=True)
+            key = (stop, collected, aboard)
+            prev = dom.get(key)
+            if prev is not None and prev <= spent: continue
+            dom[key] = spent
+            owed = [y for y in range(N_STATES) if y not in collected]
+            if not still_collectable(stop, t, owed): continue
+            opts = rides_into(stop, t, aboard, collected)
+            n_new = lambda o: len(o[3] - collected)
+            if a.order == 'rate': opts.sort(key=lambda o: (n_new(o) == 0, (t - o[1]) / max(1, n_new(o))))
+            elif a.order == 'states': opts.sort(key=lambda o: (n_new(o) == 0, -n_new(o), -o[1]))
+            else: opts.sort(key=lambda o: (n_new(o) == 0, -o[1]))
+            for frm, bt, trip, got in opts[:a.width]:
+                new = collected | got
+                sp2 = D - bt
+                if sp2 > limit[0]: continue
+                k2 = (frm, new, trip)
+                pv = dom.get(k2)
+                if pv is not None and pv <= sp2: continue
+                seq[0] += 1
+                heapq.heappush(q, (sp2 - a.credit * 3600 * len(new), sp2, seq[0], frm, bt, new, trip,
+                                   path + ((trip, frm, stop, bt, t),)))
+
     if a.track:
         import pickle as _pk
         import time_search as ts
@@ -397,8 +512,22 @@ def main():
 
     sys.setrecursionlimit(20000)
     if back:
-        print('--dir backward is not implemented: it needs a reverse connection index. Run forward with '
-              '--start/--at and --end/--by.')
+        if L is None:
+            print('backward needs --end and --by to anchor the deadline'); return
+        print(f'\nbackward from {a.end} at {datetime.fromtimestamp(D, ZoneInfo(a.tz)):%a %Y-%m-%d %H:%M}, '
+              f'free start, limit {a.target} h\n', flush=True)
+        backward_search()
+        el2 = time.time() - t_run
+        print(f'\n{seen_nodes[0]} nodes in {el2:.0f} s ({seen_nodes[0] / max(el2, 1):.0f}/s); '
+              f'deepest {deepest[0]}/{NEED} states')
+        if best[0] is None: print(f'nothing reached {NEED} states under {a.target} h in the budget')
+        else:
+            spent, path = best[0]
+            print(f'best {spent / 3600:.2f} h, starting {R.fmt_time(D - spent, path[-1][1]) if path else "?"}')
+            for trip, frm, to, bt, at in path[::-1]:
+                info = R.trip_info.get(trip, ('', '')) if trip else ('', 'border walk-in')
+                print(f'   {R.fmt_time(bt, frm)} {R.stop_name[frm][:26]:26s} -> {R.fmt_time(at, to)} '
+                      f'{R.stop_name[to][:26]:26s} {(info[1] or info[0])[:24]}')
         return
     if START is None: print('need --start'); return
     start_states = set()      # a walk-in at the start is a move like any other, and costs its time
