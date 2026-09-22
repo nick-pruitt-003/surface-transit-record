@@ -556,13 +556,246 @@ did not already contain it. Only dropping the excursion separated the two.
 That is the fifth time a same-shaped assumption has hidden the thing the route depends on, and the first
 four are in CLAUDE.md. The gap's two ends are data; requiring them to be equal was a guess.
 
-### Why it is free, and why it is more than free
+### When it is free, and when it is not
 
-A detour that returns before the next ride boards leaves every later leg bit-identical, so nothing
-downstream can break: elapsed time is unchanged by construction. What changes is the owed set, and that is
-where the gain lives. Collecting MS at Memphis is what frees the Houston to Tallahassee bus that skips
+The first version of this section claimed a detour "leaves every later leg bit-identical, so nothing
+downstream can break". That is only true when the chain was **alighting at X anyway**. If it was going to
+stay aboard through X, an insertion forces getting off and reboarding, which costs at least MIN_TRANSFER
+and may miss the vehicle entirely, and the later legs are then not identical at all.
+
+Memphis happens to alight, so the probe result there does not demonstrate the general claim, and the claim
+was doing real work: it was going to be the foundation of a spine-plus-repair design where repair is always
+free. It is not. A repair pass has to check whether the window it is filling sits inside a stay-aboard, and
+price it when it does.
+
+What survives is the weaker and still useful statement: where the chain already alights and the detour
+returns before the same departure, elapsed time is unchanged by construction. What changes is the owed set,
+and that is where the gain lives. Collecting MS at Memphis is what frees the Houston to Tallahassee bus that skips
 Mississippi, which arrives early enough for the Silver Meteor and the accelerated finish. The operator is
 not a tidy-up pass, it is an enabler.
 
 Next: run it on what the search produces rather than on the control. A chain that stalls at 28 states owes
 20, and the question is how many of those its own dead time already holds.
+
+## 15. Sep 22: the pair prune, and what the deep bucket was really holding
+
+The search kept a node while every state it still owed was individually collectable, `L[y][stop] >= t`.
+That test is exact and it is not enough. The deepest chain of the long runs passed it at every leg and was
+already dead: from ride 10 at Springfield Union Station, holding 23 states, it owed California and
+Washington, each reachable on its own and neither reachable after the other. It then spent 2600 s and
+83000 nodes below that position and reported 31 states. The 31 was not progress, it was bookkeeping.
+
+`pair_tables.py` answers the question the per-state table cannot, with the same scans and no new machinery.
+`L[z]` is one reverse scan seeded from z's stops with `L_end`. Seed a scan from y's stops with `L[z]`
+instead and you get `L[y->z][s]`, the latest you can be at s and still collect y, then z, then finish.
+`P[stop, y, z]` is the better of the two orders. A node owing y and z is dead when its clock is past it.
+Nothing is estimated, which is the only reason it is allowed anywhere near this route.
+
+`--pairs {report,pop,push}` wires it into `ride_search.py`. `report` builds the table and prunes nothing,
+which is the arm the other two are read against; without it the baseline and the pruned runs are measured
+with different instruments and the comparison says nothing.
+
+### What it validated before it pruned anything
+
+| | |
+|---|---|
+| table | 805 s on 2 workers of a 4-core box, 182 MB, keyed on the scan inputs so a changed router rebuilds |
+| control, via `pair_tables.py` | 48/48 states, 69 nodes, 0 killed |
+| control, via `ride_search.py --track --pairs push` | 0 of 40 ride nodes killed |
+| tightest control margin, both | **+0.03 h at Trinidad CO, on AL & FL** |
+| the deep chain | dead from ride 10, Springfield MA, CA & WA by 5.8 h |
+
+The two control validations derive the owed set differently: `pair_tables` reads it off the route's legs
+through `leg_states`, the replay accumulates what the menu actually returned. They agree on the same
+tightest node and the same margin, which is a cross-check rather than one code path run twice.
+
+**+0.03 h is 108 seconds, and that is the number to watch.** The table is a relaxation, so the true margin
+can only be looser and the prune is sound as built. But it also means the prune is within two minutes of
+killing the 237 route at Trinidad, and the last time a one-minute difference in how a walk was modelled got
+in front of this route it compounded backwards into four hours by Houston. Anything that makes `P` stricter
+has to be measured against that leg specifically, not against the replay's pass/fail.
+
+### Where the check goes, and why there are two sites
+
+`pop` tests a node as it comes off the frontier, `push` before it goes on. They are not interchangeable and
+the difference is not throughput. `deepest` is raised at pop, before the death tests, and the exit census
+reads whatever is sitting in the queue. So only `push` keeps a jointly dead chain from being counted as
+depth and from filling the census. Which is cheaper is a measurement; which is honest is not.
+
+The frontier sweep uses the test too, and prints what it dropped. Under `--pairs push` that has to read 0.
+If it does not, a node reached the frontier untested, and the sweep is reporting the bug rather than doing
+useful work.
+
+### The gate the prune needed, and the one the writer never had
+
+The search's pair sites live in `best_first`, which `--track` never reaches, so the prune would have shipped
+with no gate inside the search at all. `--track` now tests the control's own nodes and exits non-zero on a
+kill: a rule that kills a node of the 237 route is not a prune.
+
+The same pass closed an older hole. `be64aa9` added a field to the legs the search pushes and not to the
+ones it writes, so every `--out` raised `ValueError` with `regress.py` green and `--track` green, because
+nothing routine exercises `route_record`. The replay is already walking real legs through the real menu, so
+it now builds the same leg tuples `best_first` pushes, hands them to `route_record`, and asserts the derived
+state order equals what the chain was credited with and that the result pickles. Doing that surfaced a live
+`UnboundLocalError`: `route_record` was defined at line 960 and the `--track` block runs inline at 691.
+
+The lesson is the one in CLAUDE.md's tier table, stated again because it keeps costing: a green oracle suite
+and a green replay say nothing about a path neither of them executes. Ask which lines a gate actually runs.
+
+## 16. Sep 22: forcedness is not comfort, and what the menu was hiding
+
+Every score tried on this search measures how comfortable a move leaves you. `rate` measured hours per new
+state. `slack` measures the minimum over owed states of `L[y][to] - at`, how close a move leaves the chain
+to losing the state it can least afford. The pair margin asks the same question about pairs. All three are
+comfort, and the control violates comfort constantly.
+
+`--pairrank` priced every option at all 39 control legs: 7 better, 16 worse, 16 same against slack. The
+ranks are the less interesting half. The levels:
+
+| leg | the control's move leaves | best on offer | given up |
+|---|---|---|---|
+| 8 Conway +AR | **+24.6 h** | +57.7 h | **33.1 h** |
+| 19 Pasco | +1.9 h | +5.9 h | 4.0 h |
+| 21 Saint George | +3.5 h | +7.5 h | 4.0 h |
+
+At Conway the control surrenders thirty-three hours of pair margin, and Conway is one of the three stops
+CLAUDE.md says the route cannot do without. Any ranker preferring comfort refuses that move. The Pasco
+figure is the same +1.9 h `CORRIDORS.md` records by a different path, which is what says the margins are
+right.
+
+So the lesson at the top of CLAUDE.md extends. "Hours per new state is a local measure and this route's
+value is not local" becomes: **the pair margin is a local measure of comfort, and this route's value is not
+comfort either.** A forced move is one whose absence kills you; a comfortable move is one that leaves room.
+Pasco is forced and tight at the same time, so no amount of tuning a comfort score finds it.
+
+### --goal: ask the timetable which move is forced
+
+One forward scan per node gives earliest arrival everywhere. For each owed state, the chain to it comes
+back from the predecessor arrays, and its **first ride** is a move worth having whatever it collects on its
+own. Spokane to Pasco collects one state in a few hours and is the first ride of the fastest chain to
+Oregon and Idaho. The ride toward Saint George collects nothing at all and is the first ride of the fastest
+chain to Arizona and Nevada.
+
+Nothing is named. There is no corridor list to keep true against the feed, which was the objection to the
+hand-built composite and is already a live risk in `keep_routes.json`. And it adds no new kind of move: it
+re-ranks rides already on the menu, so the leg tuple, `route_record`, dominance and `aboard` are untouched.
+A composite carrying its own multi-leg path would have to be threaded through all four, which is the shape
+`be64aa9` got wrong.
+
+Measured, not assumed: a full forward scan is 30 ms (5 runs, Salt Lake City, `want_pred`) against a
+per-node budget of about 40 ms at the observed 25 nodes/s.
+
+### Choosing the target: three versions, and the one that is right
+
+| leg | no goal | argmin on arrival | one argmin per kind | argmin on slack left |
+|---|---|---|---|---|
+| 21 Saint George | 21586/21638 | 3 | 3 | **3** |
+| 23 Bonneville | 816/7004 | 1 | 1 | **1** |
+| 6 Holmes (MS walk-in) | 5090/17676 | 5090 | 51 | **49** |
+| 10 Des Moines +IA | 1748/5332 | 4 | 16 (outside) | **9** |
+| 8 Conway +AR | 40/3273 | 8 | 8 | **7** |
+| 30 AKARD | 20/33 | 2 | 2 | **1** |
+| 2 Detroit +MI | 16/265 | 26 | 26 | 21 |
+| 7 Airways | 40/857 | 49 | 49 | 49 |
+| replay | 30/40 | 37/40 | 36/40 | 37/40 |
+
+**Arrival time is the wrong quantity, and Memphis proves it.** From Memphis the scan reaches Marks Amtrak
+at 06:25 and the Mississippi line beyond HOLMES at ELVIS PRESLEY at 06:26, so `argmin` picks Marks by sixty
+seconds and the whole Memphis manoeuvre is discarded. `corridor_probe` measures those two moves at 12.3 h
+against 2.5 h. The difference is entirely in the return, and arrival time measures the wrong end of the
+detour.
+
+`argmin` over a state's stops is a summary statistic, which is the table at the top of CLAUDE.md arriving
+somewhere new.
+
+**The fix that looked right and was not.** One argmin per kind of collection, ride versus border walk-in,
+on the grounds that `a389a55` already settled a walk-in is its own kind of move. It worked exactly as
+claimed: Holmes went 5090 to 51, a hundredfold. The replay fell from 37 to 36, because promoting two
+candidates per owed state instead of one diluted the promoted group and pushed Des Moines from 4th to 16th
+and out of the width. Widening the net treats the symptom.
+
+**The fix that is right.** Score each way of collecting `y` by `cap[s] - best[s]`: the node's own ceiling at
+`s`, the latest you could be there and still collect everything owed and finish, minus when you would
+arrive. That is the slack the detour leaves, which is what 12.3 h against 2.5 h actually measures. Marks is
+a once-a-day Delta stop so its ceiling is early; Holmes has MATA service back to Airways. Same table the
+search already prunes with, computed by a call `sort_opts` already makes, no new quantity and no threshold.
+One target per state, so no dilution.
+
+### What the tally is not
+
+The replay reads 37/40 for both arrival-selection and slack-selection, and they are not the same result.
+The pass condition is in CLAUDE.md: *a leg ranked below the width is fine, backtracking reaches it; a leg
+missing from the menu is a bug.* Holmes at 5090 of 17676 is unreachable in practice; Holmes at 49 is a
+backtrack away. That change does not appear in 37/40 anywhere.
+
+### Method notes, from three wrong predictions in a row
+
+- 38/40 predicted for the per-kind split, returned 36. 38/40 predicted for slack-selection, returned 37.
+  Both times the mechanism did exactly what was claimed. **"It works as described" and "it helps" came
+  apart twice in one afternoon**, which is the argument for one change at a time and for diffing the legs
+  rather than reading the tally.
+- `--rerank`'s +1 was a reshuffle: Fargo crossed the width while Pasco was demoted 4/53 to 11/53 and Saint
+  George did not move. Reported as an improvement, it would have been a lie by tally.
+- The claim that `--goal` "structurally cannot reach" walk-in collection was wrong and was written
+  confidently. It finds the walk-in and discards it. Ninety seconds of instrumenting settled what several
+  paragraphs of reasoning got backwards.
+
+### Verdicts, and what is left
+
+`--goal` does not help the search. At equal 200 s budget, `--pairs push` alone gives 4974 nodes at 25/s and
+an honest deepest of 26; adding `--goal` gives 3085 nodes at 15/s and an honest deepest of 23. It
+transformed the menu ranking exactly as measured and came out three states shallower, because 38 percent
+fewer nodes was not repaid. Both frontiers are fully pair-live, so it finds shallower chains rather than
+deader ones. Off by default. The caveat is that 200 s is short and better ranking changes direction rather
+than speed, so a payoff over hours is not ruled out.
+
+`shape_probe.py` answers whether an ordering can exist, by chaining the pair table's reverse scans to 48.
+Two results from it stand:
+
+- **Nothing does the control's ordering faster than 237.34 h, from any start.** Set the deadline one minute
+  before the control's own arrival and the chain is IMPOSSIBLE at step 2, Kentucky. Not degraded,
+  collapsed.
+- **The control sits at exactly zero slack at eight links**: Lamoni, Moorhead, Kellogg, Beaver Dam,
+  Mesquite, Gallup, Oklahoma, Providence, with Trinidad, Garden City, Stamford, Baltimore, Wilmington and
+  Philadelphia under four minutes. A nine and a half day route with fourteen rigid joints. That is the
+  mechanism behind Nick's reading that it is 237.3 or 241 with nothing between.
+
+Its rotation mode does NOT work and the table it printed is not evidence. `cur[s]` is the latest departure
+beating a fixed wall-clock deadline, so a rotation whose services only permit a 05:00 start is charged for
+misalignment with Saturday 22:54 as well as for its duration, and that charge approaches a day. 46 of 48
+rotations came back IMPOSSIBLE for that reason. A rotation under 237.34 h there would still be a real
+finding; one over it means nothing.
+
+`forward_shapes.py` is the replacement and the right instrument. `Search.evaluate` returns the real arrival,
+so elapsed is arrival minus departure with no deadline, no alignment and no bound. It is also **0.2 s
+against the backward chain's 60 s**, because each layer stops early rather than scanning the full span: the
+proxy was two orders of magnitude slower than the exact thing it stood in for. Its harness check passes,
+rotation 0 from Huntington at 00:54 returning 237.34 h.
+
+It has not been run to completion. Phase 1 evaluates every stop of each rotation's first state, which is
+19437 evaluations, and the run was killed by a `pkill -f` whose pattern matched its own command line and
+took the worker pool with it. CLAUDE.md documents that exact failure; it was reproduced anyway.
+
+Open, and it is the question that matters: **whether a structurally different shape beats 237.3.** Nothing
+today answers it. Four alternative orderings came back impossible, but two were longitude sorts, which are
+not route shapes at all, and the rotations were measured with the biased instrument.
+
+### The harness this day argues for
+
+Eight errors, six of them two shapes.
+
+**Silently picking one element of a set.** `cands[0]` starting rotation 0 from Charleston and reporting the
+control at 285 h. `argmin` over Mississippi's stops keeping Marks Amtrak and discarding the Memphis walk-in
+by sixty seconds. `sorted()` on a covered-set used as a visiting order, which asked for Nebraska before
+Iowa on a train that passes them the other way. `stops_matching(x)[0]`. What would catch all four is a
+helper that refuses silent selection and **always reports the gap to the runner-up**: "chose Marks 06:25,
+runner-up MS line at Holmes 06:26, gap 60 s" would have shown the bug on its first run instead of three
+turns and several confident paragraphs later. `pair_tables.resolve_stop` already does this for names.
+
+**Publishing before the known answer is checked.** Four IMPOSSIBLE verdicts printed before anything
+confirmed the control reproduced. A mandatory `gate(name, fn, expected, tol)` that a probe must pass before
+it prints anything would make that impossible rather than leaving it to memory.
+
+Writing the falsification down before the run caught every single error today. It is also the one control
+that lives entirely in whether the author remembers to apply it, which is the worst place for a control to
+live.

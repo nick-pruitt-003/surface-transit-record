@@ -30,8 +30,9 @@ Run it against the control and it should rediscover Memphis:
   python3 repair_probe.py --route ../out/res_starttest.pkl
 """
 import argparse, pickle, time
+from zoneinfo import ZoneInfo
 import numpy as np
-from time_router import TimeRouter, load_feeds, MIN_TRANSFER, N_STATES
+from time_router import TimeRouter, load_feeds, cached_router, MIN_TRANSFER, N_STATES
 import backward as B
 import time_search as ts
 from time_search import Search
@@ -50,7 +51,14 @@ def main():
     a = ap.parse_args()
 
     d = pickle.load(open(a.route, 'rb'))
-    R = TimeRouter(load_feeds(), __import__('datetime').datetime.fromtimestamp(d['t0']).date(), a.days)
+    # The service date the router was built for, not whatever date this machine's clock calls that
+    # instant. The route starts at 00:54 Eastern, so a container running in UTC happens to agree and one
+    # running west of Eastern would silently build a router for the previous day. New pickles carry the
+    # date; older ones are read in Eastern, which is the clock the route is written in.
+    sdate = d.get('service_date')
+    sdate = (__import__('datetime').date.fromisoformat(sdate) if sdate else
+             __import__('datetime').datetime.fromtimestamp(d['t0'], ZoneInfo('America/New_York')).date())
+    R = cached_router(sdate, a.days)
     ab = lambda x: ABBR[R.state_names[x]] if x >= 0 else '--'
     st0 = R.stop_name.index(d['start'])
     S = Search(R, st0, d['t0'], [], 1)
@@ -91,17 +99,23 @@ def main():
     # What the route already holds by the time it reaches each layover. Without this the table is mostly
     # tautology: standing in Wisconsin, Wisconsin is collectable. The question worth asking is what a
     # window could add that the route does not have yet.
+    # Walk one pass over the legs in order, so a state taken on foot is in every later snapshot. The first
+    # version collected those into a `seen` set it then never used, and built the snapshots from rides
+    # alone: Mississippi, which this route takes by walking, was missing from every `have`, so the probe
+    # would have offered it back as something a window could add. The probe exists to find exactly that
+    # move, so getting it wrong here would have looked like a discovery.
+    # Ask the router what the route has covered so far, rather than counting the stops it stopped at. A
+    # ride is in every state it passes through, not just the two ends, and `covered` is the same helper
+    # regress already trusts as an oracle. Counting endpoints only meant a state collected mid-ride was
+    # missing from `have`, so the probe would have offered it back as something a window could add: a
+    # discovery that was really the route's own work, reported to itself.
     have = [None] * (len(rides) + 1)
-    seen = set()
-    if R.state[st0] >= 0: seen.add(int(R.state[st0]))
-    for _l in legs:
-        if _l[0] == 'walk' and _l[2] >= R.first_virtual and R.state[_l[2]] >= 0: seen.add(int(R.state[_l[2]]))
-    running = set()
-    if R.state[st0] >= 0: running.add(int(R.state[st0]))
-    for i, (_, _t, bs_, _bt, al_, _at) in enumerate(rides):
-        for s_ in (bs_, al_):
-            if R.state[s_] >= 0: running.add(int(R.state[s_]))
-        have[i + 1] = set(running)
+    base = {int(R.state[st0])} if R.state[st0] >= 0 else set()
+    ride_i = 0
+    for i_, _l in enumerate(legs):
+        if _l[0] == 'ride':
+            ride_i += 1
+            if ride_i <= len(rides): have[ride_i] = base | S.covered(legs[:i_ + 1])
 
     print(f'{len(holes)} layovers where the route waits at the stop it arrived at\n', flush=True)
     print(f'{"after leg":>9}  {"stop":28s} {"window":>8}  states it could add that the route lacks there', flush=True)

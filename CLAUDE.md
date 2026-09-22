@@ -7,7 +7,8 @@ the route, the rules, and everything tested and ruled out. Read it before propos
 ## Working rules
 
 - **One search at a time.** Not three in parallel to compare them.
-- **Run `scripts/regress.py` (6 checks) before committing** anything touching the router, the search or the
+- **Run `regress.py` from inside `scripts/` before committing** (it resolves `../out/` relatively, so
+  running it from the repository root fails on missing pickles rather than on anything real) anything touching the router, the search or the
   data. A new leaf script that nothing imports is the one exception, and say so when you skip it.
 - Defaults are 5 min transfers, 1.4 km walk-ins, 24 h slack.
 - Never seed new end points from old routes.
@@ -115,6 +116,83 @@ answer this exactly, do not put a number in front of it.** Every magic threshold
 sparse rural link the route depends on. When a threshold seems unavoidable, make it permissive rather than
 strict, so it can only let a dead branch live a little longer and never prune a live one: that is why the
 deadline tables use guard=False and why the scan cache rounds its clock up.
+
+## The live instances, not just the history
+
+The table above lists bugs that were fixed. Nick's audit found the same shape still sitting in the default
+path, which matters more, and the reply to it is that prose does not fail a build. `regress.py` now asserts
+the geography instead: the Barstow depot, Conway, Holmes and the Bellevue at Carr hop exist, Holmes still
+steps over the Mississippi line on foot, and nothing on the ride-search path picks stops by how busy they
+are. That last one fails if `build_gateways` is ever wired into `ride_search.py`, because it ranks by raw
+departure count and contains none of the three stops the control cannot do without.
+
+Still live and not yet addressed, in the order they are being worked:
+
+| what | where | what it can erase |
+|---|---|---|
+| ranking by hours per new state | `--order rate`, no longer the default since slack measured 25 vs 28 vs 31, and no longer hardcoded in `overnight.sh` | the Silver Meteor, 14 h for four states, last of thirteen |
+| positioning rides sorted behind collecting ones | `sort_opts`, first key in every mode including slack | Spokane to Pasco, Saint George, Memphis to Holmes |
+| a flat 5 h credit per state on the frontier | `--credit` | a west-first chain loses to a cheap north-east one that looks ahead of pace |
+| the `--hub 6` alight fallback | `alight_ok` when no `--end`/`--by` is given | the Barstow depot has 2, Conway has 5 |
+| walk-only cap in the branching diagnostic | `branching.py` | local-proxy hops, which taints the "median 2 useful services" figure quoted above |
+| hand allowlist of routes per feed | `data/more_gtfs/keep_routes.json` | `lake_erie` entirely; `mata` is trimmed to routes 42 and 30, and Memphis is where the route walks to Mississippi |
+
+When adding a check here, make it able to fail. A first version of the gateway check asserted that a list
+was non-empty, which reads like a test and tests nothing.
+
+## What --dedupe costs, and why it stays opt-in
+
+Option dominance drops an option when another at the same stop holds at least its states and arrives at
+least MIN_TRANSFER earlier. The slack is what makes it safe: the survivor is ready to board by the time the
+discarded option arrived, so it can take whatever that option would have taken next.
+
+The seam, found by adversarial review rather than by a run: dominance keys on (stop, states, time) and not
+on the trip. If the useful continuation is *being already aboard* some trip T, and T cannot be boarded
+fresh at that stop, the survivor does not preserve it. Rare in this data and not something `--track` can
+catch, because the replay only ever exercises the control's own trips, and a non-control casualty is
+silent.
+
+That is why `--dedupe` is opt-in rather than the default, and the mitigation is the reason, not a verdict.
+Turning it on by default needs either a proof that the case cannot arise in this feed set or a check that
+would notice it.
+
+## Where a check belongs, now that the world is cached
+
+A built router is pickled by `cached_router` and reloads in 2 s against 63 s to build, keyed on every file
+under `data/`, the dates, and the source of `time_router.py`. That changes where checks can live: geography
+assertions used to be exiled to the slow suite because they needed a router, and now they do not.
+
+| tier | cost | what belongs |
+|---|---|---|
+| A0 | milliseconds, no router | `Menu`, dominance, slack arithmetic, leg tuple layouts, `got` emptiness. Synthetic fixtures of a few connections, not Amtrak. |
+| A1 | seconds, warm router | Holmes stepping over the Mississippi line, the Bellevue hop costing over twenty minutes, sparse stops surviving the filters. |
+| B, `regress.py` | ~15 s warm | Oracles and wiring: the 237 route evaluates, calendars and agency time, busyness stays off the search path. |
+| C, `--track` | minutes | The control replay. The gate for any change to the search. |
+| D | hours | Full searches. Never the inner loop. |
+
+Two rules the day produced.
+
+**Put a fixed bug in the cheapest tier that can see it.** Both of today's escapes were A0 shapes. `if not
+got` never fired because `got` holds every state a ride passes through, and a three-stop synthetic trip
+would have caught it in milliseconds; instead it cost a profile, a push and a restart on another machine.
+The ride-versus-walk tuple index is the same: `('ride', trip, board, dep, alight, arr)` against
+`('walk', from, to, t0, t1)`, so the destination is index 4 on one and index 2 on the other.
+
+**A green `regress.py` does not mean the new loops are safe.** It passed 8/8 on a version where every
+candidate died on a `None` subscript, because it never exercises generation. Only the control replay caught
+that. B is an oracle suite, not a generation gate, and reading it as one is how a broken build looks fine.
+
+## On a change that claims to change nothing, a number going up is a failure signal
+
+Making walk-ins their own move type was meant to be behaviour-neutral, and the control replay came back at
+31/40 instead of 30/40. The extra leg was not progress. Walk-in options now carry the real trip key rather
+than none, and the replay matched a control leg by stop and trip alone, so a plain ride in the control
+started matching the ride-plus-detour variant of the same trip to the same stop. A different move, counted
+as the same one, in the gate that exists to catch exactly that.
+
+Nothing announced it. The only reason it surfaced is that the tally moved when it should not have, so treat
+that as the signal: when a refactor says it changes nothing, any number that improves is unexplained until
+proven otherwise, and unexplained improvements in a gate usually mean the gate got easier.
 
 ## Diagnostics worth reusing
 

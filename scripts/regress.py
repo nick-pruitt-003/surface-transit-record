@@ -9,7 +9,7 @@ from datetime import datetime
 from zoneinfo import ZoneInfo
 import numpy as np
 import time_router as tr
-from time_router import TimeRouter, load_feeds, N_STATES
+from time_router import TimeRouter, load_feeds, cached_router, N_STATES
 import time_search as ts
 from time_search import Search
 import backward as B
@@ -35,7 +35,7 @@ def search_for(R, start, t0):
 
 
 print('settings: MIN_TRANSFER', tr.MIN_TRANSFER // 60, 'min, WALKIN_KM', tr.WALKIN_KM, ', SCAN_SLACK', tr.SCAN_SLACK / 3600, 'h')
-R = TimeRouter(load_feeds(), datetime(2026, 9, 23).date(), 18)
+R = cached_router(datetime(2026, 9, 23).date(), 18)
 t237 = datetime(2026, 9, 24, 0, 30, tzinfo=ET).timestamp()
 hun = R.stops_matching('Huntington Bus Stop')[0]
 
@@ -94,6 +94,109 @@ def _():
         assert lat, f'layer {k} ({order[k]}) empty'
         assert max(v - fw[k][s] for s, v in lat.items()) >= -60, f'layer {k} negative slack'
     assert datetime.fromtimestamp(ls, ET).strftime('%a %H:%M') == 'Thu 00:54', datetime.fromtimestamp(ls, ET)
+
+
+@check('the load-bearing sparse stops survive every filter on the default path')
+def _():
+    """Four times this project has lost the route to a reasonable-sounding rule about what counts as a real
+    option, and each time the rule was found by hand, after days. Prose in CLAUDE.md does not fail a build,
+    so the geography the route cannot do without is asserted here instead.
+
+    None of these stops is busy. That is the point: busyness, averages and radii all delete them, and the
+    route dies quietly at 267 h or 25 states with nothing going red. A stop being sparse is exactly why it
+    is load-bearing, because the one service that calls there is the only way through."""
+    want = {
+        'Barstow': ('Barstow Amtrak', 'the Southwest Chief leaves from nowhere else; the depot has 2 services'),
+        'Conway': ('Conway', 'five services, and Arkansas is new there'),
+        'Holmes': ('HOLMES at ELVIS PRESLEY', 'Mississippi is taken on foot from here, 1.3 km to the line'),
+        'Carr': ('BELLEVUE BOULEVARD at CA', 'the local-transit hop out of Memphis that reaches Holmes'),
+    }
+    missing = [f'{k} ({why})' for k, (pat, why) in want.items() if not R.stops_matching(pat)]
+    assert not missing, 'stops absent from the router entirely: ' + '; '.join(missing)
+
+    # The Mississippi walk-in has to exist as a border link, not merely as a stop.
+    holmes = R.stops_matching('HOLMES at ELVIS PRESLEY')[0]
+    ms = R.state_names.index('Mississippi')
+    over = [j for j, w in R.foot.get(holmes, ()) if j >= R.first_virtual and R.state[j] == ms]
+    assert over, 'Holmes no longer steps over the Mississippi line on foot; MS becomes uncollectable there'
+
+    # The Memphis hop is a local-transit proxy link, and the point of it is that it is LONGER than any plain
+    # walk: the old bug capped foot weights at a made-up 1200, which is twenty minutes in seconds, and that
+    # one number hid every proxy hop the route needs. Asserting the link merely exists would pass with the
+    # bug reinstated, so assert the thing the bug destroyed, a usable link costing more than twenty minutes.
+    bell = R.stops_matching('BELLEVUE BOULEVARD at CA')[0]
+    long_hops = [(j, w) for j, w in R.foot.get(bell, ()) if w > 1200]
+    assert long_hops, ('Bellevue at Carr has no foot link over twenty minutes; a walking-speed cap would '
+                       'leave this stop looking connected while the hop the route uses is gone')
+    assert max(w for _, w in long_hops) > 1200, 'longest link at Bellevue at Carr is under the old 1200 cap'
+
+    # These stops are quiet, and that is the assertion, not an aside. `if n < 6: pass` was here instead: a
+    # comment wearing an assertion's clothes, in the same commit that replaced another check for being a
+    # no-op. What the project keeps getting wrong is rules that require a stop to be busy, so state the fact
+    # those rules break on: at least one load-bearing stop serves fewer than the six the old --hub rule
+    # demanded. If that stops being true the data moved and the rule deserves rechecking, not reinstating.
+    # Count what the --hub rule counted: distinct named services, not connections. A first version of this
+    # used np.bincount(R.cfrom), which counts one entry per connection over the whole twenty day window, so
+    # the Barstow depot came out at 38 and the check failed against its own premise. Two services running
+    # daily for twenty days is not thirty-eight services, and the rule that broke here was about services.
+    svc = {}
+    for k, (pat, why) in want.items():
+        i = R.stops_matching(pat)[0]
+        names = {R.trip_info.get((R.ctrip[c][0], R.ctrip[c][1]), ('', ''))[1]
+                 for c in range(len(R.dep)) if R.cfrom[c] == i}
+        svc[k] = len(names - {''})
+        assert svc[k] > 0 or names, f'{k} has nothing departing at all, so nothing can board there'
+    assert min(svc.values()) < 6, ('every load-bearing stop now runs six or more named services, so the '
+                                   f'--hub 6 rule would no longer visibly break here: {svc}')
+
+
+@check('nothing on the ride-search path picks stops by how busy they are')
+def _():
+    """`build_gateways` ranks stops by raw departure count, five per state inside a 6 km radius. That is the
+    same shape as the alight rule that lost the Barstow depot, and it is blind to most of the geography the
+    control needs: Conway and Holmes are not gateways for their states. It is not blind to all of it, which
+    the first version of this check asserted and got wrong. Barstow Amtrak falls inside a California gateway
+    radius, not because a busyness rule values a two-service depot but because Victor Valley Transit makes
+    the nearby bus station busy and the radius is six kilometres. Being covered by accident is not the same
+    as being chosen.
+
+    The useful assertion is structural rather than numeric. The gateway list is fine where it is used, as a
+    relocation hint for the ordering search; it becomes dangerous the moment it constrains where the ride
+    search may stop. So this fails if `ride_search.py` ever starts using it. A count of services or
+    departures deciding what is a real option is the single most repeated mistake in this project."""
+    import numpy as _np, re
+    S = search_for(R, hun, t237)
+    gw = S.build_gateways()
+    deps = _np.bincount(R.cfrom, minlength=R.N)
+    blind = []
+    for pat in ('Barstow Amtrak', 'Conway', 'HOLMES at ELVIS PRESLEY'):
+        hits = R.stops_matching(pat)
+        if not hits: continue
+        i = hits[0]; y = int(R.state[i])
+        if y < 0: continue
+        lon, lat = R.stop_xy[i]
+        inside = False
+        for g in gw.get(y, []):
+            m = re.match(r'@~(-?[\d.]+),(-?[\d.]+),([\d.]+)', g)
+            if not m: continue
+            a, b, km = float(m.group(1)), float(m.group(2)), float(m.group(3))
+            if _np.hypot((lon - a) * 111.3 * _np.cos(_np.radians(lat)), (lat - b) * 111.3) <= km:
+                inside = True; break
+        if not inside: blind.append(f'{pat} ({int(deps[i])} departures)')
+    # Pin which stops the gateways actually cover. Two claims died here. The first version asserted `blind`
+    # was non-empty, which passes on any single survivor and says almost nothing. The second asserted all
+    # three were outside, which is what the docstring claimed and is false: Barstow Amtrak IS inside a
+    # California gateway radius, because Victor Valley Transit makes Barstow Station busy enough to be a
+    # gateway and the depot sits within six kilometres of it. So gateways are not uniformly blind to quiet
+    # geography, they are blind to Conway and Holmes and happen to cover Barstow for an unrelated reason.
+    # Asserting the exact set makes drift in either direction visible.
+    assert sorted(b.split(' (')[0] for b in blind) == ['Conway', 'HOLMES at ELVIS PRESLEY'], (
+        'which load-bearing stops the busyness gateways reach has changed, and the reasoning that depends '
+        f'on it needs rechecking rather than the assertion updating: outside = {blind}')
+
+    src = open('ride_search.py').read()
+    assert 'build_gateways' not in src, ('ride_search.py now uses build_gateways, which picks by departure '
+                                         'count and does not contain ' + '; '.join(blind))
 
 
 @check('move labels read correctly')

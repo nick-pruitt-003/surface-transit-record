@@ -8,7 +8,7 @@ usage:
   python3 time_router.py --start "Missoula" --at 2026-09-21T07:00 --tz America/Denver \
       --order result.pkl [--prefix "Montana,Idaho,Washington,..."] [--days 14]
 """
-import argparse, csv, io, math, os, pickle, sys, zipfile
+import argparse, csv, io, math, os, pickle, sys, time, zipfile
 from collections import defaultdict
 from datetime import date, datetime, timedelta, timezone
 from zoneinfo import ZoneInfo
@@ -327,6 +327,41 @@ class TimeRouter:
             legs = seg[::-1] + legs; end = s
         return t_end, self._fill(legs)
 
+    def __getstate__(self):
+        """Everything except the ctypes handles, which cannot be pickled and cost nothing to remake.
+
+        The point of pickling a router at all is that building one takes about three and a half minutes,
+        nearly all of it parsing feeds and assembling eleven million connections. That work is
+        deterministic given the same feeds and dates, so paying it once per day instead of once per idea is
+        the single biggest thing available for the speed of the loop. What cannot be pickled is the loaded
+        shared library and the pointers into the flat arrays; those are rebound on load in milliseconds.
+        """
+        d = self.__dict__.copy()
+        for k in ('_fast', '_ptrs', '_ct', '_masks'): d.pop(k, None)
+        return d
+
+    def __setstate__(self, d):
+        self.__dict__.update(d)
+        self._fast = None
+        if getattr(self, '_fa', None) is not None: self._bind_fast()
+
+    def _bind_fast(self):
+        """Load csa.so and point it at the flat arrays. Cheap, and the only part a pickle cannot carry."""
+        import ctypes, subprocess
+        self._fast = None
+        here = os.path.dirname(os.path.abspath(__file__)); so = os.path.join(here, 'csa.so'); src = os.path.join(here, 'csa.c')
+        try:
+            if not os.path.exists(so) or os.path.getmtime(so) < os.path.getmtime(src):
+                subprocess.run(['cc', '-O3', '-shared', '-fPIC', src, '-o', so], check=True)
+            lib = ctypes.CDLL(so)
+        except Exception as e:
+            print('fast scan unavailable:', e); return
+        D = ctypes.POINTER(ctypes.c_double); I = ctypes.POINTER(ctypes.c_int); B = ctypes.POINTER(ctypes.c_ubyte)
+        lib.csa_scan.argtypes = [ctypes.c_int, D, D, I, I, I, ctypes.c_int, ctypes.c_int, ctypes.c_int, I, I, D, B, D, I, B, ctypes.c_double, ctypes.c_double, I, I, D, I, D]
+        lib.csa_scan.restype = ctypes.c_int
+        self._ptrs = {k: v.ctypes.data_as(D if v.dtype == np.float64 else B if v.dtype == np.uint8 else I) for k, v in self._fa.items()}
+        self._masks = {}; self._ct = (D, I, B); self._fast = lib
+
     def _init_fast(self):
         """Flat arrays + compiled scan (csa.c) for finish(); falls back to Python when no compiler."""
         import ctypes, subprocess
@@ -335,7 +370,7 @@ class TimeRouter:
         try:
             if not os.path.exists(so) or os.path.getmtime(so) < os.path.getmtime(src):
                 subprocess.run(['cc', '-O3', '-shared', '-fPIC', src, '-o', so], check=True)
-            lib = ctypes.CDLL(so)
+            ctypes.CDLL(so)
         except Exception as e:
             print('fast scan unavailable:', e); return
         self.trip_ids = {}
@@ -348,11 +383,7 @@ class TimeRouter:
         self._fa = dict(dep=np.ascontiguousarray(self.dep, dtype=np.float64), arr=np.ascontiguousarray(self.arr, dtype=np.float64),
                         cfrom=np.ascontiguousarray(self.cfrom, dtype=np.int32), cto=np.ascontiguousarray(self.cto, dtype=np.int32), ctrip=ct,
                         ptr=ptr, to=np.array(to, dtype=np.int32), w=np.array(w, dtype=np.float64), fx=np.array(fx, dtype=np.uint8))
-        D = ctypes.POINTER(ctypes.c_double); I = ctypes.POINTER(ctypes.c_int); B = ctypes.POINTER(ctypes.c_ubyte)
-        lib.csa_scan.argtypes = [ctypes.c_int, D, D, I, I, I, ctypes.c_int, ctypes.c_int, ctypes.c_int, I, I, D, B, D, I, B, ctypes.c_double, ctypes.c_double, I, I, D, I, D]
-        lib.csa_scan.restype = ctypes.c_int
-        self._ptrs = {k: v.ctypes.data_as(D if v.dtype == np.float64 else B if v.dtype == np.uint8 else I) for k, v in self._fa.items()}
-        self._masks = {}; self._ct = (D, I, B); self._fast = lib
+        self._bind_fast()
 
     def _scan_fast(self, stops, times, trips, target, want_pred=False):
         """One layer in C. Labels come in and go out as parallel arrays (stop, time, trip index or -1)."""
@@ -582,3 +613,59 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+
+def cached_router(date, days, cache_dir=None, verbose=True):
+    """A TimeRouter for these feeds and dates, built once and reloaded thereafter.
+
+    Building one costs about three and a half minutes, nearly all of it parsing feeds and assembling
+    eleven million connections, and it is paid again for every experiment. That is the tax that makes a
+    one-line change to a ranking rule a ten minute question, which is most of why wrong ideas survive here:
+    checking is expensive enough that it gets skipped.
+
+    The key covers everything the answer depends on: every file under data/ by size and mtime, the dates
+    asked for, and the source of this module. A stale cache is worse than no cache, because it would be a
+    silent wrong answer in a project whose whole difficulty is that wrong answers look fine, so any change
+    to the feeds or to this file produces a different key and a rebuild rather than a hit.
+    """
+    import hashlib, pickle, glob
+    here = os.path.dirname(os.path.abspath(__file__))
+    cache_dir = cache_dir or os.path.join(here, '..', 'out')
+    files = sorted(glob.glob(os.path.join(here, '..', 'data', '**', '*'), recursive=True))
+    # Nanosecond mtimes, because a second is long enough to edit a feed inside and integer seconds would
+    # then serve the old world from cache.
+    sig = [(os.path.relpath(f, here), os.path.getsize(f), os.stat(f).st_mtime_ns) for f in files if os.path.isfile(f)]
+    # Both sources that decide what a router is. common.py carries StateIndex, ABBR and hav, so a change
+    # to how a stop is assigned a state, or to the distance function the footpaths are built from, changes
+    # every router without changing this file.
+    for src in (__file__, os.path.join(here, 'common.py')):
+        if os.path.isfile(src): sig.append(hashlib.sha1(open(src, 'rb').read()).hexdigest())
+    sig.append((str(date), int(days)))
+    # Every knob that changes what a router IS. All six are environment variables, so the same source and
+    # the same feeds can still describe different worlds, and a cache that ignored them would hand back the
+    # wrong one without a word. BUS48_LOCAL_MAX_KM=5 against a router built at 10 is not an error anyone
+    # would see; it is a plausible number from a different universe, which is this project's whole problem.
+    sig.append(('cfg', WALKIN_KM, MIN_TRANSFER, SCAN_SLACK, LOCAL_MAX_KM, LOCAL_PROXY_ALL, STOP_TZ_LOCAL,
+                WALK_MAX_KM, WALK_SPEED))
+    key = hashlib.sha1(repr(sig).encode()).hexdigest()[:16]
+    path = os.path.join(cache_dir, f'router_{key}.pkl')
+    if os.path.exists(path):
+        t0 = time.time()
+        try:
+            R = pickle.load(open(path, 'rb'))
+            if verbose: print(f'router from cache in {time.time() - t0:.1f} s ({os.path.basename(path)})', flush=True)
+            return R
+        except Exception as e:
+            print(f'cache unreadable, rebuilding: {type(e).__name__}: {e}', flush=True)
+    t0 = time.time()
+    R = TimeRouter(load_feeds(), date, days)
+    os.makedirs(cache_dir, exist_ok=True)
+    tmp = path + f'.{os.getpid()}.tmp'
+    try:
+        with open(tmp, 'wb') as fh: pickle.dump(R, fh, protocol=5)
+        os.replace(tmp, path)       # atomic, so two runs racing cannot leave half a router behind
+        if verbose: print(f'router built in {time.time() - t0:.0f} s and cached', flush=True)
+    except Exception as e:
+        print(f'could not cache the router: {type(e).__name__}: {e}', flush=True)
+        if os.path.exists(tmp): os.remove(tmp)
+    return R
