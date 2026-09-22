@@ -216,6 +216,17 @@ def main():
         return out
 
     best = [None]; limit = [a.target * 3600]; seen_nodes = [0]; t_run = time.time(); deepest = [0]
+    beat = [time.time()]
+
+    def heartbeat(n_front):
+        """Print every 30 s regardless of progress. Reporting only on new depth makes a search that is
+        grinding at a plateau look exactly like one that has hung, which cost a manual check of CPU time."""
+        now = time.time()
+        if now - beat[0] < 30: return
+        beat[0] = now
+        print(f'  [{now - t_run:5.0f}s] still {deepest[0]}/{NEED}, {seen_nodes[0]} nodes '
+              f'({seen_nodes[0] / max(now - t_run, 1):.0f}/s), {n_front} in frontier, {len(dom)} seen',
+              flush=True)
     dom = {}       # (stop, collected, aboard) -> best time EXPANDED, read when popping
     queued = {}    # the same key -> best time already SITTING in the frontier, read only when pushing.
                    # These have to stay apart. Writing a pushed node's own time into dom would make it fail
@@ -358,6 +369,7 @@ def main():
             if time.time() - t_run > a.budget or seen_nodes[0] > a.nodes: break
             _f, spent, _, stop, t, collected, aboard, path = heapq.heappop(q)
             seen_nodes[0] += 1
+            heartbeat(len(q))
             if spent > limit[0]: continue
             if len(collected) >= NEED:
                 limit[0] = spent; best[0] = (spent, list(path))
@@ -472,6 +484,7 @@ def main():
             if time.time() - t_run > a.budget or seen_nodes[0] > a.nodes: break
             _f, spent, _, stop, t, collected, aboard, path = heapq.heappop(q)
             seen_nodes[0] += 1
+            heartbeat(len(q))
             if spent > limit[0]: continue
             # Collecting every state is not the same as finishing. With an end given, the deadline tables
             # prune the whole way on the assumption the chain still has to reach it, so accepting a chain
