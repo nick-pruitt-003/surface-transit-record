@@ -26,6 +26,22 @@ import backward as B
 from common import ABBR
 
 
+def final_stop(legs):
+    """Where a router itinerary actually ends.
+
+    Rides and walks do not agree on where the destination sits in the tuple: a ride is
+    ('ride', trip, board, dep, alight, arr) and a walk is ('walk', from, to, t0, t1), so the destination is
+    index 4 on one and index 2 on the other. Reading index 2 for both, which the first version of the
+    end-of-route check did, silently asks whether the route BOARDED its last ride in the end state. The
+    control finishes by riding to Hanover and walking over the Vermont line, so the two readings disagree
+    there, which is exactly the case the check exists for.
+    """
+    for l in reversed(legs):
+        if l[0] == 'ride': return int(l[4])
+        if l[0] == 'walk': return int(l[2])
+    return None
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--start'); ap.add_argument('--at')
@@ -347,19 +363,27 @@ def main():
                 cs = trip_conns[key]
                 p = int(conn_pos[k])
                 got = set()
+                fresh = False        # has this ride collected anything the chain did not already hold?
                 for kk in cs[p:]:
                     to = int(R.cto[kk]); st = int(R.state[to])
-                    if st >= 0: got.add(st)
+                    if st >= 0:
+                        got.add(st)
+                        if st not in collected: fresh = True
                     at = float(R.arr[kk])
                     if cap is not None:
                         # The ride's own new states are not owed after it, so they may exceed the ceiling,
-                        # and that is the only reason this is not simply a lookup. While the ride has
-                        # collected nothing the exception cannot apply, and the pair of tests below is
-                        # exactly `at > cap[to]`: `any(at > L[y][to] for y in owed)` is `at > min over owed`,
-                        # and cap is that same minimum already clamped by L_end. Most stops a ride passes
-                        # add no state, so this is the common path, and it was rebuilding a number that was
-                        # sitting in an array: 331M generator calls, 65 s of a 180 s profile.
-                        if not got:
+                        # and that is the only reason this is not simply a lookup. Until the ride collects
+                        # something the chain does not already hold, the exception cannot apply and the pair
+                        # of tests below is exactly `at > cap[to]`: `any(at > L[y][to] for y in owed)` is
+                        # `at > min over owed`, and cap is that same minimum already clamped by L_end.
+                        #
+                        # The test is whether anything NEW was collected, not whether `got` is empty. `got`
+                        # holds every state the ride passes through and every stop sits in a state, so it is
+                        # non-empty from the first stop onward and an emptiness test almost never fires. The
+                        # first version of this checked emptiness, on the stated reasoning that "most stops
+                        # a ride passes add no state", which confuses adding no NEW state with `got` being
+                        # empty. It left the generator at 215M calls, barely fewer per node than before.
+                        if not fresh:
                             if at > capl[to]: continue
                         else:
                             if at > capl[to] and any(at > L[y][to] for y in all_states
@@ -838,8 +862,7 @@ def main():
             # thing, so a route that collected everything and stopped in the wrong state could have been
             # reported as confirmed. Adversarial review found this; it had not bitten yet.
             if END_ST is not None:
-                last_ = [l for l in legs_ if l[0] in ('ride', 'walk')]
-                end_stop_ = last_[-1][2] if last_ else None
+                end_stop_ = final_stop(legs_)
                 if end_stop_ is None or int(R.state[end_stop_]) != END_ST:
                     where_ = ab(int(R.state[end_stop_])) if end_stop_ is not None else '?'
                     return (f'router reaches every state but finishes in {where_}, not {ab(END_ST)}',
