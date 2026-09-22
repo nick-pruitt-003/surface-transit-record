@@ -20,35 +20,32 @@ import argparse, bisect, pickle, sys, time
 from collections import defaultdict
 from datetime import datetime
 from zoneinfo import ZoneInfo
+from typing import NamedTuple
 import numpy as np
 from time_router import TimeRouter, load_feeds, cached_router, MIN_TRANSFER, N_STATES, WALK_MAX_KM
 import backward as B
 from common import ABBR
 
 
-# A real trip key is (feed name, trip id, day index), also a 3-tuple, so the marker needs a first element
-# that cannot be a feed name. '#' is not legal in the directory and zip names the loader derives feeds from.
-WALKIN = '#walkin'
+class Opt(NamedTuple):
+    """One thing the chain can do next: ride somewhere, and possibly step over a state line on foot there.
 
+    `walk` is its own field because hiding it anywhere else has cost this project eight bugs. It was first
+    absent entirely, so states taken on foot were never collected; then credited free at every stop a ride
+    passed, so the search invented routes; then smuggled into the trip slot as a marker, where `trip` was
+    sometimes a trip and sometimes not, and every reader that assumed moves are rides had a silent hole.
 
-def walkin_state(trip):
-    """The state a compound ride-and-walk move collected on foot, or None for a plain ride.
-
-    A border walk-in used to be recorded as `trip=None`, which threw away both the ride that carried you
-    there and the state you walked into. The route takes Mississippi on foot at Holmes, in Tennessee, so a
-    path built only from where each move starts and ends contains no Mississippi at all. `confirm` rebuilds
-    its state order from exactly those endpoints, so it would ask the router to fly a route with the state
-    missing and then report the route as failing to reach it: a false alarm on a good route, raised by the
-    one check that exists to catch routes that do not exist.
+    A ride is (board, alight, trip, time) and the whole codebase speaks that grammar. A walk-in is getting
+    off, leaving the network on foot, coming back, and holding a state never ridden to. It does not fit, and
+    dressing it as a ride does not make it fit, it only moves the misfit somewhere nobody is looking. Here
+    `trip` is always a trip and `walk` is always the state walked into or None, so a reader that ignores
+    `walk` is visibly ignoring it rather than accidentally not seeing it.
     """
-    return trip[2] if isinstance(trip, tuple) and len(trip) == 3 and trip[0] == WALKIN \
-        and isinstance(trip[1], tuple) else None
-
-
-def ride_of(trip):
-    """The underlying trip key of a move, looking through a walk-in marker."""
-    return trip[1] if isinstance(trip, tuple) and len(trip) == 3 and trip[0] == WALKIN \
-        and isinstance(trip[1], tuple) else trip
+    stop: int           # where this move leaves you (forward) or picks you up (backward)
+    time: float         # when, already including both directions of any walk
+    trip: object        # the trip ridden, never a marker
+    got: frozenset      # states this move collects, including the walked-into one
+    walk: object = None # the state stepped into on foot, or None
 
 
 def final_stop(legs):
@@ -218,7 +215,7 @@ def main():
         def __init__(self, back=False):
             self.front = defaultdict(list); self.back = back
 
-        def add(self, where, when_, trip, got):
+        def add(self, where, when_, trip, got, walk=None):
             fr = self.front[where]
             for g, w, _ in fr:
                 if (w - MIN_TRANSFER >= when_ if self.back else w + MIN_TRANSFER <= when_) and got <= g:
@@ -227,7 +224,7 @@ def main():
             fr[:] = [e for e in fr
                      if not ((when_ - MIN_TRANSFER >= e[1] if self.back else when_ + MIN_TRANSFER <= e[1])
                              and e[0] <= keep)]
-            fr.append((keep, when_, (where, when_, trip, keep)))
+            fr.append((keep, when_, Opt(where, when_, trip, keep, walk)))
 
         def list(self):
             return [e[2] for fr in self.front.values() for e in fr]
@@ -286,7 +283,7 @@ def main():
         survivors = undominated(opts)
         kept, ctrl_rank = len(survivors), None
         for i, o in enumerate(sorted(survivors, key=lambda o: (n_new(o) == 0, o[1])), 1):
-            if o[0] == al and o[2] == trip: ctrl_rank = i; break
+            if o[0] == al and o[2] == trip and o.walk is None: ctrl_rank = i; break
         print(f'         anatomy: {len(opts)} options -> {len(by_to)} destinations -> {kept} after exact '
               f'dominance ({100.0 * kept / max(1, len(opts)):.2f}%)'
               + (f'; the control\'s ride is {ctrl_rank} of them' if ctrl_rank else ''), flush=True)
@@ -319,7 +316,7 @@ def main():
             endl = L_end.tolist()
 
             def slack(o):
-                to, at, _trip, got = o
+                to, at, got = o.stop, o.time, o.got     # by name: the tuple has grown once and will again
                 if not (got - collected): return capl[to] - at      # owed unchanged, the node's own ceiling
                 owed_after = [y for y in range(N_STATES) if y not in collected and y not in got]
                 if not owed_after: return endl[to] - at
@@ -355,7 +352,8 @@ def main():
         Riding on the trip already boarded needs no transfer; anything else does."""
         menu = Menu() if (a.dedupe and not raw) else None
         out = []
-        push = menu.add if menu is not None else (lambda w_, t_, k_, g_: out.append((w_, t_, k_, frozenset(g_))))
+        push = menu.add if menu is not None else (
+            lambda w_, t_, k_, g_, wk_=None: out.append(Opt(w_, t_, k_, frozenset(g_), wk_)))
         all_states = range(N_STATES)
         if cap is None and L is not None: cap = ceiling(collected)
         # Plain lists for the two deadline arrays, and only once `cap` is actually filled in: reading them
@@ -433,7 +431,7 @@ def main():
                         if cap is not None and at2 > capl[to] and any(
                                 at2 > L[z][to] for z in all_states if z not in collected and z not in got and z != y):
                             continue
-                        push(to, at2, (WALKIN, key, y), got | {y})
+                        push(to, at2, key, got | {y}, y)
         return menu.list() if menu is not None else out
 
     best = [None]; limit = [a.target * 3600]; seen_nodes = [0]; t_run = time.time(); deepest = [0]
@@ -517,9 +515,10 @@ def main():
         # those two groups.
         n_new = lambda o: len(o[3] - collected)
         sort_opts(opts, collected, n_new, t)
-        for to, at, trip, got in opts[:a.width]:
+        for o in opts[:a.width]:
+            to, at, trip, got, walk = o
             new = collected | got
-            path.append((trip, stop, to, t, at))
+            path.append((trip, stop, to, t, at, walk))
             dfs(to, at, new, trip, path)
             path.pop()
 
@@ -571,7 +570,8 @@ def main():
             """Rides that could have dropped you here by t: (board stop, board time, trip, states collected)."""
             menu = Menu(back=True) if a.dedupe else None
             out = []
-            push = menu.add if menu is not None else (lambda w_, t_, k_, g_: out.append((w_, t_, k_, frozenset(g_))))
+            push = menu.add if menu is not None else (
+                lambda w_, t_, k_, g_, wk_=None: out.append(Opt(w_, t_, k_, frozenset(g_), wk_)))
             for j, w in [(s_, 0)] + list(R.foot.get(s_, ())):
                 t_ok = t - w
                 times = arr_times.get(j)
@@ -598,7 +598,7 @@ def main():
                         for y2, w2 in walkin.get(frm, ()):
                             if y2 in got or y2 in collected: continue
                             if bt - 2 * w2 < T_min: continue
-                            push(frm, bt - 2 * w2, (WALKIN, key, y2), got | {y2})
+                            push(frm, bt - 2 * w2, key, got | {y2}, y2)
             return menu.list() if menu is not None else out
 
         start_c = set()
@@ -633,7 +633,8 @@ def main():
             opts = rides_into(stop, t, aboard, collected)
             n_new = lambda o: len(o[3] - collected)
             sort_opts(opts, collected, n_new, t, back=True)
-            for frm, bt, trip, got in opts[:a.width]:
+            for o in opts[:a.width]:
+                frm, bt, trip, got, walk = o
                 new = collected | got
                 sp2 = D - bt
                 if sp2 > limit[0]: continue
@@ -644,7 +645,7 @@ def main():
                 queued[k2] = sp2
                 seq[0] += 1
                 heapq.heappush(q, (sp2 - a.credit * 3600 * len(new), sp2, seq[0], frm, bt, new, trip,
-                                   path + ((trip, frm, stop, bt, t),)))
+                                   path + ((trip, frm, stop, bt, t, walk),)))
 
     if a.track:
         import pickle as _pk
@@ -676,8 +677,14 @@ def main():
             raw_opts = rides_from(stop, t, aboard, collected, raw=True) if a.dedupe else opts
             n_new = lambda o: len(o[3] - collected)
             sort_opts(opts, collected, n_new, t)
-            rank = next((i + 1 for i, o in enumerate(opts) if o[0] == al and o[2] == trip), None)
-            got = next((o[3] for o in opts if o[0] == al and o[2] == trip), frozenset())
+            # A control leg is a plain ride, so only a plain ride reproduces it. Before the walk field
+            # existed a walk-in carried no trip and could never match here; now it carries the real one,
+            # and without this the replay counts the ride-plus-detour variant as the same move. It showed
+            # up as the tally rising from 30/40 to 31/40 on a refactor that was meant to change nothing,
+            # which is the shape of a gate quietly getting easier to pass.
+            same = lambda o: o[0] == al and o[2] == trip and o.walk is None
+            rank = next((i + 1 for i, o in enumerate(opts) if same(o)), None)
+            got = next((o[3] for o in opts if same(o)), frozenset())
             info = R.trip_info.get(trip, ('', ''))
             name = (info[1] or info[0])[:22]
             if rank is None and a.dedupe:
@@ -687,7 +694,7 @@ def main():
                 # the same stop, at least MIN_TRANSFER earlier, holding at least as many states, leaves
                 # every later leg of the control available. Requiring trip identity would fail a menu that
                 # is strictly better, which is how this gate read the Memphis leg as missing.
-                want = next((o for o in raw_opts if o[0] == al and o[2] == trip), None)
+                want = next((o for o in raw_opts if same(o)), None)
                 if want is not None:
                     cover = [(i + 1, o) for i, o in enumerate(opts)
                              if o[0] == al and o[1] + MIN_TRANSFER <= want[1] and (want[3] - collected) <= (o[3] - collected)]
@@ -703,7 +710,7 @@ def main():
                         continue
             if rank is None:
                 # why not: was the trip offered at all, and would getting off there have been allowed?
-                offered = any(o[2] == trip for o in opts)
+                offered = any(o[2] == trip and o.walk is None for o in opts)
                 owed = [y for y in range(N_STATES) if y not in collected]
                 ok = alight_ok(al, at, [y for y in owed if y != int(R.state[al])])
                 bad = [ab(y) for y in owed if y != int(R.state[al]) and L is not None and at > L[y][al]]
@@ -735,7 +742,7 @@ def main():
                 # positioning rides are ranked against each other has to change.
                 mine = n_new(opts[rank - 1]) == 0
                 peers = [o for o in opts if (n_new(o) == 0) == mine]
-                grank = next((i + 1 for i, o in enumerate(peers) if o[0] == al and o[2] == trip), None)
+                grank = next((i + 1 for i, o in enumerate(peers) if same(o)), None)
                 kind = 'positioning' if mine else 'collecting'
                 print(f'  leg {n:2d} {name:22s} -> {R.stop_name[al][:26]:26s} rank {rank:3d}/{len(opts):4d}'
                       f'  +{" ".join(ab(x) for x in sorted(got - collected)) or "-"}{flag}', flush=True)
@@ -792,7 +799,8 @@ def main():
             opts = rides_from(stop, t, aboard, collected)
             n_new = lambda o: len(o[3] - collected)
             sort_opts(opts, collected, n_new, t)
-            for to, at, trip, got in opts[:a.width]:
+            for o in opts[:a.width]:
+                to, at, trip, got, walk = o
                 new = collected | got
                 # Dominance when queuing, not only when popped. Many queued nodes share a stop, a set of
                 # states and a boarded trip, and only the earliest of those can ever matter; checking at push
@@ -804,7 +812,7 @@ def main():
                 queued[k2] = sp_new
                 seq[0] += 1
                 heapq.heappush(q, (pri(at - T0, len(new)), at - T0, seq[0], to, at, new, trip,
-                                   path + ((trip, stop, to, t, at),)))
+                                   path + ((trip, stop, to, t, at, walk),)))
             if len(q) > a.queue:
                 # Drop only what is provably dead: a node whose clock has passed the limit, or passed the
                 # latest it could still collect something it owes. Both are facts. The old rule kept the best
@@ -848,8 +856,8 @@ def main():
         if not rides_: return None
         st0_ = rides_[0][1]; t0_ = rides_[0][3]
         order_ = []
-        for trip_, frm_, to_, bt_, at_ in path_:
-            for st_ in (int(R.state[frm_]), int(R.state[to_]), walkin_state(trip_)):
+        for trip_, frm_, to_, bt_, at_, walk_ in path_:
+            for st_ in (int(R.state[frm_]), int(R.state[to_]), walk_):
                 if st_ is not None and st_ >= 0 and st_ not in order_: order_.append(st_)
         try:
             import time_search as ts_
@@ -895,9 +903,8 @@ def main():
             print(f'best {spent / 3600:.2f} h, starting {R.fmt_time(D - spent, path[-1][1]) if path else "?"}')
             chk = confirm(path[::-1])
             if chk: print(f'  independent check: {chk[0]}' + (f', {chk[1]:.2f} h' if chk[1] is not None else ''))
-            for trip, frm, to, bt, at in path[::-1]:
-                info = R.trip_info.get(ride_of(trip), ('', '')) if trip else ('', 'border walk-in')
-                wy = walkin_state(trip)
+            for trip, frm, to, bt, at, wy in path[::-1]:
+                info = R.trip_info.get(trip, ('', '')) if trip else ('', 'border walk-in')
                 print(f'   {R.fmt_time(bt, frm)} {R.stop_name[frm][:26]:26s} -> {R.fmt_time(at, to)} '
                       f'{R.stop_name[to][:26]:26s} {(info[1] or info[0])[:24]}'
                       + (f' + walk into {ab(wy)}' if wy is not None else ''))
@@ -922,9 +929,8 @@ def main():
         print(f'best {spent / 3600:.2f} h over {len(path)} rides')
         chk = confirm(path)
         if chk: print(f'  independent check: {chk[0]}' + (f', {chk[1]:.2f} h' if chk[1] is not None else ''))
-        for trip, s, to, t, at in path[:60]:
-            info = R.trip_info.get(ride_of(trip), ('', ''))
-            wy = walkin_state(trip)
+        for trip, s, to, t, at, wy in path[:60]:
+            info = R.trip_info.get(trip, ('', ''))
             print(f'   {R.fmt_time(t, s)} {R.stop_name[s][:26]:26s} -> {R.fmt_time(at, to)} {R.stop_name[to][:26]:26s} '
                   f'{(info[1] or info[0])[:24]}' + (f' + walk into {ab(wy)}' if wy is not None else ''))
         if a.out:

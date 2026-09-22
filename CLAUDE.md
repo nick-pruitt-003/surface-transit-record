@@ -181,6 +181,18 @@ The ride-versus-walk tuple index is the same: `('ride', trip, board, dep, alight
 candidate died on a `None` subscript, because it never exercises generation. Only the control replay caught
 that. B is an oracle suite, not a generation gate, and reading it as one is how a broken build looks fine.
 
+## On a change that claims to change nothing, a number going up is a failure signal
+
+Making walk-ins their own move type was meant to be behaviour-neutral, and the control replay came back at
+31/40 instead of 30/40. The extra leg was not progress. Walk-in options now carry the real trip key rather
+than none, and the replay matched a control leg by stop and trip alone, so a plain ride in the control
+started matching the ride-plus-detour variant of the same trip to the same stop. A different move, counted
+as the same one, in the gate that exists to catch exactly that.
+
+Nothing announced it. The only reason it surfaced is that the tally moved when it should not have, so treat
+that as the signal: when a refactor says it changes nothing, any number that improves is unexplained until
+proven otherwise, and unexplained improvements in a gate usually mean the gate got easier.
+
 ## Diagnostics worth reusing
 
 Instrumenting against the known answer worked every time; running searches blind and reading the result did
