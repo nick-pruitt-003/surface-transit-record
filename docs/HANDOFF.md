@@ -556,11 +556,21 @@ did not already contain it. Only dropping the excursion separated the two.
 That is the fifth time a same-shaped assumption has hidden the thing the route depends on, and the first
 four are in CLAUDE.md. The gap's two ends are data; requiring them to be equal was a guess.
 
-### Why it is free, and why it is more than free
+### When it is free, and when it is not
 
-A detour that returns before the next ride boards leaves every later leg bit-identical, so nothing
-downstream can break: elapsed time is unchanged by construction. What changes is the owed set, and that is
-where the gain lives. Collecting MS at Memphis is what frees the Houston to Tallahassee bus that skips
+The first version of this section claimed a detour "leaves every later leg bit-identical, so nothing
+downstream can break". That is only true when the chain was **alighting at X anyway**. If it was going to
+stay aboard through X, an insertion forces getting off and reboarding, which costs at least MIN_TRANSFER
+and may miss the vehicle entirely, and the later legs are then not identical at all.
+
+Memphis happens to alight, so the probe result there does not demonstrate the general claim, and the claim
+was doing real work: it was going to be the foundation of a spine-plus-repair design where repair is always
+free. It is not. A repair pass has to check whether the window it is filling sits inside a stay-aboard, and
+price it when it does.
+
+What survives is the weaker and still useful statement: where the chain already alights and the detour
+returns before the same departure, elapsed time is unchanged by construction. What changes is the owed set,
+and that is where the gain lives. Collecting MS at Memphis is what frees the Houston to Tallahassee bus that skips
 Mississippi, which arrives early enough for the Silver Meteor and the accelerated finish. The operator is
 not a tidy-up pass, it is an enabler.
 

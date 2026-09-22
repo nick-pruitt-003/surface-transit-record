@@ -139,6 +139,22 @@ Still live and not yet addressed, in the order they are being worked:
 When adding a check here, make it able to fail. A first version of the gateway check asserted that a list
 was non-empty, which reads like a test and tests nothing.
 
+## What --dedupe costs, and why it stays opt-in
+
+Option dominance drops an option when another at the same stop holds at least its states and arrives at
+least MIN_TRANSFER earlier. The slack is what makes it safe: the survivor is ready to board by the time the
+discarded option arrived, so it can take whatever that option would have taken next.
+
+The seam, found by adversarial review rather than by a run: dominance keys on (stop, states, time) and not
+on the trip. If the useful continuation is *being already aboard* some trip T, and T cannot be boarded
+fresh at that stop, the survivor does not preserve it. Rare in this data and not something `--track` can
+catch, because the replay only ever exercises the control's own trips, and a non-control casualty is
+silent.
+
+That is why `--dedupe` is opt-in rather than the default, and the mitigation is the reason, not a verdict.
+Turning it on by default needs either a proof that the case cannot arise in this feed set or a check that
+would notice it.
+
 ## Diagnostics worth reusing
 
 Instrumenting against the known answer worked every time; running searches blind and reading the result did

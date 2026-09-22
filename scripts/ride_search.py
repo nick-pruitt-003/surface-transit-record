@@ -832,8 +832,19 @@ def main():
             f_, legs_ = SS.evaluate(order_)
             if f_ == float('inf'): return ('the router cannot follow this order at all', None)
             miss_ = [ab(x) for x in SS.missing(legs_)]
-            return (('router confirms' if not miss_ else 'router says it never reaches ' + ' '.join(miss_)),
-                    (f_ - t0_) / 3600)
+            if miss_: return ('router says it never reaches ' + ' '.join(miss_), (f_ - t0_) / 3600)
+            # Finishing somewhere is not finishing at the end. The search refuses a chain that holds all 48
+            # while standing somewhere other than END_ST, and this second witness was not checking the same
+            # thing, so a route that collected everything and stopped in the wrong state could have been
+            # reported as confirmed. Adversarial review found this; it had not bitten yet.
+            if END_ST is not None:
+                last_ = [l for l in legs_ if l[0] in ('ride', 'walk')]
+                end_stop_ = last_[-1][2] if last_ else None
+                if end_stop_ is None or int(R.state[end_stop_]) != END_ST:
+                    where_ = ab(int(R.state[end_stop_])) if end_stop_ is not None else '?'
+                    return (f'router reaches every state but finishes in {where_}, not {ab(END_ST)}',
+                            (f_ - t0_) / 3600)
+            return ('router confirms', (f_ - t0_) / 3600)
         except Exception as e:
             return (f'could not be checked ({type(e).__name__}: {e})', None)
 

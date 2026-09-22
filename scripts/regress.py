@@ -120,21 +120,34 @@ def _():
     over = [j for j, w in R.foot.get(holmes, ()) if j >= R.first_virtual and R.state[j] == ms]
     assert over, 'Holmes no longer steps over the Mississippi line on foot; MS becomes uncollectable there'
 
-    # The Memphis hop is a local-transit proxy link, longer than any plain walk. A cap written against walking
-    # speed hides it, which is the bug that cost Mississippi once already.
-    mem_hop = [w for j, w in R.foot.get(R.stops_matching('BELLEVUE BOULEVARD at CA')[0], ())]
-    assert mem_hop, 'Bellevue at Carr has no links at all'
+    # The Memphis hop is a local-transit proxy link, and the point of it is that it is LONGER than any plain
+    # walk: the old bug capped foot weights at a made-up 1200, which is twenty minutes in seconds, and that
+    # one number hid every proxy hop the route needs. Asserting the link merely exists would pass with the
+    # bug reinstated, so assert the thing the bug destroyed, a usable link costing more than twenty minutes.
+    bell = R.stops_matching('BELLEVUE BOULEVARD at CA')[0]
+    long_hops = [(j, w) for j, w in R.foot.get(bell, ()) if w > 1200]
+    assert long_hops, ('Bellevue at Carr has no foot link over twenty minutes; a walking-speed cap would '
+                       'leave this stop looking connected while the hop the route uses is gone')
+    assert max(w for _, w in long_hops) > 1200, 'longest link at Bellevue at Carr is under the old 1200 cap'
 
-    # And the sparse stops must still be somewhere a search can choose to get off. Counting services is the
-    # rule that failed here before, so the assertion is the opposite one: these stops are allowed to be quiet.
-    import numpy as _np
-    deps = _np.bincount(R.cfrom, minlength=R.N)
+    # These stops are quiet, and that is the assertion, not an aside. `if n < 6: pass` was here instead: a
+    # comment wearing an assertion's clothes, in the same commit that replaced another check for being a
+    # no-op. What the project keeps getting wrong is rules that require a stop to be busy, so state the fact
+    # those rules break on: at least one load-bearing stop serves fewer than the six the old --hub rule
+    # demanded. If that stops being true the data moved and the rule deserves rechecking, not reinstating.
+    # Count what the --hub rule counted: distinct named services, not connections. A first version of this
+    # used np.bincount(R.cfrom), which counts one entry per connection over the whole twenty day window, so
+    # the Barstow depot came out at 38 and the check failed against its own premise. Two services running
+    # daily for twenty days is not thirty-eight services, and the rule that broke here was about services.
+    svc = {}
     for k, (pat, why) in want.items():
         i = R.stops_matching(pat)[0]
-        n = int(deps[i])
-        assert n > 0, f'{k} has no departures at all'
-        if n < 6:
-            pass    # expected, and the reason --hub 6 was wrong; recorded rather than asserted away
+        names = {R.trip_info.get((R.ctrip[c][0], R.ctrip[c][1]), ('', ''))[1]
+                 for c in range(len(R.dep)) if R.cfrom[c] == i}
+        svc[k] = len(names - {''})
+        assert svc[k] > 0 or names, f'{k} has nothing departing at all, so nothing can board there'
+    assert min(svc.values()) < 6, ('every load-bearing stop now runs six or more named services, so the '
+                                   f'--hub 6 rule would no longer visibly break here: {svc}')
 
 
 @check('nothing on the ride-search path picks stops by how busy they are')
