@@ -12,9 +12,20 @@ could have left and still collected the whole order in that order and finished b
 
     if that value is before the start time, the ordering is impossible
 
-Definitively. Not estimated, not bounded. The scans are the same ones the search already prunes with and
-they are permissive at every seam (guard=False, and `max(lat, eff)` lets a connection be boarded with zero
-transfer), so the test can only ever be too generous. A shape it rules out is genuinely ruled out.
+for that ordering. The scans themselves are permissive at every seam (guard=False, and `max(lat, eff)` lets
+a connection be boarded with zero transfer).
+
+**But the test as a whole is STRICTER than reality, and the first run measured by how much.** Chaining
+scans through an order demands you visit a stop of each state in strict sequence, while a real route picks
+up many states incidentally as it passes through. The control's own targets came back feasible by 36
+seconds when the route truly finishes 0.7 h inside the deadline. So the strictness is worth about 0.7 h on
+the control, and a shape whose real margin is under that reads as IMPOSSIBLE when a route exists.
+
+An early version of this docstring claimed the opposite, that the test could only ever be too generous and
+a shape it ruled out was genuinely ruled out. That was wrong, and it was wrong in the direction that makes
+a probe sell a false negative as a fact. Run `--true-order` to derive the order the route actually collects
+in: the gap between the two IS the correction, and until it is measured an IMPOSSIBLE verdict is a
+statement about this test and not about the timetable.
 
 This is NOT the ordering search CLAUDE.md declares dead. That one searched the space of orderings guided by
 a leftover estimate, and every form of the estimate failed because a spanning tree cannot price a set of
@@ -22,7 +33,15 @@ states with no idea where or when you are. This estimates nothing and searches n
 as a hypothesis and asks the timetable whether it can exist, for about 48 scans.
 
 Falsification, before running: the control's own order must come back feasible with roughly its own known
-slack. If the 237 route reads as impossible, the probe is wrong and nothing else it says counts.
+slack. If the 237 route reads as impossible, the probe is wrong and nothing else it says counts. It came
+back feasible, and at 36 seconds rather than the route's real 0.7 h, which is how the strictness above was
+found: the falsification passed and the margin it passed by was the finding.
+
+A second lesson from the first run, about choosing shapes rather than about the machinery. `east-first` and
+`west-first` sort the states by mean longitude, and BOTH are impossible. They do not fail because of
+direction; they fail because a longitude sort is not a route shape at all, forcing you to sweep the height
+of the country at every step. Permute at the granularity that preserves local coherence, contiguous blocks
+of an order that works, or the answer is about the permutation and not about the shape.
 
     python3 shape_probe.py
     python3 shape_probe.py --shapes control,reverse,east-first
@@ -49,6 +68,7 @@ def main():
     ap.add_argument('--span', type=float, default=260)
     ap.add_argument('--days', type=int, default=20)
     ap.add_argument('--shapes', default=','.join(HERE_SHAPES))
+    ap.add_argument('--true-order', action='store_true', help='derive the order from the route\'s own legs rather than the pickle\'s target list. The difference between the two IS the strictness this test adds, and until it is measured an IMPOSSIBLE verdict may be a fact about the test rather than about the timetable.')
     a = ap.parse_args()
 
     tz = ZoneInfo(a.tz)
@@ -93,7 +113,32 @@ def main():
     for y in range(N_STATES):
         if st_stops[y]: lon[y] = float(xy[np.asarray(st_stops[y]), 0].mean())
 
-    base = list(pickle.load(open(a.route, 'rb'))['order'])
+    d_ = pickle.load(open(a.route, 'rb'))
+    base = list(d_['order'])
+    if a.true_order:
+        # The pickle's `order` is a TARGET list fed to the router's layered scan, not the order in which the
+        # route actually first collects states. Chaining scans through targets demands you visit a stop of
+        # each in strict sequence, while the real route picks up many states incidentally as it passes
+        # through. That strictness costs the control 0.7 h: it truly finishes at 237.3 h against a 238 h
+        # deadline, so it has about forty minutes of room, and the target chain gives it 36 seconds.
+        #
+        # That matters far more than the control's own verdict. If strictness costs 0.7 h here it costs
+        # something comparable on every other ordering, so a shape whose real margin is +0.5 h reads as
+        # IMPOSSIBLE and the probe reports a fact about its own test rather than about the timetable.
+        # Deriving the order the route actually collects in is the calibration: run it both ways and the
+        # difference IS the correction.
+        import time_search as ts
+        from time_search import Search
+        st0_ = R.stop_name.index(d_['start'])
+        S_ = Search(R, st0_, d_['t0'], [], 1)
+        ts._R, ts._START, ts._T0, ts._SELF, ts._BASE, ts._END = R, st0_, d_['t0'], S_, None, None
+        _f, legs_ = S_.evaluate(d_['order'])
+        seen_ = []
+        for i_, l_ in enumerate(legs_):
+            for y_ in sorted(S_.covered(legs_[:i_ + 1])):
+                if y_ not in seen_: seen_.append(int(y_))
+        base = seen_
+        print(f'true first-collection order: {len(base)} states, against {len(d_["order"])} targets')
     body = [y for y in base if y != end_st]
 
     def shape(name):
@@ -120,7 +165,8 @@ def main():
             print(f'{name:16s} {"unreachable":>26s} {"-":>10s}   IMPOSSIBLE from this start')
             continue
         m = (best - t0) / 3600
-        print(f'{name:16s} {datetime.fromtimestamp(best, tz):>26%a %d %b %H:%M} {m:+9.2f} h   '
+        when = datetime.fromtimestamp(best, tz).strftime('%a %d %b %H:%M')
+        print(f'{name:16s} {when:>26s} {m:+9.2f} h   '
               f'{"feasible" if m >= 0 else "IMPOSSIBLE, must have left " + f"{-m:.2f} h earlier"}')
 
     print('\nMargin is how much later than the actual start you could have left and still done the whole '
