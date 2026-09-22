@@ -576,3 +576,68 @@ not a tidy-up pass, it is an enabler.
 
 Next: run it on what the search produces rather than on the control. A chain that stalls at 28 states owes
 20, and the question is how many of those its own dead time already holds.
+
+## 15. Sep 22: the pair prune, and what the deep bucket was really holding
+
+The search kept a node while every state it still owed was individually collectable, `L[y][stop] >= t`.
+That test is exact and it is not enough. The deepest chain of the long runs passed it at every leg and was
+already dead: from ride 10 at Springfield Union Station, holding 23 states, it owed California and
+Washington, each reachable on its own and neither reachable after the other. It then spent 2600 s and
+83000 nodes below that position and reported 31 states. The 31 was not progress, it was bookkeeping.
+
+`pair_tables.py` answers the question the per-state table cannot, with the same scans and no new machinery.
+`L[z]` is one reverse scan seeded from z's stops with `L_end`. Seed a scan from y's stops with `L[z]`
+instead and you get `L[y->z][s]`, the latest you can be at s and still collect y, then z, then finish.
+`P[stop, y, z]` is the better of the two orders. A node owing y and z is dead when its clock is past it.
+Nothing is estimated, which is the only reason it is allowed anywhere near this route.
+
+`--pairs {report,pop,push}` wires it into `ride_search.py`. `report` builds the table and prunes nothing,
+which is the arm the other two are read against; without it the baseline and the pruned runs are measured
+with different instruments and the comparison says nothing.
+
+### What it validated before it pruned anything
+
+| | |
+|---|---|
+| table | 805 s on 2 workers of a 4-core box, 182 MB, keyed on the scan inputs so a changed router rebuilds |
+| control, via `pair_tables.py` | 48/48 states, 69 nodes, 0 killed |
+| control, via `ride_search.py --track --pairs push` | 0 of 40 ride nodes killed |
+| tightest control margin, both | **+0.03 h at Trinidad CO, on AL & FL** |
+| the deep chain | dead from ride 10, Springfield MA, CA & WA by 5.8 h |
+
+The two control validations derive the owed set differently: `pair_tables` reads it off the route's legs
+through `leg_states`, the replay accumulates what the menu actually returned. They agree on the same
+tightest node and the same margin, which is a cross-check rather than one code path run twice.
+
+**+0.03 h is 108 seconds, and that is the number to watch.** The table is a relaxation, so the true margin
+can only be looser and the prune is sound as built. But it also means the prune is within two minutes of
+killing the 237 route at Trinidad, and the last time a one-minute difference in how a walk was modelled got
+in front of this route it compounded backwards into four hours by Houston. Anything that makes `P` stricter
+has to be measured against that leg specifically, not against the replay's pass/fail.
+
+### Where the check goes, and why there are two sites
+
+`pop` tests a node as it comes off the frontier, `push` before it goes on. They are not interchangeable and
+the difference is not throughput. `deepest` is raised at pop, before the death tests, and the exit census
+reads whatever is sitting in the queue. So only `push` keeps a jointly dead chain from being counted as
+depth and from filling the census. Which is cheaper is a measurement; which is honest is not.
+
+The frontier sweep uses the test too, and prints what it dropped. Under `--pairs push` that has to read 0.
+If it does not, a node reached the frontier untested, and the sweep is reporting the bug rather than doing
+useful work.
+
+### The gate the prune needed, and the one the writer never had
+
+The search's pair sites live in `best_first`, which `--track` never reaches, so the prune would have shipped
+with no gate inside the search at all. `--track` now tests the control's own nodes and exits non-zero on a
+kill: a rule that kills a node of the 237 route is not a prune.
+
+The same pass closed an older hole. `be64aa9` added a field to the legs the search pushes and not to the
+ones it writes, so every `--out` raised `ValueError` with `regress.py` green and `--track` green, because
+nothing routine exercises `route_record`. The replay is already walking real legs through the real menu, so
+it now builds the same leg tuples `best_first` pushes, hands them to `route_record`, and asserts the derived
+state order equals what the chain was credited with and that the result pickles. Doing that surfaced a live
+`UnboundLocalError`: `route_record` was defined at line 960 and the `--track` block runs inline at 691.
+
+The lesson is the one in CLAUDE.md's tier table, stated again because it keeps costing: a green oracle suite
+and a green replay say nothing about a path neither of them executes. Ask which lines a gate actually runs.
