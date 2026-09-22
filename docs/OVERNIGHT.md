@@ -125,3 +125,46 @@ What replaces them is the pair that tests the diagnosis instead of the symptom. 
 now sits behind them. If the diagnosis is right, an ordering that does not front-load the Northeast should
 get past 25 states, and if neither does, the dive is not the whole story and the next thing to look at is
 why the frontier never recovers once the greedy chain has poisoned it.
+| `c_fwd48_early` | 26 min | deepest 25/48 | 14684 nodes in 1500 s (10/s) | 0 | none |  | rc=0 |
+
+### Ordering does not move the wall, so the diagnosis was wrong
+
+`c_fwd48_early` ran the full 1500 s and stopped at 25/48, the same place `--order rate` stops. It got there
+by a different road, Hanover at 68.1 h and Wilmington at 78.8 h, nineteen rides deep against rate's eleven
+to White River Junction, so the knob does change the dive. It just does not change where the dive ends.
+
+That kills the explanation offered two sections up. Front-loading the Northeast is real, but the candidate
+ordering is not what causes it, because every ordering does it.
+
+What does cause it is one line up from the ordering, in the priority function:
+
+```
+pri = spent - credit * 3600 * n_states          # --credit defaults to 5.0 h
+```
+
+237 h over 48 states is 4.94 h per state, so the default prices every state at the average and the priority
+is "hours behind the ideal pace". Now price the wall with it. A chain holding 24 states at 80 h is running
+at 3.3 h per state, comfortably ahead, and the queue rewards it accordingly. But it is ahead only because
+the states it took are the cheap dense ones in the Northeast; the 24 it still owes are spread across the
+West and need 157 h, or 6.5 h each. A flat per-state credit cannot see the difference, so it promotes every
+chain that spent the cheap half and starves the ones that did the West first, which is what the control
+does. Changing `--order` cannot fix that, because `--order` only picks among the children of a node the
+priority function already chose.
+
+The obvious next move is a `--credit` sweep, and it is worth one run, but a scalar is the wrong shape and
+this project has been here before: a flat price per state is exactly the kind of summary statistic that has
+broken four times already. The exact quantity is on hand instead. `L[y][stop]` is the latest you can be at
+a stop and still collect y and finish, so for a node standing at `stop` at `t` the slack
+
+```
+min over owed y of ( L[y][stop] - t )
+```
+
+is how close the chain is to losing the state it can least afford to lose, read straight off the deadline
+tables rather than estimated. Ranking by slack prefers chains that are still comfortable everywhere over
+chains that are far ahead on average and already out of time somewhere, which is the distinction a flat
+credit cannot draw.
+
+Falsification, stated before building it: if slack ranking is right, a run should pass 25 states and the
+chains it expands late should be ones with the West already collected. If it stalls at 25 like everything
+else, then the wall is not in the ranking at all and the next suspect is the pruning, not the priority.
