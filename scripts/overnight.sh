@@ -10,7 +10,10 @@ set -u
 cd "$(dirname "$0")"
 OUT=../out
 NOTES=../docs/OVERNIGHT.md
-COMMON="--end VT --by 2026-10-03T22:54 --tz America/New_York --target 238 --order rate"
+# No --order here on purpose. Hardcoding it meant every run in this queue inherited whatever the
+# default was when the file was written, which is how a whole night went to `rate` after it had been
+# measured worse. Runs that want a specific ordering pass it themselves.
+COMMON="--end VT --by 2026-10-03T22:54 --tz America/New_York --target 238"
 FWD="--start \"Huntington Bus Stop\" --at 2026-09-24T00:54"
 
 note () { echo "$1" >> "$NOTES"; }
@@ -65,9 +68,9 @@ note "|---|---|---|---|---|---|---|---|"
 
 # Forward first, and all of it, before any backward run. Backward moves at about one node a second here
 # (56 nodes in 93 s, measured twice), so a 25 minute backward run sees a few hundred nodes and cannot say
-# anything about breadth; forward does 274 a second and every question below is answerable there. Spending
-# the night the other way round would have bought five starved runs. Backward stays in the queue, at the
-# end, because "it is still slow at 25 minutes" is itself worth recording.
+# anything about breadth. Forward is faster, though not by as much as this comment used to claim: 274 a
+# second was its first minute, and the sustained rate over a full run is 5 to 13. Backward stays in the
+# queue, at the end, because "it is still slow at 25 minutes" is itself worth recording.
 
 # A: does superset dominance break the plateau at all
 eval run a_fwd48  1500 $FWD --states 48
