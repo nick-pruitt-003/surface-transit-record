@@ -22,6 +22,7 @@ from datetime import datetime
 from zoneinfo import ZoneInfo
 import numpy as np
 from time_router import TimeRouter, load_feeds, MIN_TRANSFER, N_STATES, WALK_MAX_KM
+import backward as B
 from common import ABBR
 
 
@@ -35,6 +36,7 @@ def main():
     ap.add_argument('--states', type=int, default=N_STATES, help='how many states to require (fewer = a test case)')
     ap.add_argument('--horizon', type=float, default=24, help='hours ahead to look for a departure')
     ap.add_argument('--hub', type=int, default=6, help='alight here if the stop has at least this many services')
+    ap.add_argument('--span', type=float, default=260, help='hours the deadline tables scan back over')
     ap.add_argument('--budget', type=float, default=900); ap.add_argument('--nodes', type=int, default=2000000)
     ap.add_argument('--days', type=int, default=20); ap.add_argument('--out')
     a = ap.parse_args()
@@ -58,9 +60,35 @@ def main():
     print(f'  indexed {len(R.dep)} connections over {len(trip_conns)} trips in {time.time() - t_build:.0f} s', flush=True)
 
     START = R.stops_matching(a.start)[0] if a.start else None
-    if back:
-        inv = {v: k for k, v in ABBR.items()}
+    inv = {v: k for k, v in ABBR.items()}
+
+    # Both clocks on the same node. Going forward the search knows how long it has been out; these tables give
+    # it the other half, how long it has left. One reverse scan from the end at its deadline gives the latest
+    # you could be at each stop and still finish; seeding a second scan from a state's stops with those values
+    # gives the latest you could be at each stop and still collect THAT state and then finish. So at any node,
+    # if the clock is past L[y] for a state y still owed, that branch is already dead. That is a fact rather
+    # than an estimate, and after the precompute it costs one array lookup.
+    L = None; L_end = None; END_ST = None
+    if a.end and a.by:
         END_ST = R.state_names.index(inv[a.end])
+        D = datetime.fromisoformat(a.by).replace(tzinfo=ZoneInfo(a.tz)).timestamp()
+        F = B.RevFast(R)
+        st_stops = {x: [i for i in range(R.N) if R.state[i] == x] for x in range(N_STATES)}
+        t_pre = time.time()
+
+        def latest_from(nxt):
+            lat, ok, k0, k1 = F.layer(nxt, True, D - a.span * 3600, None)
+            eff, _ = F.through(ok, k0, k1, np.ones(R.N, bool))
+            return np.maximum(lat, eff)
+
+        L_end = latest_from({int(s): D for s in st_stops[END_ST]})
+        L = np.full((N_STATES, R.N), -np.inf)
+        for y in range(N_STATES):
+            nxt = {int(s): float(L_end[s]) for s in st_stops[y] if L_end[s] > -np.inf}
+            if nxt: L[y] = latest_from(nxt)
+        ls = L_end[START] if START is not None else -np.inf
+        print('  deadline tables built in %.0f s; latest start that still finishes: %s'
+              % (time.time() - t_pre, R.fmt_time(float(ls), START) if ls > -np.inf else 'unreachable'), flush=True)
 
     def rides_from(s, t, aboard):
         """The menu at stop s at time t: (alight stop, alight time, trip, states it collects).
@@ -103,6 +131,11 @@ def main():
             print(f'  [{time.time() - t_run:5.0f}s] FOUND {spent / 3600:.2f} h, {len(collected)} states, '
                   f'{len(path)} rides', flush=True)
             return
+        if L is not None:
+            if t > L_end[stop]: return                        # the end is no longer reachable from here
+            col = L[:, stop]
+            for y in range(N_STATES):
+                if y not in collected and t > col[y]: return  # y can no longer be collected before finishing
         key = (stop, collected)
         prev = dom.get(key)
         if prev is not None and prev <= spent: return
