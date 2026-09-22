@@ -26,6 +26,31 @@ import backward as B
 from common import ABBR
 
 
+# A real trip key is (feed name, trip id, day index), also a 3-tuple, so the marker needs a first element
+# that cannot be a feed name. '#' is not legal in the directory and zip names the loader derives feeds from.
+WALKIN = '#walkin'
+
+
+def walkin_state(trip):
+    """The state a compound ride-and-walk move collected on foot, or None for a plain ride.
+
+    A border walk-in used to be recorded as `trip=None`, which threw away both the ride that carried you
+    there and the state you walked into. The route takes Mississippi on foot at Holmes, in Tennessee, so a
+    path built only from where each move starts and ends contains no Mississippi at all. `confirm` rebuilds
+    its state order from exactly those endpoints, so it would ask the router to fly a route with the state
+    missing and then report the route as failing to reach it: a false alarm on a good route, raised by the
+    one check that exists to catch routes that do not exist.
+    """
+    return trip[2] if isinstance(trip, tuple) and len(trip) == 3 and trip[0] == WALKIN \
+        and isinstance(trip[1], tuple) else None
+
+
+def ride_of(trip):
+    """The underlying trip key of a move, looking through a walk-in marker."""
+    return trip[1] if isinstance(trip, tuple) and len(trip) == 3 and trip[0] == WALKIN \
+        and isinstance(trip[1], tuple) else trip
+
+
 def final_stop(legs):
     """Where a router itinerary actually ends.
 
@@ -408,7 +433,7 @@ def main():
                         if cap is not None and at2 > capl[to] and any(
                                 at2 > L[z][to] for z in all_states if z not in collected and z not in got and z != y):
                             continue
-                        push(to, at2, None, got | {y})
+                        push(to, at2, (WALKIN, key, y), got | {y})
         return menu.list() if menu is not None else out
 
     best = [None]; limit = [a.target * 3600]; seen_nodes = [0]; t_run = time.time(); deepest = [0]
@@ -573,7 +598,7 @@ def main():
                         for y2, w2 in walkin.get(frm, ()):
                             if y2 in got or y2 in collected: continue
                             if bt - 2 * w2 < T_min: continue
-                            push(frm, bt - 2 * w2, None, got | {y2})
+                            push(frm, bt - 2 * w2, (WALKIN, key, y2), got | {y2})
             return menu.list() if menu is not None else out
 
         start_c = set()
@@ -824,8 +849,8 @@ def main():
         st0_ = rides_[0][1]; t0_ = rides_[0][3]
         order_ = []
         for trip_, frm_, to_, bt_, at_ in path_:
-            for st_ in (int(R.state[frm_]), int(R.state[to_])):
-                if st_ >= 0 and st_ not in order_: order_.append(st_)
+            for st_ in (int(R.state[frm_]), int(R.state[to_]), walkin_state(trip_)):
+                if st_ is not None and st_ >= 0 and st_ not in order_: order_.append(st_)
         try:
             import time_search as ts_
             from time_search import Search as S_
@@ -871,9 +896,11 @@ def main():
             chk = confirm(path[::-1])
             if chk: print(f'  independent check: {chk[0]}' + (f', {chk[1]:.2f} h' if chk[1] is not None else ''))
             for trip, frm, to, bt, at in path[::-1]:
-                info = R.trip_info.get(trip, ('', '')) if trip else ('', 'border walk-in')
+                info = R.trip_info.get(ride_of(trip), ('', '')) if trip else ('', 'border walk-in')
+                wy = walkin_state(trip)
                 print(f'   {R.fmt_time(bt, frm)} {R.stop_name[frm][:26]:26s} -> {R.fmt_time(at, to)} '
-                      f'{R.stop_name[to][:26]:26s} {(info[1] or info[0])[:24]}')
+                      f'{R.stop_name[to][:26]:26s} {(info[1] or info[0])[:24]}'
+                      + (f' + walk into {ab(wy)}' if wy is not None else ''))
         return
     if START is None: print('need --start'); return
     start_states = set()      # a walk-in at the start is a move like any other, and costs its time
@@ -896,9 +923,10 @@ def main():
         chk = confirm(path)
         if chk: print(f'  independent check: {chk[0]}' + (f', {chk[1]:.2f} h' if chk[1] is not None else ''))
         for trip, s, to, t, at in path[:60]:
-            info = R.trip_info.get(trip, ('', ''))
+            info = R.trip_info.get(ride_of(trip), ('', ''))
+            wy = walkin_state(trip)
             print(f'   {R.fmt_time(t, s)} {R.stop_name[s][:26]:26s} -> {R.fmt_time(at, to)} {R.stop_name[to][:26]:26s} '
-                  f'{(info[1] or info[0])[:24]}')
+                  f'{(info[1] or info[0])[:24]}' + (f' + walk into {ab(wy)}' if wy is not None else ''))
         if a.out:
             pickle.dump(dict(path=path, spent=spent, complete=True), open(a.out, 'wb'))
             print('wrote', a.out)
