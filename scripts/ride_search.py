@@ -94,6 +94,7 @@ def main():
                     'collecting one however much more slack it leaves, which is the second live item in '
                     'CLAUDE.md and the shape that buries Spokane to Pasco and Saint George. `off` ranks '
                     'purely by the mode\'s own key, and --track says which reproduces the control.')
+    ap.add_argument('--goal', action='store_true', help='one forward scan per node, promoting the first ride of the fastest chain to each owed state. Answers forcedness rather than comfort, which is what every score tried so far measures and what the control keeps violating: at Conway it gives up 33 h of pair margin, at Pasco it takes +1.9 h with the whole East still owed. It adds no new kind of move, only re-ranks rides already on the menu, so nothing downstream of the leg tuple changes. Costs about 30 ms a node against a per-node budget of about 40.')
     ap.add_argument('--pairrank', action='store_true', help='with --track and --pairs: also report where the '
                     'pair margin would have ranked each control leg, over the whole option list. This is '
                     'the diagnostic --rerank cannot be: it prices every option, which only 40 nodes can '
@@ -348,7 +349,7 @@ def main():
               f'dominance ({100.0 * kept / max(1, len(opts)):.2f}%)'
               + (f'; the control\'s ride is {ctrl_rank} of them' if ctrl_rank else ''), flush=True)
 
-    def sort_opts(opts, collected, n_new, t, back=False):
+    def sort_opts(opts, collected, n_new, t, back=False, goal=None):
         """Order a node's candidate rides, by slack when asked for it and by the old keys otherwise.
 
         Slack is how much room a move leaves before the first state it can no longer collect: for a ride
@@ -375,6 +376,9 @@ def main():
         Pasco, Saint George and Memphis to Holmes are the legs it can erase.
         """
         grp = (lambda o: n_new(o) == 0) if a.split == 'on' else (lambda o: False)
+        gs = goal or ()
+        pre = ((lambda o: (0 if (o.trip, int(o.stop)) in gs else 1, grp(o))) if gs else
+               (lambda o: (grp(o),)))
         if a.order == 'slack' and L is not None:
             cap = ceiling(collected)
             capl = cap.tolist()                      # 1.15M numpy scalar reads per node is not affordable
@@ -387,13 +391,13 @@ def main():
                 if not owed_after: return endl[to] - at
                 return min(float(L[owed_after, to].min()), endl[to]) - at
 
-            opts.sort(key=lambda o: (grp(o), -slack(o)))
+            opts.sort(key=lambda o: pre(o) + (-slack(o),))
         elif a.order in ('rate', 'slack'):      # 'slack' lands here only backward, which has no tables
-            opts.sort(key=lambda o: (grp(o), ((t - o[1]) if back else (o[1] - t)) / max(1, n_new(o))))
+            opts.sort(key=lambda o: pre(o) + (((t - o[1]) if back else (o[1] - t)) / max(1, n_new(o)),))
         elif a.order == 'states':
-            opts.sort(key=lambda o: (grp(o), -n_new(o), -o[1] if back else o[1]))
+            opts.sort(key=lambda o: pre(o) + (-n_new(o), -o[1] if back else o[1]))
         else:
-            opts.sort(key=lambda o: (grp(o), -o[1] if back else o[1]))
+            opts.sort(key=lambda o: pre(o) + (-o[1] if back else o[1],))
         # Re-rank the head by the pair margin. The slack key asks how close a move leaves the chain to
         # losing the single state it can least afford; the pair table answers the same question one step
         # deeper, and it is the deeper one the deep chains actually lose on. The run-1 chain was never
@@ -414,6 +418,66 @@ def main():
             dec.sort(key=lambda d: d[:2])
             opts[:k] = [d[2] for d in dec]
         return opts
+
+    goal_scans = [0]
+
+    def goal_first(stop, t, collected):
+        """The first ride of the fastest chain to each state still owed.
+
+        Every scoring function tried so far measures comfort: slack asks how much room a move leaves before
+        the first state it could lose, and the pair margin asks the same about pairs. Measured against the
+        control both are wrong in the same direction, because the control's moves are not comfortable. At
+        Conway it takes a move leaving +24.6 h of pair margin when +57.7 h was on offer, giving up
+        thirty-three hours; at Pasco it takes +1.9 h with the whole East still owed. Those are forced moves,
+        and forcedness is not comfort. No amount of tuning a comfort score finds them: Saint George is
+        21586th of 21638 by slack and 13534th by pair margin, and the width is 12.
+
+        So ask a different question, and ask the timetable rather than a score. One forward scan from this
+        node gives the earliest arrival everywhere. For each owed state, the earliest arrival at any of its
+        stops is the fastest way to get it, and the chain is recoverable from the predecessor arrays. The
+        first RIDE of that chain is a move worth having, whatever it collects on its own. Spokane to Pasco
+        collects one state in a few hours and is the first ride of the fastest chain to Oregon and Idaho;
+        the ride toward Saint George collects nothing and is the first ride of the fastest chain to Arizona
+        and Nevada.
+
+        This deliberately offers no new kind of move. It re-ranks rides already on the menu, so the leg
+        tuple, route_record, dominance and `aboard` are all untouched. A composite move that carried its own
+        multi-leg path would have to be threaded through every one of those, which is the shape be64aa9 went
+        wrong in: a field added to the legs the search pushes and not to the ones it writes.
+
+        Costs one scan, measured at 30 ms against a per-node budget of about 40 ms, so it roughly halves
+        throughput. Whether that trade is worth it is what the replay and then a run at equal budget say.
+
+        Seeds the scan not aboard (trip -1). A node riding through can therefore have its own continuation
+        under-promoted rather than over-promoted, which is the safe direction, and is worth fixing only if
+        the idea earns it.
+        """
+        if not a.goal or END_ST is None: return None
+        goal_scans[0] += 1
+        _h, _t, _l, pred = R._scan_fast(np.array([int(stop)]), np.array([float(t)]),
+                                        np.array([-1], dtype=np.int32), a.end, want_pred=True)
+        best_ = pred['best']; conn_ = pred['conn']; walk_ = pred['walk']; bstop_ = pred['bstop']
+        ct = R._fa['ctrip']
+        out = set()
+        for y in range(N_STATES):
+            if y in collected: continue
+            sa = st_arr.get(y)
+            if sa is None: continue
+            v = best_[sa]
+            if not np.any(np.isfinite(v)): continue
+            s_ = int(sa[int(np.argmin(v))])
+            first = None
+            for _ in range(400):            # a chain longer than this is a predecessor loop, not a route
+                if walk_[s_] >= 0:
+                    s_ = int(walk_[s_])
+                elif conn_[s_] >= 0:
+                    k_ = int(conn_[s_])
+                    first = (R.ctrip[k_], s_)       # overwritten each step back, so it ends on the earliest
+                    s_ = int(bstop_[int(ct[k_])])
+                else:
+                    break
+            if first: out.add(first)
+        return out
 
     def alight_ok(to, at, owed_after):
         """Is getting off here survivable? Every state still owed has to remain collectible from this stop at
@@ -814,7 +878,7 @@ def main():
             opts = rides_from(stop, t, aboard, collected)
             raw_opts = rides_from(stop, t, aboard, collected, raw=True) if a.dedupe else opts
             n_new = lambda o: len(o[3] - collected)
-            sort_opts(opts, collected, n_new, t)
+            sort_opts(opts, collected, n_new, t, goal=goal_first(stop, t, collected))
             # What rank would the pair margin have given this leg, over the WHOLE option list rather than a
             # head? Asked here and not in the search because here it is affordable: 40 nodes, so even
             # 17676 options at 30 us is half a second, against a search that has 40 ms a node.
@@ -1043,7 +1107,7 @@ def main():
             remember(stop, mk, spent)
             opts = rides_from(stop, t, aboard, collected)
             n_new = lambda o: len(o[3] - collected)
-            sort_opts(opts, collected, n_new, t)
+            sort_opts(opts, collected, n_new, t, goal=goal_first(stop, t, collected))
             for o in opts[:a.width]:
                 to, at, trip, got, walk, seg = o
                 new = collected | got
@@ -1254,6 +1318,8 @@ def main():
     el = time.time() - t_run
     print(f'\n{seen_nodes[0]} nodes in {el:.0f} s ({seen_nodes[0] / max(el, 1):.0f}/s), {sum(len(v) for v in dom_stop.values())} kept '
           f'(stop, states); deepest {deepest[0]}/{NEED} states')
+    if a.goal:
+        print(f'goal scans: {goal_scans[0]}, one forward scan per node expanded')
     if PT is not None:
         print('pair table built, prune switched off (--pairs report); the census below is the measurement'
               if a.pairs == 'report' else
