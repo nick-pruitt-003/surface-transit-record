@@ -104,18 +104,18 @@ def main():
     # alone: Mississippi, which this route takes by walking, was missing from every `have`, so the probe
     # would have offered it back as something a window could add. The probe exists to find exactly that
     # move, so getting it wrong here would have looked like a discovery.
+    # Ask the router what the route has covered so far, rather than counting the stops it stopped at. A
+    # ride is in every state it passes through, not just the two ends, and `covered` is the same helper
+    # regress already trusts as an oracle. Counting endpoints only meant a state collected mid-ride was
+    # missing from `have`, so the probe would have offered it back as something a window could add: a
+    # discovery that was really the route's own work, reported to itself.
     have = [None] * (len(rides) + 1)
-    running = set()
-    if R.state[st0] >= 0: running.add(int(R.state[st0]))
+    base = {int(R.state[st0])} if R.state[st0] >= 0 else set()
     ride_i = 0
-    for _l in legs:
-        if _l[0] == 'walk':
-            if _l[2] >= R.first_virtual and R.state[_l[2]] >= 0: running.add(int(R.state[_l[2]]))
-        elif _l[0] == 'ride':
-            for s_ in (_l[2], _l[4]):
-                if R.state[s_] >= 0: running.add(int(R.state[s_]))
+    for i_, _l in enumerate(legs):
+        if _l[0] == 'ride':
             ride_i += 1
-            if ride_i <= len(rides): have[ride_i] = set(running)
+            if ride_i <= len(rides): have[ride_i] = base | S.covered(legs[:i_ + 1])
 
     print(f'{len(holes)} layovers where the route waits at the stop it arrived at\n', flush=True)
     print(f'{"after leg":>9}  {"stop":28s} {"window":>8}  states it could add that the route lacks there', flush=True)
