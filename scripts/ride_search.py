@@ -56,6 +56,9 @@ def main():
     ap.add_argument('--track', help='reference route pickle: replay its rides through this search and report, '
                     'leg by leg, whether the menu offers them and where they rank. 237 is a control: the test '
                     'is that it reproduces, not that it is beaten.')
+    ap.add_argument('--anatomy', action='store_true', help='with --track, break down each leg\'s option '
+                    'list: how many options, how many distinct destinations, and how many survive exact '
+                    'dominance. Answers whether a node with a million options has a million choices.')
     ap.add_argument('--days', type=int, default=20); ap.add_argument('--out')
     a = ap.parse_args()
     back = a.dir == 'backward'
@@ -150,6 +153,38 @@ def main():
         owed = [y for y in range(N_STATES) if y not in collected]
         if not owed: return L_end
         return np.minimum(L[owed].min(axis=0), L_end)
+
+    def anatomy(opts, al, trip, n_new):
+        """How much of a node's option list is choice and how much is the same choice written out again.
+
+        A node on the control offered 1156415 options, of which 1156403 collected nothing, and no ranking
+        rescued the one the route needs: Saint George sat 486373rd by hours-per-state and 509148th by slack.
+        That is a clue about the representation, not the ranking. The list is built by three nested loops,
+        over footpath neighbours, over trips leaving each, and over every downstream stop of each trip, so
+        the same physical decision appears once per stop you could ride to.
+
+        Exact dominance says which of those are real. For one destination, only the earliest arrival for
+        each distinct set of states gained can ever matter: anything arriving later having gained no more is
+        worse in both quantities the search uses, elapsed time and states held, so discarding it cannot lose
+        a route. That is the same test already trusted between nodes, applied inside one node's menu.
+        """
+        by_to = defaultdict(list)
+        for o in opts: by_to[o[0]].append(o)
+        kept, ctrl_rank = 0, None
+        survivors = []
+        for to, group in by_to.items():
+            group.sort(key=lambda o: o[1])            # earliest arrival first
+            front = []
+            for o in group:
+                g = o[3]
+                if any(g <= k for k in front): continue   # an earlier arrival already held these states
+                front = [k for k in front if not (k <= g)]
+                front.append(g); survivors.append(o); kept += 1
+        for i, o in enumerate(sorted(survivors, key=lambda o: (n_new(o) == 0, o[1])), 1):
+            if o[0] == al and o[2] == trip: ctrl_rank = i; break
+        print(f'         anatomy: {len(opts)} options -> {len(by_to)} destinations -> {kept} after exact '
+              f'dominance ({100.0 * kept / max(1, len(opts)):.2f}%)'
+              + (f'; the control\'s ride is {ctrl_rank} of them' if ctrl_rank else ''), flush=True)
 
     def sort_opts(opts, collected, n_new, t, back=False):
         """Order a node's candidate rides, by slack when asked for it and by the old keys otherwise.
@@ -530,6 +565,7 @@ def main():
                 print(f'  leg {n:2d} {name:22s} -> {R.stop_name[al][:26]:26s} rank {rank:3d}/{len(opts):4d}'
                       f'  +{" ".join(ab(x) for x in sorted(got - collected)) or "-"}{flag}', flush=True)
                 print(f'         {kind:11s} {grank}/{len(peers)} within its own group', flush=True)
+                if a.anatomy: anatomy(opts, al, trip, n_new)
                 if rank > a.width: lost += 1
             collected = collected | got | frozenset(by_walk.get(al, ()))
             stop, t, aboard = al, at, trip

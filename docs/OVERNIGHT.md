@@ -299,3 +299,51 @@ Falsification for the ranking work, stated before building: rank by the slack th
 hold, `min over owed y of (L[y][to] - at)`, and the control's twelve outside legs should move up their
 groups. If leg 36 and leg 21 stay buried, slack is not the missing signal either and the option set, not
 the ranking, is the thing to fix.
+
+## The option explosion is redundancy, not choice
+
+`--order slack` first: a full search reaches **28/48**, where every run with the old keys stopped at 24 or
+25. It gets there at Winona, 116.7 h, twenty rides deep, which is the shape of the control rather than a
+dive into the Northeast. It is slower, 5 nodes a second against 9, because slack is scored per option, and
+that cost is the subject of the rest of this section.
+
+`--anatomy` counts how much of a node's option list is a real choice. Group the options by destination,
+take earliest arrival first, and drop any whose set of states gained is already held by something that
+arrived no later: that option is worse in both quantities the search uses, elapsed and states, so
+discarding it cannot lose a route. It is the dominance test already trusted between nodes, applied inside
+one node's menu.
+
+Over the control's forty legs: **3868010 options collapse to 7915. A 489x reduction, 0.2% surviving.**
+
+The worst nodes are the most redundant, which is the opposite of a problem:
+
+| leg | options | destinations | after dominance | survives | control's ride |
+|---|---|---|---|---|---|
+| 3 | 1674890 | 1135 | 1135 | 0.07% | 2nd |
+| 21 (Saint George) | 1156415 | 915 | 916 | 0.08% | 909th |
+| 6 (Holmes) | 375718 | 803 | 834 | 0.22% | 381st |
+| 23 | 331320 | 1029 | 1033 | 0.31% | 55th |
+| 10 (Des Moines) | 199476 | 487 | 591 | 0.30% | 193rd |
+| 24 (Barstow) | 56015 | 623 | 627 | 1.12% | 1st |
+| 32 | 8892 | 522 | 522 | 5.87% | 1st |
+
+A node never offers more than about eleven hundred genuinely different rides, and usually far fewer. The
+million was three nested loops, over footpath neighbours, over trips leaving each, and over every
+downstream stop of each trip, writing the same physical decision out once per stop it could take you to.
+`branching.py` was right all along: the menu is small. It was counted in services, and the search was
+building it in alighting points.
+
+Two consequences.
+
+**Ranking becomes possible.** At leg 3 the control's ride is 2nd of 1135, at leg 24 and leg 32 it is 1st.
+Those are inside any sensible width. At leg 21 it is 909th of 916, still bad, but 909 of 916 is a list that
+can be reasoned about and 509148 of 1156403 is not. Saint George is both a representation problem and a
+ranking problem; everywhere else the representation was the whole of it.
+
+**Slack becomes cheap.** Scoring 7915 options instead of 3.87 million is the difference between slack
+costing the search half its throughput and costing nothing. The two changes pay for each other.
+
+Next: apply the dominance filter inside `rides_from` and `rides_into` rather than only in the probe, then
+re-measure both the group ranks and the wall. Falsification: if the filter is right, the control's legs
+keep their positions from the table above and a slack run reaches states a 28 does not. If dominance drops
+a leg the control needs, the test is not subtle, `--track` exits non-zero.
