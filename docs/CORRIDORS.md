@@ -52,3 +52,30 @@ Measured from South Station on d10 (Sat), every 2 h: Portland first (ending in V
 (ending in ME). Portland first wins or ties at 11 of 12 start times (by 0 to +8.9 h, largest at 14:00-16:00),
 but **not always**: leaving at 18:00 Upper Valley first is 2.4 h faster. A strong tendency, not a law. With
 `--end VT` it is forced anyway, since only Portland-first ends in Vermont, which is what the control does.
+
+## Three more of the control's moves (corridor_checks.py)
+
+Each from the control's own node (re-evaluated through the router) and every 2 h across that day, against the
+best route the router finds that avoids the move, including forced detours through named alternatives.
+
+**Mississippi on foot at Memphis** (Holmes walk-in, then the Jefferson bus from Airways Transit Center).
+Fastest in 11 of 13 start times, by +7.4 to +21.2 h; at the control's own time (Fri 05:42) 2.5 h against
+12.3 h. It loses only for departures from 20:00 on, when the Jefferson connection is gone for the day (a tie
+at 20:00, and no walk-in route at all at 22:00). A layover move that is nearly free and nearly forced.
+
+**Saint George, as the way from Salt Lake City to Las Vegas collecting AZ and NV.** Fastest in 13 of 13, and
+no route avoiding it ever finished. Even detours forced through Glenwood Springs or Elko come back to ride
+Las Vegas - Saint George - Las Vegas, because Arizona is collected on I-15's Arizona Strip between Saint George
+and Mesquite. There is no way around it: Saint George is how the route gets Arizona.
+
+**The Silver Meteor, Jacksonville to Washington collecting GA SC NC VA.** Not a law; a window. Fastest only
+for departures 10:00-16:00 (+4.2 to +10.0 h; at the control's time, Fri 14:50, 15.6 h against 25.6 h by bus).
+Outside that window buses win (by up to 28.5 h overnight), or the Crescent (midday alternative) or the
+Floridian (evening). Caveat: at night the "with Meteor" figure is the best route the router found that
+happened to use it, not the best possible Meteor route, so the overnight gaps overstate how bad it is. The
+honest reading is that the Meteor is decisive if you are in Jacksonville by mid-afternoon, and the control
+arrives at 14:50.
+
+Amtrak trips carry no name in the router (`trip_info` is empty for them); the first version of this check
+matched on names and silently filed every Meteor route under "without". It now reads route names from the
+Amtrak feed.
