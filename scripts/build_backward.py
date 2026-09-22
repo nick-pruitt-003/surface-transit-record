@@ -21,6 +21,8 @@ import backward as B
 from common import ABBR
 
 WINDOWS = (30, 60, 110)
+TIMES_PCT = 50       # percentile over the sampled deadlines in state_times (50 = median, higher = count the waits)
+TIMES_SYM = 'min'    # how state_times symmetrises a pair: 'min' (cheaper direction) or 'max' (dearer)
 STRAND_KMH = 70
 STRAND_W = 1.0   # weight on the timetable leftover estimate (hours of spanning tree)   # leftover-work estimate: each unvisited state's distance to its nearest unvisited neighbour, at this speed
 
@@ -62,8 +64,13 @@ def state_times(R, F, state_stops, D0, cache):
                 v = vals[st_arr[x]].max()
                 if v > -np.inf: T[x, y, k] = (D - v) / 3600
         print(f'  state times: {y + 1}/48 ({time.time() - t0:.0f} s)', flush=True)
-    T = np.nanmedian(np.where(np.isnan(T), 96.0, T), axis=2); np.fill_diagonal(T, 0)
-    T = np.minimum(T, T.T)   # undirected for the spanning tree
+    T = np.percentile(np.where(np.isnan(T), 96.0, T), TIMES_PCT, axis=2); np.fill_diagonal(T, 0)
+    # Symmetrised with the dearer direction, not the cheaper one. Taking the minimum of a state pair over
+    # every stop pair and every deadline asks what the best crossing costs on the best day, which for any two
+    # states sharing a busy border town is an hour whether the real service is hourly or daily. A route does
+    # not get the best crossing for every state it still owes, and the states these chains differ over are
+    # exactly the ones served once a day.
+    T = np.maximum(T, T.T) if TIMES_SYM == 'max' else np.minimum(T, T.T)
     np.save(cache, T); return T
 
 
@@ -196,6 +203,10 @@ def main():
     ap.add_argument('--tries', type=int, default=1, help='builds per deadline: 1 greedy + randomized top-3')
     ap.add_argument('--strand-kmh', type=float, default=70, help='speed for the leftover-work estimate (lower = weigh stranding more)')
     ap.add_argument('--beam', type=int, default=30, help='partial chains kept per step')
+    ap.add_argument('--times-pct', type=float, default=50, help='percentile over sampled deadlines in the '
+                    'state-to-state matrix; above 50 counts the wait for a once-a-day service')
+    ap.add_argument('--times-sym', default='min', choices=('min', 'max'), help="symmetrise a state pair by its "
+                    "cheaper ('min') or dearer ('max') direction")
     ap.add_argument('--topk', type=int, default=3, help='states per node taken as children by latest time. The 237 '
                     'route needs its 6th-ranked state at one step (CO out of Kansas) and its 5th at another (WI '
                     'out of Wyoming), so 3 cannot rebuild it however wide the beam is.')
@@ -207,6 +218,7 @@ def main():
     ap.add_argument('--days', type=int, default=20); ap.add_argument('--out', required=True, help='prefix for the seed pickles')
     a = ap.parse_args()
     globals()['STRAND_KMH'] = a.strand_kmh; globals()['STRAND_W'] = a.strand_w
+    globals()['TIMES_PCT'] = a.times_pct; globals()['TIMES_SYM'] = a.times_sym
     inv = {v: k for k, v in ABBR.items()}
     D0 = datetime.fromisoformat(a.frm).replace(tzinfo=ZoneInfo(a.tz))
     # the router's calendar must cover ~11 days before the earliest deadline through the last one
@@ -218,7 +230,7 @@ def main():
     km = lambda p, q: float(np.hypot((p[0] - q[0]) * 111.3 * np.cos(np.radians((p[1] + q[1]) / 2)), (p[1] - q[1]) * 111.3))
     dist = {x: {y: km(cen[x], cen[y]) for y in range(N_STATES)} for x in range(N_STATES)}
     dist['M'] = np.array([[dist[x][y] for y in range(N_STATES)] for x in range(N_STATES)])
-    if not a.km_estimate: dist['T'] = state_times(R, F, state_stops, D0.timestamp() - 7 * 86400, '../out/state_times_real.npy')
+    if not a.km_estimate: dist['T'] = state_times(R, F, state_stops, D0.timestamp() - 7 * 86400, f'../out/state_times_real_p{int(a.times_pct)}{a.times_sym}.npy')
     rng = random.Random(48); results = []; t_run = time.time(); oracle = None
     if a.track:
         d = pickle.load(open(a.track, 'rb')); st0 = R.stop_name.index(d['start'])

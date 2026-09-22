@@ -298,3 +298,57 @@ Barstow, going via Raton and Trinidad instead.
 That 48 h is the greedy cost of the *same state order*, not proof that no proxy-free route is quick. But it
 does mean the 237 h figure currently rests on links nobody runs, so before an attempt the open question is
 whether a search with `BUS48_LOCAL_MAX_KM=0` finds something near 240. That has not been run.
+
+## 11. Sep 22: the static-matrix family is dead, and what replaces it
+
+The last idea for the leftover estimate was to make the state-to-state matrix frequency-aware: a high
+percentile over the sampled deadlines instead of the median, symmetrised by the dearer direction instead
+of the cheaper, so that a once-a-day corridor costs more than a dense one. The chains the beam cannot tell
+apart differ by exactly one state, and that state is always a rare-corridor one (Oklahoma at step 19,
+California at tail step 4) against a dense one (Mississippi), so the prediction was that the leader would
+finally be charged more. Both matrices are built (`--times-pct`, `--times-sym`, cached as
+`state_times_real_p{pct}{sym}.npy`).
+
+It is wrong, and it fails in the informative direction. At step 19, needing +19.1 h:
+
+| matrix | tracked | leader | separation |
+|---|---|---|---|
+| median, min-symmetrised (current) | 70.5 h | 63.6 h | -6.9 h |
+| 75th percentile, max-symmetrised | 136.9 h | 124.9 h | -12.0 h |
+| 90th percentile, max-symmetrised | 189.0 h | 172.1 h | -16.8 h |
+
+The estimates get much closer to the true remainder of about 160 h, and the separation gets steadily
+**worse**. The reason is structural: a spanning tree is a *minimum*, so it attaches every state by its
+cheapest remaining neighbour. Oklahoma is interior, ringed by states still unplaced, so it attaches cheaply
+however the matrix is scaled, and scaling only amplifies the sign that was already wrong.
+
+**So every estimate of the form f(states left, static matrix) is ruled out by measurement**: plain, doubled,
+cheapest-entry sum, and both frequency-aware matrices. Together with the earlier results (no set-based
+estimate can separate chains whose remaining states differ by one; per-state reach from one scan is worth
+9.5 h against the 19.1 needed; summing reach values is arithmetically biased), there is no estimate left to
+try in this shape. Stop writing them.
+
+### What the route actually needs, and where to build next
+
+`scripts/anchors.py` derives from the feeds alone the services that are both long and rare: 4 or more states
+in one ride, at most twice a day. It reproduces section 3's anchors without being told them (the Southwest
+Chief and the Silver Meteor both come out near the top), which is the check that the concept is real and not
+fitted to the known route.
+
+Committing to one of these is precisely what the score cannot price. The chain that boards the Chief at
+Barstow is 11.8 h worse immediately, because committing means being somewhere at a fixed hour, and stays
+worse for fifteen steps. A score cannot see that far, and a beam cannot hold it. So **branch on the
+commitment instead of pricing it**: for each anchor, run a build that is forced to use it, and compare the
+finished routes. That is a few dozen constrained runs rather than one search, and none of them needs a
+better heuristic.
+
+The list also turned up a lead that is in neither section 3 nor section 4:
+
+```
+ 8 states  0.43/day   Empire Builder   OR > WA > ID > MT > ND > MN > WI > IL
+                      Portland -> Chicago Union Station
+```
+
+Eight states in one ride, covering the northern tier the 237 route currently spends legs 15 to 18 and about
+two days crossing by Jefferson Lines via Billings, Spokane and Pasco. It does not collect SD, WY, NE or IA,
+which the Jefferson runs do, so it is not a drop-in. It has not been tested.

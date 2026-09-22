@@ -43,27 +43,26 @@ def enter(nodes, M):
 def main(path):
     d = pickle.load(open(path, 'rb'))
     D, step, nodes, on = d['D'], d['step'], d['nodes'], d['oracle_node']
-    T = np.load('../out/state_times_real.npy' if os.path.exists('../out/state_times_real.npy') else '../out/state_times.npy')
+    mats = [m for m in (sys.argv[2] if len(sys.argv) > 2 else '').split(',') if m] or ['../out/state_times_real.npy']
     lead = nodes[0]
     t_on, t_ld = max(on['cur'].values()), max(lead['cur'].values())
     gap = (t_ld - t_on) / 3600
     print(f'step {step}: tracked is {gap:.1f} h further back than the beam leader, so an estimate only '
           f'keeps it alive if it charges the leader MORE than the tracked node by over {gap:.1f} h.\n')
 
+    T = np.load(mats[0])
     here_on, here_ld = on['picked'][-1], lead['picked'][-1]
     only_on = sorted(on['left'] - lead['left']); only_ld = sorted(lead['left'] - on['left'])
     print('the two differ by one state each:')
     for x in only_on: print(f'  only the tracked node still needs {AB[x]}: cheapest hop to it {T[x][list(on["left"])].min():.1f} h')
     for x in only_ld: print(f'  only the leader  still needs {AB[x]}: cheapest hop to it {T[x][list(lead["left"])].min():.1f} h')
 
-    print('\nestimate                          tracked   leader   leader-tracked   keeps tracked?')
-    for name, fn, M in (('MST over state_times (current)', mst, T),
-                        ('MST, doubled', lambda n, M: 2 * mst(n, M), T),
-                        ('cheapest-entry sum', enter, T),
-                        ('cheapest-entry sum, doubled', lambda n, M: 2 * enter(n, M), T)):
-        a = fn([here_on] + sorted(on['left']), M) ; b = fn([here_ld] + sorted(lead['left']), M)
+    print('\nmatrix                            tracked   leader   leader-tracked   keeps tracked?')
+    for m in mats:
+        M = np.load(m)
+        a = mst([here_on] + sorted(on['left']), M); b = mst([here_ld] + sorted(lead['left']), M)
         sep = b - a
-        print(f'{name:33s} {a:6.1f} h {b:6.1f} h   {sep:+8.1f} h        {"YES" if sep > gap else "no"}')
+        print(f'{os.path.basename(m)[:33]:33s} {a:6.1f} h {b:6.1f} h   {sep:+8.1f} h        {"YES" if sep > gap else "no"}')
 
     print('\nper-state marginal cost the current matrix implies (cheapest hop to each state still left, '
           'tracked node):')
