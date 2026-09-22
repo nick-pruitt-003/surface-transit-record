@@ -21,6 +21,8 @@ import backward as B
 from common import ABBR
 
 WINDOWS = (30, 60, 110)
+TIMES_PCT = 50       # percentile over the sampled deadlines in state_times (50 = median, higher = count the waits)
+TIMES_SYM = 'min'    # how state_times symmetrises a pair: 'min' (cheaper direction) or 'max' (dearer)
 STRAND_KMH = 70
 STRAND_W = 1.0   # weight on the timetable leftover estimate (hours of spanning tree)   # leftover-work estimate: each unvisited state's distance to its nearest unvisited neighbour, at this speed
 
@@ -42,7 +44,14 @@ def strand_cost(left, here, dist):
 def state_times(R, F, state_stops, D0, cache):
     """Typical hours from each state to each other state on the real timetables: for 8 deadlines across the week,
     a reverse scan from every stop of y gives the latest you can leave each state x and still be in y; hours =
-    deadline - that, median over the deadlines (so waits for once-a-day departures count). Cached."""
+    deadline - that, median over the deadlines (so waits for once-a-day departures count). Cached.
+
+    Border walk-in points are left out of both ends. They are real ways to cross a state line, but a pair of them
+    sits either side of the same line, so counting them makes neighbouring states 0.0 h apart: before this, the
+    cheapest hop into most states was under 1 h and into several exactly 0, and a spanning tree over 28 states
+    came to 45 h. That tree was measuring which states touch, not what it takes to travel between them, and it
+    scored two chains the same however differently their remaining states were placed."""
+    state_stops = {x: [i for i in state_stops[x] if i < R.first_virtual] or state_stops[x] for x in state_stops}
     if os.path.exists(cache): return np.load(cache)
     T = np.full((N_STATES, N_STATES, 8), np.nan); t0 = time.time()
     st_arr = {x: np.array(state_stops[x], dtype=np.int64) for x in state_stops}
@@ -55,8 +64,13 @@ def state_times(R, F, state_stops, D0, cache):
                 v = vals[st_arr[x]].max()
                 if v > -np.inf: T[x, y, k] = (D - v) / 3600
         print(f'  state times: {y + 1}/48 ({time.time() - t0:.0f} s)', flush=True)
-    T = np.nanmedian(np.where(np.isnan(T), 96.0, T), axis=2); np.fill_diagonal(T, 0)
-    T = np.minimum(T, T.T)   # undirected for the spanning tree
+    T = np.percentile(np.where(np.isnan(T), 96.0, T), TIMES_PCT, axis=2); np.fill_diagonal(T, 0)
+    # Symmetrised with the dearer direction, not the cheaper one. Taking the minimum of a state pair over
+    # every stop pair and every deadline asks what the best crossing costs on the best day, which for any two
+    # states sharing a busy border town is an hour whether the real service is hourly or daily. A route does
+    # not get the best crossing for every state it still owes, and the states these chains differ over are
+    # exactly the ones served once a day.
+    T = np.maximum(T, T.T) if TIMES_SYM == 'max' else np.minimum(T, T.T)
     np.save(cache, T); return T
 
 
@@ -74,11 +88,12 @@ def live_write(R, name, phase, chains, note, best_h=None):
     except Exception as e: print('live view error (ignored):', e)
 
 
-def build(R, F, state_stops, end, D, rng, topk, beam=30, label='', dist=None, near=2, oracle=None, dump=None, root=None, quiet=False):
+def build(R, F, state_stops, end, D, rng, topk, beam=30, label='', dist=None, near=2, oracle=None, dump=None, root=None, quiet=False, stop_at=None):
     """Beam search backwards (C reverse scan). A node: states picked (end first), states left, the latest time at
     each stop of the last state, and its through vehicles (staying aboard needs no transfer). Each step every node
     scans back once; its top-k unvisited states by latest time plus the `near` closest ones become children; the
     beam keeps the children with the best score = latest time minus the leftover-work estimate (strand_cost).
+    stop_at: give up after this many states are placed, for a lookahead that does not run to the start.
     Returns (order start..end, states nothing could reach)."""
     NEG = -np.inf; st_arr = {x: np.array(state_stops[x], dtype=np.int64) for x in state_stops}
     def sparse(ns):
@@ -118,7 +133,7 @@ def build(R, F, state_stops, end, D, rng, topk, beam=30, label='', dist=None, ne
         return cands, kids
 
     onode = nodes[0] if oracle else None
-    while nodes[0]['left']:
+    while nodes[0]['left'] and (stop_at is None or len(nodes[0]['picked']) < stop_at):
         step += 1; t_step = time.time(); children = []
         for nd in nodes:
             cands, kids = expand(nd); children += kids
@@ -188,6 +203,13 @@ def main():
     ap.add_argument('--tries', type=int, default=1, help='builds per deadline: 1 greedy + randomized top-3')
     ap.add_argument('--strand-kmh', type=float, default=70, help='speed for the leftover-work estimate (lower = weigh stranding more)')
     ap.add_argument('--beam', type=int, default=30, help='partial chains kept per step')
+    ap.add_argument('--times-pct', type=float, default=50, help='percentile over sampled deadlines in the '
+                    'state-to-state matrix; above 50 counts the wait for a once-a-day service')
+    ap.add_argument('--times-sym', default='min', choices=('min', 'max'), help="symmetrise a state pair by its "
+                    "cheaper ('min') or dearer ('max') direction")
+    ap.add_argument('--topk', type=int, default=3, help='states per node taken as children by latest time. The 237 '
+                    'route needs its 6th-ranked state at one step (CO out of Kansas) and its 5th at another (WI '
+                    'out of Wyoming), so 3 cannot rebuild it however wide the beam is.')
     ap.add_argument('--km-estimate', action='store_true', help='old leftover estimate: straight-line km at --strand-kmh')
     ap.add_argument('--strand-w', type=float, default=1.0, help='weight on the timetable leftover estimate')
     ap.add_argument('--dump-step', type=int, help='save the beam and the tracked chain at this step, then stop')
@@ -196,6 +218,7 @@ def main():
     ap.add_argument('--days', type=int, default=20); ap.add_argument('--out', required=True, help='prefix for the seed pickles')
     a = ap.parse_args()
     globals()['STRAND_KMH'] = a.strand_kmh; globals()['STRAND_W'] = a.strand_w
+    globals()['TIMES_PCT'] = a.times_pct; globals()['TIMES_SYM'] = a.times_sym
     inv = {v: k for k, v in ABBR.items()}
     D0 = datetime.fromisoformat(a.frm).replace(tzinfo=ZoneInfo(a.tz))
     # the router's calendar must cover ~11 days before the earliest deadline through the last one
@@ -207,7 +230,7 @@ def main():
     km = lambda p, q: float(np.hypot((p[0] - q[0]) * 111.3 * np.cos(np.radians((p[1] + q[1]) / 2)), (p[1] - q[1]) * 111.3))
     dist = {x: {y: km(cen[x], cen[y]) for y in range(N_STATES)} for x in range(N_STATES)}
     dist['M'] = np.array([[dist[x][y] for y in range(N_STATES)] for x in range(N_STATES)])
-    if not a.km_estimate: dist['T'] = state_times(R, F, state_stops, D0.timestamp() - 7 * 86400, '../out/state_times.npy')
+    if not a.km_estimate: dist['T'] = state_times(R, F, state_stops, D0.timestamp() - 7 * 86400, f'../out/state_times_real_p{f"{a.times_pct:g}".replace(".", "p")}{a.times_sym}.npy')
     rng = random.Random(48); results = []; t_run = time.time(); oracle = None
     if a.track:
         d = pickle.load(open(a.track, 'rb')); st0 = R.stop_name.index(d['start'])
@@ -220,7 +243,7 @@ def main():
     for di in range(n_dl):
         D = (D0 + timedelta(hours=di * a.step)).timestamp()
         for tri in range(a.tries):
-            order, left, _ = build(R, F, state_stops, end, D, rng, 3, a.beam, f'{a.end} deadline {di + 1}/{n_dl}', dist, oracle=oracle, dump=(a.dump_step, f'{a.out}_dump{a.dump_step}.pkl') if a.dump_step else None)
+            order, left, _ = build(R, F, state_stops, end, D, rng, a.topk, a.beam, f'{a.end} deadline {di + 1}/{n_dl}', dist, oracle=oracle, dump=(a.dump_step, f'{a.out}_dump{a.dump_step}.pkl') if a.dump_step else None)
             print('    checking forward: insert leftovers, drop passing states, pick the start day and clock', flush=True)
             # forward: free start in the order's first state, end fixed; insert leftovers at their cheapest
             # spot, drop states covered in passing, then pick the start day and latest clock
