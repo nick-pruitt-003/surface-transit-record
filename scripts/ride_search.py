@@ -360,10 +360,40 @@ def main():
             else: opts.sort(key=lambda o: (n_new(o) == 0, o[1]))
             for to, at, trip, got in opts[:a.width]:
                 new = collected | got
+                # Dominance when queuing, not only when popped. Many queued nodes share a stop, a set of
+                # states and a boarded trip, and only the earliest of those can ever matter; checking at push
+                # keeps the duplicates out of the frontier instead of carrying them until they surface.
+                k2 = (to, new, trip)
+                pv = dom.get(k2)
+                if pv is not None and pv <= at - T0: continue
                 seq[0] += 1
                 heapq.heappush(q, (pri(at - T0, len(new)), at - T0, seq[0], to, at, new, trip,
                                    path + ((trip, stop, to, t, at),)))
-            if len(q) > a.queue: q = heapq.nsmallest(a.queue // 2, q); heapq.heapify(q)
+            if len(q) > a.queue:
+                # Drop only what is provably dead: a node whose clock has passed the limit, or passed the
+                # latest it could still collect something it owes. Both are facts. The old rule kept the best
+                # half by hours per state, which is the same relative ranking that orders the frontier, and
+                # relative pruning is exactly what loses a route that looks inefficient for a long stretch
+                # before it pays off. That is the mistake the beam made; it should not come back as a memory
+                # detail. If the sweep frees nothing the frontier is genuinely all live, so say so and stop
+                # rather than quietly discard a branch that might have been the answer.
+                before = len(q)
+                alive = []
+                for it in q:
+                    _f2, sp2, sq2, st2, t2, col2, ab2, pa2 = it
+                    if sp2 > limit[0]: continue
+                    if L is not None:
+                        if t2 > L_end[st2]: continue
+                        cl = L[:, st2]
+                        if any(t2 > cl[y] for y in range(N_STATES) if y not in col2): continue
+                    alive.append(it)
+                q = alive; heapq.heapify(q)
+                print(f'  [{time.time() - t_run:5.0f}s] frontier swept {before} -> {len(q)} '
+                      f'(only provably dead nodes dropped)', flush=True)
+                if len(q) > a.queue:
+                    print(f'  frontier is {len(q)} and all of it is still live; raise --queue rather than '
+                          f'guess which to discard', flush=True)
+                    break
 
     sys.setrecursionlimit(20000)
     if back:
