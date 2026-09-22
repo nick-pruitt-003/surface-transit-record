@@ -481,8 +481,20 @@ def main():
                 lost += 1; gone += 1
             else:
                 flag = '' if rank <= a.width else f'  <-- OUTSIDE --width {a.width}'
+                # Rank within the leg's own group as well as overall. The sort puts every ride that
+                # collects a state ahead of every ride that collects none, so a positioning leg's overall
+                # rank is mostly the size of the group in front of it and says nothing about how badly it is
+                # ranked. The group rank is the number that decides what to do about it: if the control's
+                # positioning rides sit near the front of their own group, widening the cut or reserving a
+                # few slots reaches them; if they are buried inside it, no reserve is enough and the way
+                # positioning rides are ranked against each other has to change.
+                mine = n_new(opts[rank - 1]) == 0
+                peers = [o for o in opts if (n_new(o) == 0) == mine]
+                grank = next((i + 1 for i, o in enumerate(peers) if o[0] == al and o[2] == trip), None)
+                kind = 'positioning' if mine else 'collecting'
                 print(f'  leg {n:2d} {name:22s} -> {R.stop_name[al][:26]:26s} rank {rank:3d}/{len(opts):4d}'
                       f'  +{" ".join(ab(x) for x in sorted(got - collected)) or "-"}{flag}', flush=True)
+                print(f'         {kind:11s} {grank}/{len(peers)} within its own group', flush=True)
                 if rank > a.width: lost += 1
             collected = collected | got | frozenset(by_walk.get(al, ()))
             stop, t, aboard = al, at, trip

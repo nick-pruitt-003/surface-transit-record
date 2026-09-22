@@ -252,3 +252,50 @@ achieves nothing, which is exactly the distinction duration cannot draw.
 Falsification, before building: if slack ranking is right, the instrumented `--track` should show the
 control's positioning legs inside the expanded set, and a run should reach states it has never reached. If
 the legs are still outside, the ranking is not the binding constraint and the pruning is the next suspect.
+
+## The measurement that settles it: rank within the leg's own group
+
+`--track` now reports, per leg, where the control's ride sits among its own kind as well as overall, which
+is the number that decides what to do. All twelve legs outside `--width 12`:
+
+| leg | destination | group rank | collects |
+|---|---|---|---|
+| 36 | Washington Union | 13/13 collecting | GA SC NC VA |
+| 25 | Las Vegas Amtrak | 13/14 collecting | NM |
+| 2 | Detroit | 25/152 collecting | MI |
+| 10 | Des Moines | 6524/57235 collecting | IA |
+| 30 | AKARD STATION | 16/190 positioning | - |
+| 19 | Pasco Bus Stop | 10/66 positioning | - |
+| 35 | Amtrak Station | 29/41 positioning | - |
+| 23 | Bonneville Transit Center | 87/331309 positioning | - |
+| 31 | Houston 808 Jefferson St | 129/129 positioning | - |
+| 7 | Airways Transit Center | 1233/25929 positioning | - |
+| 6 | Holmes at Elvis Presley | 6794/365785 positioning | - |
+| 21 | Saint George | 486373/1156403 positioning | - |
+
+Two things follow, and the first corrects what this file claimed two sections ago.
+
+**The `n_new == 0` key is not the explanation.** Four of the twelve are collecting legs, so they never met
+that key at all, and leg 36 is the worst case of the lot: it collects four states, Georgia, South Carolina,
+North Carolina and Virginia, and ranks dead last among its thirteen collecting peers. The earlier claim that
+the demotion of positioning rides explained the whole night was an overclaim on partial evidence.
+
+**What is actually wrong is ranking by hours per new state.** It is a local measure and this route's value
+is not local. Leg 36 is the Silver Meteor, about fourteen hours for four states, 3.5 h each, and every
+short hop that grabs one state quickly beats it on that ratio. The same logic buries Saint George: judged
+on how little time it burns, a five minute local hop wins and a long repositioning ride that is the only
+way south does not. Collecting or positioning, the ranking prefers what looks efficient in the next hour
+over what makes the rest of the route possible, which is the fourth entry in the CLAUDE.md table wearing
+different clothes.
+
+**And the menu is not what `branching.py` measured.** At leg 21 the node offers 1156415 options, of which
+1156403 collect nothing. A "median of 2 useful services" counted services along the reference route; these
+are alighting points, every stop of every boardable trip inside `--horizon` at every footpath neighbour. A
+million alighting points is not a choice set anyone can rank usefully, and it is the same explosion the
+profile found in `rides_into`. Reducing options to the ones that can matter, per boardable trip rather than
+per stop along it, is a separate problem from ranking and probably has to come first.
+
+Falsification for the ranking work, stated before building: rank by the slack the deadline tables already
+hold, `min over owed y of (L[y][to] - at)`, and the control's twelve outside legs should move up their
+groups. If leg 36 and leg 21 stay buried, slack is not the missing signal either and the option set, not
+the ranking, is the thing to fix.
