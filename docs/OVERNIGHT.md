@@ -208,3 +208,47 @@ And 24 or 25 states is simply where the route first needs a move the search is f
 It is also the same failure the file already lists four times: a reasonable-sounding rule, here "prefer
 moves that make progress", quietly deleting the sparse link the route depends on. A ride that collects
 nothing is not a wasted ride; it is how you stand in the right place at the right time.
+
+### The reserve did not clear the wall, and the test that says so is weak
+
+One full search with the positioning reserve: 17477 nodes in 1503 s, deepest 25/48. Reverted, per the
+condition stated when it went in.
+
+Two honest caveats on that.
+
+It did change the trajectory. It reached 25 states at 203 s, twenty-one rides deep at Detroit Bus Station,
+101.1 h spent, where every earlier run reached 24 or 25 inside ten seconds at eleven rides. Twenty-one
+rides and 101 h is much closer to the shape of the control than eleven rides into the Northeast. So the
+reserve does something; it just does not get past 25.
+
+And the criterion was poor. `deepest` is printed when a node is popped, before pruning, so it counts how
+far a doomed chain got, which this very file argued three sections ago. Judging a fix by it is judging by
+the wrong number. The revert is the disciplined call given the stated condition, but it rests on a weak
+test rather than a clean refutation, and the fix may deserve a second look under a better one.
+
+A better test exists and should be built before touching the ranking again: instrument `--track` to report,
+per leg, whether the control's ride is in the shortlist the search would actually expand, rather than its
+rank in the full sorted list. That answers the question directly. Rank is not the quantity of interest;
+membership in the expanded set is.
+
+### What to do next, and why it is not a scalar
+
+The diagnosis stands and is the most solid result of the night: positioning rides sort behind every
+state-collecting ride, and among themselves they are ranked by how little time they burn, which is
+meaningless for them. That is why a five minute local hop outranks Saint George by half a million places.
+
+The exact quantity is already in the deadline tables. For an option arriving at `to` at `at`,
+
+```
+slack = min over owed y of ( L[y][to] - at )
+```
+
+is how close that move leaves the chain to losing the state it can least afford. It is a numpy min over the
+owed rows at one column, the same shape as the existing `ceiling(collected)`, so it is affordable per
+candidate, and it is read off the tables rather than estimated. Ranking positioning rides by slack prefers
+a long repositioning ride that keeps the West reachable over a local hop that burns five minutes and
+achieves nothing, which is exactly the distinction duration cannot draw.
+
+Falsification, before building: if slack ranking is right, the instrumented `--track` should show the
+control's positioning legs inside the expanded set, and a run should reach states it has never reached. If
+the legs are still outside, the ranking is not the binding constraint and the pruning is the next suspect.
