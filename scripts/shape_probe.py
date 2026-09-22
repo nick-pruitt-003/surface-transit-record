@@ -68,6 +68,7 @@ def main():
     ap.add_argument('--span', type=float, default=260)
     ap.add_argument('--days', type=int, default=20)
     ap.add_argument('--shapes', default=','.join(HERE_SHAPES))
+    ap.add_argument('--trace', action='store_true', help='with --true-order, print the margin at every step of the control chain so a slack loss can be localised instead of reported as one number at the end')
     ap.add_argument('--true-order', action='store_true', help='derive the order from the route\'s own legs rather than the pickle\'s target list. The difference between the two IS the strictness this test adds, and until it is measured an IMPOSSIBLE verdict may be a fact about the test rather than about the timetable.')
     a = ap.parse_args()
 
@@ -96,15 +97,29 @@ def main():
 
     L_end = latest_from({s: D for s in st_stops[end_st]})
 
-    def test(order):
-        """latest departure from each stop that still does this whole order, and where it dies if it does"""
+    def test(order, where=None, marg=None):
+        """latest departure from each stop that still does this whole order, and where it dies if it does
+
+        With `where` mapping state -> (stop, time) from the route itself, also records the margin at every
+        step: standing where the route stands when it first enters that state, at that time, how much room
+        is left to do all of it. That localises a slack loss instead of reporting one number at the end.
+        The control loses 0.57 h between its real slack (+0.66 h) and what this test grants it (+0.09 h),
+        and 0.57 h in a timetable this lumpy is potentially a whole missed connection rather than rounding:
+        you make the Silver Meteor or you wait for tomorrow's.
+        """
         cur = L_end
-        for i, y in enumerate(reversed(order)):
+        for i in range(len(order) - 1, -1, -1):
+            y = order[i]
             nxt = {s: float(cur[s]) for s in st_stops[y] if cur[s] > -np.inf}
             if not nxt:
-                return None, f'{ab(y)} (step {len(order) - i} of {len(order)}) is unreachable from anything ' \
+                return None, f'{ab(y)} (step {i + 1} of {len(order)}) is unreachable from anything ' \
                              f'that could still finish'
             cur = latest_from(nxt)
+            if where is not None and marg is not None and i > 0:
+                prev = order[i - 1]
+                if prev in where:
+                    s_, t_ = where[prev]
+                    marg.append((i, prev, float(cur[s_]) - t_, s_, t_))
         return cur, None
 
     # mean longitude per state, from the router's own coordinates rather than a hand list of "western states"
@@ -113,6 +128,7 @@ def main():
     for y in range(N_STATES):
         if st_stops[y]: lon[y] = float(xy[np.asarray(st_stops[y]), 0].mean())
 
+    WHERE = {}
     d_ = pickle.load(open(a.route, 'rb'))
     base = list(d_['order'])
     if a.true_order:
@@ -139,8 +155,12 @@ def main():
         for v_ in tc_.values(): v_.sort(key=lambda k: R.dep[k])
         seen_ = []
 
-        def add_(y_):
-            if y_ is not None and y_ >= 0 and y_ not in seen_: seen_.append(int(y_))
+        where_ = {}
+
+        def add_(y_, s_=None, t_=None):
+            if y_ is not None and y_ >= 0 and y_ not in seen_:
+                seen_.append(int(y_))
+                if s_ is not None: where_[int(y_)] = (int(s_), float(t_))
 
         # In the order the vehicle actually ENTERS each state, connection by connection in departure order.
         # The first version took sorted(S.covered(legs[:i+1])) and appended what was new, which breaks ties
@@ -148,18 +168,19 @@ def main():
         # in an order with no relation to the geography: the chain then demanded Nebraska before Iowa on a
         # train that passes them the other way, and reported the 237 route impossible at step 12. The route
         # exists and regress validates it every run, so that was the probe failing its own falsification.
-        add_(int(R.state[st0_]))
+        add_(int(R.state[st0_]), st0_, d_['t0'])
         for l_ in legs_:
             if l_[0] == 'ride':
                 _, trip_, bs_, bt_, al_, at_ = l_
-                add_(int(R.state[bs_]))
+                add_(int(R.state[bs_]), bs_, bt_)
                 for k_ in tc_.get(trip_, ()):
                     if bt_ <= R.dep[k_] and R.arr[k_] <= at_:
-                        add_(int(R.state[int(R.cfrom[k_])])); add_(int(R.state[int(R.cto[k_])]))
-                add_(int(R.state[al_]))
+                        add_(int(R.state[int(R.cfrom[k_])]), int(R.cfrom[k_]), float(R.dep[k_]))
+                        add_(int(R.state[int(R.cto[k_])]), int(R.cto[k_]), float(R.arr[k_]))
+                add_(int(R.state[al_]), al_, at_)
             elif l_[0] == 'walk':
-                add_(int(R.state[int(l_[2])]))
-        base = seen_
+                add_(int(R.state[int(l_[2])]), int(l_[1]), float(l_[4]))
+        base = seen_; WHERE.update(where_)
         print(f'true first-collection order: {len(base)} states, against {len(d_["order"])} targets')
     body = [y for y in base if y != end_st]
 
@@ -178,7 +199,13 @@ def main():
     print(f'{"shape":16s} {"latest possible departure":>26s} {"margin":>10s}   verdict')
     for name in a.shapes.split(','):
         order = shape(name.strip()) + [end_st]
-        cur, dead = test(order)
+        marg = [] if (a.trace and name.strip() == 'control') else None
+        cur, dead = test(order, WHERE if marg is not None else None, marg)
+        if marg:
+            print('   step  state  margin   where the route stands when it enters it')
+            for i_, y_, m_, s_, t_ in sorted(marg):
+                print(f'   {i_:4d}  {ab(y_):5s} {m_ / 3600:+7.2f} h  {R.stop_name[s_][:34]:34s} '
+                      f'{datetime.fromtimestamp(t_, tz):%a %H:%M}')
         if dead is not None:
             print(f'{name:16s} {"-":>26s} {"-":>10s}   IMPOSSIBLE: {dead}')
             continue
