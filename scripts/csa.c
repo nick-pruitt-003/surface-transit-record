@@ -1,5 +1,6 @@
 /* Connection Scan inner loop for time_router.TimeRouter.finish().
    Mirrors TimeRouter.scan(): one-hop footpaths, MIN_TRANSFER between vehicles (0 to stay on a trip),
+   footpaths relaxed when a RIDE improves a stop (see `ride[]` below, not when it improves best[]),
    stop scanning SCAN_SLACK after the first target is reached. is_target 2 = a state target's stop: a footpath that
    crosses a state line (foot_x) can't land on it, so a state is collected by a ride (or a border walk-in stop, 1). Build: cc -O3 -shared -fPIC csa.c -o csa.so */
 #include <stdlib.h>
@@ -15,8 +16,10 @@ int csa_scan(int n_conn, const double *dep, const double *arr, const int *cfrom,
 {
     unsigned char *reached = (unsigned char *)calloc((size_t)n_trips, 1);
     double *init = (double *)malloc(sizeof(double) * (size_t)n_stops);
-    if (!reached || !init) { free(reached); free(init); return -1; }
+    double *ride = (double *)malloc(sizeof(double) * (size_t)n_stops);   /* earliest arrival BY A RIDE */
+    if (!reached || !init || !ride) { free(reached); free(init); free(ride); return -1; }
     memcpy(init, best, sizeof(double) * (size_t)n_stops);
+    for (int s = 0; s < n_stops; s++) ride[s] = INFINITY;
     for (int s = 0; s < n_stops; s++) {            /* one walking hop from the starting labels */
         if (isinf(init[s])) continue;
         for (int e = foot_ptr[s]; e < foot_ptr[s + 1]; e++) {
@@ -37,10 +40,21 @@ int csa_scan(int n_conn, const double *dep, const double *arr, const int *cfrom,
             if (ba + need <= dt) { reached[trip] = 1; if (pconn) { trip_bstop[trip] = a; trip_bdep[trip] = dt; } } else continue;
         }
         int b = cto[k]; double at = arr[k];
+        /* Footpaths are relaxed when a RIDE newly improves this stop, not when it improves best[].
+           Walks do not chain (one hop), so a walk-derived label at b must not suppress the onward walk
+           that a ride arriving at b would license. Memphis, Tue 6 Oct: a 57 min proxy link puts Holmes at
+           21:02:13 while the MATA bus arrives 21:07:26, so `at < best[b]` failed, this whole block was
+           skipped, and the 1142 s walk over the Mississippi line was never relaxed. The state went
+           uncollectable because a faster arrival shadowed a slower one. best[b] <= ride[b] always, so
+           every case that relaxed before still relaxes: this only adds the shadowed ones. */
+        int fresh_ride = at < ride[b];
+        if (fresh_ride) ride[b] = at;
         if (at < best[b]) {
             best[b] = at; ltrip[b] = trip;
             if (pconn) { pconn[b] = k; pwalk[b] = -1; }
             if (is_target[b] && at < target_best) target_best = at;
+        }
+        if (fresh_ride) {
             for (int e = foot_ptr[b]; e < foot_ptr[b + 1]; e++) {
                 int j = foot_to[e]; double t = at + foot_w[e];
                 if (foot_x[e] && is_target[j] == 2) continue;
@@ -48,7 +62,7 @@ int csa_scan(int n_conn, const double *dep, const double *arr, const int *cfrom,
             }
         }
     }
-    free(reached); free(init);
+    free(reached); free(init); free(ride);
     return 0;
 }
 
