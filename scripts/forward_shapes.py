@@ -26,6 +26,7 @@ from zoneinfo import ZoneInfo
 import numpy as np
 from time_router import cached_router, N_STATES
 from common import ABBR
+from pick import choose, gate
 
 _W = {}          # worker state, inherited by fork rather than pickled (pair_tables._W does the same)
 
@@ -34,12 +35,12 @@ def _one(job):
     """(rotation, start stop, departure) -> elapsed hours, or None if the order cannot be completed"""
     k, s0, t0 = job
     R, orders = _W['R'], _W['orders']
-    import time_search as ts
-    from time_search import Search
-    S = Search(R, s0, t0, [], 1)
-    ts._R, ts._START, ts._T0, ts._SELF, ts._BASE, ts._END = R, s0, t0, S, None, None
+    # R.finish, not Search(...).evaluate: the same compiled scan layer by layer, without rebuilding the
+    # legs, and without constructing a Search, whose __init__ runs build_gateways (a Python pass over every
+    # state's stops) on every call. That constructor was most of phase 1's cost. The rotation-0 gate runs
+    # through this function, so if the two ever disagree the run stops before printing a row.
     try:
-        fin, _legs = S.evaluate(orders[k])
+        fin = R.finish(s0, t0, orders[k])
     except Exception:
         return k, s0, t0, None
     if fin is None or not np.isfinite(fin): return k, s0, t0, None
@@ -64,6 +65,15 @@ def main():
     ap.add_argument('--hours', type=float, default=24, help='sweep departures over this many hours')
     ap.add_argument('--step', type=float, default=2, help='hours between swept departures')
     ap.add_argument('--workers', type=int, default=0)
+    ap.add_argument('--no-gate', action='store_true', help='skip the harness checks')
+    ap.add_argument('--reverse', action='store_true', help='rotate the REVERSED cycle instead. Rotations of one '
+                    'orientation are only half the cyclic reorders of the sequence, and the other half '
+                    'includes the record\'s own White River Junction to Huntington direction.')
+    ap.add_argument('--record', default='../out/time_238.pkl', help='the 238.8 h record-shape order, replayed '
+                    'as a second gate: one control can pass a harness that is wrong in a way the control '
+                    'does not exercise, two that disagree cannot')
+    ap.add_argument('--checkpoint', default='../out/fs_phase1_{tag}.pkl', help='phase 1 results are saved here '
+                    'as they arrive and reused on restart, so a kill costs minutes rather than the whole phase')
     a = ap.parse_args()
 
     tz = ZoneInfo(a.tz)
@@ -102,7 +112,8 @@ def main():
         elif l_[0] == 'walk':
             add_(int(R.state[int(l_[2])]))
     n_ = len(full)
-    print(f'control order: {n_} states, {" ".join(ab(y) for y in full)}\n')
+    if a.reverse: full = full[::-1]
+    print(f'control order{" (REVERSED)" if a.reverse else ""}: {n_} states, {" ".join(ab(y) for y in full)}\n')
 
     orders = {k: full[k:] + full[:k] for k in range(n_)}
 
@@ -137,6 +148,33 @@ def main():
         for k in ks: best_stop[k] = hit[0]; multi.pop(k, None)
         print(f'forced start: {a.start_stop!r} ({len(hit)} exact matches, using {hit[0]})')
     _W.update(R=R, orders=orders)
+    # The known answer before any row: rotation 0 is the control's own ordering, and from Huntington at 00:54
+    # it must come back at 237.34 h. Checked only when the inputs are the control's, since any other route or
+    # clock has no known answer to check against.
+    control_inputs = a.route == ap.get_default('route') and a.at == ap.get_default('at')
+    if not a.no_gate and control_inputs and not a.reverse:
+        hun = [i for i, n in enumerate(R.stop_name) if n == 'Huntington Bus Stop']
+        gate('rotation 0 from Huntington 00:54',
+             lambda: min(el for el in (_one((0, h, t_base))[3] for h in hun) if el is not None),
+             237.34, 0.01)
+    # Second gate, and one that disagrees with the first: the record's own shape, the other direction across
+    # the country from a different start. 239.08 h from the 04:20 clock at White River Junction (238.83 from
+    # its first bus), measured through this same Search.evaluate on Sep 22 against the saved finish.
+    if not a.no_gate and a.record and os.path.exists(a.record):
+        rec = pickle.load(open(a.record, 'rb'))['order']
+        t_rec = datetime(2026, 9, 24, 4, 20, tzinfo=ZoneInfo('America/New_York')).timestamp()
+
+        def rec_el():
+            best = None
+            for w in [i for i, n in enumerate(R.stop_name) if n == 'White River Junction Bus Station']:
+                Sr = Search(R, w, t_rec, [], 1)
+                ts._R, ts._START, ts._T0, ts._SELF, ts._BASE, ts._END = R, w, t_rec, Sr, None, None
+                f_, lg_ = Sr.evaluate(rec)
+                if np.isfinite(f_) and Sr.all_states(lg_):
+                    el_ = (f_ - t_rec) / 3600
+                    best = el_ if best is None else min(best, el_)
+            return best
+        gate('record order from White River Junction 04:20', rec_el, 239.08, 0.01)
     import multiprocessing as mp
     nw = a.workers or max(1, (os.cpu_count() or 2) - 1)
 
@@ -148,12 +186,35 @@ def main():
     with mp.get_context('fork').Pool(nw) as pool:
         need = [(k, s0, t_base) for k in ks for s0 in multi.get(k, []) if k not in best_stop]
         if need:
+            # Checkpointed, keyed on everything that decides a result, because the first full run died 31
+            # minutes in with nothing saved and pool.map had printed nothing to say how far it had got.
+            tag = f'{"rev" if a.reverse else "fwd"}'
+            ck_path = a.checkpoint.format(tag=tag)
+            ck_key = (a.route, a.at, a.tz, a.days, a.reverse, tuple(full))
+            done = {}
+            if os.path.exists(ck_path):
+                ck = pickle.load(open(ck_path, 'rb'))
+                if ck.get('key') == ck_key: done = ck['done']
+                else: print(f'checkpoint {ck_path} is for different inputs; ignoring it', flush=True)
+            todo = [j for j in need if (j[0], j[1]) not in done]
             print(f'phase 1: {len(need)} start stops across {len(set(k for k, _, _ in need))} rotations, '
-                  f'at one departure, {nw} workers', flush=True)
+                  f'at one departure, {nw} workers; {len(done)} from checkpoint, {len(todo)} to go', flush=True)
+            import time as _time
+            t_p1 = _time.time(); n_new = 0
+            for k, s0, _t, el in pool.imap_unordered(_one, todo, chunksize=16):
+                done[(k, s0)] = el; n_new += 1
+                if n_new % 500 == 0 or n_new == len(todo):
+                    tmp = ck_path + '.tmp'
+                    pickle.dump(dict(key=ck_key, done=done), open(tmp, 'wb')); os.replace(tmp, ck_path)
+                    rate = n_new / max(_time.time() - t_p1, 1e-9)
+                    print(f'  phase 1: {len(done)}/{len(need)} ({rate:.1f}/s, '
+                          f'{(len(todo) - n_new) / max(rate, 1e-9) / 60:.0f} min left)', flush=True)
             got = defaultdict(list)
-            for k, s0, _t, el in pool.map(_one, need):
+            for (k, s0), el in done.items():
                 if el is not None: got[k].append((el, s0))
-            for k, v in got.items(): best_stop[k] = min(v)[1]
+            for k in sorted(got):
+                best_stop[k] = choose(got[k], key=lambda e: e[0], label=f'  rot {k:2d} start',
+                                      show=lambda e: f'{R.stop_name[e[1]][:30]} {e[0]:.2f} h')[1]
             print(f'phase 1 done: {len(got)} rotations have a start that completes at all', flush=True)
         jobs = [(k, best_stop[k], t) for k in ks if k in best_stop for t in times]
         print(f'phase 2: {len(jobs)} evaluations, {len(ks)} rotations x {len(times)} departures\n',
