@@ -43,7 +43,7 @@ def main():
     ap.add_argument('--route', default='../out/res_starttest.pkl')
     ap.add_argument('--min-window', type=float, default=30, help='minutes; shorter layovers are reported '
                     'but not scanned, since nothing fits')
-    ap.add_argument('--drop', type=int, default=None, help='pretend the route never took this ride, so the '
+    ap.add_argument('--drop', default=None, help='N or N-M: pretend the route never took these rides, so '
                     'layover around it reopens. The honest test of the operator: drop the Memphis detour '
                     'and it should offer Mississippi back.')
     ap.add_argument('--days', type=int, default=20)
@@ -57,11 +57,14 @@ def main():
     ts._R, ts._START, ts._T0, ts._SELF, ts._BASE, ts._END = R, st0, d['t0'], S, None, None
     _, legs = S.evaluate(d['order'])
     rides = [l for l in legs if l[0] == 'ride']
-    if a.drop is not None and 1 <= a.drop <= len(rides):
-        gone_ = rides[a.drop - 1]
-        print(f'pretending the route never took leg {a.drop}, {R.stop_name[gone_[2]][:24]} -> '
-              f'{R.stop_name[gone_[4]][:24]}', flush=True)
-        rides = rides[:a.drop - 1] + rides[a.drop:]
+    if a.drop:
+        lo_, _, hi_ = a.drop.partition('-')
+        lo_ = int(lo_); hi_ = int(hi_ or lo_)
+        if 1 <= lo_ <= hi_ <= len(rides):
+            for g_ in rides[lo_ - 1:hi_]:
+                print(f'pretending the route never took {R.stop_name[g_[2]][:24]} -> '
+                      f'{R.stop_name[g_[4]][:24]}', flush=True)
+            rides = rides[:lo_ - 1] + rides[hi_:]
     print(f'{len(rides)} rides over {len(d["order"])} states\n', flush=True)
 
     # Where the route stands still. A layover is arriving somewhere and leaving it later, and the gap is
@@ -77,9 +80,13 @@ def main():
     for i in range(len(rides) - 1):
         _, _trip, _bs, _bt, al, at = rides[i]
         _, _t2, bs2, bt2, _al2, _at2 = rides[i + 1]
-        if bs2 != al: continue                       # the route walks between them; not a clean layover
+        # The window runs from where one ride drops you to where the next one picks you up, and those need
+        # not be the same stop. Requiring them to match is what made the first version of this probe miss
+        # the move it was written for: the Memphis excursion lands at Holmes and boards the Jefferson bus at
+        # Airways Transit Center, so a same-stop test threw it away. The two scans do not care, they just
+        # need the two ends.
         gap = bt2 - at
-        if gap > 0: holes.append((i + 1, al, at, bt2, gap))
+        if gap > 0: holes.append((i + 1, al, at, bs2, bt2, gap))
 
     # What the route already holds by the time it reaches each layover. Without this the table is mostly
     # tautology: standing in Wisconsin, Wisconsin is collectable. The question worth asking is what a
@@ -100,7 +107,7 @@ def main():
     print(f'{"after leg":>9}  {"stop":28s} {"window":>8}  states it could add that the route lacks there', flush=True)
 
     total_free = set()
-    for n, X, t_in, t_out, gap in sorted(holes, key=lambda h: -h[4]):
+    for n, X, t_in, Y, t_out, gap in sorted(holes, key=lambda h: -h[5]):
         if gap < a.min_window * 60:
             continue
         t0_ = time.time()
@@ -109,7 +116,7 @@ def main():
         _h, _t, _l, pred = R._scan_fast(stops, times, trips, 'VT', want_pred=True)
         best = pred['best']
         # back: latest you can leave anywhere and still stand at X by t_out
-        latest, ok, k0, k1 = rev.layer({int(X): float(t_out)}, False, float(t_in), None)
+        latest, ok, k0, k1 = rev.layer({int(Y): float(t_out)}, False, float(t_in), None)
         eff, _ = rev.through(ok, k0, k1, np.ones(R.N, bool))
         back = np.maximum(latest, eff)
 
@@ -121,7 +128,8 @@ def main():
             if np.any(np.isfinite(best[sa]) & (best[sa] <= back[sa])):
                 fits.append(y)
         total_free |= set(fits)
-        print(f'{n:9d}  {R.stop_name[X][:28]:28s} {gap / 3600:6.1f} h  '
+        where = R.stop_name[X][:26] if X == Y else f'{R.stop_name[X][:12]} -> {R.stop_name[Y][:11]}'
+        print(f'{n:9d}  {where:28s} {gap / 3600:6.1f} h  '
               f'{" ".join(ab(y) for y in fits) if fits else "nothing"}'
               f'   [{time.time() - t0_:.1f}s]', flush=True)
 
