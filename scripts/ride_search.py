@@ -317,6 +317,12 @@ def main():
         push = menu.add if menu is not None else (lambda w_, t_, k_, g_: out.append((w_, t_, k_, frozenset(g_))))
         all_states = range(N_STATES)
         if cap is None and L is not None: cap = ceiling(collected)
+        # Plain lists for the two deadline arrays, and only once `cap` is actually filled in: reading them
+        # before that line left capl as None while cap was not, and every candidate then died on a
+        # subscript. Every check below indexes these once per candidate, and a numpy scalar read is an
+        # order slower than a list one, which at hundreds of millions of candidates is tens of seconds.
+        capl = cap.tolist() if cap is not None else None
+        endl = L_end.tolist() if L is not None else None
         # Every footpath the router built, with no second opinion. This line used to drop any link costing
         # more than a made-up 1200, which is seconds, so it silently hid every local-transit hop longer than
         # twenty minutes: Memphis to Bellevue at Carr, Salt Lake City Intermodal to the Salt Lake Express
@@ -346,10 +352,19 @@ def main():
                     if st >= 0: got.add(st)
                     at = float(R.arr[kk])
                     if cap is not None:
-                        # the ride's own new states are not owed after it, so they may exceed the ceiling
-                        if at > cap[to] and any(at > L[y][to] for y in all_states
-                                                if y not in collected and y not in got): continue
-                        if at > L_end[to]: continue
+                        # The ride's own new states are not owed after it, so they may exceed the ceiling,
+                        # and that is the only reason this is not simply a lookup. While the ride has
+                        # collected nothing the exception cannot apply, and the pair of tests below is
+                        # exactly `at > cap[to]`: `any(at > L[y][to] for y in owed)` is `at > min over owed`,
+                        # and cap is that same minimum already clamped by L_end. Most stops a ride passes
+                        # add no state, so this is the common path, and it was rebuilding a number that was
+                        # sitting in an array: 331M generator calls, 65 s of a 180 s profile.
+                        if not got:
+                            if at > capl[to]: continue
+                        else:
+                            if at > capl[to] and any(at > L[y][to] for y in all_states
+                                                     if y not in collected and y not in got): continue
+                            if at > endl[to]: continue
                     elif not alight_ok(to, at, [y for y in all_states if y not in collected and y not in got]):
                         continue
                     push(to, at, key, got)
@@ -360,8 +375,8 @@ def main():
                     for y, w in walkin.get(to, ()):
                         if y in got or y in collected: continue
                         at2 = at + 2 * w
-                        if cap is not None and (at2 > L_end[to] or at2 > L[y][to]): continue
-                        if cap is not None and at2 > cap[to] and any(
+                        if cap is not None and (at2 > endl[to] or at2 > L[y][to]): continue
+                        if cap is not None and at2 > capl[to] and any(
                                 at2 > L[z][to] for z in all_states if z not in collected and z not in got and z != y):
                             continue
                         push(to, at2, None, got | {y})
