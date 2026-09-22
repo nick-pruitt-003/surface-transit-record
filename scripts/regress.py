@@ -153,8 +153,12 @@ def _():
 @check('nothing on the ride-search path picks stops by how busy they are')
 def _():
     """`build_gateways` ranks stops by raw departure count, five per state inside a 6 km radius. That is the
-    same shape as the alight rule that lost the Barstow depot, and it is measurably blind in the same way:
-    of the three stops the control cannot do without, none is a gateway for its state.
+    same shape as the alight rule that lost the Barstow depot, and it is blind to most of the geography the
+    control needs: Conway and Holmes are not gateways for their states. It is not blind to all of it, which
+    the first version of this check asserted and got wrong. Barstow Amtrak falls inside a California gateway
+    radius, not because a busyness rule values a two-service depot but because Victor Valley Transit makes
+    the nearby bus station busy and the radius is six kilometres. Being covered by accident is not the same
+    as being chosen.
 
     The useful assertion is structural rather than numeric. The gateway list is fine where it is used, as a
     relocation hint for the ordering search; it becomes dangerous the moment it constrains where the ride
@@ -179,8 +183,16 @@ def _():
             if _np.hypot((lon - a) * 111.3 * _np.cos(_np.radians(lat)), (lat - b) * 111.3) <= km:
                 inside = True; break
         if not inside: blind.append(f'{pat} ({int(deps[i])} departures)')
-    assert blind, ('every load-bearing stop is now inside a gateway radius, which would be a change in the '
-                   'data worth understanding before trusting it')
+    # Pin which stops the gateways actually cover. Two claims died here. The first version asserted `blind`
+    # was non-empty, which passes on any single survivor and says almost nothing. The second asserted all
+    # three were outside, which is what the docstring claimed and is false: Barstow Amtrak IS inside a
+    # California gateway radius, because Victor Valley Transit makes Barstow Station busy enough to be a
+    # gateway and the depot sits within six kilometres of it. So gateways are not uniformly blind to quiet
+    # geography, they are blind to Conway and Holmes and happen to cover Barstow for an unrelated reason.
+    # Asserting the exact set makes drift in either direction visible.
+    assert sorted(b.split(' (')[0] for b in blind) == ['Conway', 'HOLMES at ELVIS PRESLEY'], (
+        'which load-bearing stops the busyness gateways reach has changed, and the reasoning that depends '
+        f'on it needs rechecking rather than the assertion updating: outside = {blind}')
 
     src = open('ride_search.py').read()
     assert 'build_gateways' not in src, ('ride_search.py now uses build_gateways, which picks by departure '

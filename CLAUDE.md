@@ -7,7 +7,7 @@ the route, the rules, and everything tested and ruled out. Read it before propos
 ## Working rules
 
 - **One search at a time.** Not three in parallel to compare them.
-- **Run `scripts/regress.py` (6 checks) before committing** anything touching the router, the search or the
+- **Run `scripts/regress.py` before committing** anything touching the router, the search or the
   data. A new leaf script that nothing imports is the one exception, and say so when you skip it.
 - Defaults are 5 min transfers, 1.4 km walk-ins, 24 h slack.
 - Never seed new end points from old routes.
@@ -129,7 +129,7 @@ Still live and not yet addressed, in the order they are being worked:
 
 | what | where | what it can erase |
 |---|---|---|
-| ranking by hours per new state | `--order rate`, still the default, hardcoded in `overnight.sh` | the Silver Meteor, 14 h for four states, last of thirteen |
+| ranking by hours per new state | `--order rate`, no longer the default since slack measured 25 vs 28 vs 31, and no longer hardcoded in `overnight.sh` | the Silver Meteor, 14 h for four states, last of thirteen |
 | positioning rides sorted behind collecting ones | `sort_opts`, first key in every mode including slack | Spokane to Pasco, Saint George, Memphis to Holmes |
 | a flat 5 h credit per state on the frontier | `--credit` | a west-first chain loses to a cheap north-east one that looks ahead of pace |
 | the `--hub 6` alight fallback | `alight_ok` when no `--end`/`--by` is given | the Barstow depot has 2, Conway has 5 |

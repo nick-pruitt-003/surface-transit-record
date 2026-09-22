@@ -399,7 +399,12 @@ def main():
                     for y, w in walkin.get(to, ()):
                         if y in got or y in collected: continue
                         at2 = at + 2 * w
-                        if cap is not None and (at2 > endl[to] or at2 > L[y][to]): continue
+                        # `L[y][to]` is the latest you can be at `to` and still collect y and finish, and
+                        # it already prices the walk. Testing it at at2, after charging 2w, charges the walk
+                        # twice and can refuse a walk-in that is comfortably feasible: exactly the shape
+                        # that has cost Mississippi before. The question "can I still collect y from here"
+                        # is asked at `at`, before walking; the end has to remain reachable at at2, after.
+                        if cap is not None and (at2 > endl[to] or at > L[y][to]): continue
                         if cap is not None and at2 > capl[to] and any(
                                 at2 > L[z][to] for z in all_states if z not in collected and z not in got and z != y):
                             continue
@@ -802,34 +807,7 @@ def main():
                     break
 
     sys.setrecursionlimit(20000)
-    if back:
-        if L is None:
-            print('backward needs --end and --by to anchor the deadline'); return
-        print(f'\nbackward from {a.end} at {datetime.fromtimestamp(D, ZoneInfo(a.tz)):%a %Y-%m-%d %H:%M}, '
-              f'free start, limit {a.target} h\n', flush=True)
-        backward_search()
-        el2 = time.time() - t_run
-        print(f'\n{seen_nodes[0]} nodes in {el2:.0f} s ({seen_nodes[0] / max(el2, 1):.0f}/s); '
-              f'deepest {deepest[0]}/{NEED} states')
-        if best[0] is None: print(f'nothing reached {NEED} states under {a.target} h in the budget')
-        else:
-            spent, path = best[0]
-            print(f'best {spent / 3600:.2f} h, starting {R.fmt_time(D - spent, path[-1][1]) if path else "?"}')
-            chk = confirm(path[::-1])
-            if chk: print(f'  independent check: {chk[0]}' + (f', {chk[1]:.2f} h' if chk[1] is not None else ''))
-            for trip, frm, to, bt, at in path[::-1]:
-                info = R.trip_info.get(trip, ('', '')) if trip else ('', 'border walk-in')
-                print(f'   {R.fmt_time(bt, frm)} {R.stop_name[frm][:26]:26s} -> {R.fmt_time(at, to)} '
-                      f'{R.stop_name[to][:26]:26s} {(info[1] or info[0])[:24]}')
-        return
-    if START is None: print('need --start'); return
-    start_states = set()      # a walk-in at the start is a move like any other, and costs its time
-    if R.state[START] >= 0: start_states.add(int(R.state[START]))
-    if a.mode == 'best': best_first(START, T0, frozenset(start_states))
-    else: dfs(START, T0, frozenset(start_states), None, [])
-    el = time.time() - t_run
-    print(f'\n{seen_nodes[0]} nodes in {el:.0f} s ({seen_nodes[0] / max(el, 1):.0f}/s), {sum(len(v) for v in dom_stop.values())} kept '
-          f'(stop, states); deepest {deepest[0]}/{NEED} states')
+
     def confirm(path_):
         """Hand the route back to the router and see if it agrees. The search must not be the only witness
         to its own result.
@@ -871,6 +849,40 @@ def main():
         except Exception as e:
             return (f'could not be checked ({type(e).__name__}: {e})', None)
 
+    if back:
+        if L is None:
+            print('backward needs --end and --by to anchor the deadline'); return
+        print(f'\nbackward from {a.end} at {datetime.fromtimestamp(D, ZoneInfo(a.tz)):%a %Y-%m-%d %H:%M}, '
+              f'free start, limit {a.target} h\n', flush=True)
+        backward_search()
+        el2 = time.time() - t_run
+        print(f'\n{seen_nodes[0]} nodes in {el2:.0f} s ({seen_nodes[0] / max(el2, 1):.0f}/s); '
+              f'deepest {deepest[0]}/{NEED} states')
+        if best[0] is None:
+            print(f'nothing reached {NEED} states under {a.target} h in the budget')
+            if a.out and deep_path[0] is not None:
+                sp_, pa_, co_ = deep_path[0]
+                pickle.dump(dict(path=pa_, spent=sp_, collected=sorted(co_), complete=False), open(a.out, 'wb'))
+                print(f'wrote {a.out}: the deepest chain, {len(co_)} states over {len(pa_)} rides, '
+                      f'{sp_ / 3600:.1f} h. Not a route; the input repair_probe wants.')
+        else:
+            spent, path = best[0]
+            print(f'best {spent / 3600:.2f} h, starting {R.fmt_time(D - spent, path[-1][1]) if path else "?"}')
+            chk = confirm(path[::-1])
+            if chk: print(f'  independent check: {chk[0]}' + (f', {chk[1]:.2f} h' if chk[1] is not None else ''))
+            for trip, frm, to, bt, at in path[::-1]:
+                info = R.trip_info.get(trip, ('', '')) if trip else ('', 'border walk-in')
+                print(f'   {R.fmt_time(bt, frm)} {R.stop_name[frm][:26]:26s} -> {R.fmt_time(at, to)} '
+                      f'{R.stop_name[to][:26]:26s} {(info[1] or info[0])[:24]}')
+        return
+    if START is None: print('need --start'); return
+    start_states = set()      # a walk-in at the start is a move like any other, and costs its time
+    if R.state[START] >= 0: start_states.add(int(R.state[START]))
+    if a.mode == 'best': best_first(START, T0, frozenset(start_states))
+    else: dfs(START, T0, frozenset(start_states), None, [])
+    el = time.time() - t_run
+    print(f'\n{seen_nodes[0]} nodes in {el:.0f} s ({seen_nodes[0] / max(el, 1):.0f}/s), {sum(len(v) for v in dom_stop.values())} kept '
+          f'(stop, states); deepest {deepest[0]}/{NEED} states')
     if best[0] is None:
         print(f'nothing reached {NEED} states under {a.target} h in the budget')
         if a.out and deep_path[0] is not None:
