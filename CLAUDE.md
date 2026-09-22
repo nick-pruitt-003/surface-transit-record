@@ -7,7 +7,8 @@ the route, the rules, and everything tested and ruled out. Read it before propos
 ## Working rules
 
 - **One search at a time.** Not three in parallel to compare them.
-- **Run `scripts/regress.py` before committing** anything touching the router, the search or the
+- **Run `regress.py` from inside `scripts/` before committing** (it resolves `../out/` relatively, so
+  running it from the repository root fails on missing pickles rather than on anything real) anything touching the router, the search or the
   data. A new leaf script that nothing imports is the one exception, and say so when you skip it.
 - Defaults are 5 min transfers, 1.4 km walk-ins, 24 h slack.
 - Never seed new end points from old routes.

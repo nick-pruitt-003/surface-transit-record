@@ -632,9 +632,17 @@ def cached_router(date, days, cache_dir=None, verbose=True):
     here = os.path.dirname(os.path.abspath(__file__))
     cache_dir = cache_dir or os.path.join(here, '..', 'out')
     files = sorted(glob.glob(os.path.join(here, '..', 'data', '**', '*'), recursive=True))
-    sig = [(os.path.relpath(f, here), os.path.getsize(f), int(os.path.getmtime(f))) for f in files if os.path.isfile(f)]
+    # Nanosecond mtimes, because a second is long enough to edit a feed inside and integer seconds would
+    # then serve the old world from cache.
+    sig = [(os.path.relpath(f, here), os.path.getsize(f), os.stat(f).st_mtime_ns) for f in files if os.path.isfile(f)]
     sig.append(hashlib.sha1(open(__file__, 'rb').read()).hexdigest())
     sig.append((str(date), int(days)))
+    # Every knob that changes what a router IS. All six are environment variables, so the same source and
+    # the same feeds can still describe different worlds, and a cache that ignored them would hand back the
+    # wrong one without a word. BUS48_LOCAL_MAX_KM=5 against a router built at 10 is not an error anyone
+    # would see; it is a plausible number from a different universe, which is this project's whole problem.
+    sig.append(('cfg', WALKIN_KM, MIN_TRANSFER, SCAN_SLACK, LOCAL_MAX_KM, LOCAL_PROXY_ALL, STOP_TZ_LOCAL,
+                WALK_MAX_KM, WALK_SPEED))
     key = hashlib.sha1(repr(sig).encode()).hexdigest()[:16]
     path = os.path.join(cache_dir, f'router_{key}.pkl')
     if os.path.exists(path):

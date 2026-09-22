@@ -435,6 +435,7 @@ def main():
         return menu.list() if menu is not None else out
 
     best = [None]; limit = [a.target * 3600]; seen_nodes = [0]; t_run = time.time(); deepest = [0]
+    last_q = [None]      # the frontier as the budget ran out, for the exit census
     # The deepest chain, win or not. A run that stalls at 31 of 48 is the interesting input for
     # repair_probe: the question it answers is how many of the twenty it still owes are sitting in
     # dead time the chain is already spending. Keeping only completed routes threw that away.
@@ -610,6 +611,7 @@ def main():
                                frozenset(start_c), None, ()))
             seq[0] += 1
         while q:
+            last_q[0] = q
             if time.time() - t_run > a.budget or seen_nodes[0] > a.nodes: break
             _f, spent, _, stop, t, collected, aboard, path = heapq.heappop(q)
             seen_nodes[0] += 1
@@ -774,6 +776,7 @@ def main():
         heapq.heappush(q, (pri(t_start - T0, len(start_collected)), t_start - T0, 0, start_stop, t_start,
                            start_collected, None, ()))
         while q:
+            last_q[0] = q
             if time.time() - t_run > a.budget or seen_nodes[0] > a.nodes: break
             _f, spent, _, stop, t, collected, aboard, path = heapq.heappop(q)
             seen_nodes[0] += 1
@@ -792,6 +795,11 @@ def main():
                 print(f'  [{time.time() - t_run:5.0f}s] {len(collected)}/{NEED} states, {spent / 3600:6.1f} h spent, '
                       f'at {R.stop_name[stop][:28]}, {len(path)} rides, {seen_nodes[0]} nodes, '
                       f'{len(q)} in frontier', flush=True)
+            # Only the end test here. The owed-state kill dfs runs at pop is already enforced at push:
+            # rides_from accepts an alight only when `at <= cap[to]`, and cap is the minimum over owed
+            # states of L[y][to] clamped by L_end. L never changes and a queued node never moves, so
+            # anything that passed at push passes at pop. That was worth measuring rather than assuming, and
+            # the counter said 0 of 13404 pops: the check was redundant and is gone.
             if L is not None and t > L_end[stop]: continue
             mk = bits(collected)
             if dominated(stop, mk, spent): continue
@@ -840,6 +848,56 @@ def main():
                     break
 
     sys.setrecursionlimit(20000)
+
+    def route_record(path_, spent_, collected_, complete_, back_=False):
+        """A chain in the shape everything downstream already reads.
+
+        repair_probe and Search.evaluate want (start, t0, order); the search's own path is a list of legs.
+        The first version of the stalled-chain writer emitted only the legs, so the pickle written for the
+        repair test could not be read by the repair test: producer and consumer written an hour apart and
+        never run against each other. `complete` still says whether this is a route or a chain that stalled,
+        because a caller that cannot tell those apart will eventually treat one as the other.
+        """
+        legs_ = list(path_[::-1]) if back_ else list(path_)
+        order_ = []
+        for trip_, frm_, to_, bt_, at_, walk_ in legs_:
+            for st_ in (int(R.state[frm_]), int(R.state[to_]), walk_):
+                if st_ is not None and st_ >= 0 and st_ not in order_: order_.append(st_)
+        st0_ = legs_[0][1] if legs_ else (START if START is not None else 0)
+        t0_ = legs_[0][3] if legs_ else T0
+        return dict(path=legs_, spent=spent_, collected=sorted(collected_), complete=complete_,
+                    start=R.stop_name[st0_], t0=float(t0_), order=order_,
+                    service_date=str(R.d0) if hasattr(R, 'd0') else None)
+
+    def census(q):
+        """What was still in the queue when the budget ran out.
+
+        `deepest` is printed at pop, before the death tests, so a high-water mark of 31 can be a node that
+        died on the next line. Twenty minutes without a 32nd state says only that no surviving expansion
+        minted one, and that is consistent with three different situations: a queue full of doomed chains
+        nobody has killed yet, a live deep layer the ranking never chooses, and a shallow queue where the
+        deep number was one lucky dive. The counters cannot tell them apart. A census can.
+        """
+        if not q: print('  queue empty at exit'); return
+        hist = defaultdict(int)
+        for e in q: hist[len(e[5])] += 1
+        top = max(hist)
+        print(f'  queue at exit: {len(q)} nodes, depth ' +
+              ' '.join(f'{d}:{hist[d]}' for d in sorted(hist, reverse=True)[:12]), flush=True)
+        if L is None: return
+        deep = [e for e in q if len(e[5]) == top]
+        live = []
+        for e in deep:
+            stop_, t_, coll_ = e[3], e[4], e[5]
+            if t_ > L_end[stop_]: continue
+            col_ = L[:, stop_]
+            owed_ = [y for y in range(N_STATES) if y not in coll_]
+            if any(t_ > col_[y] for y in owed_): continue
+            live.append((stop_, t_, owed_))
+        print(f'  of the {len(deep)} nodes at {top} states, {len(live)} can still collect everything they '
+              f'owe, which the push-side test guarantees and is therefore not evidence', flush=True)
+        for stop_, t_, owed_ in live[:5]:
+            print(f'    {R.stop_name[stop_][:30]:30s} owes {" ".join(ab(y) for y in owed_[:18])}', flush=True)
 
     def confirm(path_):
         """Hand the route back to the router and see if it agrees. The search must not be the only witness
@@ -891,11 +949,12 @@ def main():
         el2 = time.time() - t_run
         print(f'\n{seen_nodes[0]} nodes in {el2:.0f} s ({seen_nodes[0] / max(el2, 1):.0f}/s); '
               f'deepest {deepest[0]}/{NEED} states')
+        census(last_q[0] or [])
         if best[0] is None:
             print(f'nothing reached {NEED} states under {a.target} h in the budget')
             if a.out and deep_path[0] is not None:
                 sp_, pa_, co_ = deep_path[0]
-                pickle.dump(dict(path=pa_, spent=sp_, collected=sorted(co_), complete=False), open(a.out, 'wb'))
+                pickle.dump(route_record(pa_, sp_, co_, False, back_=True), open(a.out, 'wb'))
                 print(f'wrote {a.out}: the deepest chain, {len(co_)} states over {len(pa_)} rides, '
                       f'{sp_ / 3600:.1f} h. Not a route; the input repair_probe wants.')
         else:
@@ -917,11 +976,12 @@ def main():
     el = time.time() - t_run
     print(f'\n{seen_nodes[0]} nodes in {el:.0f} s ({seen_nodes[0] / max(el, 1):.0f}/s), {sum(len(v) for v in dom_stop.values())} kept '
           f'(stop, states); deepest {deepest[0]}/{NEED} states')
+    census(last_q[0] or [])
     if best[0] is None:
         print(f'nothing reached {NEED} states under {a.target} h in the budget')
         if a.out and deep_path[0] is not None:
             sp_, pa_, co_ = deep_path[0]
-            pickle.dump(dict(path=pa_, spent=sp_, collected=sorted(co_), complete=False), open(a.out, 'wb'))
+            pickle.dump(route_record(pa_, sp_, co_, False), open(a.out, 'wb'))
             print(f'wrote {a.out}: the deepest chain, {len(co_)} states over {len(pa_)} rides, '
                   f'{sp_ / 3600:.1f} h. Not a route; the input repair_probe wants.')
     else:
@@ -929,13 +989,17 @@ def main():
         print(f'best {spent / 3600:.2f} h over {len(path)} rides')
         chk = confirm(path)
         if chk: print(f'  independent check: {chk[0]}' + (f', {chk[1]:.2f} h' if chk[1] is not None else ''))
+        agreed = bool(chk) and chk[0] == 'router confirms'
         for trip, s, to, t, at, wy in path[:60]:
             info = R.trip_info.get(trip, ('', ''))
             print(f'   {R.fmt_time(t, s)} {R.stop_name[s][:26]:26s} -> {R.fmt_time(at, to)} {R.stop_name[to][:26]:26s} '
                   f'{(info[1] or info[0])[:24]}' + (f' + walk into {ab(wy)}' if wy is not None else ''))
         if a.out:
-            pickle.dump(dict(path=path, spent=spent, complete=True), open(a.out, 'wb'))
-            print('wrote', a.out)
+            # complete=True means the router agreed, not merely that the search stopped looking. A route it
+            # refused is still worth writing, because the disagreement is the interesting artifact, but
+            # labelling it complete would hand a reader a route the second witness rejected.
+            pickle.dump(route_record(path, spent, best_states, agreed), open(a.out, 'wb'))
+            print('wrote', a.out + ('' if agreed else '  (complete=False: the router did not confirm it)'))
 
 
 if __name__ == '__main__':

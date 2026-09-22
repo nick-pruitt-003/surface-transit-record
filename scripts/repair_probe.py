@@ -30,6 +30,7 @@ Run it against the control and it should rediscover Memphis:
   python3 repair_probe.py --route ../out/res_starttest.pkl
 """
 import argparse, pickle, time
+from zoneinfo import ZoneInfo
 import numpy as np
 from time_router import TimeRouter, load_feeds, cached_router, MIN_TRANSFER, N_STATES
 import backward as B
@@ -50,7 +51,14 @@ def main():
     a = ap.parse_args()
 
     d = pickle.load(open(a.route, 'rb'))
-    R = cached_router(__import__('datetime').datetime.fromtimestamp(d['t0']).date(), a.days)
+    # The service date the router was built for, not whatever date this machine's clock calls that
+    # instant. The route starts at 00:54 Eastern, so a container running in UTC happens to agree and one
+    # running west of Eastern would silently build a router for the previous day. New pickles carry the
+    # date; older ones are read in Eastern, which is the clock the route is written in.
+    sdate = d.get('service_date')
+    sdate = (__import__('datetime').date.fromisoformat(sdate) if sdate else
+             __import__('datetime').datetime.fromtimestamp(d['t0'], ZoneInfo('America/New_York')).date())
+    R = cached_router(sdate, a.days)
     ab = lambda x: ABBR[R.state_names[x]] if x >= 0 else '--'
     st0 = R.stop_name.index(d['start'])
     S = Search(R, st0, d['t0'], [], 1)
