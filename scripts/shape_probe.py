@@ -133,10 +133,32 @@ def main():
         S_ = Search(R, st0_, d_['t0'], [], 1)
         ts._R, ts._START, ts._T0, ts._SELF, ts._BASE, ts._END = R, st0_, d_['t0'], S_, None, None
         _f, legs_ = S_.evaluate(d_['order'])
+        from collections import defaultdict as _dd
+        tc_ = _dd(list)
+        for k_ in range(len(R.dep)): tc_[R.ctrip[k_]].append(k_)
+        for v_ in tc_.values(): v_.sort(key=lambda k: R.dep[k])
         seen_ = []
-        for i_, l_ in enumerate(legs_):
-            for y_ in sorted(S_.covered(legs_[:i_ + 1])):
-                if y_ not in seen_: seen_.append(int(y_))
+
+        def add_(y_):
+            if y_ is not None and y_ >= 0 and y_ not in seen_: seen_.append(int(y_))
+
+        # In the order the vehicle actually ENTERS each state, connection by connection in departure order.
+        # The first version took sorted(S.covered(legs[:i+1])) and appended what was new, which breaks ties
+        # WITHIN a leg by state index. One long ride collects several states at once, so that asked for them
+        # in an order with no relation to the geography: the chain then demanded Nebraska before Iowa on a
+        # train that passes them the other way, and reported the 237 route impossible at step 12. The route
+        # exists and regress validates it every run, so that was the probe failing its own falsification.
+        add_(int(R.state[st0_]))
+        for l_ in legs_:
+            if l_[0] == 'ride':
+                _, trip_, bs_, bt_, al_, at_ = l_
+                add_(int(R.state[bs_]))
+                for k_ in tc_.get(trip_, ()):
+                    if bt_ <= R.dep[k_] and R.arr[k_] <= at_:
+                        add_(int(R.state[int(R.cfrom[k_])])); add_(int(R.state[int(R.cto[k_])]))
+                add_(int(R.state[al_]))
+            elif l_[0] == 'walk':
+                add_(int(R.state[int(l_[2])]))
         base = seen_
         print(f'true first-collection order: {len(base)} states, against {len(d_["order"])} targets')
     body = [y for y in base if y != end_st]
@@ -171,8 +193,9 @@ def main():
 
     print('\nMargin is how much later than the actual start you could have left and still done the whole '
           'order. Negative means no route exists in that order from this start at this time, which is a '
-          'fact about the timetable and not about any search. The scans are permissive at every seam, so a '
-          'shape ruled out here is genuinely ruled out; a positive margin is necessary, not sufficient.')
+          'fact about the timetable and not about any search. The scans are permissive at every seam, but the test as a whole is '
+          'STRICTER than reality because it demands strict sequencing, so run --true-order to measure that '
+          'correction before believing any IMPOSSIBLE.')
 
 
 if __name__ == '__main__':
