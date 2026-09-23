@@ -845,3 +845,37 @@ have.
 earlier the same day, a key that does not cover everything that changes the answer, and it should be closed
 by hashing `csa.c` into the router fingerprint. `pair_tables.fingerprint` already hashes it, so every pair
 table on disk is invalidated by this commit and will rebuild.
+
+### The inverse, Southaven to Sheridan, is ~50 h worse and the reason is structural
+
+Nick's construction: start at the Mississippi line, claim MS and TN by the 19 min walk to Holmes, run the
+remaining 46 states, end in Wyoming. Then, since the Sheridan bus is once a day, subtract the target from
+its fixed arrival to get the start time.
+
+| | |
+|---|---|
+| X forwards, Sheridan -> MS line | **238.08 h** |
+| inverse, MS collected en route | 300.58 h |
+| inverse, MS + TN claimed at the line | 288.67 h, ending Cody |
+| inverse, + the JL 702 southbound Sheridan arrival | **288.58 h**, ending Sheridan 06:35 |
+
+Claiming MS and TN at the line is worth **11.9 h**: it removes a Memphis to Birmingham round trip the scan
+was using to reach Mississippi through the north of the state instead of walking over it. The southbound
+service is worth **0.09 h**. Neither dents a fifty hour gap.
+
+The sweeps say why, identically in all three runs: elapsed falls **exactly one hour per hour of later
+departure**, across 96 departures. That is not a route improving, it is dead time being trimmed at the
+start, because every version is pinned to an arrival it cannot influence. Forwards, Sheridan is a 22:20
+departure you catch and you are gone; backwards it is an arrival you wait for. A timetable is not
+reversible: the Silver Meteor, the Southwest Chief, the Dartmouth Coach and the Jefferson runs each go once
+a day in each direction at unrelated times, so the same 48 states in the opposite sequence land on an
+unrelated set of connections.
+
+Subtraction gives a start time and cannot tell you a route exists that leaves then. At the 238 h start the
+arithmetic demands, the timetable offers 288.58 h.
+
+Two corrections recorded rather than quietly fixed. The claim that no 06:35 Sheridan arrival existed was
+wrong: `755d99e` added JL 702 Billings 04:30 -> Sheridan 06:35 and only `37cad72` had been cherry-picked,
+so an entire conclusion was built on a router missing a service. And the follow-up claim that the earlier
+number was therefore "worse than meaningless" was an over-correction: with the service restored it moved by
+five minutes.
