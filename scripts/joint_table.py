@@ -32,6 +32,7 @@ HUBS = [  # name, lon, lat
     ('LasVegasAirport', -115.148, 36.086), ('BarstowAmtrak', -117.030, 34.906), ('KansasCity', -94.569, 39.100),
     ('Dallas', -96.804, 32.779), ('Houston', -95.302, 29.735), ('Tallahassee', -84.283, 30.444),
     ('JacksonvilleAmtrak', -81.724, 30.366), ('Atlanta', -84.397, 33.748), ('Memphis', -89.993, 35.062),
+    ('Shreveport', -93.757, 32.500), ('JacksonMS', -90.191, 32.301), ('Birmingham', -86.808, 33.512),
 ]
 
 
