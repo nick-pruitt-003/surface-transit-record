@@ -1,9 +1,18 @@
 """Route X and its inverse, measured forwards in real hours.
 
 X runs Sheridan WY -> the Mississippi line at Southaven in 238.08 h by hand, against a 238.83 h timetabled
-record and a 237.34 h control. Until 78ada1b the forward scan could not reach its ending at all: a 57 min
-proxy link labelled Holmes five minutes before the MATA bus arrived, and a walk-derived label does not
-license an onward walk, so the 1142 s step over the state line was never relaxed.
+record and a 237.34 h control. Measured through the router it is 238.32 h, boarding JL 701 at 22:20 MT on
+Sat 26 Sep and reaching the line at Holmes at 20:18 MT on Tue 06 Oct: +0.24 h on the hand arithmetic and
+still 0.51 h under the record. All 64 legs resolve, so the gap is a modelling difference and not a missing
+leg; it has not been run down yet.
+
+Until 78ada1b the forward scan could not reach its ending at all: a 57 min proxy link labelled Holmes five
+minutes before the MATA bus arrived, and a walk-derived label does not license an onward walk, so the
+1142 s step over the state line was never relaxed.
+
+The start stop needs JL 701 and JL 702 in data/extra_trips.csv (7fd3c55). Without them Wyoming has no
+Sheridan at all, and the name match here used to be the bare word, which found Hollywood Sheridan Tri-Rail
+in FLORIDA and reported X at 309.98 h. Matching 'Sheridan WY' and starting at 22:00 are both deliberate.
 
     --dir out       Sheridan WY -> MS line          (X as built)
     --dir back      MS line -> Sheridan WY          (the inverse)
@@ -61,7 +70,10 @@ def main():
         print('GATE FAILED, stopping'); return
 
     if a.dir == 'out':
-        names, at, tz = ['Sheridan'], a.at or '2026-09-26T22:20', a.tz or 'America/Denver'
+        # 22:00, not JL 701's own 22:20. A start clock equal to the departure can never board it: the scan
+        # needs best[a] + MIN_TRANSFER <= dep, so at 22:20 the 22:20 bus is 5 min out of reach, the next one
+        # is 24 h later, and the run reports 285.98 h for a route that costs 238.32.
+        names, at, tz = ['Sheridan WY'], a.at or '2026-09-26T22:00', a.tz or 'America/Denver'
         order = [R.state_names.index(inv[x]) for x in ORDER]
     else:
         names, at, tz = ['HOLMES at ELVIS PRESLEY'], a.at or '2026-09-24T06:00', a.tz or 'America/Chicago'

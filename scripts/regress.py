@@ -199,6 +199,40 @@ def _():
                                          'count and does not contain ' + '; '.join(blind))
 
 
+@check('route X can start, and no gate is guarded by a file nothing writes')
+def _():
+    """Two halves of the same escape.
+
+    Geography first. Route X is the second forward gate, and it starts at the Jefferson Lines stop in
+    Sheridan WY that data/extra_trips.csv defines by hand (JL 701, with JL 702 as the return). Drop those
+    rows and Wyoming has no Sheridan at all, x_forward.py's name match lands on Hollywood Sheridan Tri-Rail
+    in Florida, and a route that costs 238.32 h is reported at 309.98. So assert the stop AND that something
+    departs from it, because a stop definition with no service would pass the first half and still not start
+    a route.
+
+    Then the wiring. forward_shapes.py used to read its second gate's ordering from ../out/time_238.pkl
+    under `if ... os.path.exists(a.record)`. Nothing in this repo has ever written that file and out/ is
+    gitignored, so the gate skipped in silence on every fresh checkout and the harness reported one gate as
+    two. That is the same shape as the sweep printing "0 of N jointly dead" for a test it never ran. A gate
+    whose input can go missing can stop existing without anything saying so; the fix was to import the
+    ordering instead, and this asserts nobody reintroduces the guard."""
+    x = R.stops_matching('Sheridan WY Taco Bell')
+    assert x, ('Sheridan WY is gone from the feed, so route X cannot start and the second forward gate is '
+               'measuring nothing. data/extra_trips.csv needs the JL 701 and JL 702 rows (7fd3c55).')
+    deps = sum(1 for c in range(len(R.dep)) if R.cfrom[c] == x[0])
+    assert deps, f'{R.stop_name[x[0]]} exists as a stop but nothing departs from it, so no route starts there'
+
+    src = open('forward_shapes.py').read()
+    for line in src.splitlines():
+        s = line.strip()
+        if s.startswith('if ') and 'os.path.exists' in s and 'no_gate' in s:
+            raise AssertionError('a forward_shapes gate is guarded by os.path.exists again, so it will skip '
+                                 'silently whenever that file is absent: ' + s)
+    assert 'from x_forward import ORDER' in src, ("forward_shapes no longer imports route X's ordering, so "
+                                                  'the second gate is reading it from somewhere that can go '
+                                                  'missing')
+
+
 @check('move labels read correctly')
 def _():
     S = Search.__new__(Search); S.R = R; n = lambda a: R.state_names.index(a)

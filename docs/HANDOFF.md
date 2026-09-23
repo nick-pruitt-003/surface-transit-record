@@ -911,3 +911,73 @@ unidentified.
 
 The general principle stands, that a once-daily service is cheap to catch and ruinous to wait for. Using it
 to explain this particular number was wrong.
+
+## 18. Sep 23: one of the three shapes replayed, one never existed as a file
+
+"We have three shapes under 239 h" was true as arithmetic and false as a working set. Checked on
+`pipeline-msdwxp`, only the 237.34 control could be replayed at all.
+
+| shape | ends | state on this branch before today |
+|---|---|---|
+| 237.34 control | Hanover, VT line on foot | replays, gated |
+| 238.83 record | Huntington, from White River Junction | **ordering exists nowhere**; `out/time_238.pkl` is read by `forward_shapes.py` and `run_safe_queue.sh` and written by nothing. `4dc5bbf`, the first handoff commit, already referenced it as a file on one machine. `out/` is gitignored, so it has never survived a checkout. Not recoverable from git. |
+| 238.07 X | MS line at Holmes, from Sheridan WY | **could not start**: no Sheridan stop in Wyoming. JL 701, which defines it, landed on `cloud-families` only. |
+
+### The Florida Sheridan
+
+`x_forward.py` matched the bare word `Sheridan` and took the best over every match. With Wyoming's stop
+absent the only match that completed was **Hollywood Sheridan Tri-Rail Station, in Florida**, and the run
+printed 309.98 h for route X without a word of complaint. `pick.choose` exists precisely to stop a silent
+pick, and this pick was not silent, it was loud and wrong: the stop name was printed on screen every time.
+Taking the best of a name match protects you from picking the wrong one of several right stops. It does
+nothing when the right stop is absent and a homonym in another state is not, and reading the printed name
+is the only thing that catches it.
+
+Cherry-picking JL 701 and JL 702 (`7fd3c55`) fixes it. Route X now replays at **238.32 h**, Sat 26 Sep
+22:00 MT to Tue 06 Oct 20:18 MT, all 64 legs resolving. That is +0.24 h on the spreadsheet's hand
+arithmetic and still 0.51 h under the record. The 0.24 h is unexplained and is a modelling difference
+rather than a missing leg.
+
+### A start clock equal to a departure cannot board it
+
+`x_forward.py --at` defaulted to `2026-09-26T22:20`, which is JL 701's own departure. The scan requires
+`best[a] + MIN_TRANSFER <= dep`, so at 22:20 the 22:20 bus is five minutes out of reach, the next is a day
+later, and the run reported 285.98 h. A default set to the exact time of the thing it means to catch is
+worth watching for generally: it is off by exactly the transfer constant, so it reads as a real result
+rather than an error, and the penalty is one whole service interval.
+
+### The gate that had not run since it was written
+
+The second forward gate replayed the record's ordering, and its guard was
+`if not a.no_gate and a.record and os.path.exists(a.record)`. The file has never existed on a fresh
+checkout, so the gate skipped in silence and every run reported one gate as two. This is the same shape as
+the `--pairs report` sweep printing "0 of N jointly dead" for a test it had skipped: a clean bill from a
+check that never ran.
+
+The fix is not a better error message on a missing file, it is removing the ability of the input to go
+missing. The second gate is now **route X, with its ordering imported from `x_forward.ORDER`**, a committed
+literal. X is also the better of the two as a second gate, for a reason worth keeping: it ends on a
+ride-licensed border walk-in, the exact path `78ada1b` fixed in `csa.c`, which the control never exercises.
+The record shares both of the control's endpoints and is its corridor reversed, so even with its file
+present it was the weaker check.
+
+`--record` survives as an optional extra shape with `--record-start/-at/-tz/-el`, and a path that is given
+but missing is now a hard failure. `regress.py` asserts both halves and both were shown to fail: that the
+Sheridan stop exists and has departures, and that no `no_gate` branch is guarded by `os.path.exists` again.
+
+### For the question that started this
+
+Three shapes help in three ways, in descending confidence. As bug detectors, which has already paid once
+and is why X earns the gate. As composite moves, where a sub-chain two independent shapes both use is a
+verified multi-leg unit that can be added to the menu without pruning anything. And as disagreement, which
+is worth more than agreement, because agreement may only reflect a shared feed set and shared corridor
+priors, and in the control-versus-record case reflects literally the same corridor.
+
+What they do not license is averaging. "Every fast shape goes through Memphis, so constrain to Memphis" is
+hours-per-new-state in new clothes: a filter fitted to a sample of two that would erase whatever sparse link
+the next shape needs. The Pasco premise is the same, and is safe as an ordering and not as a filter, which
+is the line `start_order.py` already draws.
+
+They are also not three independent samples. The control and the record share both endpoints and are one
+corridor run in opposite directions. X is the only independent shape, and until today it was the one that
+would not run.
