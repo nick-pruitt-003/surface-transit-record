@@ -29,7 +29,7 @@ HUBS = [  # name, lon, lat
     ('Detroit', -83.058, 42.328), ('Chicago', -87.644, 41.875), ('Indianapolis', -86.161, 39.762),
     ('Minneapolis', -93.276, 44.981), ('Fargo', -96.850, 46.891), ('Billings', -108.496, 45.790),
     ('Sheridan', -106.945, 44.774), ('Spokane', -117.415, 47.657), ('Denver', -105.001, 39.754),
-    ('LasVegasAirport', -115.148, 36.086), ('BarstowAmtrak', -117.030, 34.906), ('KansasCity', -94.569, 39.100),
+    ('LasVegasAirport', -115.148, 36.086), ('BarstowAmtrak', -117.025, 34.905), ('KansasCity', -94.569, 39.100),
     ('Dallas', -96.804, 32.779), ('Houston', -95.302, 29.735), ('Tallahassee', -84.283, 30.444),
     ('JacksonvilleAmtrak', -81.724, 30.366), ('Atlanta', -84.397, 33.748), ('Memphis', -89.993, 35.062),
     ('Shreveport', -93.757, 32.500), ('JacksonMS', -90.191, 32.301), ('Birmingham', -86.808, 33.512),
