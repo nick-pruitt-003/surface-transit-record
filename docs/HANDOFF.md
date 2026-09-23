@@ -879,3 +879,35 @@ wrong: `755d99e` added JL 702 Billings 04:30 -> Sheridan 06:35 and only `37cad72
 so an entire conclusion was built on a router missing a service. And the follow-up claim that the earlier
 number was therefore "worse than meaningless" was an over-correction: with the service restored it moved by
 five minutes.
+
+#### Correction: the 288.58 h is a bad ORDERING, not evidence about direction
+
+The section above reads as though a timetable being irreversible explains the 50 h gap. It does not, and
+the counterexample was in the repo the whole time: **the 238.83 h record is itself an east-to-west route**,
+White River Junction to Huntington, which `forward_shapes` gates on at 239.08 h from its 04:20 clock. A
+route in the direction called dead above is the standing record.
+
+So the comparison that matters is:
+
+| | direction | |
+|---|---|---|
+| control | west to east | 237.34 h |
+| route X | west to east | **238.08 h** |
+| record | **east to west** | **238.83 h** |
+| the flipped inverse | east to west | 288.58 h |
+
+X beats the record by 0.76 h and the record is the real east-to-west benchmark. The 288.58 h is what comes
+of deriving an ordering by reversing another one mechanically, which is the same mistake as the alphabetical
+state grouping one level up: treating the sequence as something to transform rather than something the
+geography determines.
+
+Nick's specific catch, that `CORRIDORS.md` measures ID -> OR -> WA as best from Salt Lake while a flip of X
+gives OR -> WA -> ID, was right about the flaw and **made no difference at all**: both orders return 288.58 h,
+identical to the minute, same departure and same arrival. That is the sweep's 1:1 shape finally explained.
+Elapsed falling exactly one hour per hour of later departure means the route is slack throughout and pinned
+at ONE point, so interior savings become waiting and no reordering of an interior segment can help. Where it
+binds is not the Pacific Northwest, not Memphis (11.9 h, already recovered) and not Sheridan (0.09 h). It is
+unidentified.
+
+The general principle stands, that a once-daily service is cheap to catch and ruinous to wait for. Using it
+to explain this particular number was wrong.
