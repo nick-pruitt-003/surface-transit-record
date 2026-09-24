@@ -1,0 +1,21 @@
+REGRESS FAILED
+  File "/home/user/bus48/scripts/regress.py", line 25, in deco
+    try: fn(); results.append((name, True, f'{time.time() - t:.0f}s'))
+         ^^^^
+  File "/home/user/bus48/scripts/regress.py", line 81, in _
+    d = pickle.load(open(OUT + 'res_starttest.pkl', 'rb')); order = d['order']; t0 = d['t0']
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '../out/res_starttest.pkl'
+
+PASS defaults match the search settings (5 min transfers, 1.4 km walk-ins, 24 h slack)
+PASS Amtrak times are agency (Eastern) time: CONO Effingham 10:01 PM, Memphis 4:42 AM Central
+FAIL 237 route (hun_ms_meteor) is valid: all 48 states, finish <= 238.0 h from the 12:30 AM clock
+     FileNotFoundError: [Errno 2] No such file or directory: '../out/hun_ms_meteor.pkl'
+PASS router and coverage agree: every state target is collected by a ride or border walk-in (Sunland seed)
+FAIL backward report on the 237 result: every layer feasible, slack >= 0, latest start = 12:54 AM Thu
+     FileNotFoundError: [Errno 2] No such file or directory: '../out/res_starttest.pkl'
+PASS the load-bearing sparse stops survive every filter on the default path
+PASS nothing on the ride-search path picks stops by how busy they are
+PASS move labels read correctly
+
+6/8 passed
