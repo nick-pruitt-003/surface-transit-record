@@ -7,6 +7,7 @@ cd "$(dirname "$0")"
 R=../docs/cloud_latest.txt; touch $R
 push () { git add $R; git commit -qm "cloud result: $1" || true; for i in 1 2 3; do git pull -q --rebase && git push -q && return 0; sleep 5; done; echo "PUSH FAILED $1"; }
 mkdir -p ../out
+python3 -u rebuild_237.py > ../out/rebuild.log 2>&1 || { echo "REBUILD FAILED" | tee -a $R; tail -20 ../out/rebuild.log >> $R; push rebuild; exit 2; }
 python3 -u regress.py > ../out/regress.log 2>&1 || { echo "REGRESS FAILED" | tee -a $R; tail -20 ../out/regress.log >> $R; push regress; exit 2; }
 echo "regress ok: $(tail -1 ../out/regress.log)" | tee -a $R
 TAIL="GA,SC,NC,VA,MD,DE,PA,NJ,NY,CT,RI,MA,ME,NH,VT"
