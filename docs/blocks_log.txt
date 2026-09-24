@@ -1,0 +1,80 @@
+flix: 1042 stops, 7839 trips, tz UTC, 1042 stop_tz, calendar dates
+amtrak: 645 stops, 2920 trips, tz America/New_York, 645 stop_tz, calendar dates
+ibus: 3919 stops, 2774 trips, tz UTC, 1963 stop_tz, calendar weekday
+advance_transit: 203 stops, 1322 trips, tz America/New_York, 203 stop_tz, calendar dates
+bisman: 57 stops, 335 trips, tz America/Chicago, calendar dates
+bustang: 58 stops, 257 trips, tz America/Denver, calendar dates
+cat_savannah: 1159 stops, 2169 trips, tz America/New_York, calendar dates
+coast: 423 stops, 512 trips, tz America/New_York, calendar dates
+concord_coach: 36 stops, 124 trips, tz America/New_York, calendar dates
+dart: 343 stops, 1246 trips, tz America/Chicago, calendar dates
+ddot: 1252 stops, 2689 trips, tz America/Detroit, calendar dates
+fourcounty: 176 stops, 105 trips, tz America/New_York, 176 stop_tz, calendar dates
+gobus: 66 stops, 30 trips, tz America/New_York, calendar dates
+jta: 93 stops, 142 trips, tz America/New_York, calendar dates
+jule: 103 stops, 46 trips, tz America/Chicago, calendar dates
+kcata: 478 stops, 677 trips, tz America/Chicago, calendar dates
+kimball: 74 stops, 16 trips, tz America/Denver, 74 stop_tz, calendar dates
+lake_erie: 0 stops, 0 trips, tz America/New_York, calendar dates
+lct: 21 stops, 140 trips, tz America/New_York, 21 stop_tz, calendar dates
+marc: 79 stops, 179 trips, tz America/New_York, calendar dates
+mata: 821 stops, 262 trips, tz America/Chicago, calendar dates
+metra: 28 stops, 823 trips, tz America/Chicago, calendar dates
+metro: 2035 stops, 5493 trips, tz America/Chicago, calendar dates
+mlta: 13 stops, 11 trips, tz US/Eastern, calendar dates
+rtc: 1426 stops, 8272 trips, tz America/Los_Angeles, calendar dates
+rtd: 1009 stops, 7296 trips, tz America/Denver, calendar dates
+scrtd: 176 stops, 214 trips, tz America/Denver, calendar dates
+starmetro: 486 stops, 611 trips, tz America/New_York, calendar dates
+sunmetro: 855 stops, 2621 trips, tz America/Denver, calendar dates
+svrta: 16 stops, 22 trips, tz America/New_York, calendar dates
+tarta: 322 stops, 283 trips, tz America/New_York, calendar dates
+transpo: 87 stops, 24 trips, tz America/Indiana/Indianapolis, calendar dates
+tri_valley_transit: 466 stops, 394 trips, tz America/New_York, 466 stop_tz, calendar dates
+uta: 1125 stops, 3150 trips, tz America/Denver, calendar dates
+vvta: 229 stops, 398 trips, tz America/Los_Angeles, calendar dates
+zz_mct: 124 stops, 105 trips, tz America/Chicago, calendar dates
+zz_nictd: 21 stops, 139 trips, tz America/Chicago, 21 stop_tz, calendar dates
+zz_opt: 46 stops, 28 trips, tz America/Denver, calendar dates
+zz_tank: 809 stops, 2024 trips, tz America/New_York, calendar dates
+extra: 105 manual trips
+405 walk-in border points within 1.4 km
+20780 stops, 870600 footpaths, 11709118 connections over 20 days, 155 trips rejected as implausible
+router built in 78 s and cached
+Sheridan         1 stops: ['Sheridan WY Taco Bell 1655 Coffeen Ave (Jefferson)']
+LasVegasAirport  3 stops: ['Harry Reid Intl Airport Zero Level', 'Las Vegas (Airport)', 'Mccarran International Airport Amtrak Bus Stop']
+Dallas           39 stops: ['CBD WEST TC', 'COMMERCE @ AUSTIN - E - NS', 'COMMERCE @ GRIFFIN - E - MB']
+WashingtonDC     8 stops: ['DC Union Station', 'UNION STATION MARC Washington', 'Union Station']
+Hanover          18 stops: ['Alumni Gym', 'Hanover (Hanover Inn)', 'Hanover Inn']
+Huntington       4 stops: ['Huntington', 'Huntington Bus Stop', 'TTA Transit Center Huntington, call 740-532-2269 for 3/4 mile deviation']
+Toledo           4 stops: ['Toledo', 'Toledo (Amtrak)', 'Toledo Bus Stop']
+Chicago          5 stops: ['Chicago', 'Chicago Bus Station', 'Downtown Chicago']
+Memphis          11 stops: ['AIRWAYS BOULEVARD at BROOKS ROAD', 'AIRWAYS TRANSIT CENTER', 'BROOKS ROAD at AIRWAYS BOULEVARD']
+Minneapolis      4 stops: ['Minneapolis', 'Minneapolis (Bus Station)', 'Minneapolis Bus Station']
+block ('NW', 'Sheridan', 'LasVegasAirport'): best 40.6 h, median 52.5 h  (30 s)
+block ('NW', 'LasVegasAirport', 'Sheridan'): best 40.8 h, median 52.7 h  (62 s)
+block ('SW', 'LasVegasAirport', 'Dallas'): best 43.2 h, median 55.3 h  (98 s)
+block ('SW', 'Dallas', 'LasVegasAirport'): best 48.3 h, median 60.0 h  (135 s)
+block ('GS', 'Dallas', 'WashingtonDC'): best 44.2 h, median 49.5 h  (154 s)
+block ('GS', 'WashingtonDC', 'Dallas'): best 45.6 h, median 50.6 h  (172 s)
+block ('NE', 'WashingtonDC', 'Hanover'): best 15.7 h, median 22.7 h  (199 s)
+block ('NE', 'Hanover', 'WashingtonDC'): best 17.6 h, median 23.4 h  (215 s)
+block ('GL', 'Huntington', 'Chicago'): best 20.3 h, median 27.5 h  (246 s)
+block ('GL', 'Chicago', 'Huntington'): best 17.4 h, median 26.5 h  (280 s)
+block ('GL', 'Toledo', 'Chicago'): best 24.9 h, median 33.1 h  (312 s)
+block ('GL', 'Chicago', 'Toledo'): best 26.0 h, median 33.9 h  (345 s)
+block ('PL', 'Chicago', 'Memphis'): best 43.8 h, median 65.2 h  (382 s)
+block ('PL', 'Memphis', 'Chicago'): best 48.5 h, median 65.2 h  (404 s)
+block ('PL', 'Memphis', 'Minneapolis'): best 46.1 h, median 63.8 h  (425 s)
+block ('PL', 'Minneapolis', 'Memphis'): best 44.1 h, median 65.1 h  (460 s)
+joints from Sheridan done (500 s)
+joints from LasVegasAirport done (549 s)
+joints from Dallas done (605 s)
+joints from WashingtonDC done (653 s)
+joints from Hanover done (706 s)
+joints from Huntington done (757 s)
+joints from Toledo done (803 s)
+joints from Chicago done (849 s)
+joints from Memphis done (898 s)
+joints from Minneapolis done (947 s)
+wrote ../out/blocks.pkl
