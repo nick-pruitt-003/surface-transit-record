@@ -451,7 +451,7 @@ def main():
     ap.add_argument('--done', default='', help='comma list of state abbreviations already collected before --start')
     ap.add_argument('--seed-pins', action='store_true', help='keep the seed pickle\'s @stop pins (by default only states are kept)')
     ap.add_argument('--patience', type=float, default=0, help='stop early after this many seconds without a new best')
-    ap.add_argument('--end', help='where the route must finish: a state abbreviation ("VT") or a stop name ("Barstow")')
+    ap.add_argument('--end', help='where the route must finish: a state abbreviation ("VT"), a stop name ("Barstow"), or a point "~lon,lat,km"')
     ap.add_argument('--end-by', help='finish deadline at --end, ISO time in --tz; the search works out the latest start that makes it')
     ap.add_argument('--start-alt', default='', help='semicolon list of other stops the start may move to (each tried on 7 days, latest clock)')
     a = ap.parse_args()
@@ -475,7 +475,7 @@ def main():
     end = None
     if a.end:   # a state abbreviation (finish anywhere in it) or a stop name
         end = R.state_names.index(inv[a.end]) if a.end in inv else f'@{a.end}'
-        if isinstance(end, str) and not R.stops_matching(a.end): sys.exit(f'no stop matching --end {a.end!r}')
+        if isinstance(end, str) and not end.startswith('@~') and not R.stops_matching(a.end): sys.exit(f'no stop matching --end {a.end!r}')
     S = Search(R, start, t0.timestamp(), [x.strip() for x in a.prefix.split(',') if x.strip()], a.workers, done, alts,
                end=end, end_by=end_by)
     S.patience = a.patience
