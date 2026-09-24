@@ -1,0 +1,65 @@
+router from cache in 2.5 s (router_1029a3f182bf7a11.pkl)
+gate control (Huntington -> Hanover) total: 237.3 (expected 237.34 +/- 0.02)
+
+== control (Huntington -> Hanover): 237.24 h, 17 hub visits
+from               to                  route h fastest h  excess  wait at next hub
+Huntington         Detroit                10.5      17.0    -6.5    2.3
+Detroit            Indianapolis            5.6       8.6    -3.0    0.2
+Indianapolis       Memphis                13.1      13.5    -0.5    0.9
+Memphis            KansasCity             10.9      12.8    -1.9    0.3
+KansasCity         Fargo                  18.8      18.8     0.0    1.3
+Fargo              Minneapolis             4.4      17.5   -13.1   10.4
+Minneapolis        Billings               18.7      18.9    -0.2    1.1
+Billings           Spokane                10.0      34.0   -24.0    0.2
+Spokane            LasVegasAirport        27.1      27.1     0.0    0.1
+LasVegasAirport    BarstowAmtrak           6.8       4.4     2.4    0.0
+BarstowAmtrak      Dallas                 37.0      43.0    -6.0    0.8
+Dallas             Tallahassee            21.4      26.8    -5.4    0.4
+Tallahassee        JacksonvilleAmtrak      4.1       6.5    -2.4    0.7
+JacksonvilleAmtrak WashingtonDC           14.2      16.1    -1.8    0.2
+WashingtonDC       Boston                  7.1       8.6    -1.5    5.7
+Boston             Hanover                 2.5       4.5    -2.0    0.0
+total excess over hub-to-hub fastest: 2.4 h
+gate record (White River Junction -> Huntington) total: 239.1 (expected 239.08 +/- 0.02)
+
+== record (White River Junction -> Huntington): 238.83 h, 15 hub visits
+from               to                  route h fastest h  excess  wait at next hub
+WhiteRiverJct      Boston                  3.0       4.9    -1.9    5.4
+Boston             WashingtonDC            7.0       8.1    -1.1    1.7
+WashingtonDC       Tallahassee            21.7      24.7    -3.0    1.4
+Tallahassee        KansasCity             31.9      42.6   -10.7    2.5
+KansasCity         LasVegasAirport        52.8      46.1     6.6    0.0
+LasVegasAirport    Spokane                32.0      31.4     0.6    0.2
+Spokane            Billings                9.9      33.9   -24.0    0.9
+Billings           Denver                 10.8      34.8   -24.0    3.2
+Denver             Fargo                  18.6      18.6     0.0    1.3
+Fargo              Minneapolis             4.4      17.5   -13.1    3.9
+Minneapolis        Chicago                 8.5      16.5    -8.0    0.3
+Chicago            Toledo                  5.0       8.0    -3.0    0.5
+Toledo             Detroit                 1.2       2.4    -1.2    3.1
+Detroit            Huntington              7.5      26.0   -18.5    0.0
+total excess over hub-to-hub fastest: 7.2 h
+gate X (Sheridan -> Southaven) total: 239.5 (expected 239.5 +/- 0.02)
+
+== X (Sheridan -> Southaven): 239.50 h, 20 hub visits
+from               to                  route h fastest h  excess  wait at next hub
+Sheridan           Billings                2.1      26.1   -24.0    1.1
+Billings           Spokane                10.0      26.2   -16.2    0.2
+Spokane            LasVegasAirport        27.1      27.1     0.0    0.1
+LasVegasAirport    BarstowAmtrak           6.8       4.4     2.4    0.0
+BarstowAmtrak      Dallas                 37.0      43.0    -6.0    0.8
+Dallas             Houston                 4.7       6.9    -2.2    1.3
+Houston            Tallahassee            15.4      20.8    -5.4    0.4
+Tallahassee        JacksonvilleAmtrak      4.1      10.1    -6.0    0.7
+JacksonvilleAmtrak WashingtonDC           14.2      16.1    -1.8    0.3
+WashingtonDC       Boston                  7.2       8.4    -1.2    5.6
+Boston             Hanover                 2.5       4.5    -2.0    5.0
+Hanover            Boston                  3.0       4.6    -1.6    0.6
+Boston             Indianapolis           21.6      20.7     0.9    6.7
+Indianapolis       Detroit                 5.1       6.0    -0.9    0.4
+Detroit            Chicago                 6.1       7.1    -1.0    0.6
+Chicago            Minneapolis             8.3      11.4    -3.1    4.2
+Minneapolis        Fargo                   4.3       7.2    -2.9    0.9
+Fargo              KansasCity             12.4      16.1    -3.7    4.1
+KansasCity         Memphis                11.8      11.8     0.0    1.8
+total excess over hub-to-hub fastest: 3.2 h
