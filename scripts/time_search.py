@@ -3,7 +3,7 @@
 usage: python3 time_search.py --start Missoula --at 2026-09-21T07:00 --tz America/Denver \
          --seed ../out/start_newton.pkl [--prefix "Idaho,Washington"] --budget 900 --workers 8 --out ../out/time_best.pkl
 """
-import argparse, itertools, json, os, pickle, random, time, sys
+import re, argparse, itertools, json, os, pickle, random, time, sys
 from datetime import datetime
 from zoneinfo import ZoneInfo
 import numpy as np
@@ -463,7 +463,7 @@ def main():
     done = [R.state_names.index(inv[x.strip()]) for x in a.done.split(',') if x.strip()]
     if a.seed_states:
         # '@stop' items are pins (e.g. '@Las Vegas Amtrak Station' to leave the Chief for the Denver bus)
-        seed = [x.strip() if x.strip().startswith('@') else R.state_names.index(inv[x.strip()]) for x in a.seed_states.split(',')]
+        seed = [x.strip() if x.strip().startswith('@') else R.state_names.index(inv[x.strip()]) for x in re.findall(r'@~[^,]+,[^,]+,[^,]+|[^,]+', a.seed_states)]   # an '@~lon,lat,km' pin keeps its commas
     else:
         seed = [x for x in pickle.load(open(a.seed, 'rb'))['order']
                 if (isinstance(x, (int, np.integer)) and x < N_STATES) or (a.seed_pins and isinstance(x, str) and x.startswith('@'))]
