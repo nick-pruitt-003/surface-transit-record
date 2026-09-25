@@ -48,3 +48,56 @@ d9 Fri 21:20  Memphis Bus Station, TN  ->  d10 Sat 05:55  Atlanta Bus Station, G
 d10 Sat 07:00  Atlanta Bus Station, GA  ->  d10 Sat 13:35  Jacksonville (Downtown), FL   [FlixBus-us: Atlanta - Jacksonville - Orlando]
   walk  Jacksonville (Downtown) -> JRTC Bay H  (0.1 km, from d10 Sat 13:35)
 d10 Sat 14:00  JRTC Bay H, FL  ->  d10 Sat 14:27  Amtrak Station, FL   [Jacksonville Transportation Authority: Kings Road]
+SUN rc=0 FINAL 254.2 h d16 Fri 17:15 START Sunland Park Casino first bus d6 Tue 03:05 
+FINAL 254.2 h d16 Fri 17:15
+START Sunland Park Casino first bus d6 Tue 03:05
+  local Sunland Park Casino -> El Paso Bus Station (W San Antonio St)  (8.3 km, from d6 Tue 00:50)
+d6 Tue 03:05  El Paso Bus Station (W San Antonio St), TX  ->  d6 Tue 16:20  San Bernardino Depot, CA   [Greyhound-us: Los Angeles - Phoenix - Dallas]
+d6 Tue 18:55  San Bernardino Depot, CA  ->  d6 Tue 23:10  Las Vegas Bus Terminal, NV   [Greyhound-us: Los Angeles - Las Vegas]
+d7 Wed 00:35  Las Vegas Bus Terminal, NV  ->  d7 Wed 15:10  Vail (Eco Transit), CO   [Greyhound-us: Pittsburgh - Denver - Las Vegas]
+d7 Wed 18:50  Vail (Eco Transit), CO  ->  d8 Thu 14:30  Pasco Bus Stop, WA   [Greyhound-us: Seattle-Boise-SLC-Denver]
+d8 Thu 14:40  Pasco Bus Stop, WA  ->  d8 Thu 17:00  Spokane Station, WA   [FlixBus-us: Portland - Boise]
+  walk  Spokane Station -> Spokane  (0.0 km, from d8 Thu 17:00)
+d8 Thu 17:10  Spokane, WA  ->  d9 Fri 04:05  Billings, MT   [Jefferson Lines: Spokane -> Billings]
+d9 Fri 05:00  Billings, MT  ->  d10 Sat 00:00  Minneapolis, MN   [Jefferson Lines: Billings -> Minneapolis]
+  walk  Minneapolis -> Minneapolis Bus Station  (0.0 km, from d10 Sat 00:00)
+d10 Sat 00:15  Minneapolis Bus Station, MN  ->  d10 Sat 02:05  Eau Claire (McDonald's), WI   [Greyhound-us: Chicago - Milwaukee - Minneapolis]
+d10 Sat 04:30  Eau Claire (McDonald's), WI  ->  d10 Sat 06:20  Minneapolis Bus Station, MN   [Greyhound-us: Chicago - Milwaukee - Minneapolis]
+  walk  Minneapolis Bus Station -> Minneapolis  (0.0 km, from d10 Sat 06:20)
+d10 Sat 10:35  Minneapolis, MN  ->  d10 Sat 14:55  Fargo, ND   [Jefferson Lines: Minneapolis -> Billings]
+d10 Sat 15:50  Fargo, ND  ->  d10 Sat 19:50  Sioux Falls, SD   [Jefferson Lines: Fargo -> Sioux Falls]
+d10 Sat 20:05  Sioux Falls, SD  ->  d11 Sun 04:15  Kansas City, MO   [Jefferson Lines: Sioux Falls -> Kansas City]
+  walk  Kansas City -> Kansas City Bus Station  (0.0 km, from d11 Sun 04:15)
+d11 Sun 04:35  Kansas City Bus Station, MO  ->  d11 Sun 04:50  Kansas City 47Th St Transit Center, KS   [Greyhound-us: St Louis - Denver]
+  local Kansas City 47Th St Transit Center -> Kansas City  (9.3 km, from d11 Sun 04:50)
+d11 Sun 07:13  Kansas City, MO  ->  d11 Sun 15:29  Chicago Union Station, IL   [Amtrak: Southwest Chief]
+d11 Sun 16:00  Chicago Union Station, IL  ->  d11 Sun 19:08  Kalamazoo, MI   [Amtrak: Blue Water]
+  walk  Kalamazoo -> Kalamazoo Bus Stop  (0.0 km, from d11 Sun 19:08)
+d11 Sun 19:30  Kalamazoo Bus Stop, MI  ->  d11 Sun 21:25  Chicago Bus Station, IL   [Greyhound-us: Chicago - Kalamazoo - Detroit]
+d11 Sun 22:50  Chicago Bus Station, IL  ->  d12 Mon 06:45  Louisville Bus Station, KY   [Greyhound-us: Atlanta - Chicago]
+  walk  Louisville Bus Station -> Louisville Bus Station  (0.0 km, from d12 Mon 06:45)
+  walk  Louisville Bus Station -> Louisville  (0.0 km, from d12 Mon 06:45)
+d12 Mon 07:50  Louisville, KY  ->  d12 Mon 11:45  Columbus, OH   [Barons Bus Lines: Louisville -> Cleveland]
+  walk  Columbus -> Columbus Bus Station  (0.0 km, from d12 Mon 11:45)
+d12 Mon 13:40  Columbus Bus Station, OH  ->  d13 Tue 04:20  New York Port Authority, NY   [Greyhound-us: New York - Pittsburgh - St. Louis]
+  walk  New York Port Authority -> Ny Moynihan Train Hall At Penn Station  (0.8 km, from d13 Tue 04:20)
+d13 Tue 05:27  Ny Moynihan Train Hall At Penn Station, NY  ->  d13 Tue 09:32  Boston, MA   [Amtrak: Acela]
+  walk  Boston -> Boston South Station  (0.3 km, from d13 Tue 09:32)
+d13 Tue 10:00  Boston South Station, MA  ->  d13 Tue 11:55  Portland, ME, ME   [Concord Coach Lines: Portland, ME to/from Boston & Logan Airport]
+d13 Tue 12:30  Portland, ME, ME  ->  d13 Tue 14:25  Boston South Station, MA   [Concord Coach Lines: Portland, ME to/from Boston & Logan Airport]
+  walk  Boston South Station -> Boston South Station  (0.0 km, from d13 Tue 14:25)
+d13 Tue 15:30  Boston South Station, MA  ->  d13 Tue 18:30  Hanover (Hanover Inn), NH   [Dartmouth Coach: Boston South Station -> Hanover 15:30]
+  walk  Hanover (Hanover Inn) -> Main at Allen  (0.1 km, from d13 Tue 18:30)
+d13 Tue 18:38  Main at Allen, NH  ->  d13 Tue 19:07  Sykes Ave @ Greyhound, VT   [Advance Transit: Yellow Route]
+  walk  Sykes Ave @ Greyhound -> White River Junction Bus Station  (0.0 km, from d13 Tue 19:07)
+d13 Tue 22:25  White River Junction Bus Station, VT  ->  d14 Wed 00:40  Boston (South Station), MA   [FlixBus-us: Boston - Burlington - Montreal]
+d14 Wed 01:00  Boston (South Station), MA  ->  d14 Wed 05:30  New York Midtown (31st St & 8th Ave), NY   [FlixBus-us: NYC - Boston]
+  walk  New York Midtown (31st St & 8th Ave) -> Ny Moynihan Train Hall At Penn Station  (0.1 km, from d14 Wed 05:30)
+d14 Wed 06:02  Ny Moynihan Train Hall At Penn Station, NY  ->  d15 Thu 00:21  Savannah, GA   [Amtrak: Palmetto]
+  local Savannah -> Savannah Bus Station  (4.6 km, from d15 Thu 00:21)
+d15 Thu 04:45  Savannah Bus Station, GA  ->  d15 Thu 07:00  Jacksonville (Downtown), FL   [FlixBus-us: Atlanta - Jacksonville - Orlando nightline]
+d15 Thu 08:00  Jacksonville (Downtown), FL  ->  d15 Thu 18:20  Mobile Bus Station, AL   [Greyhound-us: Jacksonville - Mobile]
+d15 Thu 20:15  Mobile Bus Station, AL  ->  d15 Thu 22:40  New Orleans Bus Station, LA   [FlixBus-us: Houston - New Orleans]
+d15 Thu 23:55  New Orleans Bus Station, LA  ->  d16 Fri 08:15  Memphis Bus Station, TN   [FlixBus-us: Houston - New Orleans - Memphis]
+  walk  Memphis Bus Station -> Memphis (MATA Airways Transit Center)  (0.0 km, from d16 Fri 08:15)
+d16 Fri 08:30  Memphis (MATA Airways Transit Center), TN  ->  d16 Fri 17:15  Tulsa, OK   [Jefferson Lines: Memphis -> Tulsa]
