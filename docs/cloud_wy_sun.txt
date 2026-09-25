@@ -1,103 +1,71 @@
-WY_LONG rc=0 FINAL 230.1 h d10 Sat 14:27 START Sheridan WY Taco Bell 1655 Coffeen Ave (Jefferson) first bus d0 Wed 22:20 END ~-81.724,30.366,0.3 arrive d10 Sat 14:27 | record 238.83 h: beats it by 8.7 h 
-FINAL 230.1 h d10 Sat 14:27
-START Sheridan WY Taco Bell 1655 Coffeen Ave (Jefferson) first bus d0 Wed 22:20
-d0 Wed 22:20  Sheridan WY Taco Bell 1655 Coffeen Ave (Jefferson), WY  ->  d1 Thu 00:25  Billings, MT   [Jefferson Lines: JL 701 Gillette -> Buffalo -> Sheridan -> Billings (Nick screenshots Sep 22 2026: jeffersonlines.com 09/29 and Google Thu 09/24; feed trip 1902 has Gillette and Buffalo but skips Sheridan; times from it shifted to Mountain as the router does; daily assumed; Sheridan Taco Bell point approximate)]
-d1 Thu 01:30  Billings, MT  ->  d1 Thu 10:30  Spokane, WA   [Jefferson Lines: Billings -> Spokane]
-  walk  Spokane -> Spokane  (0.0 km, from d1 Thu 10:30)
-d1 Thu 10:45  Spokane, WA  ->  d1 Thu 13:10  Pasco Bus Stop, WA   [Northwestern Stage Lines: NWL 710 Spokane -> Pasco]
-d1 Thu 13:25  Pasco Bus Stop, WA  ->  d2 Fri 02:30  Salt Lake City Intermodal Trans Ctr, UT   [Greyhound-us: Seattle-Boise-SLC-Denver]
-  local Salt Lake City Intermodal Trans Ctr -> Salt Lake City (Shop)  (9.9 km, from d2 Fri 02:30)
-d2 Fri 06:30  Salt Lake City (Shop), UT  ->  d2 Fri 12:20  Saint George (Bluff St Office), UT   [Salt Lake Express: Salt Lake City (Shop) -> St George (Utah Tech)]
-d2 Fri 12:40  Saint George (Bluff St Office), UT  ->  d2 Fri 13:50  Las Vegas (Airport), NV   [Salt Lake Express: St George (Shop) -> Las Vegas (South Strip Transit)]
-  walk  Las Vegas (Airport) -> Harry Reid Intl Airport Zero Level  (0.1 km, from d2 Fri 13:50)
-d2 Fri 13:59  Harry Reid Intl Airport Zero Level, NV  ->  d2 Fri 14:37  Bonneville Transit Center Bay 11, NV   [Regional Transportation Commission of Southern Nevada : Paradise]
-  walk  Bonneville Transit Center Bay 11 -> Las Vegas Downtown (1st St)  (0.1 km, from d2 Fri 14:37)
-d2 Fri 15:05  Las Vegas Downtown (1st St), NV  ->  d2 Fri 17:55  Barstow Station, CA   [FlixBus-us: Los Angeles - Las Vegas]
-  local Barstow Station -> Barstow  (2.8 km, from d2 Fri 17:55)
-d2 Fri 20:47  Barstow, CA  ->  d3 Sat 10:41  Albuquerque Alvarado Transportation Center, NM   [Amtrak: Southwest Chief]
-  walk  Albuquerque Alvarado Transportation Center -> Albuquerque Bus Station  (0.1 km, from d3 Sat 10:41)
-  walk  Albuquerque Bus Station -> Albuquerque Alvarado Transportation Center  (0.1 km, from d3 Sat 10:41)
-d3 Sat 11:31  Albuquerque Alvarado Transportation Center, NM  ->  d4 Sun 01:47  Newton, KS   [Amtrak: Southwest Chief]
-  walk  Newton -> Newton (Amtrak)  (0.0 km, from d4 Sun 01:47)
-d4 Sun 03:00  Newton (Amtrak), KS  ->  d4 Sun 06:38  Oklahoma (Amtrak), OK   [BeeLine Express-Village Travel: Newton (Amtrak) -> Oklahoma City]
-  walk  Oklahoma (Amtrak) -> Oklahoma City  (0.0 km, from d4 Sun 06:38)
-d4 Sun 08:25  Oklahoma City, OK  ->  d4 Sun 12:27  Fort Worth, TX   [Amtrak: Heartland Flyer]
-d4 Sun 14:23  Fort Worth, TX  ->  d4 Sun 18:18  Longview, TX   [Amtrak: Texas Eagle]
-d4 Sun 18:30  Longview, TX  ->  d4 Sun 19:50  Shreveport Sportran Intermodal Terminal, LA   [Amtrak Chartered Vehicle: Amtrak Thruway Connecting Service]
-  walk  Shreveport Sportran Intermodal Terminal -> Shreveport Bus Station  (0.0 km, from d4 Sun 19:50)
-d4 Sun 20:50  Shreveport Bus Station, LA  ->  d4 Sun 22:10  Texarkana (Travel Stop), TX   [Greyhound-us: Texarkana - Houston]
-d4 Sun 22:40  Texarkana (Travel Stop), TX  ->  d5 Mon 08:05  Nashville Bus Station, TN   [Greyhound-us: Dallas - Nashville - Detroit]
-d5 Mon 09:50  Nashville Bus Station, TN  ->  d5 Mon 22:55  Detroit Bus Station, MI   [Greyhound-us: Dallas - Nashville - Detroit]
-d5 Mon 23:00  Detroit Bus Station, MI  ->  d6 Tue 04:35  Pittsburgh Intermodal Station, PA   [Greyhound-us: New York - Pittsburgh - Detroit]
-d6 Tue 07:00  Pittsburgh Intermodal Station, PA  ->  d6 Tue 10:40  Columbus (E Rich St), OH   [FlixBus-us: NYC - Cincinnati - Chicago]
-  local Columbus (E Rich St) -> Columbus  (8.7 km, from d6 Tue 10:40)
-d6 Tue 11:50  Columbus, OH  ->  d6 Tue 13:40  West Salem, OH   [Barons Bus Lines: Louisville -> Cleveland]
-d6 Tue 13:45  West Salem, OH  ->  d6 Tue 20:15  Louisville, KY   [Barons Bus Lines: Cleveland -> Louisville]
-  walk  Louisville -> Louisville Bus Station  (0.0 km, from d6 Tue 20:15)
-  walk  Louisville Bus Station -> Louisville Bus Station  (0.0 km, from d6 Tue 20:15)
-d7 Wed 03:00  Louisville Bus Station, KY  ->  d7 Wed 08:00  Chicago Train Station, IL   [Greyhound-us: Atlanta - Chicago]
-  walk  Chicago Train Station -> Chicago Union Station  (0.1 km, from d7 Wed 08:00)
-d7 Wed 15:05  Chicago Union Station, IL  ->  d8 Thu 04:13  Fargo Amtrak Station, ND   [Amtrak: Empire Builder]
-  local Fargo Amtrak Station -> Fargo  (5.1 km, from d8 Thu 04:13)
-d8 Thu 15:50  Fargo, ND  ->  d8 Thu 19:50  Sioux Falls, SD   [Jefferson Lines: Fargo -> Sioux Falls]
-d8 Thu 20:05  Sioux Falls, SD  ->  d9 Fri 04:15  Kansas City, MO   [Jefferson Lines: Sioux Falls -> Kansas City]
-d9 Fri 08:20  Kansas City, MO  ->  d9 Fri 12:30  Fayetteville, AR   [Jefferson Lines: Kansas City -> Texarkana]
-d9 Fri 13:35  Fayetteville, AR  ->  d9 Fri 20:05  Memphis (MATA Airways Transit Center), TN   [Jefferson Lines: Tulsa -> Memphis]
-  walk  Memphis (MATA Airways Transit Center) -> Memphis Bus Station  (0.0 km, from d9 Fri 20:05)
-d9 Fri 21:20  Memphis Bus Station, TN  ->  d10 Sat 05:55  Atlanta Bus Station, GA   [Greyhound-us: Atlanta - Memphis]
-d10 Sat 07:00  Atlanta Bus Station, GA  ->  d10 Sat 13:35  Jacksonville (Downtown), FL   [FlixBus-us: Atlanta - Jacksonville - Orlando]
-  walk  Jacksonville (Downtown) -> JRTC Bay H  (0.1 km, from d10 Sat 13:35)
-d10 Sat 14:00  JRTC Bay H, FL  ->  d10 Sat 14:27  Amtrak Station, FL   [Jacksonville Transportation Authority: Kings Road]
-SUN rc=0 FINAL 254.2 h d16 Fri 17:15 START Sunland Park Casino first bus d6 Tue 03:05 
-FINAL 254.2 h d16 Fri 17:15
-START Sunland Park Casino first bus d6 Tue 03:05
-  local Sunland Park Casino -> El Paso Bus Station (W San Antonio St)  (8.3 km, from d6 Tue 00:50)
-d6 Tue 03:05  El Paso Bus Station (W San Antonio St), TX  ->  d6 Tue 16:20  San Bernardino Depot, CA   [Greyhound-us: Los Angeles - Phoenix - Dallas]
-d6 Tue 18:55  San Bernardino Depot, CA  ->  d6 Tue 23:10  Las Vegas Bus Terminal, NV   [Greyhound-us: Los Angeles - Las Vegas]
-d7 Wed 00:35  Las Vegas Bus Terminal, NV  ->  d7 Wed 15:10  Vail (Eco Transit), CO   [Greyhound-us: Pittsburgh - Denver - Las Vegas]
-d7 Wed 18:50  Vail (Eco Transit), CO  ->  d8 Thu 14:30  Pasco Bus Stop, WA   [Greyhound-us: Seattle-Boise-SLC-Denver]
-d8 Thu 14:40  Pasco Bus Stop, WA  ->  d8 Thu 17:00  Spokane Station, WA   [FlixBus-us: Portland - Boise]
-  walk  Spokane Station -> Spokane  (0.0 km, from d8 Thu 17:00)
-d8 Thu 17:10  Spokane, WA  ->  d9 Fri 04:05  Billings, MT   [Jefferson Lines: Spokane -> Billings]
-d9 Fri 05:00  Billings, MT  ->  d10 Sat 00:00  Minneapolis, MN   [Jefferson Lines: Billings -> Minneapolis]
-  walk  Minneapolis -> Minneapolis Bus Station  (0.0 km, from d10 Sat 00:00)
-d10 Sat 00:15  Minneapolis Bus Station, MN  ->  d10 Sat 02:05  Eau Claire (McDonald's), WI   [Greyhound-us: Chicago - Milwaukee - Minneapolis]
-d10 Sat 04:30  Eau Claire (McDonald's), WI  ->  d10 Sat 06:20  Minneapolis Bus Station, MN   [Greyhound-us: Chicago - Milwaukee - Minneapolis]
-  walk  Minneapolis Bus Station -> Minneapolis  (0.0 km, from d10 Sat 06:20)
-d10 Sat 10:35  Minneapolis, MN  ->  d10 Sat 14:55  Fargo, ND   [Jefferson Lines: Minneapolis -> Billings]
-d10 Sat 15:50  Fargo, ND  ->  d10 Sat 19:50  Sioux Falls, SD   [Jefferson Lines: Fargo -> Sioux Falls]
-d10 Sat 20:05  Sioux Falls, SD  ->  d11 Sun 04:15  Kansas City, MO   [Jefferson Lines: Sioux Falls -> Kansas City]
-  walk  Kansas City -> Kansas City Bus Station  (0.0 km, from d11 Sun 04:15)
-d11 Sun 04:35  Kansas City Bus Station, MO  ->  d11 Sun 04:50  Kansas City 47Th St Transit Center, KS   [Greyhound-us: St Louis - Denver]
-  local Kansas City 47Th St Transit Center -> Kansas City  (9.3 km, from d11 Sun 04:50)
-d11 Sun 07:13  Kansas City, MO  ->  d11 Sun 15:29  Chicago Union Station, IL   [Amtrak: Southwest Chief]
-d11 Sun 16:00  Chicago Union Station, IL  ->  d11 Sun 19:08  Kalamazoo, MI   [Amtrak: Blue Water]
-  walk  Kalamazoo -> Kalamazoo Bus Stop  (0.0 km, from d11 Sun 19:08)
-d11 Sun 19:30  Kalamazoo Bus Stop, MI  ->  d11 Sun 21:25  Chicago Bus Station, IL   [Greyhound-us: Chicago - Kalamazoo - Detroit]
-d11 Sun 22:50  Chicago Bus Station, IL  ->  d12 Mon 06:45  Louisville Bus Station, KY   [Greyhound-us: Atlanta - Chicago]
-  walk  Louisville Bus Station -> Louisville Bus Station  (0.0 km, from d12 Mon 06:45)
-  walk  Louisville Bus Station -> Louisville  (0.0 km, from d12 Mon 06:45)
-d12 Mon 07:50  Louisville, KY  ->  d12 Mon 11:45  Columbus, OH   [Barons Bus Lines: Louisville -> Cleveland]
-  walk  Columbus -> Columbus Bus Station  (0.0 km, from d12 Mon 11:45)
-d12 Mon 13:40  Columbus Bus Station, OH  ->  d13 Tue 04:20  New York Port Authority, NY   [Greyhound-us: New York - Pittsburgh - St. Louis]
-  walk  New York Port Authority -> Ny Moynihan Train Hall At Penn Station  (0.8 km, from d13 Tue 04:20)
-d13 Tue 05:27  Ny Moynihan Train Hall At Penn Station, NY  ->  d13 Tue 09:32  Boston, MA   [Amtrak: Acela]
-  walk  Boston -> Boston South Station  (0.3 km, from d13 Tue 09:32)
-d13 Tue 10:00  Boston South Station, MA  ->  d13 Tue 11:55  Portland, ME, ME   [Concord Coach Lines: Portland, ME to/from Boston & Logan Airport]
-d13 Tue 12:30  Portland, ME, ME  ->  d13 Tue 14:25  Boston South Station, MA   [Concord Coach Lines: Portland, ME to/from Boston & Logan Airport]
-  walk  Boston South Station -> Boston South Station  (0.0 km, from d13 Tue 14:25)
-d13 Tue 15:30  Boston South Station, MA  ->  d13 Tue 18:30  Hanover (Hanover Inn), NH   [Dartmouth Coach: Boston South Station -> Hanover 15:30]
-  walk  Hanover (Hanover Inn) -> Main at Allen  (0.1 km, from d13 Tue 18:30)
-d13 Tue 18:38  Main at Allen, NH  ->  d13 Tue 19:07  Sykes Ave @ Greyhound, VT   [Advance Transit: Yellow Route]
-  walk  Sykes Ave @ Greyhound -> White River Junction Bus Station  (0.0 km, from d13 Tue 19:07)
-d13 Tue 22:25  White River Junction Bus Station, VT  ->  d14 Wed 00:40  Boston (South Station), MA   [FlixBus-us: Boston - Burlington - Montreal]
-d14 Wed 01:00  Boston (South Station), MA  ->  d14 Wed 05:30  New York Midtown (31st St & 8th Ave), NY   [FlixBus-us: NYC - Boston]
-  walk  New York Midtown (31st St & 8th Ave) -> Ny Moynihan Train Hall At Penn Station  (0.1 km, from d14 Wed 05:30)
-d14 Wed 06:02  Ny Moynihan Train Hall At Penn Station, NY  ->  d15 Thu 00:21  Savannah, GA   [Amtrak: Palmetto]
-  local Savannah -> Savannah Bus Station  (4.6 km, from d15 Thu 00:21)
-d15 Thu 04:45  Savannah Bus Station, GA  ->  d15 Thu 07:00  Jacksonville (Downtown), FL   [FlixBus-us: Atlanta - Jacksonville - Orlando nightline]
-d15 Thu 08:00  Jacksonville (Downtown), FL  ->  d15 Thu 18:20  Mobile Bus Station, AL   [Greyhound-us: Jacksonville - Mobile]
-d15 Thu 20:15  Mobile Bus Station, AL  ->  d15 Thu 22:40  New Orleans Bus Station, LA   [FlixBus-us: Houston - New Orleans]
-d15 Thu 23:55  New Orleans Bus Station, LA  ->  d16 Fri 08:15  Memphis Bus Station, TN   [FlixBus-us: Houston - New Orleans - Memphis]
-  walk  Memphis Bus Station -> Memphis (MATA Airways Transit Center)  (0.0 km, from d16 Fri 08:15)
-d16 Fri 08:30  Memphis (MATA Airways Transit Center), TN  ->  d16 Fri 17:15  Tulsa, OK   [Jefferson Lines: Memphis -> Tulsa]
+SUN rc=0 FINAL 254.6 h d11 Sun 17:55 START Sunland Park Casino first bus d1 Thu 05:20 END CA arrive d11 Sun 17:55 | record 238.83 h: misses by 15.8 h 
+FINAL 254.6 h d11 Sun 17:55
+START Sunland Park Casino first bus d1 Thu 05:20
+  local Sunland Park Casino -> El Paso Bus Station (W San Antonio St)  (8.3 km, from d1 Thu 03:10)
+d1 Thu 05:20  El Paso Bus Station (W San Antonio St), TX  ->  d1 Thu 16:45  Ft Worth Bus Station, TX   [Greyhound-us: Los Angeles - Phoenix - Dallas]
+  walk  Ft Worth Bus Station -> Fort Worth  (0.2 km, from d1 Thu 16:45)
+d1 Thu 17:25  Fort Worth, TX  ->  d1 Thu 21:27  Oklahoma City, OK   [Amtrak: Heartland Flyer]
+  local Oklahoma City -> Oklahoma City Bus Station  (3.2 km, from d1 Thu 21:27)
+d1 Thu 22:40  Oklahoma City Bus Station, OK  ->  d2 Fri 08:00  Memphis Bus Station, TN   [Greyhound-us: Oklahoma City - Memphis]
+d2 Fri 08:50  Memphis Bus Station, TN  ->  d2 Fri 17:50  New Orleans Bus Station, LA   [Greyhound-us: Baton Rouge - New Orleans - Memphis]
+d2 Fri 18:00  New Orleans Bus Station, LA  ->  d2 Fri 21:15  Lafayette Transit System, LA   [Greyhound-us: Atlanta - New Orleans - Houston]
+d2 Fri 22:35  Lafayette Transit System, LA  ->  d3 Sat 11:00  Tallahassee (CK Steele Bus Plaza), FL   [Greyhound-us: Orlando - Houston]
+d3 Sat 11:25  Tallahassee (CK Steele Bus Plaza), FL  ->  d3 Sat 14:50  Jacksonville (Downtown), FL   [Greyhound-us: Jacksonville - Mobile]
+  walk  Jacksonville (Downtown) -> JRTC Bay H  (0.1 km, from d3 Sat 14:50)
+d3 Sat 15:00  JRTC Bay H, FL  ->  d3 Sat 15:27  Amtrak Station, FL   [Jacksonville Transportation Authority: Kings Road]
+  walk  Amtrak Station -> Jacksonville  (0.3 km, from d3 Sat 15:27)
+d3 Sat 16:11  Jacksonville, FL  ->  d4 Sun 06:25  Washington Union Station, None   [Amtrak: Silver Meteor]
+d4 Sun 06:40  Washington Union Station, None  ->  d4 Sun 09:37  Ny Moynihan Train Hall At Penn Station, NY   [Amtrak: Acela]
+  local Ny Moynihan Train Hall At Penn Station -> Dartmouth Coach NYC (150 E 42nd St)  (1.6 km, from d4 Sun 09:37)
+d4 Sun 10:30  Dartmouth Coach NYC (150 E 42nd St), NY  ->  d4 Sun 15:15  Hanover (Hanover Inn), NH   [Dartmouth Coach: New York -> Hanover 10:30 (Sun)]
+  walk  Hanover (Hanover Inn) -> VT state line (walk from Hanover (Hanover Inn))  (0.9 km, from d4 Sun 15:15)
+  walk  VT state line (walk from Hanover (Hanover Inn)) -> Hanover (Hanover Inn)  (0.9 km, from d4 Sun 15:29)
+d4 Sun 16:40  Hanover (Hanover Inn), NH  ->  d4 Sun 19:25  Boston South Station, MA   [Dartmouth Coach: Hanover -> Boston South Station 16:40]
+  walk  Boston South Station -> Boston  (0.3 km, from d4 Sun 19:25)
+d4 Sun 19:55  Boston, MA  ->  d4 Sun 20:34  Providence, RI   [Amtrak: Northeast Regional]
+d4 Sun 21:16  Providence, RI  ->  d4 Sun 22:04  Boston, MA   [Amtrak: Acela]
+  walk  Boston -> Boston South Station  (0.3 km, from d4 Sun 22:04)
+d4 Sun 23:15  Boston South Station, MA  ->  d5 Mon 01:25  Portland, ME, ME   [Concord Coach Lines: Portland, ME to/from Boston & Logan Airport]
+d5 Mon 03:15  Portland, ME, ME  ->  d5 Mon 05:25  Boston South Station, MA   [Concord Coach Lines: Portland, ME to/from Boston & Logan Airport]
+  walk  Boston South Station -> Boston  (0.3 km, from d5 Mon 05:25)
+d5 Mon 06:10  Boston, MA  ->  d5 Mon 10:22  Ny Moynihan Train Hall At Penn Station, NY   [Amtrak: Northeast Regional]
+d5 Mon 10:52  Ny Moynihan Train Hall At Penn Station, NY  ->  d5 Mon 14:26  Harrisburg, PA   [Amtrak: Pennsylvanian]
+  walk  Harrisburg -> Harrisburg Bus Station  (0.1 km, from d5 Mon 14:26)
+d5 Mon 14:50  Harrisburg Bus Station, PA  ->  d6 Tue 04:10  Indianapolis Bus Station, IN   [Greyhound-us: New York - Pittsburgh - St. Louis]
+d6 Tue 04:40  Indianapolis Bus Station, IN  ->  d6 Tue 06:45  Louisville Bus Station, KY   [Greyhound-us: Atlanta - Chicago]
+d6 Tue 07:35  Louisville Bus Station, KY  ->  d6 Tue 09:30  Indianapolis Bus Station, IN   [Greyhound-us: Atlanta - Chicago]
+  walk  Indianapolis Bus Station -> Indianapolis  (0.0 km, from d6 Tue 09:30)
+d6 Tue 11:35  Indianapolis, IN  ->  d6 Tue 14:40  South Bend, IN   [Miller Transportation: Indianapolis -> Elkhart]
+  walk  South Bend -> South Street Station  (0.1 km, from d6 Tue 14:40)
+d6 Tue 15:24  South Street Station, IN  ->  d6 Tue 15:52  Adams & Dylan, IN   [Transpo (South Bend, IN): Blackthorn Express]
+  walk  Adams & Dylan -> MI state line (walk from Adams & Dylan)  (0.9 km, from d6 Tue 15:52)
+  walk  MI state line (walk from Adams & Dylan) -> Adams & Dylan  (0.9 km, from d6 Tue 16:06)
+d6 Tue 17:52  Adams & Dylan, IN  ->  d6 Tue 18:28  South Street Station, IN   [Transpo (South Bend, IN): Blackthorn Express]
+  walk  South Street Station -> South Bend Transpo (S St Station)  (0.1 km, from d6 Tue 18:28)
+d6 Tue 18:55  South Bend Transpo (S St Station), IN  ->  d6 Tue 20:05  Chicago Bus Station, IL   [Greyhound-us: Chicago - Cleveland - Washington]
+d6 Tue 22:00  Chicago Bus Station, IL  ->  d7 Wed 06:20  Minneapolis Bus Station, MN   [Greyhound-us: Chicago - Milwaukee - Minneapolis]
+  walk  Minneapolis Bus Station -> Minneapolis  (0.0 km, from d7 Wed 06:20)
+d7 Wed 12:15  Minneapolis, MN  ->  d7 Wed 22:00  Kansas City, MO   [Jefferson Lines: Minneapolis -> Kansas City]
+  walk  Kansas City -> Kansas City Bus Station  (0.0 km, from d7 Wed 22:00)
+d7 Wed 22:45  Kansas City Bus Station, MO  ->  d8 Thu 00:05  Topeka (BP To Go), KS   [Greyhound-us: Dallas - Oklahoma City - Kansas City]
+d8 Thu 00:20  Topeka (BP To Go), KS  ->  d8 Thu 09:30  Denver Union Station Bus Concourse, CO   [Greyhound-us: Pittsburgh - Denver - Las Vegas]
+d8 Thu 10:05  Denver Union Station Bus Concourse, CO  ->  d8 Thu 11:55  Cheyenne (Sinclair), WY   [Greyhound-us: Reno - Salt Lake City - Denver]
+  walk  Cheyenne (Sinclair) -> Cheyenne  (0.1 km, from d8 Thu 11:55)
+d8 Thu 13:25  Cheyenne, WY  ->  d8 Thu 15:45  Denver, CO   [Express Arrow: Buffalo -> Denver (Limo Express)]
+  walk  Denver -> Denver  (0.4 km, from d8 Thu 15:45)
+d8 Thu 18:59  Denver, CO  ->  d9 Fri 04:54  Omaha Amtrak Station, NE   [Amtrak: California Zephyr]
+  walk  Omaha Amtrak Station -> Omaha  (1.0 km, from d9 Fri 04:54)
+d9 Fri 06:15  Omaha, NE  ->  d9 Fri 10:05  Sioux Falls, SD   [Jefferson Lines: Kansas City -> Sioux Falls]
+d9 Fri 10:30  Sioux Falls, SD  ->  d9 Fri 14:35  Fargo, ND   [Jefferson Lines: Sioux Falls -> Fargo]
+d9 Fri 15:15  Fargo, ND  ->  d10 Sat 00:40  Billings, MT   [Jefferson Lines: Minneapolis -> Billings]
+d10 Sat 01:30  Billings, MT  ->  d10 Sat 10:30  Spokane, WA   [Jefferson Lines: Billings -> Spokane]
+  walk  Spokane -> Spokane  (0.0 km, from d10 Sat 10:30)
+d10 Sat 10:45  Spokane, WA  ->  d10 Sat 13:10  Pasco Bus Stop, WA   [Northwestern Stage Lines: NWL 710 Spokane -> Pasco]
+d10 Sat 13:25  Pasco Bus Stop, WA  ->  d11 Sun 02:30  Salt Lake City Intermodal Trans Ctr, UT   [Greyhound-us: Seattle-Boise-SLC-Denver]
+  local Salt Lake City Intermodal Trans Ctr -> Salt Lake City (Shop)  (9.9 km, from d11 Sun 02:30)
+d11 Sun 06:30  Salt Lake City (Shop), UT  ->  d11 Sun 12:20  Saint George (Bluff St Office), UT   [Salt Lake Express: Salt Lake City (Shop) -> St George (Utah Tech)]
+d11 Sun 12:40  Saint George (Bluff St Office), UT  ->  d11 Sun 13:50  Las Vegas (Airport), NV   [Salt Lake Express: St George (Shop) -> Las Vegas (South Strip Transit)]
+  walk  Las Vegas (Airport) -> Harry Reid Intl Airport Zero Level  (0.1 km, from d11 Sun 13:50)
+d11 Sun 14:06  Harry Reid Intl Airport Zero Level, NV  ->  d11 Sun 14:46  Bonneville Transit Center Bay 24, NV   [Regional Transportation Commission of Southern Nevada : RED LINE Maryland Pkwy BRT]
+  walk  Bonneville Transit Center Bay 24 -> Las Vegas Downtown (1st St)  (0.1 km, from d11 Sun 14:46)
+d11 Sun 15:05  Las Vegas Downtown (1st St), NV  ->  d11 Sun 17:55  Barstow Station, CA   [FlixBus-us: Los Angeles - Las Vegas]
