@@ -1173,3 +1173,39 @@ between this search and a route it can already see every leg of.
 
 The measured comparison this calls for is `--split off`, and the replay is what decides it, not the
 reasoning.
+
+### `--split off`, and the prediction it falsified
+
+I predicted, before running it, that dropping the collecting-before-positioning key would recover the
+badly-ranked legs, because CLAUDE.md's live-instances table names Saint George as one of its casualties.
+The replay says otherwise, which is the whole reason for stating a falsification condition first.
+
+| leg | collects | split on | split off |
+|---|---|---|---|
+| Indianapolis | IN | **1**/1678072 | 161301/1678072 |
+| Barstow Station | CA | **2**/56015 | 33758/56015 |
+| Conway | AR | 61/34112 | 34111/34112 |
+| Las Vegas Amtrak | NM | **5**/2552 | 1588/2552 |
+| Billings | WY MT | **2**/211 | 57/211 |
+| Sioux Falls | SD | **5**/89 | 21/89 |
+| Memphis to Holmes | nothing | 13900/375718 | 3967/375718 |
+| Jacksonville Amtrak | nothing | 14/54 | **1**/54 |
+| Saint George | nothing | 509160/1156415 | **509148**/1156415 |
+
+**31/40 within `--width 12` with the split on, 27/40 with it off.** One positioning leg gained, five
+collecting legs lost, two of them catastrophically. The split is load-bearing and removing it is a clear
+net loss.
+
+And all three casualties CLAUDE.md attributed to the split behave differently from the claim. Spokane to
+Pasco is rank 5 with the split ON, so it was never buried by it. Memphis to Holmes improves 3.5x without
+the split and is still 3967th, so the split is not why it is unreachable either. Saint George moves twelve
+places out of 1156415, which is not a movement at all.
+
+So the entry was a hypothesis dressed as a finding, and it has been corrected in CLAUDE.md rather than
+deleted, because the underlying worry is still real: something is burying Saint George. It just is not the
+split. It is the slack key itself, which has nothing to say about a positioning ride when a million options
+all leave roughly the same room. That is the open bug, and it is a different one.
+
+The width cap is the other half. `--width 12` against a leg ranked 509160th is not close, so no plausible
+width setting reaches Saint George; this needs a ranking that knows what a positioning move is for, not a
+bigger cap.

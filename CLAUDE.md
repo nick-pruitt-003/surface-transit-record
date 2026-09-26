@@ -131,7 +131,7 @@ Still live and not yet addressed, in the order they are being worked:
 | what | where | what it can erase |
 |---|---|---|
 | ranking by hours per new state | `--order rate`, no longer the default since slack measured 25 vs 28 vs 31, and no longer hardcoded in `overnight.sh` | the Silver Meteor, 14 h for four states, last of thirteen |
-| positioning rides sorted behind collecting ones | `sort_opts`, first key in every mode including slack | Spokane to Pasco, Saint George, Memphis to Holmes |
+| ~~positioning rides sorted behind collecting ones~~ **measured, and it is not the culprit** | `sort_opts`, first key in every mode including slack | see below: `--split off` costs 4 net legs and moves Saint George 12 places out of 1156415 |
 | a flat 5 h credit per state on the frontier | `--credit` | a west-first chain loses to a cheap north-east one that looks ahead of pace |
 | the `--hub 6` alight fallback | `alight_ok` when no `--end`/`--by` is given | the Barstow depot has 2, Conway has 5 |
 | walk-only cap in the branching diagnostic | `branching.py` | local-proxy hops, which taints the "median 2 useful services" figure quoted above |
@@ -139,6 +139,33 @@ Still live and not yet addressed, in the order they are being worked:
 
 When adding a check here, make it able to fail. A first version of the gateway check asserted that a list
 was non-empty, which reads like a test and tests nothing.
+
+### The split was measured and the entry above was wrong
+
+The row about positioning rides stood on reasoning, not a number, and the number says the opposite. Replayed
+over the 234 h Wheeling route (HANDOFF 20, 21), `--split off` against the default:
+
+| leg | collects | split on | split off |
+|---|---|---|---|
+| Indianapolis | IN | **1**/1678072 | 161301/1678072 |
+| Barstow Station | CA | **2**/56015 | 33758/56015 |
+| Conway | AR | 61/34112 | 34111/34112 |
+| Las Vegas Amtrak | NM | **5**/2552 | 1588/2552 |
+| Billings | WY MT | **2**/211 | 57/211 |
+| Saint George | nothing | 509160/1156415 | **509148**/1156415 |
+
+31/40 legs within `--width 12` with the split on, **27/40 with it off**. It gains one positioning leg and
+loses five collecting ones. And all three casualties the row named behave differently from the claim:
+Spokane to Pasco is rank **5** with the split on, so it was never buried; Memphis to Holmes improves from
+13900 to 3967 and is still nowhere; Saint George moves **twelve places out of 1156415**.
+
+So the split is load-bearing for collecting rides and is not what buries Saint George. What buries Saint
+George is the slack key itself: a positioning ride leaves a million near-identical options and slack gives
+no signal among them. That is a different bug and it is still open. Do not "fix" the split.
+
+The general lesson, since this is the second time this file has been wrong in this exact way: an entry in
+this table that has never been measured is a hypothesis, and three named casualties written from reasoning
+can all three be wrong at once.
 
 ## What --dedupe costs, and why it stays opt-in
 
