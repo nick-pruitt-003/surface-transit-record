@@ -1062,3 +1062,57 @@ and prose does not fail a build:
 So a result that depends on the 20:00 or the 22:00, or on the exact Wheeling minute, is provisional until
 those are confirmed. A result that uses only the 21:00 to Wheeling or Columbus rests on the screenshots
 plus the destination inference.
+
+## 20. Sep 26: 234 h 19 min, and the two hours the control spent sitting in Columbus
+
+Nick's find, and the whole thing turns on four lines at the head of the control:
+
+```
+walk Thu 00:54 Huntington Bus Stop  ->  Huntington
+ride Thu 01:00 Huntington           ->  Thu 04:50 Columbus      3.93 h on the clock
+                                        ... sits until 06:50
+ride Thu 06:50 Columbus             ->  Thu 11:30 Detroit
+```
+
+Two hours dead at the very start. The backward report already said the latest start from Huntington is
+12:54 AM, so that gap cannot be harvested by leaving Huntington later: the 01:00 is the only service that
+makes the 06:50. It can be harvested by **arriving at Columbus from somewhere else, later**.
+
+Wheeling does it. Wheeling is in West Virginia, so WV comes from the start stop rather than a leg, and the
+westbound Ohio Coach entered in `81640e5` leaves Wheeling 03:00 and reaches Columbus 06:00, fifty minutes
+clear of the 06:50. Kentucky leaves the ordering because the City of New Orleans already supplies it
+(`Effingham Amtrak -> Memphis`), and Ohio because Columbus is on the way. 48 states, 46 ordered.
+
+| start | elapsed | boards | standing |
+|---|---|---|---|
+| 02:55 | **235 h 19 min** | 03:00 passage, from the 21:00 New York departure | verified timetable |
+| 03:55 | **234 h 19 min** | 04:00 passage, from the 22:00 New York departure | rests on the transposition assumption |
+
+Against 237.34 control, 238.32 route X, 238.83 record. Even the verified figure beats all three, by 2.02,
+3.00 and 3.51 h. `scripts/wheeling_start.py` reproduces both, gates on the control first, and attributes
+every one of the 48 states to the leg that supplies it rather than trusting an aggregate count.
+
+The finish is Sat 03 Oct 22:14 at the Vermont line from Hanover, **identical to the control's**, for every
+start in the sweep. Elapsed falls exactly one hour per hour of later departure across all 48 five-minute
+steps from 00:00 to 03:55, no gaps, and 03:55 is where the chain breaks. That is the pinned-arrival
+signature from the inverse work (HANDOFF 18): slack throughout, binding at the end. So there is nothing to
+win in the interior here and the only question was how late you can leave.
+
+### Nick said Wheeling and I measured New York
+
+He wrote "start at 3 am instead of 12:45 am" and "meet it in Columbus". 3 am is the Wheeling departure. I
+read it as boarding the coach in New York and spent two runs measuring that instead, which came back at
+**240.74 h, +3.40 on the control**, because the New York boarding puts the 9 h overnight ride on the clock
+to reach a point the control reaches in 3.93 h, and its 07:00 Columbus arrival misses the 06:50 by ten
+minutes. Worth keeping as a measured negative: the coach is only worth anything if you join it partway.
+
+The lesson is narrower than "read more carefully". Both readings collect the same three states off the same
+bus, and the aggregate state-credit is identical. What separates them is *where the clock starts relative
+to the chain you are joining*, which no coverage count can see. Same bus, same states, 6.4 h apart.
+
+### What this is not
+
+A graft, not a search. The tail is the control's ordering, optimised for a Huntington start; this is the
+best start TIME for that shape, not the best shape from Wheeling. A real search from here has not been run
+and may do better. And 234 h 19 min is data-dependent in a way 235 h 19 min is not: the ticket office was
+cash only, so the 20:00 and 22:00 running times remain Nick's stated transposition. Quote 235 h 19 min.
