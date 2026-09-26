@@ -981,3 +981,52 @@ is the line `start_order.py` already draws.
 They are also not three independent samples. The control and the record share both endpoints and are one
 corridor run in opposite directions. X is the only independent shape, and until today it was the one that
 would not run.
+
+## 19. Sep 26: what a state costs when the bus already stops there
+
+Nick's rule, on the Jaguar Bus coach through Wheeling: you board once and the clock only stops where you
+step off and back on, so a state the bus already calls at is free. That is already the router's rule and
+has been all along. `Search.covered` credits every state the ridden trip **calls at** between boarding and
+alighting, with no layer break and no transfer charged, and `Search.prune` exists to exploit it: "Drop
+states the route covers in passing."
+
+It is permissive in the right way rather than sloppily. Riding Jaguar `Columbus 22:30 -> Wheeling 00:35 ->
+New York 07:30` credits OH, WV and NY. It does **not** credit PA, although the bus crosses Pennsylvania,
+because no PA stop is entered on that row. Which matches the rule exactly: you can only step off where the
+bus stops. The model's leniency and the real rule's leniency coincide, and that is worth knowing because it
+means hand-entered rows with only end stops silently under-credit, never over-credit.
+
+Not to be confused with the bug in the table at the top of CLAUDE.md. That was `ride_search`'s `got` set
+crediting states the router would not confirm. `covered` doing it is the deliberate rule, checked by
+`all_states`.
+
+### Three of X's forty-eight ordering entries do nothing
+
+Measured, from Sheridan WY at 22:00 MT, one evaluation each:
+
+| ordering | elapsed | ordered | covered | all 48 |
+|---|---|---|---|---|
+| X as built | 238.32 h | 48 | 48 | yes |
+| X minus OH | 238.32 h | 47 | 48 | yes |
+| X minus DE | 238.32 h | 47 | 48 | yes |
+| X minus RI | 238.32 h | 47 | 48 | yes |
+| X minus WV | 238.32 h | 47 | **47** | no, WV missing |
+
+Ohio, Delaware and Rhode Island are collected in passing at identical cost, so naming them in the ordering
+achieves nothing. That is three entries of branching the search does not need to spend, and the list was
+not swept exhaustively, so three is a floor.
+
+West Virginia is the exception and that is the point. It is the one state X goes and earns, and both other
+shapes anchor on it too: the control starts at Huntington and the record finishes there. If an OH -> WV ->
+NY through-ride supplies WV in passing, Huntington stops being load-bearing for any of them.
+
+### What is missing to test it
+
+`data/extra_trips.csv:97` has the eastbound only. `New York 59 Canal St (Jaguar)` has **zero departures**,
+so nothing can board in New York and the westbound cannot be evaluated at all. Nick verified the service
+from the operator's own site at the station; the times still have to be entered.
+
+To write the row, repeat `+Name;lon;lat` with the name and coordinates byte-identical to line 97. The uid is
+built as `'extra:' + name`, so an identical name reuses the same stop and a changed one silently creates a
+second stop in the same place. `=extra:...` does not work: the `=uid` lookup only searches feeds loaded
+before the manual feed, which does not include itself.
