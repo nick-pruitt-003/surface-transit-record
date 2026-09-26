@@ -56,3 +56,46 @@ d11 Sun 17:40  Cleveland, OH  ->  d11 Sun 18:25  Akron, OH   [Barons Bus Lines: 
 d11 Sun 18:40  Akron, OH, OH  ->  d11 Sun 19:40  New Philadelphia (E), OH, OH   [GoBus: Blue]
 d11 Sun 19:50  New Philadelphia (E), OH, OH  ->  d11 Sun 21:50  Cleveland, OH, OH   [GoBus: Blue]
   walk  Cleveland, OH -> Cleveland Bus Station (Brook Park)   (0.0 km, from d11 Sun 21:50)
+FLA rc=0 FINAL misses --end-by: best route reaches Cleveland Bus Station (Brook Park) at d12 Mon 02:10 (-2.2 h late) 
+d1 Thu 15:15  Panama City Beach Bus Station, FL  ->  d1 Thu 18:20  Mobile Bus Station, AL   [Greyhound-us: Jacksonville - Mobile]
+d1 Thu 20:15  Mobile Bus Station, AL  ->  d1 Thu 22:40  New Orleans Bus Station, LA   [FlixBus-us: Houston - New Orleans]
+d1 Thu 23:55  New Orleans Bus Station, LA  ->  d2 Fri 08:15  Memphis Bus Station, TN   [FlixBus-us: Houston - New Orleans - Memphis]
+  walk  Memphis Bus Station -> Memphis (MATA Airways Transit Center)  (0.0 km, from d2 Fri 08:15)
+d2 Fri 08:30  Memphis (MATA Airways Transit Center), TN  ->  d2 Fri 11:10  Conway, AR   [Jefferson Lines: Memphis -> Tulsa]
+d2 Fri 11:20  Conway, AR  ->  d2 Fri 19:25  Kansas City, MO   [Jefferson Lines: Pine Bluff -> Kansas City]
+  walk  Kansas City -> East Village Bay M  (0.4 km, from d2 Fri 19:25)
+d2 Fri 20:00  East Village Bay M, MO  ->  d2 Fri 20:10  ON W 9TH ST AT LYON AVE WB, KS   [Kansas City Area Transportation Authority: State]
+  local ON W 9TH ST AT LYON AVE WB -> Kansas City Bus Station  (3.7 km, from d2 Fri 20:10)
+d2 Fri 22:45  Kansas City Bus Station, MO  ->  d3 Sat 06:25  Oklahoma City Bus Station, OK   [Greyhound-us: Dallas - Oklahoma City - Kansas City]
+d3 Sat 11:40  Oklahoma City Bus Station, OK  ->  d4 Sun 13:55  San Bernardino Depot, CA   [Greyhound-us: St Louis - Albuquerque - Los Angeles]
+d4 Sun 14:10  San Bernardino Depot, CA  ->  d4 Sun 18:20  Las Vegas Bus Terminal, NV   [Greyhound-us: Los Angeles - Las Vegas]
+  local Las Vegas Bus Terminal -> Las Vegas (Airport)  (4.1 km, from d4 Sun 18:20)
+d4 Sun 20:30  Las Vegas (Airport), NV  ->  d4 Sun 23:45  Saint George (Shop), UT   [Salt Lake Express: Las Vegas (Airport) -> St George (Utah Tech)]
+d5 Mon 03:35  Saint George (Shop), UT  ->  d5 Mon 09:40  Salt Lake City (Airport), UT   [Salt Lake Express: St George (Shop) -> Salt Lake City (Airport - SLC)]
+d5 Mon 10:00  Salt Lake City (Airport), UT  ->  d5 Mon 14:10  Idaho Falls (Shaka's Sinclair), ID   [Salt Lake Express: Salt Lake City (Shop) -> Rexburg (BYU-Idaho)]
+d5 Mon 21:00  Idaho Falls (Shaka's Sinclair), ID  ->  d6 Tue 00:15  Butte, MT   [Salt Lake Express: Idaho Falls (Shaka's Sinclair) -> Butte]
+  walk  Butte -> Butte  (0.0 km, from d6 Tue 00:15)
+d6 Tue 00:30  Butte, MT  ->  d6 Tue 01:50  Bozeman, MT   [Jefferson Lines: Spokane -> Billings]
+d6 Tue 03:45  Bozeman, MT  ->  d6 Tue 10:30  Spokane, WA   [Jefferson Lines: Billings -> Spokane]
+  walk  Spokane -> Spokane  (0.0 km, from d6 Tue 10:30)
+d6 Tue 10:45  Spokane, WA  ->  d6 Tue 13:10  Pasco Bus Stop, WA   [Northwestern Stage Lines: NWL 710 Spokane -> Pasco]
+d6 Tue 13:25  Pasco Bus Stop, WA  ->  d7 Wed 02:30  Salt Lake City Intermodal Trans Ctr, UT   [Greyhound-us: Seattle-Boise-SLC-Denver]
+d7 Wed 07:50  Salt Lake City Intermodal Trans Ctr, UT  ->  d7 Wed 18:10  Denver Union Station Bus Concourse, CO   [Greyhound-us: Reno - Salt Lake City - Denver]
+  walk  Denver Union Station Bus Concourse -> Denver  (0.1 km, from d7 Wed 18:10)
+d7 Wed 18:59  Denver, CO  ->  d8 Thu 04:54  Omaha Amtrak Station, NE   [Amtrak: California Zephyr]
+  walk  Omaha Amtrak Station -> Omaha  (1.0 km, from d8 Thu 04:54)
+d8 Thu 06:15  Omaha, NE  ->  d8 Thu 10:05  Sioux Falls, SD   [Jefferson Lines: Kansas City -> Sioux Falls]
+d8 Thu 10:30  Sioux Falls, SD  ->  d8 Thu 14:35  Fargo, ND   [Jefferson Lines: Sioux Falls -> Fargo]
+d8 Thu 15:55  Fargo, ND  ->  d8 Thu 20:20  Minneapolis, MN   [Jefferson Lines: Billings -> Minneapolis]
+  walk  Minneapolis -> Minneapolis Bus Station  (0.0 km, from d8 Thu 20:20)
+d9 Fri 00:15  Minneapolis Bus Station, MN  ->  d9 Fri 08:45  Chicago Bus Station, IL   [Greyhound-us: Chicago - Milwaukee - Minneapolis]
+d9 Fri 09:55  Chicago Bus Station, IL  ->  d10 Sat 03:30  Atlanta Bus Station, GA   [Greyhound-us: Atlanta - Chicago]
+d10 Sat 04:40  Atlanta Bus Station, GA  ->  d10 Sat 18:35  Washington Union Station, None   [Greyhound-us: New York - Atlanta]
+  walk  Washington Union Station -> Washington Union Station  (0.1 km, from d10 Sat 18:35)
+d10 Sat 18:57  Washington Union Station, None  ->  d10 Sat 21:36  Newark, NJ   [Amtrak: Acela]
+  walk  Newark -> Newark (NJ)  (0.0 km, from d10 Sat 21:36)
+d10 Sat 22:05  Newark (NJ), NJ  ->  d11 Sun 10:40  Columbus (E Rich St), OH   [FlixBus-us: NYC - Cincinnati - Chicago]
+  walk  Columbus (E Rich St) -> Columbus (E Mound St)  (0.6 km, from d11 Sun 10:40)
+d11 Sun 13:00  Columbus (E Mound St), OH  ->  d11 Sun 18:00  Detroit Bus Station, MI   [Greyhound-us: Detroit - Columbus - Charlotte]
+d11 Sun 19:30  Detroit Bus Station, MI  ->  d11 Sun 20:45  Toledo Bus Stop, OH   [Greyhound-us: Dallas - Nashville - Detroit]
+d12 Mon 00:25  Toledo Bus Stop, OH  ->  d12 Mon 02:10  Cleveland Bus Station (Brook Park) , OH   [Greyhound-us: Chicago - Cleveland - Washington]
