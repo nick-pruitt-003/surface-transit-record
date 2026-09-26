@@ -63,6 +63,10 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--days', type=int, default=20)
     ap.add_argument('--legs', action='store_true', help='print the full leg list for the best variant')
+    ap.add_argument('--write', default=None, help='write the best variant as a --track pickle for '
+                    'ride_search.py, so the graft can be replayed leg by leg the way the control is. '
+                    'ride_search reads only start/t0/order and re-evaluates, so this is the route, not a '
+                    'cached answer. Pair it with a matching --at or the replay measures a different clock.')
     a = ap.parse_args()
 
     R = cached_router(datetime.fromisoformat('2026-09-24T00:54').date(), a.days)
@@ -114,6 +118,16 @@ def main():
             best = (el, legs, attrib, t0)
 
     el, legs, attrib, t0 = best
+    if a.write:
+        import os
+        # Written the way ride_search --track reads it: start name, clock, ordering. Nothing cached.
+        rec = {'start': START, 't0': t0, 'order': order,
+               'elapsed': el * 3600, 'finish': t0 + el * 3600}
+        tmp = a.write + f'.{os.getpid()}.tmp'
+        with open(tmp, 'wb') as fh: pickle.dump(rec, fh)
+        os.replace(tmp, a.write)
+        print(f'\nwrote {a.write} for --track '
+              f'(match it with --at {datetime.fromtimestamp(t0, et):%Y-%m-%dT%H:%M} --tz America/New_York)')
     print(f'\nper-state attribution for the {el:.2f} h variant, in collection order:')
     for y, how in attrib.items():
         print(f'  {ABBR[R.state_names[y]]}  {how}')
