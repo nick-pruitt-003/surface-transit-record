@@ -1030,3 +1030,35 @@ To write the row, repeat `+Name;lon;lat` with the name and coordinates byte-iden
 built as `'extra:' + name`, so an identical name reuses the same stop and a changed one silently creates a
 second stop in the same place. `=extra:...` does not work: the `=uid` lookup only searches feeds loaded
 before the manual feed, which does not include itself.
+
+### 19a. The westbound is in: NY, WV and OH for nine hours, three times a day
+
+`Ohio Coach` (NY-OH Ticket Inc., OhioCoach.com, 59 Canal St, the same New York address as the eastbound
+Jaguar row). Measured after entry:
+
+```
+t107  NYC 20:00 -> Wheeling 02:00 -> Columbus 05:00 ET   9.0 h   credits NY OH WV
+t106  NYC 21:00 -> Wheeling 03:00 -> Columbus 06:00 ET   9.0 h   credits NY OH WV
+t108  NYC 22:00 -> Wheeling 04:00 -> Columbus 07:00 ET   9.0 h   credits NY OH WV
+```
+
+63 connections now leave the New York stop, which had none. The three Jaguar-named stops are still three,
+not six: the `+Name;lon;lat` uid is `'extra:' + name`, so byte-identical names reuse them.
+
+Three states for one boarding, and two of them are states the existing shapes pay for. OH is already free
+on X (HANDOFF 19); WV is the one X earns and the one the control and the record both anchor an endpoint on.
+
+**What is verified and what is not**, because the row descriptions are the only place this is written down
+and prose does not fail a build:
+
+| claim | source |
+|---|---|
+| departs New York 20:00, 21:00, 22:00 every day | printed ticket-office card, primary |
+| the 21:00 runs 6 h and 9 h to two stops | operator's site, two screenshots |
+| those two stops are Wheeling and Columbus | **inferred**. The screenshots carry no destination labels. Read by distance (NYC-Wheeling ~400 mi against NYC-Columbus ~535 mi) and by the eastbound row's stop set. |
+| the 20:00 and 22:00 run the same 6 h and 9 h | **assumed**, not verified |
+| Wheeling and Columbus kerbs are the eastbound row's | **assumed**; the card gives no addresses |
+
+So a result that depends on the 20:00 or the 22:00, or on the exact Wheeling minute, is provisional until
+those are confirmed. A result that uses only the 21:00 to Wheeling or Columbus rests on the screenshots
+plus the destination inference.
