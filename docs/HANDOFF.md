@@ -1055,8 +1055,8 @@ and prose does not fail a build:
 |---|---|
 | departs New York 20:00, 21:00, 22:00 every day | printed ticket-office card, primary |
 | the 21:00 runs 6 h and 9 h to two stops | operator's site, two screenshots |
-| those two stops are Wheeling and Columbus | **inferred**. The screenshots carry no destination labels. Read by distance (NYC-Wheeling ~400 mi against NYC-Columbus ~535 mi) and by the eastbound row's stop set. |
-| the 20:00 and 22:00 run the same 6 h and 9 h | **assumed**, not verified |
+| those two stops are Wheeling and Columbus | first inferred here (the screenshots carry no destination labels) from distance, NYC-Wheeling ~400 mi against NYC-Columbus ~535 mi, and from the eastbound row's stop set. **Nick confirmed the reading.** |
+| the 20:00 and 22:00 are the 21:00 transposed by an hour | **Nick's stated assumption**, adopted deliberately rather than verified: 20:00 to Wheeling 02:00 and Columbus 05:00, 21:00 to 03:00 and 06:00, 22:00 to 04:00 and 07:00. Which is what the three rows hold. |
 | Wheeling and Columbus kerbs are the eastbound row's | **assumed**; the card gives no addresses |
 
 So a result that depends on the 20:00 or the 22:00, or on the exact Wheeling minute, is provisional until
