@@ -1,0 +1,58 @@
+SHE rc=0 FINAL 237.5 h d11 Sun 21:50 START Sheridan WY Taco Bell 1655 Coffeen Ave (Jefferson) first bus d1 Thu 22:20 END Cleveland Bus Station (Brook Park) arrive d11 Sun 21:50 | record 238.83 h: beats it by 1.3 h 
+d1 Thu 22:20  Sheridan WY Taco Bell 1655 Coffeen Ave (Jefferson), WY  ->  d2 Fri 00:25  Billings, MT   [Jefferson Lines: JL 701 Gillette -> Buffalo -> Sheridan -> Billings (Nick screenshots Sep 22 2026: jeffersonlines.com 09/29 and Google Thu 09/24; feed trip 1902 has Gillette and Buffalo but skips Sheridan; times from it shifted to Mountain as the router does; daily assumed; Sheridan Taco Bell point approximate)]
+d2 Fri 01:30  Billings, MT  ->  d2 Fri 10:30  Spokane, WA   [Jefferson Lines: Billings -> Spokane]
+  walk  Spokane -> Spokane  (0.0 km, from d2 Fri 10:30)
+d2 Fri 10:45  Spokane, WA  ->  d2 Fri 13:10  Pasco Bus Stop, WA   [Northwestern Stage Lines: NWL 710 Spokane -> Pasco]
+d2 Fri 13:25  Pasco Bus Stop, WA  ->  d3 Sat 02:30  Salt Lake City Intermodal Trans Ctr, UT   [Greyhound-us: Seattle-Boise-SLC-Denver]
+  local Salt Lake City Intermodal Trans Ctr -> Salt Lake City (Shop)  (9.9 km, from d3 Sat 02:30)
+d3 Sat 06:30  Salt Lake City (Shop), UT  ->  d3 Sat 12:20  Saint George (Bluff St Office), UT   [Salt Lake Express: Salt Lake City (Shop) -> St George (Utah Tech)]
+d3 Sat 12:40  Saint George (Bluff St Office), UT  ->  d3 Sat 13:50  Las Vegas (Airport), NV   [Salt Lake Express: St George (Shop) -> Las Vegas (South Strip Transit)]
+  walk  Las Vegas (Airport) -> Harry Reid Intl Airport Zero Level  (0.1 km, from d3 Sat 13:50)
+d3 Sat 14:04  Harry Reid Intl Airport Zero Level, NV  ->  d3 Sat 14:45  Bonneville Transit Center Bay 24, NV   [Regional Transportation Commission of Southern Nevada : RED LINE Maryland Pkwy BRT]
+  walk  Bonneville Transit Center Bay 24 -> Las Vegas Downtown (1st St)  (0.1 km, from d3 Sat 14:45)
+d3 Sat 15:05  Las Vegas Downtown (1st St), NV  ->  d3 Sat 17:55  Barstow Station, CA   [FlixBus-us: Los Angeles - Las Vegas]
+  local Barstow Station -> Barstow  (2.8 km, from d3 Sat 17:55)
+d3 Sat 20:47  Barstow, CA  ->  d4 Sun 10:41  Albuquerque Alvarado Transportation Center, NM   [Amtrak: Southwest Chief]
+  walk  Albuquerque Alvarado Transportation Center -> Albuquerque Bus Station  (0.1 km, from d4 Sun 10:41)
+  walk  Albuquerque Bus Station -> Albuquerque Alvarado Transportation Center  (0.1 km, from d4 Sun 10:41)
+d4 Sun 11:31  Albuquerque Alvarado Transportation Center, NM  ->  d5 Mon 01:47  Newton, KS   [Amtrak: Southwest Chief]
+  walk  Newton -> Newton (Amtrak)  (0.0 km, from d5 Mon 01:47)
+d5 Mon 03:00  Newton (Amtrak), KS  ->  d5 Mon 06:43  Oklahoma City, OK   [BeeLine Express-Village Travel: Newton (Amtrak) -> Oklahoma City]
+  walk  Oklahoma City -> Oklahoma City Bus Station  (0.0 km, from d5 Mon 06:43)
+d5 Mon 06:55  Oklahoma City Bus Station, OK  ->  d5 Mon 11:10  Dallas Bus Station, TX   [Greyhound-us: Dallas - Oklahoma City - Kansas City]
+d5 Mon 11:30  Dallas Bus Station, TX  ->  d5 Mon 16:20  Downtown Houston (Gray St.), TX   [FlixBus-us: Dallas - Houston]
+d5 Mon 17:45  Downtown Houston (Gray St.), TX  ->  d5 Mon 20:10  Lake Charles (City Point), LA   [FlixBus-us: Houston - New Orleans - Memphis]
+d5 Mon 21:10  Lake Charles (City Point), LA  ->  d6 Tue 11:00  Tallahassee (CK Steele Bus Plaza), FL   [Greyhound-us: Orlando - Houston]
+d6 Tue 11:25  Tallahassee (CK Steele Bus Plaza), FL  ->  d6 Tue 14:50  Jacksonville (Downtown), FL   [Greyhound-us: Jacksonville - Mobile]
+  walk  Jacksonville (Downtown) -> JRTC Bay H  (0.1 km, from d6 Tue 14:50)
+d6 Tue 15:00  JRTC Bay H, FL  ->  d6 Tue 15:29  Amtrak Station, FL   [Jacksonville Transportation Authority: Kings Road]
+  walk  Amtrak Station -> Jacksonville  (0.3 km, from d6 Tue 15:29)
+d6 Tue 16:11  Jacksonville, FL  ->  d7 Wed 06:25  Washington Union Station, None   [Amtrak: Silver Meteor]
+d7 Wed 06:45  Washington Union Station, None  ->  d7 Wed 08:26  Philadelphia, PA   [Amtrak: Acela]
+d7 Wed 08:34  Philadelphia, PA  ->  d7 Wed 09:00  Trenton, NJ   [Amtrak: Northeast Regional]
+d7 Wed 09:20  Trenton, NJ  ->  d7 Wed 11:47  Washington Union Station, None   [Amtrak: Northeast Regional]
+d7 Wed 12:55  Washington Union Station, None  ->  d7 Wed 13:10  Alexandria, VA   [Amtrak: Palmetto]
+d7 Wed 14:43  Alexandria, VA  ->  d8 Thu 05:08  Toledo, OH   [Amtrak: Floridian]
+  local Toledo -> APT Side Detour Line Up  (2.1 km, from d8 Thu 05:08)
+d8 Thu 06:00  APT Side Detour Line Up, OH  ->  d8 Thu 06:27  Jackman & Travis SE, OH   [Toledo Area Regional Transit Authority: Meijer Alexis via Franklin/Alexis]
+  walk  Jackman & Travis SE -> MI state line (walk from Jackman & Travis SE)  (0.5 km, from d8 Thu 06:27)
+  walk  MI state line (walk from Jackman & Travis SE) -> Jackman & Travis SE  (0.5 km, from d8 Thu 06:36)
+d8 Thu 07:08  Jackman & Travis SE, OH  ->  d8 Thu 07:36  Franklin & Woodruff NW, OH   [Toledo Area Regional Transit Authority: Meijer Alexis via Franklin/Alexis]
+  local Franklin & Woodruff NW -> Toledo Bus Stop  (2.5 km, from d8 Thu 07:36)
+d8 Thu 08:30  Toledo Bus Stop, OH  ->  d8 Thu 23:35  Atlanta Bus Station, GA   [Greyhound-us: Atlanta - Knoxville - Detroit]
+d9 Fri 00:30  Atlanta Bus Station, GA  ->  d9 Fri 07:25  Memphis Bus Station, TN   [Greyhound-us: Atlanta - Memphis]
+  walk  Memphis Bus Station -> Memphis (MATA Airways Transit Center)  (0.0 km, from d9 Fri 07:25)
+d9 Fri 08:30  Memphis (MATA Airways Transit Center), TN  ->  d9 Fri 11:10  Conway, AR   [Jefferson Lines: Memphis -> Tulsa]
+d9 Fri 11:20  Conway, AR  ->  d9 Fri 19:25  Kansas City, MO   [Jefferson Lines: Pine Bluff -> Kansas City]
+d10 Sat 01:30  Kansas City, MO  ->  d10 Sat 10:05  Sioux Falls, SD   [Jefferson Lines: Kansas City -> Sioux Falls]
+d10 Sat 10:30  Sioux Falls, SD  ->  d10 Sat 14:35  Fargo, ND   [Jefferson Lines: Sioux Falls -> Fargo]
+d10 Sat 15:55  Fargo, ND  ->  d10 Sat 20:20  Minneapolis, MN   [Jefferson Lines: Billings -> Minneapolis]
+  walk  Minneapolis -> Minneapolis Bus Station  (0.0 km, from d10 Sat 20:20)
+d11 Sun 00:15  Minneapolis Bus Station, MN  ->  d11 Sun 08:45  Chicago Bus Station, IL   [Greyhound-us: Chicago - Milwaukee - Minneapolis]
+  walk  Chicago Bus Station -> Chicago  (0.0 km, from d11 Sun 08:45)
+d11 Sun 09:05  Chicago, IL  ->  d11 Sun 17:00  Cleveland, OH   [Barons Bus Lines: Chicago -> Cleveland]
+d11 Sun 17:40  Cleveland, OH  ->  d11 Sun 18:25  Akron, OH   [Barons Bus Lines: Cleveland -> Charleston]
+  walk  Akron -> Akron, OH  (0.0 km, from d11 Sun 18:25)
+d11 Sun 18:40  Akron, OH, OH  ->  d11 Sun 19:40  New Philadelphia (E), OH, OH   [GoBus: Blue]
+d11 Sun 19:50  New Philadelphia (E), OH, OH  ->  d11 Sun 21:50  Cleveland, OH, OH   [GoBus: Blue]
+  walk  Cleveland, OH -> Cleveland Bus Station (Brook Park)   (0.0 km, from d11 Sun 21:50)
