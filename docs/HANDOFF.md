@@ -1116,3 +1116,60 @@ A graft, not a search. The tail is the control's ordering, optimised for a Hunti
 best start TIME for that shape, not the best shape from Wheeling. A real search from here has not been run
 and may do better. And 234 h 19 min is data-dependent in a way 235 h 19 min is not: the ticket office was
 cash only, so the 20:00 and 22:00 running times remain Nick's stated transposition. Quote 235 h 19 min.
+
+## 21. Sep 26: the search cannot find the 234 route, and the replay says exactly why
+
+`ride_search.py` from Wheeling 03:55, `--end VT --by 2026-10-04T01:55 --target 238 --pairs push`, 1800 s:
+
+```
+4386 nodes in 1804 s (2/s), 2762 kept; deepest 26/48
+pair prune at push: 6921 nodes killed for owing an uncollectable pair
+queue at exit: 5791 nodes, depth 26:1 25:8 24:8 23:16 22:74 21:36 20:58 19:155 18:196 17:444 16:432 15:551
+pair-live by depth: every bucket N/N
+nothing reached 48 states under 238.0 h in the budget
+```
+
+Two things worth separating there. The frontier is **honest**: every depth bucket is pair-live N/N, nothing
+jointly dead, against the earlier unpruned baseline that printed depth 30 while all 458 nodes from 22 to 31
+were dead on arrival. And the prune is working, 6921 nodes killed at push. It ran out of budget, it did not
+deceive itself.
+
+But it searched nowhere near the answer. Its chain ran Chicago, New Buffalo, Winona, Bethany, Shreveport,
+Tuscaloosa, Atlanta, Louisville, Detroit; the route goes Wheeling, Columbus, Detroit, Indianapolis,
+Effingham, Memphis. Different from the second ride onward. And its deepest node sat at 118.3 h for 26
+states, 4.55 h per state against the route's 4.88, so **by the local measure it looked ahead of pace while
+being nowhere**. That is hours-per-new-state, the lesson at the top of CLAUDE.md, reappearing in the
+frontier ordering rather than in the ride ranking. Worth naming as its own instance.
+
+### The replay, which is the only thing that explained anything
+
+`--track ../out/res_wheeling.pkl` (written by `wheeling_start.py --write`):
+
+```
+record round-trip over 40 real legs: collected 46 | order 46  MATCH
+31/40 rides reproducible within --width 12; 47/48 states collected along the way
+```
+
+**Not one leg is MISSING.** Every ride the route takes is on the menu. The search fails on ranking alone,
+and six of the nine legs outside the width cap collect no new state:
+
+| leg | rank | collects |
+|---|---|---|
+| Saint George (Bluff St Office) | **509160/1156415** | nothing |
+| HOLMES at ELVIS PRESLEY | 13900/375718 | nothing |
+| Des Moines | 4956/199476 | IA |
+| Bonneville Transit Center | 2173/331320 | nothing |
+| AIRWAYS TRANSIT CENTER | 365/25989 | nothing |
+| Conway | 61/34112 | AR |
+| AKARD STATION | 29/190 | nothing |
+| Amtrak Station (Jacksonville) | 14/54 | nothing |
+| Fargo | 13/37 | ND |
+
+CLAUDE.md's live-instances table already lists Saint George at "486373rd of 1156403 positioning ones". This
+is the same stop, the same bug, measured independently on a different route from a different start:
+**509160 of 1156415**. The entry was written from the control and it reproduces here unchanged, which is
+the strongest evidence yet that `sort_opts`' collecting-before-positioning key is the thing standing
+between this search and a route it can already see every leg of.
+
+The measured comparison this calls for is `--split off`, and the replay is what decides it, not the
+reasoning.
