@@ -268,7 +268,7 @@ class TimeRouter:
         """CSA from initial labels {stop: (time, trip_key)}; returns arrival labels at
         targets and predecessor info for reconstruction."""
         INF = float('inf'); N = self.N; tgt_ = targets   # guard: a state target, collected by ride or walk-in only
-        best = np.full(N, INF); pred = {}; ltrip = {}
+        best = np.full(N, INF); pred = {}; ltrip = {}; ride_best = {}   # ride_best: earliest arrival BY A RIDE
         for s, (t, trip) in labels.items():
             if t < best[s]: best[s] = t; ltrip[s] = trip; pred[s] = None
             for j, w in self.foot[s]:
@@ -289,12 +289,20 @@ class TimeRouter:
                 if ba + need <= dt: reached[trip] = (a, dt)
                 else: continue
             b = cto[k]; at = arr[k]
+            # As csa.c: footpaths are relaxed when a RIDE newly improves b, not only when it improves best[b], so a
+            # walk-derived label at b cannot shadow the onward walk the ride licenses (Holmes and the MS line). The
+            # ride is kept under ('ride', b), apart from b's own predecessor, and a walk off it carries a 4th field
+            # so route() leaves b by that ride rather than by b's walk.
+            fresh = at < ride_best.get(b, INF)
+            if fresh:
+                ride_best[b] = at; pred[('ride', b)] = ('ride', trip, reached[trip][0], reached[trip][1], a, dt)
             if at < best[b]:
-                best[b] = at; ltrip[b] = trip; pred[b] = ('ride', trip, reached[trip][0], reached[trip][1], a, dt)
+                best[b] = at; ltrip[b] = trip; pred[b] = pred[('ride', b)]
                 if b in tgt and at < target_best: target_best = at
+            if fresh:
                 for j, w in self.foot[b]:
                     if guard and j in tgt and self._crosses(b, j): continue
-                    if at + w < best[j]: best[j] = at + w; ltrip[j] = None; pred[j] = ('walk', b, at)
+                    if at + w < best[j]: best[j] = at + w; ltrip[j] = None; pred[j] = ('walk', b, at, True)
         out = {s: (best[s], ltrip.get(s)) for s in tgt if best[s] < INF}
         return out, pred, best
 
@@ -319,11 +327,10 @@ class TimeRouter:
         t_end, _ = min(labels.values(), key=lambda x: x[0]); end = min(labels, key=lambda s: labels[s][0])
         legs = []
         for t, out, pred in reversed(layers):
-            s = end; seg = []
-            while pred.get(s) is not None:
-                p = pred[s]
-                if p[0] == 'walk': seg.append(('walk', p[1], s, p[2], best_time(out, pred, s))); s = p[1]
-                else: seg.append(('ride', p[1], p[2], p[3], s, None)); s = p[2]
+            s = end; seg = []; by_ride = False   # True: s was left on foot off a ride into it, not off its own label
+            while (p := pred.get(('ride', s) if by_ride else s)) is not None:
+                if p[0] == 'walk': seg.append(('walk', p[1], s, p[2], best_time(out, pred, s))); by_ride = len(p) > 3; s = p[1]
+                else: seg.append(('ride', p[1], p[2], p[3], s, None)); by_ride = False; s = p[2]
             legs = seg[::-1] + legs; end = s
         return t_end, self._fill(legs)
 
