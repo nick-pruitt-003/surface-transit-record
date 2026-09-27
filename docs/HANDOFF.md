@@ -799,3 +799,413 @@ it prints anything would make that impossible rather than leaving it to memory.
 Writing the falsification down before the run caught every single error today. It is also the one control
 that lives entirely in whether the author remembers to apply it, which is the worst place for a control to
 live.
+
+## 17. Sep 22: a faster arrival on foot made a state uncollectable
+
+The scan's footpath relaxation was gated on a connection improving `best[b]`. Walks do not chain (one hop),
+so a walk-derived label could suppress the onward walk that a ride arriving at the same stop would license.
+
+Memphis, Tue 6 Oct, standing at Airways Transit Center at 20:05 owing only Mississippi:
+
+```
+HOLMES at ELVIS PRESLEY                            Tue 21:02:13   <- a 57 min local proxy link
+the MATA bus that serves Holmes arrives             Tue 21:07:26   <- five minutes LATER
+MS state line (walk from HOLMES at ELVIS PRESLEY)  unreached
+```
+
+`at < best[b]` failed for that connection, so the whole arrival block was skipped and with it the 1142 s
+footpath over the state line. Holmes reached, Mississippi not. The scan rode Flix to Batesville instead,
+arriving 22:50 rather than 21:26.
+
+Everything else checked out and was eliminated first: the footpath exists in `R.foot` AND in the flattened
+C arrays (1142 s, `fx=0` so unguarded), 62 of 403 virtual stops are reachable so they are not excluded
+wholesale, 402 of 403 appear as foot targets, `keep_routes.json` carries the MATA routes, and the walk-in
+guard cannot fire because `mask[first_virtual:]` is clamped to 1 and `_crosses` returns False for any
+`j >= first_virtual`. Three wrong hypotheses (the guard, the route trim, a missing edge) before the
+predecessor arrays gave it up: `pred_conn = -1, pred_walk = 3877`.
+
+The fix keeps a separate `ride[]` label, the earliest arrival BY A CONNECTION, and gates the relaxation on
+that. `best[b] <= ride[b]` always holds, so every case that relaxed before still relaxes and this only adds
+the shadowed ones.
+
+**What it is worth.** Route X (Sheridan WY to the Mississippi line at Southaven) is 238.07 h with the
+Memphis ending and 239.50 h with the Flix-to-Batesville one. The timetabled record is 238.83 h. So this one
+gate is the difference between beating the record by 0.76 h and missing it by 0.67. The 237.34 h control
+ends the same way, Hanover then 0.9 km on foot to the Vermont line, which is why neither of the two best
+routes known could be found by machine.
+
+Gates after the change, all unchanged: `regress.py` 8/8, the control replay 30/40 within `--width 12`, the
+record round-trip `collected 46 | order 46 MATCH`, the control at 237.34 h and `hun_ms_meteor` at 237.74 h.
+Additive where it was broken, neutral everywhere else, which is the signature a fix of this shape should
+have.
+
+**Rebuild `csa.so` by hand after pulling.** `cached_router` keys on `time_router.py` and `data/`, not on
+`csa.c`, so a cached router reloads against a stale shared object and the fix silently does nothing:
+`cc -O3 -shared -fPIC csa.c -o csa.so`. That is the same class of bug as the pair-table cache key fixed
+earlier the same day, a key that does not cover everything that changes the answer, and it should be closed
+by hashing `csa.c` into the router fingerprint. `pair_tables.fingerprint` already hashes it, so every pair
+table on disk is invalidated by this commit and will rebuild.
+
+### The inverse, Southaven to Sheridan, is ~50 h worse and the reason is structural
+
+Nick's construction: start at the Mississippi line, claim MS and TN by the 19 min walk to Holmes, run the
+remaining 46 states, end in Wyoming. Then, since the Sheridan bus is once a day, subtract the target from
+its fixed arrival to get the start time.
+
+| | |
+|---|---|
+| X forwards, Sheridan -> MS line | **238.08 h** |
+| inverse, MS collected en route | 300.58 h |
+| inverse, MS + TN claimed at the line | 288.67 h, ending Cody |
+| inverse, + the JL 702 southbound Sheridan arrival | **288.58 h**, ending Sheridan 06:35 |
+
+Claiming MS and TN at the line is worth **11.9 h**: it removes a Memphis to Birmingham round trip the scan
+was using to reach Mississippi through the north of the state instead of walking over it. The southbound
+service is worth **0.09 h**. Neither dents a fifty hour gap.
+
+The sweeps say why, identically in all three runs: elapsed falls **exactly one hour per hour of later
+departure**, across 96 departures. That is not a route improving, it is dead time being trimmed at the
+start, because every version is pinned to an arrival it cannot influence. Forwards, Sheridan is a 22:20
+departure you catch and you are gone; backwards it is an arrival you wait for. A timetable is not
+reversible: the Silver Meteor, the Southwest Chief, the Dartmouth Coach and the Jefferson runs each go once
+a day in each direction at unrelated times, so the same 48 states in the opposite sequence land on an
+unrelated set of connections.
+
+Subtraction gives a start time and cannot tell you a route exists that leaves then. At the 238 h start the
+arithmetic demands, the timetable offers 288.58 h.
+
+Two corrections recorded rather than quietly fixed. The claim that no 06:35 Sheridan arrival existed was
+wrong: `755d99e` added JL 702 Billings 04:30 -> Sheridan 06:35 and only `37cad72` had been cherry-picked,
+so an entire conclusion was built on a router missing a service. And the follow-up claim that the earlier
+number was therefore "worse than meaningless" was an over-correction: with the service restored it moved by
+five minutes.
+
+#### Correction: the 288.58 h is a bad ORDERING, not evidence about direction
+
+The section above reads as though a timetable being irreversible explains the 50 h gap. It does not, and
+the counterexample was in the repo the whole time: **the 238.83 h record is itself an east-to-west route**,
+White River Junction to Huntington, which `forward_shapes` gates on at 239.08 h from its 04:20 clock. A
+route in the direction called dead above is the standing record.
+
+So the comparison that matters is:
+
+| | direction | |
+|---|---|---|
+| control | west to east | 237.34 h |
+| route X | west to east | **238.08 h** |
+| record | **east to west** | **238.83 h** |
+| the flipped inverse | east to west | 288.58 h |
+
+X beats the record by 0.76 h and the record is the real east-to-west benchmark. The 288.58 h is what comes
+of deriving an ordering by reversing another one mechanically, which is the same mistake as the alphabetical
+state grouping one level up: treating the sequence as something to transform rather than something the
+geography determines.
+
+Nick's specific catch, that `CORRIDORS.md` measures ID -> OR -> WA as best from Salt Lake while a flip of X
+gives OR -> WA -> ID, was right about the flaw and **made no difference at all**: both orders return 288.58 h,
+identical to the minute, same departure and same arrival. That is the sweep's 1:1 shape finally explained.
+Elapsed falling exactly one hour per hour of later departure means the route is slack throughout and pinned
+at ONE point, so interior savings become waiting and no reordering of an interior segment can help. Where it
+binds is not the Pacific Northwest, not Memphis (11.9 h, already recovered) and not Sheridan (0.09 h). It is
+unidentified.
+
+The general principle stands, that a once-daily service is cheap to catch and ruinous to wait for. Using it
+to explain this particular number was wrong.
+
+## 18. Sep 23: one of the three shapes replayed, one never existed as a file
+
+"We have three shapes under 239 h" was true as arithmetic and false as a working set. Checked on
+`pipeline-msdwxp`, only the 237.34 control could be replayed at all.
+
+| shape | ends | state on this branch before today |
+|---|---|---|
+| 237.34 control | Hanover, VT line on foot | replays, gated |
+| 238.83 record | Huntington, from White River Junction | **ordering exists nowhere**; `out/time_238.pkl` is read by `forward_shapes.py` and `run_safe_queue.sh` and written by nothing. `4dc5bbf`, the first handoff commit, already referenced it as a file on one machine. `out/` is gitignored, so it has never survived a checkout. Not recoverable from git. |
+| 238.07 X | MS line at Holmes, from Sheridan WY | **could not start**: no Sheridan stop in Wyoming. JL 701, which defines it, landed on `cloud-families` only. |
+
+### The Florida Sheridan
+
+`x_forward.py` matched the bare word `Sheridan` and took the best over every match. With Wyoming's stop
+absent the only match that completed was **Hollywood Sheridan Tri-Rail Station, in Florida**, and the run
+printed 309.98 h for route X without a word of complaint. `pick.choose` exists precisely to stop a silent
+pick, and this pick was not silent, it was loud and wrong: the stop name was printed on screen every time.
+Taking the best of a name match protects you from picking the wrong one of several right stops. It does
+nothing when the right stop is absent and a homonym in another state is not, and reading the printed name
+is the only thing that catches it.
+
+Cherry-picking JL 701 and JL 702 (`7fd3c55`) fixes it. Route X now replays at **238.32 h**, Sat 26 Sep
+22:00 MT to Tue 06 Oct 20:18 MT, all 64 legs resolving. That is +0.24 h on the spreadsheet's hand
+arithmetic and still 0.51 h under the record. The 0.24 h is unexplained and is a modelling difference
+rather than a missing leg.
+
+### A start clock equal to a departure cannot board it
+
+`x_forward.py --at` defaulted to `2026-09-26T22:20`, which is JL 701's own departure. The scan requires
+`best[a] + MIN_TRANSFER <= dep`, so at 22:20 the 22:20 bus is five minutes out of reach, the next is a day
+later, and the run reported 285.98 h. A default set to the exact time of the thing it means to catch is
+worth watching for generally: it is off by exactly the transfer constant, so it reads as a real result
+rather than an error, and the penalty is one whole service interval.
+
+### The gate that had not run since it was written
+
+The second forward gate replayed the record's ordering, and its guard was
+`if not a.no_gate and a.record and os.path.exists(a.record)`. The file has never existed on a fresh
+checkout, so the gate skipped in silence and every run reported one gate as two. This is the same shape as
+the `--pairs report` sweep printing "0 of N jointly dead" for a test it had skipped: a clean bill from a
+check that never ran.
+
+The fix is not a better error message on a missing file, it is removing the ability of the input to go
+missing. The second gate is now **route X, with its ordering imported from `x_forward.ORDER`**, a committed
+literal. X is also the better of the two as a second gate, for a reason worth keeping: it ends on a
+ride-licensed border walk-in, the exact path `78ada1b` fixed in `csa.c`, which the control never exercises.
+The record shares both of the control's endpoints and is its corridor reversed, so even with its file
+present it was the weaker check.
+
+`--record` survives as an optional extra shape with `--record-start/-at/-tz/-el`, and a path that is given
+but missing is now a hard failure. `regress.py` asserts both halves and both were shown to fail: that the
+Sheridan stop exists and has departures, and that no `no_gate` branch is guarded by `os.path.exists` again.
+
+### For the question that started this
+
+Three shapes help in three ways, in descending confidence. As bug detectors, which has already paid once
+and is why X earns the gate. As composite moves, where a sub-chain two independent shapes both use is a
+verified multi-leg unit that can be added to the menu without pruning anything. And as disagreement, which
+is worth more than agreement, because agreement may only reflect a shared feed set and shared corridor
+priors, and in the control-versus-record case reflects literally the same corridor.
+
+What they do not license is averaging. "Every fast shape goes through Memphis, so constrain to Memphis" is
+hours-per-new-state in new clothes: a filter fitted to a sample of two that would erase whatever sparse link
+the next shape needs. The Pasco premise is the same, and is safe as an ordering and not as a filter, which
+is the line `start_order.py` already draws.
+
+They are also not three independent samples. The control and the record share both endpoints and are one
+corridor run in opposite directions. X is the only independent shape, and until today it was the one that
+would not run.
+
+## 19. Sep 26: what a state costs when the bus already stops there
+
+Nick's rule, on the Jaguar Bus coach through Wheeling: you board once and the clock only stops where you
+step off and back on, so a state the bus already calls at is free. That is already the router's rule and
+has been all along. `Search.covered` credits every state the ridden trip **calls at** between boarding and
+alighting, with no layer break and no transfer charged, and `Search.prune` exists to exploit it: "Drop
+states the route covers in passing."
+
+It is permissive in the right way rather than sloppily. Riding Jaguar `Columbus 22:30 -> Wheeling 00:35 ->
+New York 07:30` credits OH, WV and NY. It does **not** credit PA, although the bus crosses Pennsylvania,
+because no PA stop is entered on that row. Which matches the rule exactly: you can only step off where the
+bus stops. The model's leniency and the real rule's leniency coincide, and that is worth knowing because it
+means hand-entered rows with only end stops silently under-credit, never over-credit.
+
+Not to be confused with the bug in the table at the top of CLAUDE.md. That was `ride_search`'s `got` set
+crediting states the router would not confirm. `covered` doing it is the deliberate rule, checked by
+`all_states`.
+
+### Three of X's forty-eight ordering entries do nothing
+
+Measured, from Sheridan WY at 22:00 MT, one evaluation each:
+
+| ordering | elapsed | ordered | covered | all 48 |
+|---|---|---|---|---|
+| X as built | 238.32 h | 48 | 48 | yes |
+| X minus OH | 238.32 h | 47 | 48 | yes |
+| X minus DE | 238.32 h | 47 | 48 | yes |
+| X minus RI | 238.32 h | 47 | 48 | yes |
+| X minus WV | 238.32 h | 47 | **47** | no, WV missing |
+
+Ohio, Delaware and Rhode Island are collected in passing at identical cost, so naming them in the ordering
+achieves nothing. That is three entries of branching the search does not need to spend, and the list was
+not swept exhaustively, so three is a floor.
+
+West Virginia is the exception and that is the point. It is the one state X goes and earns, and both other
+shapes anchor on it too: the control starts at Huntington and the record finishes there. If an OH -> WV ->
+NY through-ride supplies WV in passing, Huntington stops being load-bearing for any of them.
+
+### What is missing to test it
+
+`data/extra_trips.csv:97` has the eastbound only. `New York 59 Canal St (Jaguar)` has **zero departures**,
+so nothing can board in New York and the westbound cannot be evaluated at all. Nick verified the service
+from the operator's own site at the station; the times still have to be entered.
+
+To write the row, repeat `+Name;lon;lat` with the name and coordinates byte-identical to line 97. The uid is
+built as `'extra:' + name`, so an identical name reuses the same stop and a changed one silently creates a
+second stop in the same place. `=extra:...` does not work: the `=uid` lookup only searches feeds loaded
+before the manual feed, which does not include itself.
+
+### 19a. The westbound is in: NY, WV and OH for nine hours, three times a day
+
+`Ohio Coach` (NY-OH Ticket Inc., OhioCoach.com, 59 Canal St, the same New York address as the eastbound
+Jaguar row). Measured after entry:
+
+```
+t107  NYC 20:00 -> Wheeling 02:00 -> Columbus 05:00 ET   9.0 h   credits NY OH WV
+t106  NYC 21:00 -> Wheeling 03:00 -> Columbus 06:00 ET   9.0 h   credits NY OH WV
+t108  NYC 22:00 -> Wheeling 04:00 -> Columbus 07:00 ET   9.0 h   credits NY OH WV
+```
+
+63 connections now leave the New York stop, which had none. The three Jaguar-named stops are still three,
+not six: the `+Name;lon;lat` uid is `'extra:' + name`, so byte-identical names reuse them.
+
+Three states for one boarding, and two of them are states the existing shapes pay for. OH is already free
+on X (HANDOFF 19); WV is the one X earns and the one the control and the record both anchor an endpoint on.
+
+**What is verified and what is not**, because the row descriptions are the only place this is written down
+and prose does not fail a build:
+
+| claim | source |
+|---|---|
+| departs New York 20:00, 21:00, 22:00 every day | printed ticket-office card, primary |
+| the 21:00 runs 6 h and 9 h to two stops | operator's site, two screenshots |
+| those two stops are Wheeling and Columbus | first inferred here (the screenshots carry no destination labels) from distance, NYC-Wheeling ~400 mi against NYC-Columbus ~535 mi, and from the eastbound row's stop set. **Nick confirmed the reading.** |
+| the 20:00 and 22:00 are the 21:00 transposed by an hour | **Nick's stated assumption**, adopted deliberately rather than verified: 20:00 to Wheeling 02:00 and Columbus 05:00, 21:00 to 03:00 and 06:00, 22:00 to 04:00 and 07:00. Which is what the three rows hold. |
+| Wheeling and Columbus kerbs are the eastbound row's | **assumed**; the card gives no addresses |
+
+So a result that depends on the 20:00 or the 22:00, or on the exact Wheeling minute, is provisional until
+those are confirmed. A result that uses only the 21:00 to Wheeling or Columbus rests on the screenshots
+plus the destination inference.
+
+## 20. Sep 26: 234 h 19 min, and the two hours the control spent sitting in Columbus
+
+Nick's find, and the whole thing turns on four lines at the head of the control:
+
+```
+walk Thu 00:54 Huntington Bus Stop  ->  Huntington
+ride Thu 01:00 Huntington           ->  Thu 04:50 Columbus      3.93 h on the clock
+                                        ... sits until 06:50
+ride Thu 06:50 Columbus             ->  Thu 11:30 Detroit
+```
+
+Two hours dead at the very start. The backward report already said the latest start from Huntington is
+12:54 AM, so that gap cannot be harvested by leaving Huntington later: the 01:00 is the only service that
+makes the 06:50. It can be harvested by **arriving at Columbus from somewhere else, later**.
+
+Wheeling does it. Wheeling is in West Virginia, so WV comes from the start stop rather than a leg, and the
+westbound Ohio Coach entered in `81640e5` leaves Wheeling 03:00 and reaches Columbus 06:00, fifty minutes
+clear of the 06:50. Kentucky leaves the ordering because the City of New Orleans already supplies it
+(`Effingham Amtrak -> Memphis`), and Ohio because Columbus is on the way. 48 states, 46 ordered.
+
+| start | elapsed | boards | standing |
+|---|---|---|---|
+| 02:55 | **235 h 19 min** | 03:00 passage, from the 21:00 New York departure | verified timetable |
+| 03:55 | **234 h 19 min** | 04:00 passage, from the 22:00 New York departure | rests on the transposition assumption |
+
+Against 237.34 control, 238.32 route X, 238.83 record. Even the verified figure beats all three, by 2.02,
+3.00 and 3.51 h. `scripts/wheeling_start.py` reproduces both, gates on the control first, and attributes
+every one of the 48 states to the leg that supplies it rather than trusting an aggregate count.
+
+The finish is Sat 03 Oct 22:14 at the Vermont line from Hanover, **identical to the control's**, for every
+start in the sweep. Elapsed falls exactly one hour per hour of later departure across all 48 five-minute
+steps from 00:00 to 03:55, no gaps, and 03:55 is where the chain breaks. That is the pinned-arrival
+signature from the inverse work (HANDOFF 18): slack throughout, binding at the end. So there is nothing to
+win in the interior here and the only question was how late you can leave.
+
+### Nick said Wheeling and I measured New York
+
+He wrote "start at 3 am instead of 12:45 am" and "meet it in Columbus". 3 am is the Wheeling departure. I
+read it as boarding the coach in New York and spent two runs measuring that instead, which came back at
+**240.74 h, +3.40 on the control**, because the New York boarding puts the 9 h overnight ride on the clock
+to reach a point the control reaches in 3.93 h, and its 07:00 Columbus arrival misses the 06:50 by ten
+minutes. Worth keeping as a measured negative: the coach is only worth anything if you join it partway.
+
+The lesson is narrower than "read more carefully". Both readings collect the same three states off the same
+bus, and the aggregate state-credit is identical. What separates them is *where the clock starts relative
+to the chain you are joining*, which no coverage count can see. Same bus, same states, 6.4 h apart.
+
+### What this is not
+
+A graft, not a search. The tail is the control's ordering, optimised for a Huntington start; this is the
+best start TIME for that shape, not the best shape from Wheeling. A real search from here has not been run
+and may do better. And 234 h 19 min is data-dependent in a way 235 h 19 min is not: the ticket office was
+cash only, so the 20:00 and 22:00 running times remain Nick's stated transposition. Quote 235 h 19 min.
+
+## 21. Sep 26: the search cannot find the 234 route, and the replay says exactly why
+
+`ride_search.py` from Wheeling 03:55, `--end VT --by 2026-10-04T01:55 --target 238 --pairs push`, 1800 s:
+
+```
+4386 nodes in 1804 s (2/s), 2762 kept; deepest 26/48
+pair prune at push: 6921 nodes killed for owing an uncollectable pair
+queue at exit: 5791 nodes, depth 26:1 25:8 24:8 23:16 22:74 21:36 20:58 19:155 18:196 17:444 16:432 15:551
+pair-live by depth: every bucket N/N
+nothing reached 48 states under 238.0 h in the budget
+```
+
+Two things worth separating there. The frontier is **honest**: every depth bucket is pair-live N/N, nothing
+jointly dead, against the earlier unpruned baseline that printed depth 30 while all 458 nodes from 22 to 31
+were dead on arrival. And the prune is working, 6921 nodes killed at push. It ran out of budget, it did not
+deceive itself.
+
+But it searched nowhere near the answer. Its chain ran Chicago, New Buffalo, Winona, Bethany, Shreveport,
+Tuscaloosa, Atlanta, Louisville, Detroit; the route goes Wheeling, Columbus, Detroit, Indianapolis,
+Effingham, Memphis. Different from the second ride onward. And its deepest node sat at 118.3 h for 26
+states, 4.55 h per state against the route's 4.88, so **by the local measure it looked ahead of pace while
+being nowhere**. That is hours-per-new-state, the lesson at the top of CLAUDE.md, reappearing in the
+frontier ordering rather than in the ride ranking. Worth naming as its own instance.
+
+### The replay, which is the only thing that explained anything
+
+`--track ../out/res_wheeling.pkl` (written by `wheeling_start.py --write`):
+
+```
+record round-trip over 40 real legs: collected 46 | order 46  MATCH
+31/40 rides reproducible within --width 12; 47/48 states collected along the way
+```
+
+**Not one leg is MISSING.** Every ride the route takes is on the menu. The search fails on ranking alone,
+and six of the nine legs outside the width cap collect no new state:
+
+| leg | rank | collects |
+|---|---|---|
+| Saint George (Bluff St Office) | **509160/1156415** | nothing |
+| HOLMES at ELVIS PRESLEY | 13900/375718 | nothing |
+| Des Moines | 4956/199476 | IA |
+| Bonneville Transit Center | 2173/331320 | nothing |
+| AIRWAYS TRANSIT CENTER | 365/25989 | nothing |
+| Conway | 61/34112 | AR |
+| AKARD STATION | 29/190 | nothing |
+| Amtrak Station (Jacksonville) | 14/54 | nothing |
+| Fargo | 13/37 | ND |
+
+CLAUDE.md's live-instances table already lists Saint George at "486373rd of 1156403 positioning ones". This
+is the same stop, the same bug, measured independently on a different route from a different start:
+**509160 of 1156415**. The entry was written from the control and it reproduces here unchanged, which is
+the strongest evidence yet that `sort_opts`' collecting-before-positioning key is the thing standing
+between this search and a route it can already see every leg of.
+
+The measured comparison this calls for is `--split off`, and the replay is what decides it, not the
+reasoning.
+
+### `--split off`, and the prediction it falsified
+
+I predicted, before running it, that dropping the collecting-before-positioning key would recover the
+badly-ranked legs, because CLAUDE.md's live-instances table names Saint George as one of its casualties.
+The replay says otherwise, which is the whole reason for stating a falsification condition first.
+
+| leg | collects | split on | split off |
+|---|---|---|---|
+| Indianapolis | IN | **1**/1678072 | 161301/1678072 |
+| Barstow Station | CA | **2**/56015 | 33758/56015 |
+| Conway | AR | 61/34112 | 34111/34112 |
+| Las Vegas Amtrak | NM | **5**/2552 | 1588/2552 |
+| Billings | WY MT | **2**/211 | 57/211 |
+| Sioux Falls | SD | **5**/89 | 21/89 |
+| Memphis to Holmes | nothing | 13900/375718 | 3967/375718 |
+| Jacksonville Amtrak | nothing | 14/54 | **1**/54 |
+| Saint George | nothing | 509160/1156415 | **509148**/1156415 |
+
+**31/40 within `--width 12` with the split on, 27/40 with it off.** One positioning leg gained, five
+collecting legs lost, two of them catastrophically. The split is load-bearing and removing it is a clear
+net loss.
+
+And all three casualties CLAUDE.md attributed to the split behave differently from the claim. Spokane to
+Pasco is rank 5 with the split ON, so it was never buried by it. Memphis to Holmes improves 3.5x without
+the split and is still 3967th, so the split is not why it is unreachable either. Saint George moves twelve
+places out of 1156415, which is not a movement at all.
+
+So the entry was a hypothesis dressed as a finding, and it has been corrected in CLAUDE.md rather than
+deleted, because the underlying worry is still real: something is burying Saint George. It just is not the
+split. It is the slack key itself, which has nothing to say about a positioning ride when a million options
+all leave roughly the same room. That is the open bug, and it is a different one.
+
+The width cap is the other half. `--width 12` against a leg ranked 509160th is not close, so no plausible
+width setting reaches Saint George; this needs a ranking that knows what a positioning move is for, not a
+bigger cap.

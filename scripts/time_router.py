@@ -268,7 +268,7 @@ class TimeRouter:
         """CSA from initial labels {stop: (time, trip_key)}; returns arrival labels at
         targets and predecessor info for reconstruction."""
         INF = float('inf'); N = self.N; tgt_ = targets   # guard: a state target, collected by ride or walk-in only
-        best = np.full(N, INF); pred = {}; ltrip = {}
+        best = np.full(N, INF); pred = {}; ltrip = {}; ride_best = {}   # ride_best: earliest arrival BY A RIDE
         for s, (t, trip) in labels.items():
             if t < best[s]: best[s] = t; ltrip[s] = trip; pred[s] = None
             for j, w in self.foot[s]:
@@ -289,12 +289,20 @@ class TimeRouter:
                 if ba + need <= dt: reached[trip] = (a, dt)
                 else: continue
             b = cto[k]; at = arr[k]
+            # As csa.c: footpaths are relaxed when a RIDE newly improves b, not only when it improves best[b], so a
+            # walk-derived label at b cannot shadow the onward walk the ride licenses (Holmes and the MS line). The
+            # ride is kept under ('ride', b), apart from b's own predecessor, and a walk off it carries a 4th field
+            # so route() leaves b by that ride rather than by b's walk.
+            fresh = at < ride_best.get(b, INF)
+            if fresh:
+                ride_best[b] = at; pred[('ride', b)] = ('ride', trip, reached[trip][0], reached[trip][1], a, dt)
             if at < best[b]:
-                best[b] = at; ltrip[b] = trip; pred[b] = ('ride', trip, reached[trip][0], reached[trip][1], a, dt)
+                best[b] = at; ltrip[b] = trip; pred[b] = pred[('ride', b)]
                 if b in tgt and at < target_best: target_best = at
+            if fresh:
                 for j, w in self.foot[b]:
                     if guard and j in tgt and self._crosses(b, j): continue
-                    if at + w < best[j]: best[j] = at + w; ltrip[j] = None; pred[j] = ('walk', b, at)
+                    if at + w < best[j]: best[j] = at + w; ltrip[j] = None; pred[j] = ('walk', b, at, True)
         out = {s: (best[s], ltrip.get(s)) for s in tgt if best[s] < INF}
         return out, pred, best
 
@@ -319,11 +327,10 @@ class TimeRouter:
         t_end, _ = min(labels.values(), key=lambda x: x[0]); end = min(labels, key=lambda s: labels[s][0])
         legs = []
         for t, out, pred in reversed(layers):
-            s = end; seg = []
-            while pred.get(s) is not None:
-                p = pred[s]
-                if p[0] == 'walk': seg.append(('walk', p[1], s, p[2], best_time(out, pred, s))); s = p[1]
-                else: seg.append(('ride', p[1], p[2], p[3], s, None)); s = p[2]
+            s = end; seg = []; by_ride = False   # True: s was left on foot off a ride into it, not off its own label
+            while (p := pred.get(('ride', s) if by_ride else s)) is not None:
+                if p[0] == 'walk': seg.append(('walk', p[1], s, p[2], best_time(out, pred, s))); by_ride = len(p) > 3; s = p[1]
+                else: seg.append(('ride', p[1], p[2], p[3], s, None)); by_ride = False; s = p[2]
             legs = seg[::-1] + legs; end = s
         return t_end, self._fill(legs)
 
@@ -357,7 +364,7 @@ class TimeRouter:
         except Exception as e:
             print('fast scan unavailable:', e); return
         D = ctypes.POINTER(ctypes.c_double); I = ctypes.POINTER(ctypes.c_int); B = ctypes.POINTER(ctypes.c_ubyte)
-        lib.csa_scan.argtypes = [ctypes.c_int, D, D, I, I, I, ctypes.c_int, ctypes.c_int, ctypes.c_int, I, I, D, B, D, I, B, ctypes.c_double, ctypes.c_double, I, I, D, I, D]
+        lib.csa_scan.argtypes = [ctypes.c_int, D, D, I, I, I, ctypes.c_int, ctypes.c_int, ctypes.c_int, I, I, D, B, D, I, B, ctypes.c_double, ctypes.c_double, I, I, D, I, D, I, B]
         lib.csa_scan.restype = ctypes.c_int
         self._ptrs = {k: v.ctypes.data_as(D if v.dtype == np.float64 else B if v.dtype == np.uint8 else I) for k, v in self._fa.items()}
         self._masks = {}; self._ct = (D, I, B); self._fast = lib
@@ -398,13 +405,15 @@ class TimeRouter:
         best[stops[o]] = times[o]; lt[stops[o]] = trips[o]
         k0 = int(np.searchsorted(self._fa['dep'], times.min()))
         p = self._ptrs
-        pred = None; pa = (None,) * 5
+        pred = None; pa = (None,) * 7
         if want_pred:
             nt = len(self.trip_ids)
             pred = dict(conn=np.full(self.N, -1, dtype=np.int32), walk=np.full(self.N, -1, dtype=np.int32), walk_t=np.zeros(self.N),
-                        bstop=np.full(nt, -1, dtype=np.int32), bdep=np.zeros(nt), best=best)
+                        bstop=np.full(nt, -1, dtype=np.int32), bdep=np.zeros(nt), best=best,
+                        rconn=np.full(self.N, -1, dtype=np.int32), walk_ride=np.zeros(self.N, dtype=np.uint8))
             pa = (pred['conn'].ctypes.data_as(I), pred['walk'].ctypes.data_as(I), pred['walk_t'].ctypes.data_as(D),
-                  pred['bstop'].ctypes.data_as(I), pred['bdep'].ctypes.data_as(D))
+                  pred['bstop'].ctypes.data_as(I), pred['bdep'].ctypes.data_as(D),
+                  pred['rconn'].ctypes.data_as(I), pred['walk_ride'].ctypes.data_as(B))
         rc = self._fast.csa_scan(len(self._fa['dep']), p['dep'], p['arr'], p['cfrom'], p['cto'], p['ctrip'], k0, self.N, len(self.trip_ids),
                             p['ptr'], p['to'], p['w'], p['fx'], best.ctypes.data_as(D), lt.ctypes.data_as(I), mask.ctypes.data_as(B),
                             float(MIN_TRANSFER), float(SCAN_SLACK), *pa)
@@ -424,12 +433,13 @@ class TimeRouter:
         i = int(np.argmin(times)); t_end = float(times[i]); end = int(stops[i]); legs = []
         arr = self._fa['arr']
         for pred in reversed(layers):
-            s = end; seg = []
+            s = end; seg = []; by_ride = False   # True: s was left on foot off a ride into it, not off its best label
             while True:
-                if pred['walk'][s] >= 0:
-                    f = int(pred['walk'][s]); seg.append(('walk', f, s, float(pred['walk_t'][s]), float(pred['best'][s]))); s = f
-                elif pred['conn'][s] >= 0:
-                    k = int(pred['conn'][s]); key = self.ctrip[k]; ti = self._fa['ctrip'][k]
+                if not by_ride and pred['walk'][s] >= 0:
+                    f = int(pred['walk'][s]); by_ride = bool(pred['walk_ride'][s])
+                    seg.append(('walk', f, s, float(pred['walk_t'][s]), float(pred['best'][s]))); s = f
+                elif (k := int(pred['rconn'][s] if by_ride else pred['conn'][s])) >= 0:
+                    by_ride = False; key = self.ctrip[k]; ti = self._fa['ctrip'][k]
                     b = int(pred['bstop'][ti]); seg.append(('ride', key, b, float(pred['bdep'][ti]), s, float(arr[k]))); s = b
                 else: break
             legs = seg[::-1] + legs; end = s

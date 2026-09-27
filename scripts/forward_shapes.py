@@ -14,8 +14,13 @@ It is also 0.2 s against the backward chain's 60 s, because each layer stops ear
 full span. Two orders of magnitude cheaper AND exact, which is the whole afternoon's lesson arriving one
 more time: the proxy was slower than the thing it stood in for.
 
-Falsification, before running: rotation 0 is the control's own ordering from Huntington at 00:54 and must
-come back at 237.34 h. If it does not, the harness is wrong and no other row counts.
+Falsification, before running, and there are two of them because one control can pass a harness that is
+wrong in a way the control does not exercise. Rotation 0 is the control's own ordering from Huntington at
+00:54 and must come back at 237.34 h. Route X's ordering from Sheridan WY at 22:00 MT must come back at
+238.32 h; it ends on a border walk-in, which the control never does. If either misses, the harness is wrong
+and no other row counts. The second gate used to be the 238.8 record and used to read its ordering from
+../out/time_238.pkl under an os.path.exists guard. Nothing in this repo writes that file and out/ is
+gitignored, so on every fresh checkout the gate skipped without a word and the run reported one gate as two.
 
     python3 forward_shapes.py                  every rotation, swept over a day of departures
     python3 forward_shapes.py --rot 0          just the control, to check the harness
@@ -48,6 +53,7 @@ def _one(job):
 
 
 def main():
+    """Parse CLI options, check reference routes, and compare rotated state orders."""
     ap = argparse.ArgumentParser()
     ap.add_argument('--at', default='2026-09-24T00:54')
     ap.add_argument('--tz', default='America/New_York')
@@ -69,9 +75,17 @@ def main():
     ap.add_argument('--reverse', action='store_true', help='rotate the REVERSED cycle instead. Rotations of one '
                     'orientation are only half the cyclic reorders of the sequence, and the other half '
                     'includes the record\'s own White River Junction to Huntington direction.')
-    ap.add_argument('--record', default='../out/time_238.pkl', help='the 238.8 h record-shape order, replayed '
-                    'as a second gate: one control can pass a harness that is wrong in a way the control '
-                    'does not exercise, two that disagree cannot')
+    ap.add_argument('--record', default=None, help='an extra shape ordering to replay as a further gate, as '
+                    '{"order": [...]} in a pickle, with --record-el and --record-start. Optional, and a path '
+                    'that does not exist is now a hard failure rather than a skip: this used to default to '
+                    '../out/time_238.pkl, which NOTHING IN THIS REPO HAS EVER WRITTEN. out/ is gitignored, '
+                    'the file only existed on one machine, and the guard was `if ... os.path.exists(...)`, '
+                    'so on every fresh checkout the second gate silently did not run and the harness '
+                    'reported one gate as two.')
+    ap.add_argument('--record-start', default='White River Junction Bus Station')
+    ap.add_argument('--record-at', default='2026-09-24T04:20')
+    ap.add_argument('--record-tz', default='America/New_York')
+    ap.add_argument('--record-el', type=float, default=239.08, help='hours --record must come back at')
     ap.add_argument('--checkpoint', default='../out/fs_phase1_{tag}.pkl', help='phase 1 results are saved here '
                     'as they arrive and reused on restart, so a kill costs minutes rather than the whole phase')
     a = ap.parse_args()
@@ -98,6 +112,7 @@ def main():
     full = []
 
     def add_(y_):
+        """Append a nonnegative state index to full only on its first visit."""
         if y_ is not None and y_ >= 0 and y_ not in full: full.append(int(y_))
 
     add_(int(R.state[st0_]))
@@ -157,24 +172,59 @@ def main():
         gate('rotation 0 from Huntington 00:54',
              lambda: min(el for el in (_one((0, h, t_base))[3] for h in hun) if el is not None),
              237.34, 0.01)
-    # Second gate, and one that disagrees with the first: the record's own shape, the other direction across
-    # the country from a different start. 239.08 h from the 04:20 clock at White River Junction (238.83 from
-    # its first bus), measured through this same Search.evaluate on Sep 22 against the saved finish.
-    if not a.no_gate and a.record and os.path.exists(a.record):
-        rec = pickle.load(open(a.record, 'rb'))['order']
-        t_rec = datetime(2026, 9, 24, 4, 20, tzinfo=ZoneInfo('America/New_York')).timestamp()
+    def replay(order, start_name, t_start, RR=None):
+        """best elapsed hours over every stop of that exact name, or None if none completes the order"""
+        RR = RR or R; best = None
+        for w in [i for i, n in enumerate(RR.stop_name) if n == start_name]:
+            Sr = Search(RR, w, t_start, [], 1)
+            ts._R, ts._START, ts._T0, ts._SELF, ts._BASE, ts._END = RR, w, t_start, Sr, None, None
+            f_, lg_ = Sr.evaluate(order)
+            if np.isfinite(f_) and Sr.all_states(lg_):
+                el_ = (f_ - t_start) / 3600
+                best = el_ if best is None else min(best, el_)
+        return best
 
-        def rec_el():
-            best = None
-            for w in [i for i, n in enumerate(R.stop_name) if n == 'White River Junction Bus Station']:
-                Sr = Search(R, w, t_rec, [], 1)
-                ts._R, ts._START, ts._T0, ts._SELF, ts._BASE, ts._END = R, w, t_rec, Sr, None, None
-                f_, lg_ = Sr.evaluate(rec)
-                if np.isfinite(f_) and Sr.all_states(lg_):
-                    el_ = (f_ - t_rec) / 3600
-                    best = el_ if best is None else min(best, el_)
-            return best
-        gate('record order from White River Junction 04:20', rec_el, 239.08, 0.01)
+    # Second gate, and one that has to disagree with the first: one control can pass a harness that is wrong
+    # in a way the control does not exercise, two that disagree cannot. Route X qualifies and the record does
+    # not, for a reason worth stating rather than discovering again. X starts in Wyoming and ends on the
+    # Mississippi line at Memphis, so it exercises a ride-licensed border walk-in at the FINISH, which is the
+    # exact path 78ada1b fixed in csa.c and which the control, ending at Hanover, never touches. The record
+    # shares both of the control's endpoints and is its corridor reversed, so it was always the weaker of the
+    # two even when its file existed.
+    #
+    # And X's ordering is IMPORTED, not unpickled. The record gate read ../out/time_238.pkl, which nothing in
+    # this repo has ever written and which out/ ignores, under an os.path.exists guard, so it skipped in
+    # silence on every fresh checkout. A gate whose input can go missing is a gate that can stop existing
+    # without anything saying so; a gate whose input is a committed literal cannot.
+    # Given but missing is a hard failure whatever --no-gate says: a typo should stop the run, not wait for a
+    # run with the gates on to be noticed. --no-gate decides only whether the orders get replayed.
+    if a.record and not os.path.exists(a.record):
+        raise SystemExit(f'--record {a.record} does not exist. Nothing in this repo writes it and out/ '
+                         f'is gitignored; pass a path that exists or leave --record off.')
+    if not a.no_gate:
+        from x_forward import ORDER as X_ORDER
+        from datetime import date as _date
+        from time_router import SCAN_SLACK
+        inv = {v: k for k, v in ABBR.items()}
+        t_x = datetime(2026, 9, 26, 22, 0, tzinfo=ZoneInfo('America/Denver')).timestamp()
+        # X's departure is fixed, so a router loaded for other dates (--at, --days) may not hold the Sep 26 bus
+        # or the ten days after it, and the gate would fail on the calendar rather than the harness. It then
+        # runs on the router it was measured on. A router's days run d0 .. d0 + days - 1.
+        d0 = datetime.fromisoformat(a.at).date()
+        x_end = datetime.fromtimestamp(t_x + 238.32 * 3600 + SCAN_SLACK, ZoneInfo('UTC')).date() + timedelta(days=1)
+        RX = R if d0 <= _date(2026, 9, 26) and d0 + timedelta(days=a.days) > x_end else cached_router(_date(2026, 9, 24), 20)
+        if RX is not R: print(f'route X gate: this router ({d0}, {a.days} days) does not cover Sep 26 to {x_end}; '
+                              f'replaying on the Sep 24, 20-day reference router', flush=True)
+        x_order = [RX.state_names.index(inv[s]) for s in X_ORDER]
+        gate('route X from Sheridan WY 22:00 MT',
+             lambda: replay(x_order, 'Sheridan WY Taco Bell 1655 Coffeen Ave (Jefferson)', t_x, RX), 238.32, 0.01)
+        del RX
+    # An extra shape, if one is supplied.
+    if not a.no_gate and a.record:
+        rec = pickle.load(open(a.record, 'rb'))['order']
+        t_rec = datetime.fromisoformat(a.record_at).replace(tzinfo=ZoneInfo(a.record_tz)).timestamp()
+        gate(f'record order from {a.record_start} {a.record_at}',
+             lambda: replay(rec, a.record_start, t_rec), a.record_el, 0.01)
     import multiprocessing as mp
     nw = a.workers or max(1, (os.cpu_count() or 2) - 1)
 
