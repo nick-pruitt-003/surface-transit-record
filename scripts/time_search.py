@@ -484,7 +484,10 @@ def main():
     if f == float('inf'): print('FINAL unreachable'); return
     if S.best_elapsed == float('inf'):   # nothing made the deadline: say how close the best route got
         late = (f - end_by) / 3600 if end_by else float('nan')
-        print(f'FINAL misses --end-by: best route reaches {a.end} at', R.fmt_time(f, [l for l in legs if l[0] == 'ride'][-1][4]), f'({late:.1f} h late)')
+        # the sign is the verdict: a negative "late" is a route that got there first, and must not read as a miss
+        # settle() records an elapsed only for a route that is complete AND on time, so an early one failed coverage
+        rel = f'{late:.1f} h late' if not late < 0 else f'{-late:.1f} h early, but it does not collect every state'
+        print(f'FINAL misses --end-by: best route reaches {a.end} at', R.fmt_time(f, [l for l in legs if l[0] == 'ride'][-1][4]), f'({rel})')
         print(R.describe(legs)); return
     # FINAL is hours from the first bus boarded to the finish (the start clock is chosen by the search)
     print('FINAL', round(S.best_elapsed / 3600, 1), 'h', R.fmt_time(f, [l for l in legs if l[0] == 'ride'][-1][4]))

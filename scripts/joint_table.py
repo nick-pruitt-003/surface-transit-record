@@ -80,9 +80,12 @@ def main():
     with open(a.out + '.txt', 'w') as fh:
         fh.write('door-to-door hours from each hub departure hour (Thu Sep 24 00:00 CT + k h): best / median / worst\n')
         for (A, B), v in sorted(arr.items()):
-            d = [(x - t) / 3600 for x, t in zip(v, deps) if x < float('inf')]
-            if not d: fh.write(f'{A:18s} -> {B:18s}  unreachable\n'); continue
-            k = int(np.argmin(d)); bt = datetime.fromtimestamp(deps[k], ct)
+            # each finite arrival stays paired with its own departure: an index into the filtered list is not an
+            # index into deps once any departure is unreachable
+            pairs = [((x - t) / 3600, t) for x, t in zip(v, deps) if x < float('inf')]
+            if not pairs: fh.write(f'{A:18s} -> {B:18s}  unreachable\n'); continue
+            d = [h for h, _ in pairs]
+            bt = datetime.fromtimestamp(min(pairs)[1], ct)
             fh.write(f'{A:18s} -> {B:18s}  best {min(d):6.1f} (leave {bt:%a %H:%M} CT)  median {np.median(d):6.1f}  worst {max(d):6.1f}\n')
     print('wrote', a.out + '.pkl/.txt', flush=True)
 

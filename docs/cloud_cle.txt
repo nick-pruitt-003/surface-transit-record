@@ -56,7 +56,7 @@ d11 Sun 17:40  Cleveland, OH  ->  d11 Sun 18:25  Akron, OH   [Barons Bus Lines: 
 d11 Sun 18:40  Akron, OH, OH  ->  d11 Sun 19:40  New Philadelphia (E), OH, OH   [GoBus: Blue]
 d11 Sun 19:50  New Philadelphia (E), OH, OH  ->  d11 Sun 21:50  Cleveland, OH, OH   [GoBus: Blue]
   walk  Cleveland, OH -> Cleveland Bus Station (Brook Park)   (0.0 km, from d11 Sun 21:50)
-FLA rc=0 FINAL misses --end-by: best route reaches Cleveland Bus Station (Brook Park) at d12 Mon 02:10 (-2.2 h late) 
+FLA rc=0 FINAL no complete route: best route reaches Cleveland Bus Station (Brook Park) at d12 Mon 02:10 (2.2 h early, but it does not collect every state) [status corrected Sep 27: the search printed "-2.2 h late"; the arrival is before the 04:25 EDT deadline, and time_search records an elapsed only for a complete route]
 d1 Thu 15:15  Panama City Beach Bus Station, FL  ->  d1 Thu 18:20  Mobile Bus Station, AL   [Greyhound-us: Jacksonville - Mobile]
 d1 Thu 20:15  Mobile Bus Station, AL  ->  d1 Thu 22:40  New Orleans Bus Station, LA   [FlixBus-us: Houston - New Orleans]
 d1 Thu 23:55  New Orleans Bus Station, LA  ->  d2 Fri 08:15  Memphis Bus Station, TN   [FlixBus-us: Houston - New Orleans - Memphis]

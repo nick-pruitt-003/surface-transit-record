@@ -5,14 +5,18 @@
 cd "$(dirname "$0")"
 R=../docs/cloud_results_x.txt; touch $R
 W=${W:-3}
-push () { git add $R; git commit -qm "cloud result: $1" || true; for i in 1 2 3; do git pull -q --rebase && git push -q && return 0; sleep 5; done; echo "PUSH FAILED $1"; }
+push () { git add $R; git commit -qm "cloud result: $1" || true; for i in 1 2 3; do git pull -q --rebase && git push -q && return 0; sleep 5; done; echo "PUSH FAILED $1" >&2; return 1; }
+# A search that exits nonzero is recorded as FAILED, which the skip check does not match, published, and the job
+# stops there: a rerun retries it rather than taking its partial output as a result.
+fail () { echo "FAILED $1 rc=$2" | tee -a $R; tail -20 "$3" >> $R; push "$1-failed"; exit 3; }
 run () {  # run <tag> <seed order>
   grep -q "^$1 " $R && { echo "skip $1"; return; }
   echo "$(date -u +%H:%M) start $1"
   BUS48_MIN_TRANSFER=5 BUS48_WALKIN_KM=1.4 python3 -u time_search.py --start free:WY --at 2026-09-25T12:00 --tz America/Denver \
     --seed-states "$2" --budget 1500 --workers $W --days 20 --out ../out/cx_$1.pkl > ../out/cx_$1.log 2>&1
-  echo "$1 rc=$? $(grep -E '^FINAL|^START|^END' ../out/cx_$1.log | tr '\n' ' ')" | tee -a $R
-  sed -n '/^FINAL/,$p' ../out/cx_$1.log | head -80 > ../docs/cloud_x_$1_legs.txt; git add ../docs/cloud_x_$1_legs.txt; push $1
+  local rc=$?; [ $rc -eq 0 ] || fail $1 $rc ../out/cx_$1.log
+  echo "$1 rc=0 $(grep -E '^FINAL|^START|^END' ../out/cx_$1.log | tr '\n' ' ')" | tee -a $R
+  sed -n '/^FINAL/,$p' ../out/cx_$1.log | head -80 > ../docs/cloud_x_$1_legs.txt; git add ../docs/cloud_x_$1_legs.txt; push $1 || exit 4
 }
 mkdir -p ../out
 python3 -u x_gate.py || { echo "GATE FAILED" | tee -a $R; push gate; exit 2; }

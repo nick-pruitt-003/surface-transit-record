@@ -11,7 +11,7 @@ and when several do the pick is reported against its runner-up.
 
     python3 shape_followup.py --log ../out/fs_full.log --top 3 --budget 900 --workers 2
 """
-import argparse, os, pickle, re, time
+import argparse, hashlib, os, pickle, re, time
 from datetime import datetime, date
 from zoneinfo import ZoneInfo
 from time_router import cached_router
@@ -45,7 +45,10 @@ def main():
     text = open(a.log).read().splitlines()
     ctl = next((l for l in text if l.startswith('control order')), None)
     if ctl is None: raise SystemExit(f'{a.log} has no control order line; did forward_shapes finish?')
-    full_ab = ctl.split(',', 1)[1].split()
+    full_ab = ctl.split(',', 1)[1].split()   # as printed: forward_shapes reverses BEFORE printing, so with --reverse this
+    # is already the reversed cycle, and full[k:] + full[:k] below is its own rotation k (the gate undoes it, not this)
+    # Which run a result belongs to: the cycle the rotations are cut from. Resume skips only a row with this id.
+    run_id = hashlib.sha1(ctl.strip().encode()).hexdigest()[:12]
     rows = []
     for l in text:
         m = ROW.match(l)
@@ -60,8 +63,9 @@ def main():
     if a.results and os.path.exists(a.results):
         for l in open(a.results):
             p = l.rstrip('\n').split('\t')
-            if len(p) > 2 and p[0] == a.tag and p[1].isdigit(): done.add(int(p[1]))
-        if done: print(f'{len(done)} {a.tag} rotations already in {a.results}; skipping them', flush=True)
+            # rows written before the id column existed carry none, so they never match and are redone: safe direction
+            if len(p) > 7 and p[0] == a.tag and p[1].isdigit() and p[7] == run_id: done.add(int(p[1]))
+        if done: print(f'{len(done)} {a.tag} rotations of run {run_id} already in {a.results}; skipping them', flush=True)
     picks = [r for r in picks if r[1] not in done]
     print(f'{len(rows)} rotations in the log; following up {len(picks)}: '
           + ', '.join(f'rot {k} {el:.2f} h' for el, k, _, _ in picks), flush=True)
@@ -106,7 +110,7 @@ def main():
             first = next((l for l in legs if l[0] == 'ride'), None)
             with open(a.results, 'a') as fh:
                 fh.write('\t'.join([a.tag, str(k), f'{el:.2f}', f'{h:.2f}', S.start_name(legs),
-                                     R.fmt_time(first[3], first[2]) if first else '', ' '.join(ab_(x) for x in order_)])
+                                     R.fmt_time(first[3], first[2]) if first else '', ' '.join(ab_(x) for x in order_), run_id])
                          + '\n')
             if a.push:
                 import subprocess
