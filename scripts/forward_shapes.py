@@ -53,6 +53,7 @@ def _one(job):
 
 
 def main():
+    """Parse CLI options, check reference routes, and compare rotated state orders."""
     ap = argparse.ArgumentParser()
     ap.add_argument('--at', default='2026-09-24T00:54')
     ap.add_argument('--tz', default='America/New_York')
@@ -111,6 +112,7 @@ def main():
     full = []
 
     def add_(y_):
+        """Append a nonnegative state index to full only on its first visit."""
         if y_ is not None and y_ >= 0 and y_ not in full: full.append(int(y_))
 
     add_(int(R.state[st0_]))

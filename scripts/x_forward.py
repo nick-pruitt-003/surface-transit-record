@@ -43,12 +43,18 @@ ORDER = ('WY MT ID WA OR UT AZ NV CA NM CO KS OK TX LA AL FL GA SC NC VA MD DE P
 
 
 def ev(R, stop, t0, order):
+    """Evaluate state indices in order from stop at Unix timestamp t0 using router R.
+
+    Set time_search's global context and return (finish timestamp, legs).
+    An unreachable order has an infinite finish timestamp.
+    """
     S = Search(R, stop, t0, [], 1)
     ts._R, ts._START, ts._T0, ts._SELF, ts._BASE, ts._END = R, stop, t0, S, None, None
     return S.evaluate(order)
 
 
 def main():
+    """Check the control, sweep route X or its inverse, and report the fastest completion."""
     ap = argparse.ArgumentParser()
     ap.add_argument('--dir', default='out', choices=('out', 'back'))
     ap.add_argument('--at', default=None, help='first departure; default depends on --dir')

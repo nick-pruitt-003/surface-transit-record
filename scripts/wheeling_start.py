@@ -54,12 +54,18 @@ VARIANTS = (('02:55', 235.3239, 'verified: 21:00 NY departure, 03:00 Wheeling pa
 
 
 def ev(R, stop, t0, order):
+    """Evaluate state indices in order from stop at Unix timestamp t0 using router R.
+
+    Set time_search's global context and return (Search, (finish timestamp, legs)).
+    An unreachable order has an infinite finish timestamp.
+    """
     S = Search(R, stop, t0, [], 1)
     ts._R, ts._START, ts._T0, ts._SELF, ts._BASE, ts._END = R, stop, t0, S, None, None
     return S, S.evaluate(order)
 
 
 def main():
+    """Validate the control and Wheeling variants, report states, and optionally save the best."""
     ap = argparse.ArgumentParser()
     ap.add_argument('--days', type=int, default=20)
     ap.add_argument('--legs', action='store_true', help='print the full leg list for the best variant')
