@@ -47,14 +47,16 @@ def main():
     if ctl is None: raise SystemExit(f'{a.log} has no control order line; did forward_shapes finish?')
     full_ab = ctl.split(',', 1)[1].split()   # as printed: forward_shapes reverses BEFORE printing, so with --reverse this
     # is already the reversed cycle, and full[k:] + full[:k] below is its own rotation k (the gate undoes it, not this)
-    # Which run a result belongs to: the cycle the rotations are cut from. Resume skips only a row with this id.
-    run_id = hashlib.sha1(ctl.strip().encode()).hexdigest()[:12]
     rows = []
     for l in text:
         m = ROW.match(l)
         if m: rows.append((float(m.group(4)), int(m.group(1)), m.group(5), m.group(6).strip()))
     if not rows: raise SystemExit(f'{a.log} has no result rows')
     rows.sort()
+    # Which run a result belongs to: the cycle the rotations are cut from AND the candidates the log ranked (each
+    # rotation's time, departure and start stop), so two logs of one cycle with different sweeps do not share an id.
+    # Sorted rows, so the id does not depend on line order. Resume skips only a row with this id.
+    run_id = hashlib.sha1((ctl.strip() + '\n' + '\n'.join(f'{k} {el:.2f} {when} {name}' for el, k, when, name in rows)).encode()).hexdigest()[:12]
     reversed_ = '(REVERSED)' in ctl
     # rotation 0 of the forward cycle IS the control; rotation 0 of the reversed cycle is a new shape
     picks = [r for r in rows if reversed_ or r[1] != 0]

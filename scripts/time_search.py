@@ -481,14 +481,15 @@ def main():
     S.patience = a.patience
     S.live(force=True, name=os.path.basename(a.out).replace('.pkl', ''), phase='loading')
     order, f, legs = S.run(seed, a.budget)
-    if f == float('inf'): print('FINAL unreachable'); return
+    # distinct nonzero exits, so a caller checking status cannot file these as results: 2 unreachable, 3 missed --end-by
+    if f == float('inf'): print('FINAL unreachable'); sys.exit(2)
     if S.best_elapsed == float('inf'):   # nothing made the deadline: say how close the best route got
         late = (f - end_by) / 3600 if end_by else float('nan')
         # the sign is the verdict: a negative "late" is a route that got there first, and must not read as a miss
         # settle() records an elapsed only for a route that is complete AND on time, so an early one failed coverage
         rel = f'{late:.1f} h late' if not late < 0 else f'{-late:.1f} h early, but it does not collect every state'
         print(f'FINAL misses --end-by: best route reaches {a.end} at', R.fmt_time(f, [l for l in legs if l[0] == 'ride'][-1][4]), f'({rel})')
-        print(R.describe(legs)); return
+        print(R.describe(legs)); sys.exit(3)
     # FINAL is hours from the first bus boarded to the finish (the start clock is chosen by the search)
     print('FINAL', round(S.best_elapsed / 3600, 1), 'h', R.fmt_time(f, [l for l in legs if l[0] == 'ride'][-1][4]))
     first = next(l for l in legs if l[0] == 'ride')

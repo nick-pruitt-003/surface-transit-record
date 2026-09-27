@@ -6,6 +6,7 @@ mkdir -p ../out
 python3 -u blocks.py > ../docs/blocks_log.txt 2>&1 || { echo "BLOCKS FAILED"; push blocks-failed; exit 2; }
 push blocks || exit 4
 # assemble.py exits nonzero when calibration fails, and then writes no assemble.pkl for block_verify to read.
+rm -f ../out/assemble.txt   # a run that fails before writing its report must not publish the previous one
 python3 -u assemble.py > ../out/assemble.log 2>&1; rc=$?
 cp ../out/assemble.txt ../docs/assemble.txt 2>/dev/null || cp ../out/assemble.log ../docs/assemble.txt
 if [ $rc -ne 0 ]; then echo "ASSEMBLE FAILED rc=$rc"; push assemble-failed; exit 3; fi
