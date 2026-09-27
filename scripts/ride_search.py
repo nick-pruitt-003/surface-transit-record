@@ -480,12 +480,12 @@ def main():
             # quantity and no threshold.
             sc = capg[sa] - v
             s_ = int(sa[int(np.argmax(np.where(fin, sc, -np.inf)))])
-            first = None
+            first = None; by_ride = False   # as in _route_fast: a walk off a ride into b leaves b by that ride
             for _ in range(400):            # a chain longer than this is a predecessor loop, not a route
-                if walk_[s_] >= 0:
-                    s_ = int(walk_[s_])
-                elif conn_[s_] >= 0:
-                    k_ = int(conn_[s_])
+                if not by_ride and walk_[s_] >= 0:
+                    by_ride = bool(pred['walk_ride'][s_]); s_ = int(walk_[s_])
+                elif (k_ := int(pred['rconn'][s_] if by_ride else conn_[s_])) >= 0:
+                    by_ride = False
                     first = (R.ctrip[k_], s_)       # overwritten each step back, so it ends on the earliest
                     s_ = int(bstop_[int(ct[k_])])
                 else:

@@ -357,7 +357,7 @@ class TimeRouter:
         except Exception as e:
             print('fast scan unavailable:', e); return
         D = ctypes.POINTER(ctypes.c_double); I = ctypes.POINTER(ctypes.c_int); B = ctypes.POINTER(ctypes.c_ubyte)
-        lib.csa_scan.argtypes = [ctypes.c_int, D, D, I, I, I, ctypes.c_int, ctypes.c_int, ctypes.c_int, I, I, D, B, D, I, B, ctypes.c_double, ctypes.c_double, I, I, D, I, D]
+        lib.csa_scan.argtypes = [ctypes.c_int, D, D, I, I, I, ctypes.c_int, ctypes.c_int, ctypes.c_int, I, I, D, B, D, I, B, ctypes.c_double, ctypes.c_double, I, I, D, I, D, I, B]
         lib.csa_scan.restype = ctypes.c_int
         self._ptrs = {k: v.ctypes.data_as(D if v.dtype == np.float64 else B if v.dtype == np.uint8 else I) for k, v in self._fa.items()}
         self._masks = {}; self._ct = (D, I, B); self._fast = lib
@@ -398,13 +398,15 @@ class TimeRouter:
         best[stops[o]] = times[o]; lt[stops[o]] = trips[o]
         k0 = int(np.searchsorted(self._fa['dep'], times.min()))
         p = self._ptrs
-        pred = None; pa = (None,) * 5
+        pred = None; pa = (None,) * 7
         if want_pred:
             nt = len(self.trip_ids)
             pred = dict(conn=np.full(self.N, -1, dtype=np.int32), walk=np.full(self.N, -1, dtype=np.int32), walk_t=np.zeros(self.N),
-                        bstop=np.full(nt, -1, dtype=np.int32), bdep=np.zeros(nt), best=best)
+                        bstop=np.full(nt, -1, dtype=np.int32), bdep=np.zeros(nt), best=best,
+                        rconn=np.full(self.N, -1, dtype=np.int32), walk_ride=np.zeros(self.N, dtype=np.uint8))
             pa = (pred['conn'].ctypes.data_as(I), pred['walk'].ctypes.data_as(I), pred['walk_t'].ctypes.data_as(D),
-                  pred['bstop'].ctypes.data_as(I), pred['bdep'].ctypes.data_as(D))
+                  pred['bstop'].ctypes.data_as(I), pred['bdep'].ctypes.data_as(D),
+                  pred['rconn'].ctypes.data_as(I), pred['walk_ride'].ctypes.data_as(B))
         rc = self._fast.csa_scan(len(self._fa['dep']), p['dep'], p['arr'], p['cfrom'], p['cto'], p['ctrip'], k0, self.N, len(self.trip_ids),
                             p['ptr'], p['to'], p['w'], p['fx'], best.ctypes.data_as(D), lt.ctypes.data_as(I), mask.ctypes.data_as(B),
                             float(MIN_TRANSFER), float(SCAN_SLACK), *pa)
@@ -424,12 +426,13 @@ class TimeRouter:
         i = int(np.argmin(times)); t_end = float(times[i]); end = int(stops[i]); legs = []
         arr = self._fa['arr']
         for pred in reversed(layers):
-            s = end; seg = []
+            s = end; seg = []; by_ride = False   # True: s was left on foot off a ride into it, not off its best label
             while True:
-                if pred['walk'][s] >= 0:
-                    f = int(pred['walk'][s]); seg.append(('walk', f, s, float(pred['walk_t'][s]), float(pred['best'][s]))); s = f
-                elif pred['conn'][s] >= 0:
-                    k = int(pred['conn'][s]); key = self.ctrip[k]; ti = self._fa['ctrip'][k]
+                if not by_ride and pred['walk'][s] >= 0:
+                    f = int(pred['walk'][s]); by_ride = bool(pred['walk_ride'][s])
+                    seg.append(('walk', f, s, float(pred['walk_t'][s]), float(pred['best'][s]))); s = f
+                elif (k := int(pred['rconn'][s] if by_ride else pred['conn'][s])) >= 0:
+                    by_ride = False; key = self.ctrip[k]; ti = self._fa['ctrip'][k]
                     b = int(pred['bstop'][ti]); seg.append(('ride', key, b, float(pred['bdep'][ti]), s, float(arr[k]))); s = b
                 else: break
             legs = seg[::-1] + legs; end = s

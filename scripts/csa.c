@@ -12,7 +12,8 @@ int csa_scan(int n_conn, const double *dep, const double *arr, const int *cfrom,
              const int *foot_ptr, const int *foot_to, const double *foot_w, const unsigned char *foot_x,
              double *best, int *ltrip, const unsigned char *is_target,
              double min_transfer, double slack,
-             int *pconn, int *pwalk, double *pwalk_t, int *trip_bstop, double *trip_bdep)   /* may all be NULL */
+             int *pconn, int *pwalk, double *pwalk_t, int *trip_bstop, double *trip_bdep,   /* may all be NULL */
+             int *prconn, unsigned char *pwalk_ride)   /* ride-into-b predecessor, and which walks leave from it */
 {
     unsigned char *reached = (unsigned char *)calloc((size_t)n_trips, 1);
     double *init = (double *)malloc(sizeof(double) * (size_t)n_stops);
@@ -25,7 +26,7 @@ int csa_scan(int n_conn, const double *dep, const double *arr, const int *cfrom,
         for (int e = foot_ptr[s]; e < foot_ptr[s + 1]; e++) {
             int j = foot_to[e]; double t = init[s] + foot_w[e];
             if (foot_x[e] && is_target[j] == 2) continue;
-            if (t < best[j]) { best[j] = t; ltrip[j] = -1; if (pconn) { pconn[j] = -1; pwalk[j] = s; pwalk_t[j] = init[s]; } }
+            if (t < best[j]) { best[j] = t; ltrip[j] = -1; if (pconn) { pconn[j] = -1; pwalk[j] = s; pwalk_t[j] = init[s]; pwalk_ride[j] = 0; } }
         }
     }
     double target_best = INFINITY;
@@ -48,7 +49,11 @@ int csa_scan(int n_conn, const double *dep, const double *arr, const int *cfrom,
            uncollectable because a faster arrival shadowed a slower one. best[b] <= ride[b] always, so
            every case that relaxed before still relaxes: this only adds the shadowed ones. */
         int fresh_ride = at < ride[b];
-        if (fresh_ride) ride[b] = at;
+        if (fresh_ride) { ride[b] = at; if (pconn) prconn[b] = k; }
+        /* The ride into b is kept as its own predecessor (prconn), apart from b's best-label one (pconn/pwalk),
+           which may be a walk. A footpath relaxed off this ride is marked pwalk_ride, so the replay leaves b by
+           the ride. Without it a shadowed ride's onward walk replayed as walk-into-b then walk-to-j: two chained
+           walks the scan never allows, with the ride that licensed the second one missing from the legs. */
         if (at < best[b]) {
             best[b] = at; ltrip[b] = trip;
             if (pconn) { pconn[b] = k; pwalk[b] = -1; }
@@ -58,7 +63,7 @@ int csa_scan(int n_conn, const double *dep, const double *arr, const int *cfrom,
             for (int e = foot_ptr[b]; e < foot_ptr[b + 1]; e++) {
                 int j = foot_to[e]; double t = at + foot_w[e];
                 if (foot_x[e] && is_target[j] == 2) continue;
-                if (t < best[j]) { best[j] = t; ltrip[j] = -1; if (pconn) { pconn[j] = -1; pwalk[j] = b; pwalk_t[j] = at; } }
+                if (t < best[j]) { best[j] = t; ltrip[j] = -1; if (pconn) { pconn[j] = -1; pwalk[j] = b; pwalk_t[j] = at; pwalk_ride[j] = 1; } }
             }
         }
     }

@@ -172,12 +172,12 @@ def main():
         gate('rotation 0 from Huntington 00:54',
              lambda: min(el for el in (_one((0, h, t_base))[3] for h in hun) if el is not None),
              237.34, 0.01)
-    def replay(order, start_name, t_start):
+    def replay(order, start_name, t_start, RR=None):
         """best elapsed hours over every stop of that exact name, or None if none completes the order"""
-        best = None
-        for w in [i for i, n in enumerate(R.stop_name) if n == start_name]:
-            Sr = Search(R, w, t_start, [], 1)
-            ts._R, ts._START, ts._T0, ts._SELF, ts._BASE, ts._END = R, w, t_start, Sr, None, None
+        RR = RR or R; best = None
+        for w in [i for i, n in enumerate(RR.stop_name) if n == start_name]:
+            Sr = Search(RR, w, t_start, [], 1)
+            ts._R, ts._START, ts._T0, ts._SELF, ts._BASE, ts._END = RR, w, t_start, Sr, None, None
             f_, lg_ = Sr.evaluate(order)
             if np.isfinite(f_) and Sr.all_states(lg_):
                 el_ = (f_ - t_start) / 3600
@@ -196,18 +196,31 @@ def main():
     # this repo has ever written and which out/ ignores, under an os.path.exists guard, so it skipped in
     # silence on every fresh checkout. A gate whose input can go missing is a gate that can stop existing
     # without anything saying so; a gate whose input is a committed literal cannot.
+    # Given but missing is a hard failure whatever --no-gate says: a typo should stop the run, not wait for a
+    # run with the gates on to be noticed. --no-gate decides only whether the orders get replayed.
+    if a.record and not os.path.exists(a.record):
+        raise SystemExit(f'--record {a.record} does not exist. Nothing in this repo writes it and out/ '
+                         f'is gitignored; pass a path that exists or leave --record off.')
     if not a.no_gate:
         from x_forward import ORDER as X_ORDER
+        from datetime import date as _date
+        from time_router import SCAN_SLACK
         inv = {v: k for k, v in ABBR.items()}
-        x_order = [R.state_names.index(inv[s]) for s in X_ORDER]
         t_x = datetime(2026, 9, 26, 22, 0, tzinfo=ZoneInfo('America/Denver')).timestamp()
+        # X's departure is fixed, so a router loaded for other dates (--at, --days) may not hold the Sep 26 bus
+        # or the ten days after it, and the gate would fail on the calendar rather than the harness. It then
+        # runs on the router it was measured on. A router's days run d0 .. d0 + days - 1.
+        d0 = datetime.fromisoformat(a.at).date()
+        x_end = datetime.fromtimestamp(t_x + 238.32 * 3600 + SCAN_SLACK, ZoneInfo('UTC')).date() + timedelta(days=1)
+        RX = R if d0 <= _date(2026, 9, 26) and d0 + timedelta(days=a.days) > x_end else cached_router(_date(2026, 9, 24), 20)
+        if RX is not R: print(f'route X gate: this router ({d0}, {a.days} days) does not cover Sep 26 to {x_end}; '
+                              f'replaying on the Sep 24, 20-day reference router', flush=True)
+        x_order = [RX.state_names.index(inv[s]) for s in X_ORDER]
         gate('route X from Sheridan WY 22:00 MT',
-             lambda: replay(x_order, 'Sheridan WY Taco Bell 1655 Coffeen Ave (Jefferson)', t_x), 238.32, 0.01)
-    # An extra shape, if one is supplied. Given but missing is a hard failure, never a skip.
+             lambda: replay(x_order, 'Sheridan WY Taco Bell 1655 Coffeen Ave (Jefferson)', t_x, RX), 238.32, 0.01)
+        del RX
+    # An extra shape, if one is supplied.
     if not a.no_gate and a.record:
-        if not os.path.exists(a.record):
-            raise SystemExit(f'--record {a.record} does not exist. Nothing in this repo writes it and out/ '
-                             f'is gitignored; pass a path that exists or leave --record off.')
         rec = pickle.load(open(a.record, 'rb'))['order']
         t_rec = datetime.fromisoformat(a.record_at).replace(tzinfo=ZoneInfo(a.record_tz)).timestamp()
         gate(f'record order from {a.record_start} {a.record_at}',
