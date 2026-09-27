@@ -5,3 +5,5 @@ amtrak:MEM,extra:Arkansas line on Big River Crossing (on foot from Memphis Amtra
 ibus:2385,extra:Denver Int'l Airport (Groome/A Line),50,RTD A Line Union Station - airport 37 min + wait
 amtrak:DEN,extra:Denver Int'l Airport (Groome/A Line),50,RTD A Line Union Station - airport 37 min + wait
 ibus:375,extra:Denver Int'l Airport (Groome/A Line),70,local to Union Station then A Line
+zz_nictd:s17,extra:Michigan line at Michiana (on foot from Michigan City Carroll Ave),85,OSM foot routing 9.3 km (5.8 mi) from South Shore Carroll Ave station at Nick's 4.1 mph running pace = 85 min (walking is 124 min)
+zz_mct:1_28,extra:Michigan line at Michiana (on foot from Michigan City Carroll Ave),51,OSM foot routing 5.6 km (3.5 mi) from MCT Route 1 Als Karwick at Nick's 4.1 mph running pace = 51 min (walking is 75 min); Route 1 hourly 07:09-17:09 Mon-Sat
