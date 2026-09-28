@@ -1209,3 +1209,88 @@ all leave roughly the same room. That is the open bug, and it is a different one
 The width cap is the other half. `--width 12` against a leg ranked 509160th is not close, so no plausible
 width setting reaches Saint George; this needs a ranking that knows what a positioning move is for, not a
 bigger cap.
+
+## 22. Sep 24–27: new shapes tried, and what they say about where a faster route could come from
+
+Every number here is the router's, from the first bus, with every state checked. Runs are local, one worker,
+25 min unless noted; logs are in `out/ep_queue.log`, `out/queue_rx.log` and `docs/cloud_*.txt` on
+`cloud-families`.
+
+### Routes under the record
+
+| route | shape | h | notes |
+|---|---|---|---|
+| Wheeling (section 20) | Jaguar NYC→Columbus, clock starts at the WV line ~03:00 → control's route | 235.3 | Jaguar running times are Nick's, not a feed |
+| control | Huntington → VT line | 237.34 | |
+| **X_TOL** | **Sheridan Thu 22:20** → spine → Chief → Texas → Shreveport → Nashville → Detroit → Pittsburgh (WV) → Chicago → plains → Memphis → Atlanta → Meteor → Portland → VT line | 237.9 | cloud, Sep 24. Ends on the control's exact bus; loses only because it starts 34 min earlier |
+| X | Sheridan Sat/Tue 22:20 → spine → Chief → I-10 → Meteor → New England → Interior → Holmes (MS) | 238.08 | the router now finds the Holmes ending itself |
+| record | White River Junction → Huntington | 238.83 | |
+
+### Tried and ruled out
+
+| idea | best | why it lost |
+|---|---|---|
+| Sheridan start through Cincinnati for KY, or Michigan City/New Buffalo for MI | 239.5 (MI City) | savings before Chicago are absorbed: Chicago 22:00 → Fargo 15:50 is once a day, so only a full day matters |
+| Dickinson, Kimball, Chadron, Spearfish starts | 246–296 | one state owed off-path (WY or ND) costs a day |
+| any reversal of X or L2 (Toledo, Southaven, Spokane-ended) | 265–297 | the spine eastbound from SLC waits 6 h for the 03:45 and Billings leads nowhere; the record gets away with eastbound only by entering from Las Vegas by day |
+| Sunland Park start, either direction | 254.2 / 254.6 / 254.9 | fast Gulf sweep (NM–FL in 61 h) but New England mid-route and a 3-day plains zigzag |
+| Bennington (Yankee Trails, now its own feed `zz_yankee`, Mon–Fri) mid-route or as a tail | 255–285 | only the evening round trip fits after a Meteor; the morning one needs Albany by 09:10 |
+| Cleveland 04:30 Greyhound tail (Albany → Bennington → NYC overnight → Boston → Providence → Portland, 31.4 h) | ~275.6 | the tail takes only 7 states, so the Southeast has to move into the front |
+| Bennington start → Meteor → Portland | ~271.5 | the opening costs 7.8 h more than Huntington's and owes WV/KY |
+| El Paso forced into any route | 238.8 (record) | record is already the fastest through El Paso; X +34, control and Wheeling +61 |
+| El Paso shapes: Las Vegas start (EP_I10), Wheeling (EP_WHL), spine-first (EP_NE) | 245.8 / 258.2 / 256.4 | New England in the middle again, or a Southwest zigzag |
+| Goodland KS start (Goodland 07:15 → Denver → Express Arrow → Buffalo 21:25 → Billings) | 256.4 | fast into the spine, but every order strands New England or the Great Lakes at the end. Interior-first priced at 278.0, searched to 262.3 |
+| six-block assembler (`blocks.py`, `assemble.py`) | 259.4 after router check | fixed block-internal order overprices the control by 40 h and X by 32 h; its ranking can't be trusted |
+
+### What the results have in common
+
+1. **All four routes under the record are one loop of three blocks** (Northwest spine; Southwest + Gulf +
+   Southeast + New England; Interior) cut open at different joints. Nothing structurally different has come
+   within 7 h.
+2. **Every route under 238 h ends on the same tail:** Jacksonville Meteor 16:11 → Acela → Portland →
+   Dartmouth Coach 19:30 → VT line 22:14, 30.06 h for 15 states. No other ending tried beats it.
+   Ending at Portland instead saves 6.1 h, but only if VT is already done, and nothing found collects it cheaply.
+3. **Once-daily anchors absorb savings.** A saving before an anchor only counts if it reaches the anchor a day
+   earlier. Kentucky, Michigan City, Cincinnati, the DC→Gulf slowness and the 9 h of Nashville–Chicago slack in
+   X_TOL are all absorbed this way.
+4. **Free searches drift back to known shapes** and drag pins along as a dead-end tail (SHE_BEN, SHE_MD).
+   To test a shape as drawn, price it with `shape_fixed.py` first, then seed a search from it.
+5. **The joint table (`out/joints.txt`) shows X's two big joints within ~1 h of the timetable's best:**
+   Hanover → Indianapolis 24.3 h best vs 25.2 paid; Dallas → Tallahassee 22.0 vs 22.8. Hanover → Toledo is
+   19.4 h, 5 h cheaper, and is what X_TOL uses.
+
+### Data added this stretch
+
+JL 701 Sheridan 22:20 and JL 702 Billings 04:30 → Sheridan 06:35 (`extra_trips.csv`, Nick's screenshots,
+"daily" assumed); feeds `zz_opt` (Open Plains, Tue/Wed), `zz_tank`, `zz_nictd` (South Shore), `zz_mct`,
+`zz_yankee`; foot links Carroll Ave → Michiana line (85 min at Nick's 4.1 mph) and Als Karwick → line (51 min).
+Scanner fix: a ride now licenses its onward walk even when a walk reached the stop first (`csa.c`, and the
+Python fallback in `c478bf1`).
+
+### Open
+
+- Two feed stops named "Denver Union Station Bus Concourse" (and ~39 other `#` copies of hub stations) sit
+  hundreds of km from their city. None is on a best route, but they can hide connections. Not fixed.
+- The intercity feed is missing some Salt Lake Express trips (e.g. SLE 7005 04:00).
+- The best method for new shapes is below; nothing on it is built yet.
+
+### How to look for new shapes next
+
+Search anchors, not states or regions. A fast route is a chain of once-daily anchor services (Billings
+01:30, the Chief, Jefferson Sioux Falls 20:05 → KC, Fargo 15:50, the Meteor, the Dartmouth Coach 19:30,
+Salt Lake Express 06:30, the Empire Builder, the City of New Orleans). Between two anchors, the connection
+cost is exact and cheap to compute: the joint table already does it hub to hub for every hour of the week.
+
+1. List about 20–30 anchors, each with its days, times and the states it collects.
+2. Extend the joint table to anchor → anchor: the earliest arrival at the next anchor's boarding stop
+   after the previous anchor alights, collecting nothing extra.
+3. Enumerate anchor sequences with a beam: prune a partial sequence once it is more than ~10 h behind the
+   best known at the same number of states. Never prune by a heuristic about what is left.
+4. Fill each surviving sequence's missing states with `time_search.py`'s repair (insert each missing state
+   where the router finishes soonest), then router-check the top 20.
+5. Gate: the enumerator must rank the control, X_TOL and the record in its top 20 before any other output
+   counts.
+
+This avoids what sank the six-block assembler (a fixed order inside each block) and what makes free searches
+drift (they never commit to a different anchor chain). Estimated cost: half a day to build, then about an
+hour of cloud time per run.
