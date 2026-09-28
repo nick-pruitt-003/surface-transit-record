@@ -453,6 +453,8 @@ def main():
     ap.add_argument('--patience', type=float, default=0, help='stop early after this many seconds without a new best')
     ap.add_argument('--end', help='where the route must finish: a state abbreviation ("VT"), a stop name ("Barstow"), or a point "~lon,lat,km"')
     ap.add_argument('--end-by', help='finish deadline at --end, ISO time in --tz; the search works out the latest start that makes it')
+    ap.add_argument('--fixed-start', action='store_true', help='keep the start stop and the --at clock exactly as given instead of '
+                    'trying 7 start days; for a chain that only connects on some weekdays')
     ap.add_argument('--start-alt', default='', help='semicolon list of other stops the start may move to (each tried on 7 days, latest clock)')
     a = ap.parse_args()
     t0 = datetime.fromisoformat(a.at).replace(tzinfo=ZoneInfo(a.tz))
@@ -477,7 +479,7 @@ def main():
         end = R.state_names.index(inv[a.end]) if a.end in inv else f'@{a.end}'
         if isinstance(end, str) and not end.startswith('@~') and not R.stops_matching(a.end): sys.exit(f'no stop matching --end {a.end!r}')
     S = Search(R, start, t0.timestamp(), [x.strip() for x in a.prefix.split(',') if x.strip()], a.workers, done, alts,
-               end=end, end_by=end_by)
+               fixed_start=a.fixed_start, end=end, end_by=end_by)
     S.patience = a.patience
     S.live(force=True, name=os.path.basename(a.out).replace('.pkl', ''), phase='loading')
     order, f, legs = S.run(seed, a.budget)
