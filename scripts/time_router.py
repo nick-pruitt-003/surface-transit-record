@@ -663,6 +663,8 @@ def cached_router(date, days, cache_dir=None, verbose=True):
         t0 = time.time()
         try:
             R = pickle.load(open(path, 'rb'))
+            try: os.utime(path)     # mtime = last use, so the pruning below keeps the caches in use
+            except OSError: pass
             if verbose: print(f'router from cache in {time.time() - t0:.1f} s ({os.path.basename(path)})', flush=True)
             return R
         except Exception as e:
@@ -670,6 +672,19 @@ def cached_router(date, days, cache_dir=None, verbose=True):
     t0 = time.time()
     R = TimeRouter(load_feeds(), date, days)
     os.makedirs(cache_dir, exist_ok=True)
+    # Every edit to the feeds or this file makes a new ~650 MB cache and the old ones never become valid again,
+    # so without pruning they filled the disk twice (Sep 27 and Sep 28), and a full disk is also where macOS
+    # puts swap. Before writing, keep only the most recently used BUS48_ROUTER_CACHES - 1 (default 2 in total,
+    # since regress and the searches use different date windows), and drop temp files a dead run left behind.
+    keep = max(1, int(os.environ.get('BUS48_ROUTER_CACHES', '2')))
+    old = sorted(glob.glob(os.path.join(cache_dir, 'router_*.pkl')), key=os.path.getmtime, reverse=True)
+    for f in old[keep - 1:]:
+        try: os.remove(f); print(f'pruned old router cache {os.path.basename(f)}', flush=True)
+        except OSError: pass
+    for f in glob.glob(os.path.join(cache_dir, 'router_*.tmp')):
+        try:
+            if time.time() - os.path.getmtime(f) > 3600: os.remove(f)
+        except OSError: pass
     tmp = path + f'.{os.getpid()}.tmp'
     try:
         with open(tmp, 'wb') as fh: pickle.dump(R, fh, protocol=5)
