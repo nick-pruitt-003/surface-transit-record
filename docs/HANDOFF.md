@@ -1209,3 +1209,57 @@ all leave roughly the same room. That is the open bug, and it is a different one
 The width cap is the other half. `--width 12` against a leg ranked 509160th is not close, so no plausible
 width setting reaches Saint George; this needs a ranking that knows what a positioning move is for, not a
 bigger cap.
+
+## 22. Sep 26: Saint George, 509160th to 3rd, and a flag that was judged on the wrong instrument
+
+The leg is `Salt Lake City (Shop) 08:30 -> Saint George (Bluff St Office) 14:20`. It collects nothing. The
+very next ride, `Saint George 14:40 -> Las Vegas (Airport) 16:50`, collects **NV and AZ**. So Saint George's
+whole value is being the hinge to the Southwest, and it costs six hours to reach.
+
+Slack ranks it **509160 of 1156415**. `--goal` ranks it **3**.
+
+| leg | collects | slack | `--goal` | factor |
+|---|---|---|---|---|
+| Saint George | nothing | 509160/1156415 | **3** | 169720x |
+| Des Moines | IA | 4956/199476 | **9** | 551x |
+| Bonneville Transit Center | nothing | 2173/331320 | **1** | 2173x |
+| Memphis to Holmes | nothing | 13900/375718 | 49 | 284x |
+| AKARD STATION | nothing | 29/190 | **1** | 29x |
+| Jacksonville Amtrak | nothing | 14/54 | **1** | 14x |
+| Conway | AR | 61/34112 | **7** | 9x |
+| Trinidad CO | CO | 6/11 | **1** | 6x |
+| Fargo | ND | 13/37 | **5** | 3x |
+
+**38/40 within `--width 12` against 31/40.** Four legs get worse and all four stay inside the cap: Detroit
+5 to 12, Las Vegas Amtrak 5 to 8, Lake Charles 2 to 5, Tallahassee 2 to 3. Two remain outside, and they are
+the two halves of one move: Holmes at 49 and the Airways hop back at 366, which is the only leg `--goal`
+does not touch at all (365 to 366).
+
+### The instrument, which is the transferable part
+
+`--goal` had been set aside on a measurement: 23 honest depth against slack's 26 at equal budget. That
+number is real and it is not what the question needed. Depth-at-budget confounds **ranking quality** with
+**cost per node**, and `--goal` costs about 30 ms a node against a per-node budget of about 40, so it was
+always going to lose a depth race whatever its ranking did. The replay separates the two, and CLAUDE.md
+already says which to trust: running searches blind and reading the output found nothing for hours, while
+replaying the known answer found every real defect. The flag was judged by the method the file warns
+against, by me among others, three messages before this one.
+
+So the open problem is cost, not ranking, and it has obvious attacks: apply `--goal` only where the
+positioning menu is large (Salt Lake offers 1156415 options, Trinidad offers 11), or cache the forward
+scans. Both are engineering. The ranking question is answered.
+
+### Why slack fails here
+
+Inferred from the fix rather than measured directly, so flagged as such. The key is
+`min over owed y of (L[y][to] - at)` with more room better. A six hour ride to Saint George burns six hours
+of room against every state still owed; a ten minute UTA hop around Salt Lake burns ten minutes. Within the
+positioning group, **slack prefers the moves that go nowhere, because going nowhere is the cheapest thing
+available**. Hours-per-new-state, third costume: the first was ranking rides by efficiency, the second was
+the frontier `--credit` (the Wheeling search's deepest node looked ahead of pace at 4.55 h/state while
+sitting in the wrong half of the country), and this is the third.
+
+The pattern across all three is one thing: a per-move score cannot see that a move's value is realised by a
+different move, later. Saint George is worth six hours because the next ride collects two states. No
+quantity evaluated at Saint George knows that. `--goal` works precisely because it is not a per-move score,
+it is a forward scan to the states still owed.

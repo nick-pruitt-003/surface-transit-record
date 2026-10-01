@@ -132,7 +132,8 @@ Still live and not yet addressed, in the order they are being worked:
 |---|---|---|
 | ranking by hours per new state | `--order rate`, no longer the default since slack measured 25 vs 28 vs 31, and no longer hardcoded in `overnight.sh` | the Silver Meteor, 14 h for four states, last of thirteen |
 | ~~positioning rides sorted behind collecting ones~~ **measured, and it is not the culprit** | `sort_opts`, first key in every mode including slack | see below: `--split off` costs 4 net legs and moves Saint George 12 places out of 1156415 |
-| a flat 5 h credit per state on the frontier | `--credit` | a west-first chain loses to a cheap north-east one that looks ahead of pace |
+| the slack key on positioning rides | `sort_opts`, and `--goal` is the measured fix: Saint George 509160 -> 3, replay 38/40 vs 31/40. Blocked on cost, ~30 ms a node against ~40 | Saint George, Bonneville, Des Moines, the Memphis walk-in |
+| a flat 5 h credit per state on the frontier | `--credit` | a west-first chain loses to a cheap north-east one that looks ahead of pace. **Measured instance:** the Wheeling search's deepest node sat at 118.3 h for 26 states, 4.55 h/state against the route's 4.88, so it looked AHEAD of pace while being in the wrong half of the country |
 | the `--hub 6` alight fallback | `alight_ok` when no `--end`/`--by` is given | the Barstow depot has 2, Conway has 5 |
 | walk-only cap in the branching diagnostic | `branching.py` | local-proxy hops, which taints the "median 2 useful services" figure quoted above |
 | hand allowlist of routes per feed | `data/more_gtfs/keep_routes.json` | `lake_erie` entirely; `mata` is trimmed to routes 42 and 30, and Memphis is where the route walks to Mississippi |
@@ -160,8 +161,41 @@ Spokane to Pasco is rank **5** with the split on, so it was never buried; Memphi
 13900 to 3967 and is still nowhere; Saint George moves **twelve places out of 1156415**.
 
 So the split is load-bearing for collecting rides and is not what buries Saint George. What buries Saint
-George is the slack key itself: a positioning ride leaves a million near-identical options and slack gives
-no signal among them. That is a different bug and it is still open. Do not "fix" the split.
+George is the slack key itself. Do not "fix" the split.
+
+### `--goal` is the answer, and it was judged on the wrong instrument
+
+Same replay, `--goal` against the default slack key:
+
+| leg | collects | slack | `--goal` |
+|---|---|---|---|
+| Saint George | nothing | 509160/1156415 | **3** |
+| Des Moines | IA | 4956/199476 | **9** |
+| Bonneville Transit Center | nothing | 2173/331320 | **1** |
+| Memphis to Holmes | nothing | 13900/375718 | 49 |
+| Conway | AR | 61/34112 | **7** |
+| AKARD STATION | nothing | 29/190 | **1** |
+
+**38/40 within `--width 12` against 31/40.** Saint George moves by a factor of 169720. Four legs get
+slightly worse (Detroit 5 to 12, Las Vegas Amtrak 5 to 8, Lake Charles 2 to 5, Tallahassee 2 to 3) and all
+four stay inside the cap. Only two legs remain outside and they are the two halves of the Memphis walk-in
+to Mississippi.
+
+`--goal` was previously set aside because it reached 23 honest depth against slack's 26 at equal budget.
+That is a blind-run metric, and this file's own rule says what to do about those: running searches blind
+and reading the output found nothing for hours, while replaying the known answer found every real defect.
+Depth-at-budget confounds ranking quality with cost per node. The replay separates them, and it says the
+ranking is right.
+
+So the open problem is **cost, not ranking**: about 30 ms a node against a per-node budget of about 40.
+That is an engineering problem with obvious attacks (apply it only where the positioning menu is large,
+cache the forward scans) rather than a search-design one. Do not reopen the ranking question.
+
+Why slack fails here is worth stating, though it is inferred from the fix rather than measured directly:
+the key is `min over owed y of (L[y][to] - at)` and more room is better, so a six hour ride to Saint George
+burns six hours of room against every owed state while a ten minute local hop around Salt Lake burns ten
+minutes. **Within the positioning group, slack prefers the moves that go nowhere, because going nowhere is
+the cheapest thing available.** That is hours-per-new-state in its third costume.
 
 The general lesson, since this is the second time this file has been wrong in this exact way: an entry in
 this table that has never been measured is a hypothesis, and three named casualties written from reasoning
