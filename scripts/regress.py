@@ -250,6 +250,26 @@ def _():
         assert got.endswith(want), (R.stop_name[s], got, want)
 
 
+@check('every extra_trips row departs at its own stated clock in its own tz column (zones are per row, not per agency)')
+def _():
+    import csv, os
+    # ExtraFeed numbers trips t{k} over every csv row, disabled '#' rows included
+    ex = next(f for f in R.feeds if f.name == 'extra'); bad = []; n = 0
+    for k, r in enumerate(csv.DictReader(open(os.path.join(tr.DATA_DIR, 'extra_trips.csv'), encoding='utf-8'))):
+        t = ex.trips.get(f't{k}')
+        if t is None: continue
+        n += 1; z = str(ex._tz_for(None, t))
+        if z != r['tz']: bad.append((r['agency'], r['route'][:40], r['tz'], z))
+    assert n > 100 and not bad, (n, bad[:5])
+    # and end to end: AE bus Las Vegas NV leaves at its stated Pacific clock, not an hour early
+    fi = R.feeds.index(ex)
+    tid = next(k for k, t in ex.trips.items() if t['agency'] == 'AE bus' and 'Las Vegas NV' in t['route'])
+    first = ex.trips[tid]['stops'][0][3]   # seconds after midnight, as written in the row
+    deps = sorted(R.dep[i] for i, c in enumerate(R.ctrip) if c[0] == fi and c[1] == tid)
+    loc = datetime.fromtimestamp(deps[0], ZoneInfo('America/Los_Angeles'))
+    assert loc.hour * 3600 + loc.minute * 60 == first, (loc, first)
+
+
 print()
 for name, ok, info in results: print(('PASS ' if ok else 'FAIL ') + name + ('' if ok else '\n     ' + info))
 print(f'\n{sum(ok for _, ok, _ in results)}/{len(results)} passed')

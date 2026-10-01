@@ -591,10 +591,16 @@ class ExtraFeed:
                 svc = f'svc{k}'; days = r['days']
                 self.cal[svc] = {d: days[j] for j, d in enumerate(('monday','tuesday','wednesday','thursday','friday','saturday','sunday'))}
                 self.cal[svc].update(start_date='20000101', end_date='20991231')
-                self.trips[f't{k}'] = dict(service=svc, agency=r['agency'], route=r['route'], headsign='', stops=seq)
+                self.trips[f't{k}'] = dict(service=svc, agency=r['agency'], route=r['route'], headsign='', stops=seq, tz=ZoneInfo(r['tz']))
                 self.agency_tz[r['agency']] = ZoneInfo(r['tz'])
         print(f'extra: {len(self.trips)} manual trips')
-    sane = Feed.sane; runs_on = Feed.runs_on; connections = Feed.connections; _tz_for = Feed._tz_for
+    sane = Feed.sane; runs_on = Feed.runs_on; connections = Feed.connections
+
+    def _tz_for(self, sid, trip):
+        # Each row's own tz column. agency_tz holds one zone per agency, so the last row of an agency used to set
+        # the zone for all of them: AE bus Las Vegas NV -> El Paso, written in Pacific, ran an hour early in Mountain
+        # because the Greeley row came after it (found Oct 1 2026).
+        return trip.get('tz') or self.agency_tz.get(trip['agency'], self.tz)
 
 
 def load_feeds():

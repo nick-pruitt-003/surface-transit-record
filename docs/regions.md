@@ -224,3 +224,15 @@ Durango, Greyhound to Albuquerque) is a full-search question, not a region one.
 
 The time-zone display bugs above are fixed: `fmt_time` uses each stop's own zone from its coordinates
 (`timezonefinder`), checked in `regress.py`.
+
+**Page chains and the shuttles (Oct 1, late).** W7 rerun with the Las Vegas - Page shuttles: 26.6 h, same route;
+the shuttles help no region tested. Page -> Tuba City -> Ft. Defiance -> Shiprock: 15.6 h (Page 4:00 Express B,
+transfer at Basha's 6:02 -> NTS 1 at 6:10, Ft. Defiance 9:57, NTS 14 16:50 -> Shiprock 19:35, Mon-Thu) **if**
+Express B keeps Navajo daylight time, which Nick judges likely and the rows now assume; on Arizona time it misses
+NTS 1 by an hour and takes 39.6 h. Shiprock is a dead end until the next morning either way. Page Express's
+current timetable calls the Wahweap route G and serves Wahweap only at 1:33 and 2:33 PM.
+
+**Bug fixed: manual trips were timed in one zone per agency.** `ExtraFeed` kept `agency_tz` per agency, so the
+last row of an agency set the zone for all of its rows. AE bus Las Vegas NV -> El Paso, written in Pacific time,
+was read as Mountain and ran an hour early (LX2, 262.0 h, used it and should be rerun). Each row now uses its own
+`tz` column; `regress.py` checks every row and the AE bus departure end to end.
