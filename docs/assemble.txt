@@ -1,0 +1,57 @@
+184320 block sequences priced over 672 start slots of 15 min
+
+calibration (must be close and rank high):
+  control  tables  277.5 h vs real 237.34 h (+40.2), rank 20 of 184320
+  X        tables  271.2 h vs real 239.50 h (+31.8), rank 7 of 184320
+
+top 50:
+  1  267.2 h  start slot  93 (+23.25 h from Thu 00:00 CT)  NW Sheridan>LasVegasAirport | SW LasVegasAirport>Dallas | GS Dallas>WashingtonDC | NE WashingtonDC>Hanover | PL Memphis>Chicago | GL Chicago>Huntington
+  2  267.2 h  start slot 573 (+143.25 h from Thu 00:00 CT)  NW Sheridan>LasVegasAirport | SW LasVegasAirport>Dallas | GS Dallas>WashingtonDC | NE Hanover>WashingtonDC | PL Memphis>Chicago | GL Chicago>Huntington
+  3  271.1 h  start slot 381 (+95.25 h from Thu 00:00 CT)  NW Sheridan>LasVegasAirport | SW LasVegasAirport>Dallas | GS Dallas>WashingtonDC | NE WashingtonDC>Hanover | GL Huntington>Chicago | PL Memphis>Minneapolis
+  4  271.1 h  start slot  93 (+23.25 h from Thu 00:00 CT)  NW Sheridan>LasVegasAirport | SW LasVegasAirport>Dallas | GS Dallas>WashingtonDC | NE WashingtonDC>Hanover | GL Toledo>Chicago | PL Memphis>Minneapolis
+  5  271.1 h  start slot 573 (+143.25 h from Thu 00:00 CT)  NW Sheridan>LasVegasAirport | SW LasVegasAirport>Dallas | GS Dallas>WashingtonDC | NE Hanover>WashingtonDC | GL Huntington>Chicago | PL Memphis>Minneapolis
+  6  271.1 h  start slot 573 (+143.25 h from Thu 00:00 CT)  NW Sheridan>LasVegasAirport | SW LasVegasAirport>Dallas | GS Dallas>WashingtonDC | NE Hanover>WashingtonDC | GL Toledo>Chicago | PL Memphis>Minneapolis
+  7  271.2 h  start slot  93 (+23.25 h from Thu 00:00 CT)  NW Sheridan>LasVegasAirport | SW LasVegasAirport>Dallas | GS Dallas>WashingtonDC | NE WashingtonDC>Hanover | GL Huntington>Chicago | PL Chicago>Memphis
+  8  271.2 h  start slot  93 (+23.25 h from Thu 00:00 CT)  NW Sheridan>LasVegasAirport | SW LasVegasAirport>Dallas | GS Dallas>WashingtonDC | NE WashingtonDC>Hanover | GL Toledo>Chicago | PL Chicago>Memphis
+  9  271.2 h  start slot  93 (+23.25 h from Thu 00:00 CT)  NW Sheridan>LasVegasAirport | SW LasVegasAirport>Dallas | GS Dallas>WashingtonDC | NE WashingtonDC>Hanover | GL Toledo>Chicago | PL Minneapolis>Memphis
+ 10  271.2 h  start slot  93 (+23.25 h from Thu 00:00 CT)  NW Sheridan>LasVegasAirport | SW LasVegasAirport>Dallas | GS Dallas>WashingtonDC | NE Hanover>WashingtonDC | GL Huntington>Chicago | PL Chicago>Memphis
+ 11  271.2 h  start slot 573 (+143.25 h from Thu 00:00 CT)  NW Sheridan>LasVegasAirport | SW LasVegasAirport>Dallas | GS Dallas>WashingtonDC | NE Hanover>WashingtonDC | GL Toledo>Chicago | PL Chicago>Memphis
+ 12  273.5 h  start slot 381 (+95.25 h from Thu 00:00 CT)  NW Sheridan>LasVegasAirport | SW LasVegasAirport>Dallas | GS Dallas>WashingtonDC | NE WashingtonDC>Hanover | GL Huntington>Chicago | PL Memphis>Chicago
+ 13  273.5 h  start slot  93 (+23.25 h from Thu 00:00 CT)  NW Sheridan>LasVegasAirport | SW LasVegasAirport>Dallas | GS Dallas>WashingtonDC | NE WashingtonDC>Hanover | GL Toledo>Chicago | PL Memphis>Chicago
+ 14  273.5 h  start slot 573 (+143.25 h from Thu 00:00 CT)  NW Sheridan>LasVegasAirport | SW LasVegasAirport>Dallas | GS Dallas>WashingtonDC | NE Hanover>WashingtonDC | GL Huntington>Chicago | PL Memphis>Chicago
+ 15  273.5 h  start slot 573 (+143.25 h from Thu 00:00 CT)  NW Sheridan>LasVegasAirport | SW LasVegasAirport>Dallas | GS Dallas>WashingtonDC | NE Hanover>WashingtonDC | GL Toledo>Chicago | PL Memphis>Chicago
+ 16  276.1 h  start slot 381 (+95.25 h from Thu 00:00 CT)  NW Sheridan>LasVegasAirport | SW LasVegasAirport>Dallas | PL Memphis>Chicago | GL Chicago>Huntington | NE WashingtonDC>Hanover | GS WashingtonDC>Dallas
+ 17  276.1 h  start slot 381 (+95.25 h from Thu 00:00 CT)  NW Sheridan>LasVegasAirport | SW LasVegasAirport>Dallas | PL Memphis>Chicago | GL Chicago>Huntington | NE Hanover>WashingtonDC | GS WashingtonDC>Dallas
+ 18  277.5 h  start slot  95 (+23.75 h from Thu 00:00 CT)  GL Huntington>Chicago | PL Chicago>Memphis | NW Sheridan>LasVegasAirport | SW LasVegasAirport>Dallas | GS Dallas>WashingtonDC | NE WashingtonDC>Hanover
+ 19  277.5 h  start slot  95 (+23.75 h from Thu 00:00 CT)  GL Huntington>Chicago | PL Memphis>Chicago | NW Sheridan>LasVegasAirport | SW LasVegasAirport>Dallas | GS Dallas>WashingtonDC | NE WashingtonDC>Hanover
+ 20  277.5 h  start slot  95 (+23.75 h from Thu 00:00 CT)  GL Huntington>Chicago | PL Memphis>Minneapolis | NW Sheridan>LasVegasAirport | SW LasVegasAirport>Dallas | GS Dallas>WashingtonDC | NE WashingtonDC>Hanover
+ 21  278.0 h  start slot 189 (+47.25 h from Thu 00:00 CT)  NW Sheridan>LasVegasAirport | SW LasVegasAirport>Dallas | PL Memphis>Chicago | GL Chicago>Huntington | GS Dallas>WashingtonDC | NE WashingtonDC>Hanover
+ 22  278.7 h  start slot 143 (+35.75 h from Thu 00:00 CT)  NE Hanover>WashingtonDC | GS WashingtonDC>Dallas | NW Sheridan>LasVegasAirport | SW LasVegasAirport>Dallas | PL Memphis>Chicago | GL Chicago>Huntington
+ 23  282.5 h  start slot  93 (+23.25 h from Thu 00:00 CT)  NW Sheridan>LasVegasAirport | SW LasVegasAirport>Dallas | GS Dallas>WashingtonDC | PL Memphis>Chicago | GL Chicago>Huntington | NE WashingtonDC>Hanover
+ 24  283.5 h  start slot 573 (+143.25 h from Thu 00:00 CT)  NW Sheridan>LasVegasAirport | SW LasVegasAirport>Dallas | GS Dallas>WashingtonDC | GL Huntington>Chicago | PL Chicago>Memphis | NE WashingtonDC>Hanover
+ 25  283.5 h  start slot 573 (+143.25 h from Thu 00:00 CT)  NW Sheridan>LasVegasAirport | SW LasVegasAirport>Dallas | GS Dallas>WashingtonDC | GL Huntington>Chicago | PL Minneapolis>Memphis | NE WashingtonDC>Hanover
+ 26  283.5 h  start slot 573 (+143.25 h from Thu 00:00 CT)  NW Sheridan>LasVegasAirport | SW LasVegasAirport>Dallas | GS Dallas>WashingtonDC | GL Chicago>Huntington | PL Chicago>Memphis | NE WashingtonDC>Hanover
+ 27  283.5 h  start slot 573 (+143.25 h from Thu 00:00 CT)  NW Sheridan>LasVegasAirport | SW LasVegasAirport>Dallas | GS Dallas>WashingtonDC | GL Toledo>Chicago | PL Chicago>Memphis | NE WashingtonDC>Hanover
+ 28  284.5 h  start slot 573 (+143.25 h from Thu 00:00 CT)  NW Sheridan>LasVegasAirport | SW LasVegasAirport>Dallas | GS Dallas>WashingtonDC | NE WashingtonDC>Hanover | PL Chicago>Memphis | GL Chicago>Toledo
+ 29  284.5 h  start slot  93 (+23.25 h from Thu 00:00 CT)  NW Sheridan>LasVegasAirport | SW LasVegasAirport>Dallas | GS Dallas>WashingtonDC | NE WashingtonDC>Hanover | PL Memphis>Chicago | GL Chicago>Toledo
+ 30  284.5 h  start slot 573 (+143.25 h from Thu 00:00 CT)  NW Sheridan>LasVegasAirport | SW LasVegasAirport>Dallas | GS Dallas>WashingtonDC | NE WashingtonDC>Hanover | PL Memphis>Minneapolis | GL Chicago>Toledo
+ 31  284.5 h  start slot 573 (+143.25 h from Thu 00:00 CT)  NW Sheridan>LasVegasAirport | SW LasVegasAirport>Dallas | GS Dallas>WashingtonDC | NE Hanover>WashingtonDC | PL Chicago>Memphis | GL Chicago>Toledo
+ 32  284.5 h  start slot 573 (+143.25 h from Thu 00:00 CT)  NW Sheridan>LasVegasAirport | SW LasVegasAirport>Dallas | GS Dallas>WashingtonDC | NE Hanover>WashingtonDC | PL Memphis>Chicago | GL Chicago>Toledo
+ 33  284.5 h  start slot 573 (+143.25 h from Thu 00:00 CT)  NW Sheridan>LasVegasAirport | SW LasVegasAirport>Dallas | GS Dallas>WashingtonDC | NE Hanover>WashingtonDC | PL Memphis>Minneapolis | GL Chicago>Toledo
+ 34  284.8 h  start slot  93 (+23.25 h from Thu 00:00 CT)  NW Sheridan>LasVegasAirport | SW LasVegasAirport>Dallas | GS Dallas>WashingtonDC | NE WashingtonDC>Hanover | GL Huntington>Chicago | PL Minneapolis>Memphis
+ 35  284.8 h  start slot  93 (+23.25 h from Thu 00:00 CT)  NW Sheridan>LasVegasAirport | SW LasVegasAirport>Dallas | GS Dallas>WashingtonDC | NE WashingtonDC>Hanover | GL Chicago>Huntington | PL Chicago>Memphis
+ 36  284.8 h  start slot  93 (+23.25 h from Thu 00:00 CT)  NW Sheridan>LasVegasAirport | SW LasVegasAirport>Dallas | GS Dallas>WashingtonDC | NE WashingtonDC>Hanover | GL Chicago>Toledo | PL Chicago>Memphis
+ 37  284.8 h  start slot  93 (+23.25 h from Thu 00:00 CT)  NW Sheridan>LasVegasAirport | SW LasVegasAirport>Dallas | GS Dallas>WashingtonDC | NE WashingtonDC>Hanover | GL Chicago>Toledo | PL Minneapolis>Memphis
+ 38  284.8 h  start slot  93 (+23.25 h from Thu 00:00 CT)  NW Sheridan>LasVegasAirport | SW LasVegasAirport>Dallas | GS Dallas>WashingtonDC | NE Hanover>WashingtonDC | GL Huntington>Chicago | PL Minneapolis>Memphis
+ 39  284.8 h  start slot  93 (+23.25 h from Thu 00:00 CT)  NW Sheridan>LasVegasAirport | SW LasVegasAirport>Dallas | GS Dallas>WashingtonDC | NE Hanover>WashingtonDC | GL Chicago>Huntington | PL Chicago>Memphis
+ 40  284.8 h  start slot  93 (+23.25 h from Thu 00:00 CT)  NW Sheridan>LasVegasAirport | SW LasVegasAirport>Dallas | GS Dallas>WashingtonDC | NE Hanover>WashingtonDC | GL Chicago>Toledo | PL Chicago>Memphis
+ 41  285.0 h  start slot  65 (+16.25 h from Thu 00:00 CT)  GL Toledo>Chicago | PL Chicago>Memphis | NW Sheridan>LasVegasAirport | SW LasVegasAirport>Dallas | GS Dallas>WashingtonDC | NE WashingtonDC>Hanover
+ 42  285.0 h  start slot  65 (+16.25 h from Thu 00:00 CT)  GL Toledo>Chicago | PL Memphis>Chicago | NW Sheridan>LasVegasAirport | SW LasVegasAirport>Dallas | GS Dallas>WashingtonDC | NE WashingtonDC>Hanover
+ 43  285.0 h  start slot  65 (+16.25 h from Thu 00:00 CT)  GL Toledo>Chicago | PL Memphis>Minneapolis | NW Sheridan>LasVegasAirport | SW LasVegasAirport>Dallas | GS Dallas>WashingtonDC | NE WashingtonDC>Hanover
+ 44  285.6 h  start slot  95 (+23.75 h from Thu 00:00 CT)  GL Huntington>Chicago | PL Chicago>Memphis | NW Sheridan>LasVegasAirport | SW LasVegasAirport>Dallas | GS Dallas>WashingtonDC | NE Hanover>WashingtonDC
+ 45  285.6 h  start slot  95 (+23.75 h from Thu 00:00 CT)  GL Huntington>Chicago | PL Memphis>Chicago | NW Sheridan>LasVegasAirport | SW LasVegasAirport>Dallas | GS Dallas>WashingtonDC | NE Hanover>WashingtonDC
+ 46  285.6 h  start slot  95 (+23.75 h from Thu 00:00 CT)  GL Huntington>Chicago | PL Memphis>Minneapolis | NW Sheridan>LasVegasAirport | SW LasVegasAirport>Dallas | GS Dallas>WashingtonDC | NE Hanover>WashingtonDC
+ 47  285.7 h  start slot  93 (+23.25 h from Thu 00:00 CT)  NW Sheridan>LasVegasAirport | SW LasVegasAirport>Dallas | GS Dallas>WashingtonDC | NE WashingtonDC>Hanover | PL Chicago>Memphis | GL Chicago>Huntington
+ 48  285.7 h  start slot  93 (+23.25 h from Thu 00:00 CT)  NW Sheridan>LasVegasAirport | SW LasVegasAirport>Dallas | GS Dallas>WashingtonDC | NE WashingtonDC>Hanover | PL Memphis>Minneapolis | GL Chicago>Huntington
+ 49  285.7 h  start slot 573 (+143.25 h from Thu 00:00 CT)  NW Sheridan>LasVegasAirport | SW LasVegasAirport>Dallas | GS Dallas>WashingtonDC | NE Hanover>WashingtonDC | PL Chicago>Memphis | GL Chicago>Huntington
+ 50  285.7 h  start slot 573 (+143.25 h from Thu 00:00 CT)  NW Sheridan>LasVegasAirport | SW LasVegasAirport>Dallas | GS Dallas>WashingtonDC | NE Hanover>WashingtonDC | PL Memphis>Minneapolis | GL Chicago>Huntington

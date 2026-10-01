@@ -1,0 +1,2 @@
+X1_tune rc=0 FINAL 239.5 h d12 Tue 22:50 START Sheridan WY Taco Bell 1655 Coffeen Ave (Jefferson) first bus d2 Sat 22:20 
+X2_noKY rc=0 FINAL 239.5 h d12 Tue 22:50 START Sheridan WY Taco Bell 1655 Coffeen Ave (Jefferson) first bus d2 Sat 22:20 

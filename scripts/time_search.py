@@ -3,7 +3,7 @@
 usage: python3 time_search.py --start Missoula --at 2026-09-21T07:00 --tz America/Denver \
          --seed ../out/start_newton.pkl [--prefix "Idaho,Washington"] --budget 900 --workers 8 --out ../out/time_best.pkl
 """
-import argparse, itertools, json, os, pickle, random, time, sys
+import re, argparse, itertools, json, os, pickle, random, time, sys
 from datetime import datetime
 from zoneinfo import ZoneInfo
 import numpy as np
@@ -451,8 +451,10 @@ def main():
     ap.add_argument('--done', default='', help='comma list of state abbreviations already collected before --start')
     ap.add_argument('--seed-pins', action='store_true', help='keep the seed pickle\'s @stop pins (by default only states are kept)')
     ap.add_argument('--patience', type=float, default=0, help='stop early after this many seconds without a new best')
-    ap.add_argument('--end', help='where the route must finish: a state abbreviation ("VT") or a stop name ("Barstow")')
+    ap.add_argument('--end', help='where the route must finish: a state abbreviation ("VT"), a stop name ("Barstow"), or a point "~lon,lat,km"')
     ap.add_argument('--end-by', help='finish deadline at --end, ISO time in --tz; the search works out the latest start that makes it')
+    ap.add_argument('--fixed-start', action='store_true', help='keep the start stop and the --at clock exactly as given instead of '
+                    'trying 7 start days; for a chain that only connects on some weekdays')
     ap.add_argument('--start-alt', default='', help='semicolon list of other stops the start may move to (each tried on 7 days, latest clock)')
     a = ap.parse_args()
     t0 = datetime.fromisoformat(a.at).replace(tzinfo=ZoneInfo(a.tz))
@@ -463,7 +465,7 @@ def main():
     done = [R.state_names.index(inv[x.strip()]) for x in a.done.split(',') if x.strip()]
     if a.seed_states:
         # '@stop' items are pins (e.g. '@Las Vegas Amtrak Station' to leave the Chief for the Denver bus)
-        seed = [x.strip() if x.strip().startswith('@') else R.state_names.index(inv[x.strip()]) for x in a.seed_states.split(',')]
+        seed = [x.strip() if x.strip().startswith('@') else R.state_names.index(inv[x.strip()]) for x in re.findall(r'@~[^,]+,[^,]+,[^,]+|[^,]+', a.seed_states)]   # an '@~lon,lat,km' pin keeps its commas
     else:
         seed = [x for x in pickle.load(open(a.seed, 'rb'))['order']
                 if (isinstance(x, (int, np.integer)) and x < N_STATES) or (a.seed_pins and isinstance(x, str) and x.startswith('@'))]
@@ -475,17 +477,21 @@ def main():
     end = None
     if a.end:   # a state abbreviation (finish anywhere in it) or a stop name
         end = R.state_names.index(inv[a.end]) if a.end in inv else f'@{a.end}'
-        if isinstance(end, str) and not R.stops_matching(a.end): sys.exit(f'no stop matching --end {a.end!r}')
+        if isinstance(end, str) and not end.startswith('@~') and not R.stops_matching(a.end): sys.exit(f'no stop matching --end {a.end!r}')
     S = Search(R, start, t0.timestamp(), [x.strip() for x in a.prefix.split(',') if x.strip()], a.workers, done, alts,
-               end=end, end_by=end_by)
+               fixed_start=a.fixed_start, end=end, end_by=end_by)
     S.patience = a.patience
     S.live(force=True, name=os.path.basename(a.out).replace('.pkl', ''), phase='loading')
     order, f, legs = S.run(seed, a.budget)
-    if f == float('inf'): print('FINAL unreachable'); return
+    # distinct nonzero exits, so a caller checking status cannot file these as results: 2 unreachable, 3 missed --end-by
+    if f == float('inf'): print('FINAL unreachable'); sys.exit(2)
     if S.best_elapsed == float('inf'):   # nothing made the deadline: say how close the best route got
         late = (f - end_by) / 3600 if end_by else float('nan')
-        print(f'FINAL misses --end-by: best route reaches {a.end} at', R.fmt_time(f, [l for l in legs if l[0] == 'ride'][-1][4]), f'({late:.1f} h late)')
-        print(R.describe(legs)); return
+        # the sign is the verdict: a negative "late" is a route that got there first, and must not read as a miss
+        # settle() records an elapsed only for a route that is complete AND on time, so an early one failed coverage
+        rel = f'{late:.1f} h late' if not late < 0 else f'{-late:.1f} h early, but it does not collect every state'
+        print(f'FINAL misses --end-by: best route reaches {a.end} at', R.fmt_time(f, [l for l in legs if l[0] == 'ride'][-1][4]), f'({rel})')
+        print(R.describe(legs)); sys.exit(3)
     # FINAL is hours from the first bus boarded to the finish (the start clock is chosen by the search)
     print('FINAL', round(S.best_elapsed / 3600, 1), 'h', R.fmt_time(f, [l for l in legs if l[0] == 'ride'][-1][4]))
     first = next(l for l in legs if l[0] == 'ride')

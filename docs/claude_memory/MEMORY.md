@@ -1,0 +1,8 @@
+- [Use TypeSafe skill](use-typesafe-skill.md) — load typesafe-ai skill for semantic-judgment tasks on bus48
+- [Stay responsive during runs](stay-responsive-during-runs.md) — background long runs; never block the conversation waiting
+- [Use Homebrew python](use-homebrew-python.md) — /opt/homebrew/bin/python3; bare python3 may lack numpy
+- [Beating 237 needs a new shape](beat-237-needs-new-shape.md) — no tweak of the control route; only from-scratch orders per start/end
+- [Limit search workers](limit-search-workers.md) — default --workers 1; Nick uses the Mac while bus48 searches run
+- [Prune router caches](prune-router-caches.md) — keep ≤2 router_*.pkl; check disk + swap before local runs
+- [NH counts via Maine](nh-counts-via-maine.md) — Portland ME routes get NH free (Nick's rule); use --done NH
+- [Fast mode: evaluate first](fast-mode-evaluate-first.md) — chain questions: --budget 0 evaluation (seconds); searches get --patience

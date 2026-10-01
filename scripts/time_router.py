@@ -34,7 +34,7 @@ LOCAL_SPEED = 15 / 3.6     # m/s effective
 # more_gtfs feeds that are intercity carriers; every other feed there is city transit. The 1.5-10 km local-transit
 # proxy link is only built when one end is an intercity stop: city-to-city-stop hops are covered by the real
 # city routes, and building them for every pair of city stops multiplied the footpaths ~9x (Sep 21 2026).
-INTERCITY_MORE = {'concord_coach', 'bustang', 'gobus', 'kimball'}
+INTERCITY_MORE = {'concord_coach', 'bustang', 'gobus', 'kimball', 'vttranslines'}
 LOCAL_PROXY_ALL = os.environ.get('BUS48_LOCAL_PROXY', 'intercity') == 'all'
 STOP_TZ_LOCAL = os.environ.get('BUS48_STOP_TZ') == '1'
 N_STATES = 48
@@ -479,7 +479,9 @@ class TimeRouter:
             if len(stops) == 0: return (None, None) if profile else None
             if profile: mins.append(float(times.min()))
         f = float(times.min())
-        return (f, sum(mins) / len(mins)) if profile else f
+        # an empty order (every owed state already collected at the start, as a region test with a free start can be)
+        # has no layers to average; its profile is just the finish
+        return (f, sum(mins) / len(mins) if mins else f) if profile else f
 
     def _finish_py(self, start_stop, start_time, order, base=None):
         """Finish time only. base=(order, outs) lets a shared prefix reuse cached layer labels."""
@@ -576,7 +578,7 @@ def load_feeds():
     feeds = [
         Feed(os.path.join(DATA_DIR, 'flix_gtfs.zip'), 'flix', 'utc', 'dates'),
         Feed(os.path.join(DATA_DIR, 'amtrak_gtfs.zip'), 'amtrak', 'agency', 'dates', max_speed=220),
-        Feed(os.path.join(DATA_DIR, 'intercity_merged_gtfs.zip'), 'ibus', 'infer', 'weekday', skip_agencies=('Greyhound-us', 'FlixBus-us', 'Concord Coach Lines')),
+        Feed(os.path.join(DATA_DIR, 'intercity_merged_gtfs.zip'), 'ibus', 'infer', 'weekday', skip_agencies=('Greyhound-us', 'FlixBus-us', 'Concord Coach Lines', 'Omnibus Express')),
     ]
     # carriers whose merged-feed times are known to be Eastern (Amtrak-sourced thruway)
     feeds[2].agency_tz['BeeLine Express-Village Travel'] = ZoneInfo('America/New_York')
@@ -663,6 +665,8 @@ def cached_router(date, days, cache_dir=None, verbose=True):
         t0 = time.time()
         try:
             R = pickle.load(open(path, 'rb'))
+            try: os.utime(path)     # mtime = last use, so the pruning below keeps the caches in use
+            except OSError: pass
             if verbose: print(f'router from cache in {time.time() - t0:.1f} s ({os.path.basename(path)})', flush=True)
             return R
         except Exception as e:
@@ -670,6 +674,19 @@ def cached_router(date, days, cache_dir=None, verbose=True):
     t0 = time.time()
     R = TimeRouter(load_feeds(), date, days)
     os.makedirs(cache_dir, exist_ok=True)
+    # Every edit to the feeds or this file makes a new ~650 MB cache and the old ones never become valid again,
+    # so without pruning they filled the disk twice (Sep 27 and Sep 28), and a full disk is also where macOS
+    # puts swap. Before writing, keep only the most recently used BUS48_ROUTER_CACHES - 1 (default 2 in total,
+    # since regress and the searches use different date windows), and drop temp files a dead run left behind.
+    keep = max(1, int(os.environ.get('BUS48_ROUTER_CACHES', '2')))
+    old = sorted(glob.glob(os.path.join(cache_dir, 'router_*.pkl')), key=os.path.getmtime, reverse=True)
+    for f in old[keep - 1:]:
+        try: os.remove(f); print(f'pruned old router cache {os.path.basename(f)}', flush=True)
+        except OSError: pass
+    for f in glob.glob(os.path.join(cache_dir, 'router_*.tmp')):
+        try:
+            if time.time() - os.path.getmtime(f) > 3600: os.remove(f)
+        except OSError: pass
     tmp = path + f'.{os.getpid()}.tmp'
     try:
         with open(tmp, 'wb') as fh: pickle.dump(R, fh, protocol=5)

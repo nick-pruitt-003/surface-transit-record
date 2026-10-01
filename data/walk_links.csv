@@ -5,3 +5,8 @@ amtrak:MEM,extra:Arkansas line on Big River Crossing (on foot from Memphis Amtra
 ibus:2385,extra:Denver Int'l Airport (Groome/A Line),50,RTD A Line Union Station - airport 37 min + wait
 amtrak:DEN,extra:Denver Int'l Airport (Groome/A Line),50,RTD A Line Union Station - airport 37 min + wait
 ibus:375,extra:Denver Int'l Airport (Groome/A Line),70,local to Union Station then A Line
+zz_nictd:s17,extra:Michigan line at Michiana (on foot from Michigan City Carroll Ave),85,OSM foot routing 9.3 km (5.8 mi) from South Shore Carroll Ave station at Nick's 4.1 mph running pace = 85 min (walking is 124 min)
+zz_mct:1_28,extra:Michigan line at Michiana (on foot from Michigan City Carroll Ave),51,OSM foot routing 5.6 km (3.5 mi) from MCT Route 1 Als Karwick at Nick's 4.1 mph running pace = 51 min (walking is 75 min); Route 1 hourly 07:09-17:09 Mon-Sat
+ibus:153,extra:Vermont line on US-7 (on foot from Williamstown),37,Google walking 2.5 mi (55 min) Williams College at Hopkins Hall -> 7985 US-7 Pownal VT just over the line (Nick screenshot Oct 1 2026); at Nick's 4.1 mph running pace = 37 min
+gmx:4258626,extra:Vermont line on US-7 (on foot from Williamstown),33,Field Park circle is on the same US-7 route about 0.25 mi in from Hopkins Hall: ~2.25 mi at 4.1 mph = 33 min
+brta:794954,extra:Vermont line on West Rd (on foot from North Adams Hospital),55,Google walking 3.0 mi via Eagle St and West Rd to 18 Klondike Rd Stamford VT with 876 ft of climb (Nick screenshot Oct 1 2026); 44 min at 4.1 mph flat plus ~11 min for the climb
