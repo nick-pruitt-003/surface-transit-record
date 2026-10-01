@@ -479,7 +479,9 @@ class TimeRouter:
             if len(stops) == 0: return (None, None) if profile else None
             if profile: mins.append(float(times.min()))
         f = float(times.min())
-        return (f, sum(mins) / len(mins)) if profile else f
+        # an empty order (every owed state already collected at the start, as a region test with a free start can be)
+        # has no layers to average; its profile is just the finish
+        return (f, sum(mins) / len(mins) if mins else f) if profile else f
 
     def _finish_py(self, start_stop, start_time, order, base=None):
         """Finish time only. base=(order, outs) lets a shared prefix reuse cached layer labels."""
