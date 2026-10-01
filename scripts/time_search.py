@@ -35,6 +35,14 @@ def _finish(order):
     f, m = _R.finish(st, _T0, o, base, profile=True)
     return f + TIE_W * (m - _T0) if f is not None else float('inf')
 
+def _elapsed_eval(order):
+    """Worker side of enumerate_all: hours from the first bus to the finish, routing from the window start.
+    inf when the route does not finish or does not cover every state."""
+    f, legs = _SELF.evaluate(order)
+    if f == float('inf') or not _SELF.all_states(legs): return float('inf')
+    first = next((l[3] for l in legs if l[0] == 'ride'), None)
+    return f - first if first is not None else float('inf')
+
 def _drop_eval(order):
     """Worker side of prune: finish time and whether the route still covers every state."""
     f, legs = _SELF.evaluate(order)
@@ -97,6 +105,8 @@ class Search:
         self.fixed_start = fixed_start   # keep start and clock as given (e.g. continuing after a forced ride)
         self.end, self.end_by = end, end_by   # route must finish at this target ('@stop'), by this time (epoch s)
         self.patience = 0   # seconds without a new best before stopping early (0 = use the whole budget)
+        self.idle_kicks = 10   # stop after this many kicks in a row that score no new order (0 = never)
+        self.exhaustive = 7    # score every order when at most this many states are owed (0 = never)
         self.done = set(done)   # states already collected before the start
         self.prefix = []
         for p in prefix:
@@ -251,10 +261,28 @@ class Search:
         f, legs = self.evaluate(order)
         for m in self.missing(legs):
             cands = [order[:j] + [m] + order[j:] for j in range(self.P, len(order) + 1)]
-            fs = pool.map(_finish, cands) if pool else [_finish(o) for o in cands]
+            fs = self.score(cands, pool)
             j = int(np.argmin(fs)); order = cands[j]
         f, legs = self.evaluate(order)
         return order, f, legs
+
+    def score(self, orders, pool=None):
+        """_finish for each order, memoised on (start, clock, order). _finish is a pure function of those three
+        for one search (_BASE only speeds it up), so an order is scored once per start however often the local
+        search, a kick or a pair move comes back to it. Only unseen orders go to the pool; self._new counts them,
+        which is how run() knows a kick taught it nothing."""
+        memo = self.__dict__.setdefault('_memo', {})
+        key = (int(self.start), self.t0)
+        ks = [(key, tuple(o)) for o in orders]
+        todo = {k: o for k, o in zip(ks, orders) if k not in memo}
+        if todo:
+            new = list(todo.values())
+            fs = pool.map(_finish, new) if pool and len(new) > 1 else [_finish(o) for o in new]
+            memo.update(zip(todo, fs)); self._new = self.__dict__.get('_new', 0) + len(new)
+        return [memo[k] for k in ks]
+
+    def score1(self, order, pool=None):
+        return self.score([order], pool)[0]
 
     def moves(self, order):
         n = len(order); P = self.P; out = []
@@ -295,7 +323,7 @@ class Search:
     def descend(self, order, f, legs, deadline, pool):
         """First-improvement local search from (order, f, legs) until no move helps or time is up.
         Moves are compared on the tie-broken score (_finish), so equal finishes with earlier states still count."""
-        improved = True; it = 0; sc = _finish(order)
+        improved = True; it = 0; sc = self.score1(order)
         while improved and time.time() < deadline:
             improved = False
             cands = self.moves(order); random.shuffle(cands)
@@ -303,28 +331,28 @@ class Search:
             for i in range(0, len(cands), batch):
                 if time.time() > deadline: break
                 chunk = cands[i:i + batch]
-                fs = pool.map(_finish, chunk) if pool else [_finish(o) for o in chunk]
+                fs = self.score(chunk, pool)
                 it += len(chunk); j = int(np.argmin(fs))
                 self.live(evals=self.__dict__.get('_live', {}).get('evals', 0) + len(chunk), phase='descending')
                 self.live_trial(order, chunk[j], fs[j])
                 if fs[j] < sc - 60:
                     o2, f2, l2 = self.repair(chunk[j], pool)
-                    s2 = _finish(o2)
+                    s2 = self.score1(o2)
                     if s2 < sc - 60 and f2 <= f + 60 and self.all_states(l2):
                         order, f, legs, sc = o2, f2, l2, s2; improved = True
                         print('  improve', round((f - self.t0) / 3600, 1), 'h after', it, 'evals', flush=True)
                         self.live_point(current_h=self.el_h(f, legs))
                         self.live(force=True, current=self.legs_json(legs), note=f'improve: {self.el_h(f, legs):.1f} h'); break
             if improved:
-                order, f, legs = self.prune(order, pool); pool = self.pool_for(order, pool); sc = _finish(order)
+                order, f, legs = self.prune(order, pool); pool = self.pool_for(order, pool); sc = self.score1(order)
         return order, f, legs, pool
 
     def joint(self, order, f, legs, deadline, pool, top=4):
         """Pair/triple move for when single moves are stuck: find groups of 2-3 nearby targets whose joint removal
         saves much more than removing any one of them (they hold a day together), then pull each group out and
         re-insert its members one by one at their best positions (state or gateway). Returns (order, f, legs, improved)."""
-        fmap = (lambda os_: pool.map(_finish, os_)) if pool else (lambda os_: [_finish(o) for o in os_])
-        sc = _finish(order); P = self.P
+        fmap = lambda os_: self.score(os_, pool)
+        sc = self.score1(order); P = self.P
         free = [i for i in range(P, len(order)) if order[i] not in self.sticky]
         drop = lambda g: [x for k, x in enumerate(order) if k not in g]
         single = dict(zip(free, fmap([drop({i}) for i in free])))
@@ -351,7 +379,7 @@ class Search:
                     fs = fmap(cands); o = cands[int(np.argmin(fs))]
                 o, fo, lo = self.repair(o, pool)   # judge only complete routes: a route that skips states finishes early
                 ok = fo != float('inf') and self.all_states(lo)
-                s = _finish(o) if ok else float('inf')
+                s = self.score1(o) if ok else float('inf')
                 self.live_trial(order, o, s, label=f'pair move {names}' + ('' if ok else ' (could not cover every state)'))
                 if s < best[0] - 60: best = (s, o, fo, lo)
         if best[1] is None: return order, f, legs, False
@@ -449,6 +477,44 @@ class Search:
             o.insert(random.randrange(self.P, len(o) + 1), x)
         return o + ([self.end] if self.end is not None else [])
 
+    def owed(self):
+        """States the route still has to collect: not done before the start, and not the required end target."""
+        return [x for x in range(N_STATES) if x not in self.done and x != self.end and x not in self.prefix]
+
+    def enumerate_all(self, order, f, legs, pool, top=12):
+        """Score every order of the owed states and continue from the best of them, so a small problem (a region
+        test) does not depend on the seed or on kicks finding the answer. Scoring ranks on finish from the window
+        start, which rewards an order for starting early rather than for being fast, so every order is also
+        routed once for hours from its first bus (_elapsed_eval). The top `top` on each key are pruned and settled
+        (the objective: hours from the first bus at the best start) and the best of those wins. About 15 ms an order on 4 workers: 7 owed states (5040) is ~75 s,
+        8 (40320) would be ~10 min, hence the default cap of 7."""
+        t = time.time(); ow = self.owed()
+        tail = [self.end] if self.end is not None else []
+        perms = [self.prefix + list(p) + tail for p in itertools.permutations(ow)]
+        print(f'exhaustive: scoring all {len(perms)} orders of {len(ow)} owed states', flush=True)
+        self.live(force=True, phase='exhaustive', note=f'scoring all {len(perms)} orders')
+        fs, es = [], []
+        for i in range(0, len(perms), 2000):
+            chunk = perms[i:i + 2000]
+            fs += self.score(chunk, pool)
+            es += pool.map(_elapsed_eval, chunk) if pool else [_elapsed_eval(o) for o in chunk]
+        pick = [i for key in (fs, es) for i in np.argsort(key)[:top] if key[i] < float('inf')]
+        ranked = [perms[i] for i in dict.fromkeys(pick)]
+        cand = []
+        for o in ranked:
+            o2, f2, l2 = self.prune(o, pool)
+            if f2 == float('inf') or not self.all_states(l2): continue
+            b = self.settle(o2)
+            if b is not None: cand.append((b[0], o2, f2, l2))
+        print(f'exhaustive: {len(perms)} scored, {len(cand)} of the top {len(ranked)} settle, '
+              f'{time.time() - t:.0f} s', flush=True)
+        if not cand: return order, f, legs, pool
+        el, o, f2, l2 = min(cand, key=lambda c: c[0])
+        b = self.settle(order)
+        if b is not None and b[0] <= el: return order, f, legs, pool    # the seed already does as well
+        print(f'exhaustive: best {el / 3600:.1f} h from first bus', flush=True)
+        return o, f2, l2, self.pool_for(o, pool)
+
     def run(self, order, budget):
         global _R, _START, _T0, _SELF, _END
         _R, _START, _T0, _SELF, _END = self.R, self.start, self.t0, self, self.end
@@ -465,28 +531,44 @@ class Search:
         self.live_point(current_h=self.el_h(f, legs))
         self.live(force=True, budget=budget, phase='starting', current=self.legs_json(legs), note=f'seed: {self.el_h(f, legs):.1f} h')
         deadline = time.time() + budget
+        ex = None
+        if 0 < len(self.owed()) <= self.exhaustive:
+            order, f, legs, pool = self.enumerate_all(order, f, legs, pool)
+            ex = self.settle(order)    # kept as a candidate: the descent below ranks on finish, not hours from first bus
+            if ex is not None: ex = (order, ex[3], ex[4], ex[0], ex[1], ex[2])
         order, f, legs, pool = self.local_opt(order, f, legs, deadline, pool)
         el, f, legs, pool = self.adopt(order, pool)
+        if ex is not None and ex[3] < el - 60:
+            order, f, legs, el = ex[:4]
+            if (self.start, self.t0) != ex[4:6]: pool = self.set_start(ex[4], ex[5], order, pool)
         print('settled', round(el / 3600, 1), 'h from first bus', flush=True)
         self.live_point(best_h=round(el / 3600, 2))
         self.live(force=True, best=self.legs_json(legs), start=self.start_name(legs), note=f'first best: {el / 3600:.1f} h from first bus')
-        best = (order, f, legs, el, self.start, self.t0); kick = 0; last_gain = time.time()
+        best = (order, f, legs, el, self.start, self.t0); kick = 0; last_gain = time.time(); idle = 0
         while time.time() < deadline:      # iterated local search: kick the incumbent, descend, keep if better
             if self.patience and time.time() - last_gain > self.patience:
                 print(f'converged: no new best for {self.patience:.0f} s, stopping early', flush=True)
                 self.live(note='converged, stopping early'); break
+            # A kick whose descent scored no order it had not already scored cannot find anything new, so a run of
+            # them means the space reachable from here is exhausted. Small problems get here in seconds.
+            if self.idle_kicks and idle >= self.idle_kicks:
+                print(f'exhausted: {idle} kicks in a row scored no new order ({len(self._memo)} scored), stopping', flush=True)
+                self.live(note='exhausted, stopping early'); break
+            n0 = self.__dict__.get('_new', 0)
             kick += 1
             if (self.start, self.t0) != best[4:6]: pool = self.set_start(best[4], best[5], best[0], pool)
             o2 = self.perturb(best[0], 2 + kick % 3)
             o2, f2, l2 = self.repair(o2, pool)
-            if not self.all_states(l2): continue
+            if not self.all_states(l2):
+                idle = idle + 1 if self.__dict__.get('_new', 0) == n0 else 0; continue
             pool = self.pool_for(o2, pool)
             print('kick', kick, 'from', round((f2 - self.t0) / 3600, 1), 'h', flush=True)
             self.live_point(current_h=self.el_h(f2, l2))
             self.live(force=True, kick=kick, phase='kicked', current=self.legs_json(l2), note=f'kick {kick}: shake up, restart at {self.el_h(f2, l2):.1f} h')
             o2, f2, l2, pool = self.local_opt(o2, f2, l2, deadline, pool)
             e2, f2, l2, pool = self.adopt(o2, pool)
-            if e2 < best[3] - 60 or (e2 <= best[3] + 60 and f2 <= best[1] + 60 and _finish(o2) < _finish(best[0]) - 60):
+            idle = idle + 1 if self.__dict__.get('_new', 0) == n0 else 0
+            if e2 < best[3] - 60 or (e2 <= best[3] + 60 and f2 <= best[1] + 60 and self.score1(o2) < self.score1(best[0]) - 60):
                 best = (o2, f2, l2, e2, self.start, self.t0); last_gain = time.time()
                 print('  new best', round(e2 / 3600, 1), 'h from first bus', flush=True)
                 self.live_point(best_h=round(e2 / 3600, 2))
@@ -507,6 +589,8 @@ def main():
     ap.add_argument('--done', default='', help='comma list of state abbreviations already collected before --start')
     ap.add_argument('--seed-pins', action='store_true', help='keep the seed pickle\'s @stop pins (by default only states are kept)')
     ap.add_argument('--patience', type=float, default=0, help='stop early after this many seconds without a new best')
+    ap.add_argument('--idle-kicks', type=int, default=10, help='stop after this many kicks in a row that score no order not already scored (0 = never)')
+    ap.add_argument('--exhaustive', type=int, default=7, help='score every order of the owed states when there are at most this many (0 = never)')
     ap.add_argument('--end', help='where the route must finish: a state abbreviation ("VT"), a stop name ("Barstow"), or a point "~lon,lat,km"')
     ap.add_argument('--end-by', help='finish deadline at --end, ISO time in --tz; the search works out the latest start that makes it')
     ap.add_argument('--fixed-start', action='store_true', help='keep the start stop and the --at clock exactly as given instead of '
@@ -538,7 +622,7 @@ def main():
         if isinstance(end, str) and not end.startswith('@~') and not R.stops_matching(a.end): sys.exit(f'no stop matching --end {a.end!r}')
     S = Search(R, start, t0.timestamp(), [x.strip() for x in a.prefix.split(',') if x.strip()], a.workers, done, alts,
                fixed_start=a.fixed_start, end=end, end_by=end_by)
-    S.patience = a.patience
+    S.patience = a.patience; S.idle_kicks = a.idle_kicks; S.exhaustive = a.exhaustive
     S.live(force=True, name=os.path.basename(a.out).replace('.pkl', ''), phase='loading')
     order, f, legs = S.run(seed, a.budget)
     # distinct nonzero exits, so a caller checking status cannot file these as results: 2 unreachable, 3 missed --end-by
