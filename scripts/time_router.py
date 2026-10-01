@@ -34,7 +34,7 @@ LOCAL_SPEED = 15 / 3.6     # m/s effective
 # more_gtfs feeds that are intercity carriers; every other feed there is city transit. The 1.5-10 km local-transit
 # proxy link is only built when one end is an intercity stop: city-to-city-stop hops are covered by the real
 # city routes, and building them for every pair of city stops multiplied the footpaths ~9x (Sep 21 2026).
-INTERCITY_MORE = {'concord_coach', 'bustang', 'gobus', 'kimball'}
+INTERCITY_MORE = {'concord_coach', 'bustang', 'gobus', 'kimball', 'vttranslines'}
 LOCAL_PROXY_ALL = os.environ.get('BUS48_LOCAL_PROXY', 'intercity') == 'all'
 STOP_TZ_LOCAL = os.environ.get('BUS48_STOP_TZ') == '1'
 N_STATES = 48
