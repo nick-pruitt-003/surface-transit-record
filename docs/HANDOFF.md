@@ -1252,10 +1252,13 @@ scans. Both are engineering. The ranking question is answered.
 ### Why slack fails here
 
 Inferred from the fix rather than measured directly, so flagged as such. The key is
-`min over owed y of (L[y][to] - at)` with more room better. A six hour ride to Saint George burns six hours
-of room against every state still owed; a ten minute UTA hop around Salt Lake burns ten minutes. Within the
-positioning group, **slack prefers the moves that go nowhere, because going nowhere is the cheapest thing
-available**. Hours-per-new-state, third costume: the first was ranking rides by efficiency, the second was
+`min over owed y of (L[y][to] - at)` with more room better. A positioning ride leaves the owed set unchanged,
+so `sort_opts` scores it `capl[to] - at`. The arrival time `at` is one term; the other is `capl[to]`, the
+destination's ceiling (min of `L[owed, to]` and `endl[to]`), which varies by
+stop. A six hour ride to Saint George pays six hours of arrival against a ten minute UTA hop around Salt
+Lake, and a higher ceiling at Saint George could offset that, so travel time alone does not fix the order.
+Within the positioning group, **slack prefers the moves that go nowhere only when the destination's ceiling
+does not offset the time penalty**, and Saint George at 509160th says here it did not. Hours-per-new-state, third costume: the first was ranking rides by efficiency, the second was
 the frontier `--credit` (the Wheeling search's deepest node looked ahead of pace at 4.55 h/state while
 sitting in the wrong half of the country), and this is the third.
 

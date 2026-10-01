@@ -199,10 +199,14 @@ That is an engineering problem with obvious attacks (apply it only where the pos
 cache the forward scans) rather than a search-design one. Do not reopen the ranking question.
 
 Why slack fails here is worth stating, though it is inferred from the fix rather than measured directly:
-the key is `min over owed y of (L[y][to] - at)` and more room is better, so a six hour ride to Saint George
-burns six hours of room against every owed state while a ten minute local hop around Salt Lake burns ten
-minutes. **Within the positioning group, slack prefers the moves that go nowhere, because going nowhere is
-the cheapest thing available.** That is hours-per-new-state in its third costume.
+the key is `min over owed y of (L[y][to] - at)` and more room is better. For a positioning ride the owed set
+does not change, so `sort_opts` scores it `capl[to] - at`, where `capl[to]` is the destination's own ceiling
+(the min of `L[owed, to]` and `endl[to]`). Two terms, then: the arrival time, which a six hour ride to Saint
+George pays six hours on against a ten minute hop around Salt Lake, and the ceiling at where the ride ends,
+which differs per stop and can pay that back. Travel time alone does not set the order. **Within the
+positioning group, slack prefers moves that go nowhere only when the destination's ceiling does not offset
+the time they cost**, and at Salt Lake the ranking (509160th) says it did not. That is hours-per-new-state in
+its third costume.
 
 The general lesson, since this is the second time this file has been wrong in this exact way: an entry in
 this table that has never been measured is a hypothesis, and three named casualties written from reasoning
