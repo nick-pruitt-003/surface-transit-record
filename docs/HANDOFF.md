@@ -1352,3 +1352,28 @@ reported 36.08 h for a leg the route does in 12.08. Earlier the same error made 
 for a 238 h route, and it is why the Wheeling start has to be 02:55 rather than 03:00. CLAUDE.md now carries
 it as a working rule: the error is exactly the transfer constant, the penalty is one whole service interval,
 and it reads as a result rather than a mistake.
+
+## 24. Moving to another machine
+
+`scripts/bootstrap.sh`. Clone, run it from inside `scripts/`, and it either produces a searchable checkout
+or exits non-zero saying why.
+
+Everything the router needs is committed, all 42 GTFS files included, so a clone carries the whole world at
+about 121 MB packed. Dependencies are `numpy`, `scipy`, `shapely`, plus a C compiler. Python 3.11 and gcc 13
+here; nothing exotic is used.
+
+Three things are deliberately not in git and the bootstrap regenerates all three:
+
+| | why it is not in git | what happens without it |
+|---|---|---|
+| `scripts/csa.so` | build artifact | `cached_router` does **not** hash `csa.c`, so nothing notices a stale object. It is not merely old: the signature gained two parameters in `c478bf1`. |
+| `out/res_starttest.pkl`, `out/hun_ms_meteor.pkl` | `out/` is gitignored | every gate silently measures nothing, which is how `forward_shapes` reported one gate as two for weeks |
+| `out/res_wheeling.pkl` | same | no `--track` for the 234 h route |
+
+The bootstrap rebuilds `csa.so` unconditionally rather than checking mtimes, because there is no mechanism
+that would catch a stale one and the rebuild costs a second.
+
+First router build is about 75 s, then `cached_router` reloads in about 2 s.
+
+The script ends by printing the search the measurements point at (`--goal`, not the default slack key) with
+its budget notes, so whoever runs it next does not have to reconstruct that from the history.
