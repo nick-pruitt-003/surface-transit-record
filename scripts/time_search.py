@@ -7,7 +7,7 @@ import re, argparse, itertools, json, os, pickle, random, time, sys
 from datetime import datetime
 from zoneinfo import ZoneInfo
 import numpy as np
-from time_router import TimeRouter, load_feeds, N_STATES
+from time_router import TimeRouter, load_feeds, cached_router, N_STATES
 from common import ABBR
 
 _R = None; _START = None; _T0 = None; _BASE = None; _SELF = None; _END = None   # _END: required last target
@@ -39,6 +39,54 @@ def _drop_eval(order):
     """Worker side of prune: finish time and whether the route still covers every state."""
     f, legs = _SELF.evaluate(order)
     return f, (f != float('inf') and _SELF.all_states(legs))
+
+
+# Where there is no fork (Windows), workers cannot inherit the globals above, and re-creating a pool for every
+# incumbent as the fork path does would mean every worker reloading a multi-GB router each kick. Instead the
+# pool is spawned once, each worker loads the cached router itself (_ROUTER_ARGS, set by main), and pool_for
+# publishes the small part that changes (start, clock, _BASE, the Search's settings) to a file with a
+# generation number. A task carries the generation and a worker rereads the file only when it is behind.
+_ROUTER_ARGS = None; _GEN = None
+
+def _spawn_init(args):
+    global _R
+    from time_router import cached_router
+    _R = cached_router(*args, verbose=False)
+
+def _spawn_task(job):
+    global _START, _T0, _BASE, _END, _SELF, _GEN
+    fn, gen, path, order = job
+    if _GEN != gen:
+        with open(path, 'rb') as fh: st = pickle.load(fh)
+        _START, _T0, _BASE, _END = st['start'], st['t0'], st['base'], st['end']
+        _SELF = Search.__new__(Search); _SELF.__dict__.update(st['self']); _SELF.R = _R
+        _GEN = gen
+    return fn(order)
+
+class _SpawnPool:
+    """Stands in for multiprocessing.Pool at the call sites: map, close, join."""
+    def __init__(self, workers):
+        import multiprocessing as mp, tempfile
+        self.path = os.path.join(tempfile.gettempdir(), f'bus48_time_search_{os.getpid()}.pkl')
+        self.gen = 0
+        self.pool = mp.get_context('spawn').Pool(workers, initializer=_spawn_init, initargs=(_ROUTER_ARGS,))
+
+    def publish(self, search):
+        keep = {k: v for k, v in search.__dict__.items() if k not in ('R', '_live')}
+        tmp = self.path + '.tmp'
+        with open(tmp, 'wb') as fh:
+            pickle.dump(dict(start=_START, t0=_T0, base=_BASE, end=_END, self=keep), fh, protocol=5)
+        os.replace(tmp, self.path); self.gen += 1
+
+    def map(self, fn, items):
+        return self.pool.map(_spawn_task, [(fn, self.gen, self.path, o) for o in items])
+
+    def close(self):
+        self.pool.close()
+        try: os.remove(self.path)
+        except OSError: pass
+
+    def join(self): self.pool.join()
 
 
 class Search:
@@ -232,8 +280,16 @@ class Search:
         if st is not None: self.R.route(st, self.t0, o); _BASE = (list(o), self.R.last_outs, order[0] if self.start == FREE else None)
         else: _BASE = None
         if self.workers <= 1: return None
-        if pool: pool.close(); pool.join()
         import multiprocessing as mp
+        if 'fork' not in mp.get_all_start_methods():   # Windows: one spawned pool, refreshed through a file
+            if pool is None:
+                if _ROUTER_ARGS is None:
+                    print('no fork and no cached router to load in workers: running with 1 worker', flush=True)
+                    self.workers = 1; return None
+                pool = _SpawnPool(self.workers)
+            pool.publish(self)
+            return pool
+        if pool: pool.close(); pool.join()
         return mp.get_context('fork').Pool(self.workers)
 
     def descend(self, order, f, legs, deadline, pool):
@@ -458,7 +514,9 @@ def main():
     ap.add_argument('--start-alt', default='', help='semicolon list of other stops the start may move to (each tried on 7 days, latest clock)')
     a = ap.parse_args()
     t0 = datetime.fromisoformat(a.at).replace(tzinfo=ZoneInfo(a.tz))
-    R = TimeRouter(load_feeds(), t0.date(), a.days)
+    global _ROUTER_ARGS
+    _ROUTER_ARGS = (t0.date(), a.days)   # spawned workers load the same cached router
+    R = cached_router(*_ROUTER_ARGS)
     start = FREE if a.start.lower().startswith('free') else R.stops_matching(a.start)[0]
     from common import ABBR
     inv = {v: k for k, v in ABBR.items()}
