@@ -170,3 +170,43 @@ on) runs load the cached router in about 2 s. PLAINS and LAKES ran on `edbba0a`
 1 min for all three seeds, stopping on exhaustion after 840 to 947 distinct orders; LAKES enumerated all 720
 orders in 31 s and then ran to `--patience` on gateway moves that never improved. Logs and pickles are in
 `out/regions/` (gitignored).
+
+## Follow-ups (Oct 1 evening)
+
+**Barons BSB 25 added** (`extra_trips.csv`, from Nick's screenshot): Toledo (Amtrak) 18:20 -> Angola, Lagrange,
+Shipshewana, Elkhart, South Bend -> Merrillville, Gary -> Chicago 22:55 Central. LAKES rerun: still **16.1 h**,
+same route. The 12 h 40 chain fails at TARTA, not Barons: route 26 (Miracle Mile via Lewis) leaves downtown
+at 16:30, the minute the Greyhound arrives, and the 17:30 reaches Alexis & Lewis at 17:54; the next run back
+reaches downtown 19:15. Even the 16:30 would not do it: Alexis & Lewis 16:54, about 2.5 km to the Michigan
+line and back, and the return passes at 17:19. It misses by about five minutes before any transfer slack.
+
+**Four Corners.** Nick's friend proposed collecting AZ UT CO NM around the Four Corners using the
+Albuquerque - Durango Greyhound and Navajo Transit (`data/more_gtfs/navajo.zip`, NTS GTFS feed_version
+20260313). Region test on the four states, all 24 orders enumerated:
+
+| | hours | route |
+|---|---|---|
+| without NTS | **22.8** | St George -> Las Vegas -> Flagstaff -> Albuquerque -> Trinidad CO |
+| with NTS | **22.8** | identical; NTS is never used |
+| forced: Durango bus, then NTS Gallup -> Window Rock | 44.7 | |
+| forced: Durango bus, then NTS via Shiprock | 68.7 | |
+| forced: Trinidad, Albuquerque, NTS Window Rock, Chief, Las Vegas, St George | 33.8 | |
+
+Why it cannot work on this network: no scheduled service reaches the monument (NTS's nearest stops are
+Shiprock, 30 km, and Round Rock), NTS never enters Utah or Colorado, its Route 18 (Shiprock - Farmington,
+the only link to the Durango bus) has a calendar that ended 2026-03-12, and every route is weekday-only.
+
+Utah via Page (Express brochure, Route F to Wahweap Housing on Stateline Dr.) needs NTS Route 1 Tuba City -
+Ft. Defiance (PDF revised 08/27/2026, Monday - Thursday, one round trip, not in the GTFS) and Express Route B
+Page - Tuba City (Tuba City -> Page only at 7:00 AM). Window Rock 15:15 -> Tuba City 19:04, overnight, Page
+8:27, Wahweap 13:33 and back, Route B 15:27 to Tuba City, overnight, Route 1 6:00 -> Window Rock 9:37: about
+42 h for Utah alone, against 22.8 h for all four states via St George. Not entered as data, since the
+arithmetic is exact and the stops would need coordinates nobody has checked.
+
+Still open: **Bustang Outrider Grand Junction - Durango**, which with the Durango - Farmington - Albuquerque
+Greyhound would link the Zephyr / Bustang West at Grand Junction to New Mexico without Denver. Needs its
+timetable.
+
+Display bugs seen (absolute times correct, only `fmt_time` shows the wrong zone): South Hammond IN prints
+Eastern (Lake County is Central); Navajo Nation stops in Arizona print Arizona time (the Nation keeps
+Mountain daylight time).
