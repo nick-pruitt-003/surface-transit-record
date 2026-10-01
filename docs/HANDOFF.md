@@ -1263,3 +1263,59 @@ The pattern across all three is one thing: a per-move score cannot see that a mo
 different move, later. Saint George is worth six hours because the next ride collects two states. No
 quantity evaluated at Saint George knows that. `--goal` works precisely because it is not a per-move score,
 it is a forward scan to the states still owed.
+
+## 23. Sep 26: the 24 h from Utah to Kingman is the Chief's timetable, not a detour
+
+Nick: "the problem leg right now is ogden to kingman, takes around 24 hours to go 500ish miles", and Ogden
+is the first Utah stop on the Pasco to Salt Lake Greyhound. The number is right. Salt Lake Tue 02:30 MT to
+Kingman Wed 01:27 MT is just under 24 h, and Ogden is about an hour earlier still.
+
+It is not a detour, and the reason is that the Barstow swing and Kingman are the **same train**:
+
+```
+CA Victorville    20:54  ->  CA Barstow     21:42
+CA Barstow        21:47  ->  CA Needles     Wed 00:20     <- the route boards here
+CA Needles        00:22  ->  AZ Kingman     Wed 01:27
+AZ Kingman        01:37  ->  AZ Flagstaff   Wed 04:31
+```
+
+| | leave Las Vegas | board | at Kingman | collects |
+|---|---|---|---|---|
+| via Barstow, as the route does | 16:05 | Barstow 21:47 | 01:27 | **California** |
+| direct to Kingman by AE bus | 15:45 | Kingman 01:37 | 01:37 | nothing |
+
+Going straight to Kingman means leaving Las Vegas *earlier*, idling there from 19:45 to 01:37, and boarding
+the same train having collected nothing. Barstow leaves later, catches the same train, and takes California
+on the way. The swing is free.
+
+Needles is not an alternative boarding point either, and the reason is worth keeping: the only things that
+reach Needles are Barstow (21 arrivals) and Kingman (21), which is the Chief itself. There is no bus. The
+router's "Las Vegas to Needles in 8.58 h" goes via Barstow and then the train.
+
+### What the window actually contains
+
+Five states (UT and OR at Salt Lake, NV and AZ on the St George shuttle via **Beaver Dam** in the Arizona
+Strip, CA at Barstow) and only two waits:
+
+```
+2.84 h  Salt Lake City (Shop)   03:39 -> 06:30    the Saint George run
+2.18 h  Barstow                 19:36 -> 21:47    the Chief
+```
+
+Five hours of idling inside twenty-four, both behind once-daily departures. Across the whole route **35 of
+68 links have under ten minutes of room**, seventeen of them exactly zero.
+
+### And it is not the binding constraint
+
+```
+depart Wheeling 03:55  ->  234.32 h
+depart Wheeling 04:00  ->  282.24 h
+```
+
+**Five minutes costs 47.9 h.** The chain binds at the Wheeling boarding, at the very start, so everything
+downstream including this window has slack. Elapsed is set by how late you can start against a finish
+pinned at Sat 22:14, and compressing the Salt Lake or Barstow waits only moves idle time around inside the
+route without moving either end.
+
+So this corridor is not where time is. The 47.9 h cliff is its own finding though: the route has no graceful
+degradation at the start, and a single missed five-minute margin does not cost a day, it costs two.
