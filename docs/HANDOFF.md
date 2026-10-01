@@ -1324,3 +1324,174 @@ Findings worth keeping:
 New data this stretch: Vermont Translines, Green Mountain Express, BRTA feeds; extra_trips rows for 702 Shuttles, Limo Express, Greyhound I-81/I-77 (Knoxville, Max Meadows, Charleston, Huntington, Toledo), Peter Pan BZ (Berkshires, Boston), GMX Purple via Field Park, Salt Lake Express 06:00; walk links Williamstown and North Adams -> VT line. Omnibus Express is skipped (no reliable stop times). `cached_router` keeps only the 2 most recently used caches.
 
 Claude's memory notes for this project are copied in `docs/claude_memory/` so another machine can restore them.
+
+## 24. Sep 26: Saint George, 509160th to 3rd, and a flag that was judged on the wrong instrument
+
+The leg is `Salt Lake City (Shop) 08:30 -> Saint George (Bluff St Office) 14:20`. It collects nothing. The
+very next ride, `Saint George 14:40 -> Las Vegas (Airport) 16:50`, collects **NV and AZ**. So Saint George's
+whole value is being the hinge to the Southwest, and it costs six hours to reach.
+
+Slack ranks it **509160 of 1156415**. `--goal` ranks it **3**.
+
+| leg | collects | slack | `--goal` | factor |
+|---|---|---|---|---|
+| Saint George | nothing | 509160/1156415 | **3** | 169720x |
+| Des Moines | IA | 4956/199476 | **9** | 551x |
+| Bonneville Transit Center | nothing | 2173/331320 | **1** | 2173x |
+| Memphis to Holmes | nothing | 13900/375718 | 49 | 284x |
+| AKARD STATION | nothing | 29/190 | **1** | 29x |
+| Jacksonville Amtrak | nothing | 14/54 | **1** | 14x |
+| Conway | AR | 61/34112 | **7** | 9x |
+| Trinidad CO | CO | 6/11 | **1** | 6x |
+| Fargo | ND | 13/37 | **5** | 3x |
+
+**38/40 within `--width 12` against 31/40.** Four legs get worse and all four stay inside the cap: Detroit
+5 to 12, Las Vegas Amtrak 5 to 8, Lake Charles 2 to 5, Tallahassee 2 to 3. Two remain outside, and they are
+the two halves of one move: Holmes at 49 and the Airways hop back at 366, which is the only leg `--goal`
+does not touch at all (365 to 366).
+
+### The instrument, which is the transferable part
+
+`--goal` had been set aside on a measurement: 23 honest depth against slack's 26 at equal budget. That
+number is real and it is not what the question needed. Depth-at-budget confounds **ranking quality** with
+**cost per node**, and `--goal` costs about 30 ms a node against a per-node budget of about 40, so it was
+always going to lose a depth race whatever its ranking did. The replay separates the two, and CLAUDE.md
+already says which to trust: running searches blind and reading the output found nothing for hours, while
+replaying the known answer found every real defect. The flag was judged by the method the file warns
+against, by me among others, three messages before this one.
+
+So the open problem is cost, not ranking, and it has obvious attacks: apply `--goal` only where the
+positioning menu is large (Salt Lake offers 1156415 options, Trinidad offers 11), or cache the forward
+scans. Both are engineering. The ranking question is answered.
+
+### Why slack fails here
+
+Inferred from the fix rather than measured directly, so flagged as such. The key is
+`min over owed y of (L[y][to] - at)` with more room better. A positioning ride leaves the owed set unchanged,
+so `sort_opts` scores it `capl[to] - at`. The arrival time `at` is one term; the other is `capl[to]`, the
+destination's ceiling (min of `L[owed, to]` and `endl[to]`), which varies by
+stop. A six hour ride to Saint George pays six hours of arrival against a ten minute UTA hop around Salt
+Lake, and a higher ceiling at Saint George could offset that, so travel time alone does not fix the order.
+Within the positioning group, **slack prefers the moves that go nowhere only when the destination's ceiling
+does not offset the time penalty**, and Saint George at 509160th says here it did not. Hours-per-new-state, third costume: the first was ranking rides by efficiency, the second was
+the frontier `--credit` (the Wheeling search's deepest node looked ahead of pace at 4.55 h/state while
+sitting in the wrong half of the country), and this is the third.
+
+The pattern across all three is one thing: a per-move score cannot see that a move's value is realised by a
+different move, later. Saint George is worth six hours because the next ride collects two states. No
+quantity evaluated at Saint George knows that. `--goal` works precisely because it is not a per-move score,
+it is a forward scan to the states still owed.
+
+## 25. Sep 26: the 24 h from Utah to Kingman is the Chief's timetable, not a detour
+
+Nick: "the problem leg right now is ogden to kingman, takes around 24 hours to go 500ish miles", and Ogden
+is the first Utah stop on the Pasco to Salt Lake Greyhound. The number is right. Salt Lake Tue 02:30 MT to
+Kingman Wed 01:27 MT is just under 24 h, and Ogden is about an hour earlier still.
+
+It is not a detour, and the reason is that the Barstow swing and Kingman are the **same train**:
+
+```
+CA Victorville    20:54  ->  CA Barstow     21:42
+CA Barstow        21:47  ->  CA Needles     Wed 00:20     <- the route boards here
+CA Needles        00:22  ->  AZ Kingman     Wed 01:27
+AZ Kingman        01:37  ->  AZ Flagstaff   Wed 04:31
+```
+
+| | leave Las Vegas | board | at Kingman | collects |
+|---|---|---|---|---|
+| via Barstow, as the route does | 16:05 | Barstow 21:47 | 01:27 | **California** |
+| direct to Kingman by AE bus | 15:45 | Kingman 01:37 | 01:37 | nothing |
+
+Going straight to Kingman means leaving Las Vegas *earlier*, idling there from 19:45 to 01:37, and boarding
+the same train having collected nothing. Barstow leaves later, catches the same train, and takes California
+on the way. The swing is free.
+
+Needles is not an alternative boarding point either, and the reason is worth keeping: the only things that
+reach Needles are Barstow (21 arrivals) and Kingman (21), which is the Chief itself. There is no bus. The
+router's "Las Vegas to Needles in 8.58 h" goes via Barstow and then the train.
+
+### What the window actually contains
+
+Five states (UT and OR at Salt Lake, NV and AZ on the St George shuttle via **Beaver Dam** in the Arizona
+Strip, CA at Barstow) and only two waits:
+
+```
+2.84 h  Salt Lake City (Shop)   03:39 -> 06:30    the Saint George run
+2.18 h  Barstow                 19:36 -> 21:47    the Chief
+```
+
+Five hours of idling inside twenty-four, both behind once-daily departures. Across the whole route **35 of
+68 links have under ten minutes of room**, seventeen of them exactly zero.
+
+### And it is not the binding constraint
+
+```
+depart Wheeling 03:55  ->  234.32 h
+depart Wheeling 04:00  ->  282.24 h
+```
+
+**Five minutes costs 47.9 h.** The chain binds at the Wheeling boarding, at the very start, so everything
+downstream including this window has slack. Elapsed is set by how late you can start against a finish
+pinned at Sat 22:14, and compressing the Salt Lake or Barstow waits only moves idle time around inside the
+route without moving either end.
+
+So this corridor is not where time is. The 47.9 h cliff is its own finding though: the route has no graceful
+degradation at the start, and a single missed five-minute margin does not cost a day, it costs two.
+
+### Mt Shasta: taking California in the north costs 24.55 h to replace something free
+
+Nick: "mt shasta is as northeast in cali you can reasonably route from". Correct, and that is the problem.
+It is in the feed (84 departures, Dunsmuir Amtrak beside it with 42), and northern California is genuinely
+enterable from Oregon: the Hwy 199 corridor runs O'Brien Market OR to Gasquet, Hiouchi and Crescent City,
+and Klamath Falls sits next to Dunsmuir on the Starlight.
+
+Measured from the route's own Pasco departure:
+
+| | time | collects |
+|---|---|---|
+| Pasco -> Salt Lake, as routed | **12.25 h** | UT, OR |
+| Pasco -> Mt Shasta | 13.58 h | CA |
+| Mt Shasta -> Salt Lake | 23.21 h | |
+| via Mt Shasta | **36.80 h** | CA, UT, OR |
+
+**+24.55 h**, and the expensive half is the return: Mt Shasta to Salt Lake is 23.21 h by itself. Against
+that, California at Barstow currently costs **zero** (the swing catches the same Chief it would catch at
+Kingman, while leaving Las Vegas later), and the most a free California could buy is about 5.5 h of slack
+before the Chief, which the sweep says is worth nothing because the chain binds at Wheeling.
+
+So the northern option is a 24.55 h detour to replace a free state, and it loses by roughly the size of the
+window it was meant to fix.
+
+### The five-minute trap, three times in one session
+
+Both of my first two attempts at this comparison were wrong, the same way. I set the start clock to the
+route's own Pasco departure, so `best[a] + MIN_TRANSFER <= dep` failed, the scan took the next day's bus and
+reported 36.08 h for a leg the route does in 12.08. Earlier the same error made `x_forward` report 285.98 h
+for a 238 h route, and it is why the Wheeling start has to be 02:55 rather than 03:00. CLAUDE.md now carries
+it as a working rule: the error is exactly the transfer constant, the penalty is one whole service interval,
+and it reads as a result rather than a mistake.
+
+## 26. Moving to another machine
+
+`scripts/bootstrap.sh`. Clone, run it from inside `scripts/`, and it either produces a searchable checkout
+or exits non-zero saying why.
+
+Everything the router needs is committed, all 42 GTFS files included, so a clone carries the whole world at
+about 121 MB packed. Dependencies are `numpy`, `scipy`, `shapely`, plus a C compiler. Python 3.11 and gcc 13
+here; nothing exotic is used.
+
+Three things are deliberately not in git and the bootstrap regenerates all three:
+
+| | why it is not in git | what happens without it |
+|---|---|---|
+| `scripts/csa.so` | build artifact | `cached_router` does **not** hash `csa.c`, so nothing notices a stale object. It is not merely old: the signature gained two parameters in `c478bf1`. |
+| `out/res_starttest.pkl`, `out/hun_ms_meteor.pkl` | `out/` is gitignored | every gate silently measures nothing, which is how `forward_shapes` reported one gate as two for weeks |
+| `out/res_wheeling.pkl` | same | no `--track` for the 234 h route |
+
+The bootstrap rebuilds `csa.so` unconditionally rather than checking mtimes, because there is no mechanism
+that would catch a stale one and the rebuild costs a second.
+
+First router build is about 75 s, then `cached_router` reloads in about 2 s.
+
+The script ends by printing the search the measurements point at (`--goal`, not the default slack key) with
+its budget notes, so whoever runs it next does not have to reconstruct that from the history.

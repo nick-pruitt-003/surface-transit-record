@@ -8,7 +8,7 @@ not collect all 48 states.
 
   python3 rebuild_237.py            # writes ../out/hun_ms_meteor.pkl and ../out/res_starttest.pkl
 """
-import os, pickle
+import os, pickle, sys
 from datetime import datetime
 from zoneinfo import ZoneInfo
 from time_router import TimeRouter, load_feeds
@@ -42,6 +42,7 @@ def main():
     inv = {v: k for k, v in ABBR.items()}
     full = [R.state_names.index(inv[x]) for x in SEQ]
     start = R.stops_matching(START)[0]
+    failed = []
     for name, when, pruned in CLOCKS:
         order = [x for x in full if x != R.state[start]] if pruned else full
         t0 = when.timestamp()
@@ -49,15 +50,17 @@ def main():
         ts._R, ts._START, ts._T0, ts._SELF, ts._BASE, ts._END = R, start, t0, S, None, None
         f, legs = S.evaluate(order)
         if f == float('inf'):
-            print(f'{name}: no finish from {when:%a %H:%M}'); continue
+            print(f'{name}: no finish from {when:%a %H:%M}'); failed.append(name); continue
         miss = [ABBR[R.state_names[s]] for s in S.missing(legs)]
         el = (f - t0) / 3600
         print(f'{name}: start {when:%a %H:%M}, {el:.2f} h, finish '
               f'{datetime.fromtimestamp(f, ET):%a %Y-%m-%d %H:%M}, missing {miss or "none"}', flush=True)
-        if miss: continue
+        if miss: failed.append(name); continue
         pickle.dump(dict(order=order, t0=t0, start=R.stop_name[start], elapsed=f - t0, finish=f),
                     open(OUT + name, 'wb'))
         print('  wrote', OUT + name, flush=True)
+    # Non-zero, so bootstrap.sh stops here: an older pickle left in out/ would otherwise satisfy every gate.
+    if failed: sys.exit(f'not rebuilt: {", ".join(failed)} (any existing copy in {OUT} is stale)')
 
 
 if __name__ == '__main__':
