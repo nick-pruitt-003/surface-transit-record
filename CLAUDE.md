@@ -22,6 +22,13 @@ the route, the rules, and everything tested and ruled out. Read it before propos
   `overnight.sh` skips any run whose log already holds a summary line, so a restart continues instead of
   redoing the first run for ever. Budget accordingly, and remember every run pays about 3.5 min of GTFS
   loading before it searches.
+- **Never use a service's own departure time as a start clock.** Boarding needs
+  `best[a] + MIN_TRANSFER <= dep`, so a clock set to the exact minute of the bus you mean to catch cannot
+  catch it, and the scan silently takes the next one. Three times in one session: `x_forward --at` defaulted
+  to JL 701's 22:20 and reported 285.98 h for a 238 h route; a Wheeling start had to be 02:55 for the 03:00;
+  and a Pasco-to-Salt-Lake reference came out at 36.08 h against a true 12.08 h. It is off by exactly the
+  transfer constant and the penalty is one whole service interval, so it reads as a result rather than an
+  error. Back the clock off ten minutes.
 - Don't write `pkill -f <script>` in a command whose own text contains that script name. It matches the
   shell running it and kills the command before it runs. Use `pgrep -f "ride_sea[r]ch"` instead. Cost me
   three commands before I noticed.

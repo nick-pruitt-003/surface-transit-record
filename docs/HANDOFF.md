@@ -1319,3 +1319,36 @@ route without moving either end.
 
 So this corridor is not where time is. The 47.9 h cliff is its own finding though: the route has no graceful
 degradation at the start, and a single missed five-minute margin does not cost a day, it costs two.
+
+### Mt Shasta: taking California in the north costs 24.55 h to replace something free
+
+Nick: "mt shasta is as northeast in cali you can reasonably route from". Correct, and that is the problem.
+It is in the feed (84 departures, Dunsmuir Amtrak beside it with 42), and northern California is genuinely
+enterable from Oregon: the Hwy 199 corridor runs O'Brien Market OR to Gasquet, Hiouchi and Crescent City,
+and Klamath Falls sits next to Dunsmuir on the Starlight.
+
+Measured from the route's own Pasco departure:
+
+| | time | collects |
+|---|---|---|
+| Pasco -> Salt Lake, as routed | **12.25 h** | UT, OR |
+| Pasco -> Mt Shasta | 13.58 h | CA |
+| Mt Shasta -> Salt Lake | 23.21 h | |
+| via Mt Shasta | **36.80 h** | CA, UT, OR |
+
+**+24.55 h**, and the expensive half is the return: Mt Shasta to Salt Lake is 23.21 h by itself. Against
+that, California at Barstow currently costs **zero** (the swing catches the same Chief it would catch at
+Kingman, while leaving Las Vegas later), and the most a free California could buy is about 5.5 h of slack
+before the Chief, which the sweep says is worth nothing because the chain binds at Wheeling.
+
+So the northern option is a 24.55 h detour to replace a free state, and it loses by roughly the size of the
+window it was meant to fix.
+
+### The five-minute trap, three times in one session
+
+Both of my first two attempts at this comparison were wrong, the same way. I set the start clock to the
+route's own Pasco departure, so `best[a] + MIN_TRANSFER <= dep` failed, the scan took the next day's bus and
+reported 36.08 h for a leg the route does in 12.08. Earlier the same error made `x_forward` report 285.98 h
+for a 238 h route, and it is why the Wheeling start has to be 02:55 rather than 03:00. CLAUDE.md now carries
+it as a working rule: the error is exactly the transfer constant, the penalty is one whole service interval,
+and it reads as a result rather than a mistake.
