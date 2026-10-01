@@ -1294,3 +1294,33 @@ cost is exact and cheap to compute: the joint table already does it hub to hub f
 This avoids what sank the six-block assembler (a fixed order inside each block) and what makes free searches
 drift (they never commit to a different anchor chain). Estimated cost: half a day to build, then about an
 hour of cloud time per run.
+
+## 23. Sep 28 – Oct 1: Nick's chains, new feeds, region tests
+
+All results are full searches unless marked otherwise. Record 238.83 h, control 237.3 h.
+
+| run | idea | result |
+|---|---|---|
+| LX2 | Sheridan start, 702 Shuttles + Limo Express Las Vegas -> El Paso | 262.0 h: the chain works, X's shape can't use it |
+| GLX | Goodland KS start into LX2 | 277.1 h |
+| WRJ_MEM | White River Junction -> Memphis finish | 266.9 h |
+| JMX / JMX2 / JMX3 | Jacksonville -> Atlanta -> Memphis -> Tulsa chain, Louisiana / Tennessee finishes | 265.2 / 261.1 / 273.1 h |
+| KNX | Knoxville 23:40 start (I-81 / I-77) | 262.6 h |
+| **MEX** | control start, VT mid-route, **finish in Portland ME** | **237.8 h**, beats the record; took Boston -> Hanover -> WRJ -> Boston -> Portland, not Albany |
+| MEW / MEW2 | Portland ME start, Williamstown VT run, Albany Lake Shore west, finish RI | 276.9 / 270.7 h; day 1 works (ME MA VT NY PA OH MI by Toledo 07:29), but WV/KY cost a Columbus -> Charlotte -> Atlanta -> Chicago zigzag |
+| MEW3 | MEW2 with WV via Charleston -> Max Meadows -> Knoxville pinned | killed at 320 h |
+| SEG_A / SEG_B | West only: Spokane Mon 10:40 -> OKC, owed WA OR ID UT NV CA AZ NM CO OK | **both OKC Thu 06:43 = the control's arrival.** The Sacramento-loop seed converged to the same route: for a Spokane Monday entry the control's West is optimal |
+
+Findings worth keeping:
+
+- **Endpoints belong on states that otherwise cost a round trip** (Maine, Wisconsin's Eau Claire, Vermont). Nick ruled any route to or from Maine counts NH (`--done NH` for a Portland start).
+- **Vermont from the west**: Vermont Translines Albany 12:50 -> Bennington 14:05, GMX Purple (official timetable, Field Park on four weekday runs), Peter Pan BZ NYC <-> Williamstown, and a measured run Williamstown (Hopkins Hall) -> VT line on US-7, 2.5 mi, 37 min. North Adams Hospital -> VT line is 3.0 mi with 876 ft climb, 55 min. Only useful when the route already passes Albany.
+- **Ogden -> Needles is slow because two once-daily services bracket it** (Salt Lake Express, Chief 20:47 at Barstow). Las Vegas -> Laughlin -> Bullhead -> Needles to board the Chief later is dead: the Needles shuttle's last Bullhead pickup is 13:15 and the Laughlin Express arrives 16:15. Salt Lake Express now leaves SLC airport 06:00 and reaches Las Vegas 13:10 (row added).
+- **Nick's LAKES chain**: Greyhound Huntington 10:15 -> Ashland -> Columbus -> Toledo 16:30, TARTA to the Michigan line, Barons BSB 25 18:20 -> Chicago 22:55. WV KY OH MI IN IL in 12 h 40 against the control's ~20.5 h, but it misses the City of New Orleans.
+- **C&J NYC -> Portsmouth 18:00 -> 23:05 plus a 3.6 mi run to Kittery** loses to Amtrak NYC 18:05 -> Portland 00:10, which also collects CT RI MA.
+- **Region tests**: `time_search.py --done <every other state> --start free:XX` finds the fastest way through a set of states. The first W7 attempt crashed on an empty-order profile (fixed in `_finish_fast`). Results of the W7 and region reruns are in `out/irw_queue.log` on the laptop and should be re-run if needed.
+- **Fast mode**: a question about one chain is `--budget 0` on that order (an evaluation, seconds). Searches use `--patience`.
+
+New data this stretch: Vermont Translines, Green Mountain Express, BRTA feeds; extra_trips rows for 702 Shuttles, Limo Express, Greyhound I-81/I-77 (Knoxville, Max Meadows, Charleston, Huntington, Toledo), Peter Pan BZ (Berkshires, Boston), GMX Purple via Field Park, Salt Lake Express 06:00; walk links Williamstown and North Adams -> VT line. Omnibus Express is skipped (no reliable stop times). `cached_router` keeps only the 2 most recently used caches.
+
+Claude's memory notes for this project are copied in `docs/claude_memory/` so another machine can restore them.
