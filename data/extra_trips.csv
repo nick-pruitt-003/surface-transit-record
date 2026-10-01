@@ -127,3 +127,4 @@ Green Mountain Express,Purple Line Field Park -> Pownal -> Bennington (official 
 Green Mountain Express,Purple Line Field Park -> Pownal -> Bennington (official timetable as above),1111100,America/New_York,=gmx:4258626@14:30|=gmx:4248598@14:40|=gmx:770794@15:05
 Green Mountain Express,Purple Line Field Park -> Pownal -> Bennington (official timetable as above),1111100,America/New_York,=gmx:4258626@15:45|=gmx:4248598@15:55|=gmx:770794@16:20
 On foot,stop definition for the Williamstown run (never runs),0000000,America/New_York,+Vermont line on US-7 (on foot from Williamstown);-73.2141;42.7450@00:00
+On foot,stop definition for the North Adams run (never runs),0000000,America/New_York,+Vermont line on West Rd (on foot from North Adams Hospital);-73.1180;42.7432@00:00
