@@ -25,12 +25,12 @@ cc --version | head -1
 python3 - <<'PY'
 import sys
 missing = []
-for m in ('numpy', 'scipy', 'shapely'):
+for m in ('numpy', 'scipy', 'shapely', 'timezonefinder'):
     try: __import__(m)
     except ImportError: missing.append(m)
 if missing:
     sys.exit(f'missing Python packages: {" ".join(missing)}\n  pip install {" ".join(missing)}')
-print('numpy, scipy, shapely present')
+print('numpy, scipy, shapely, timezonefinder present')
 PY
 
 echo

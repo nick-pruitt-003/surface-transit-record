@@ -241,6 +241,15 @@ def _():
     assert S.move_label(o, [o[0], o[2], o[1], o[3]]).startswith('reverse'), S.move_label(o, [o[0], o[2], o[1], o[3]])
 
 
+@check("stop clocks print in the stop's own zone: South Hammond IN is Central, Window Rock (Navajo Nation) Mountain daylight")
+def _():
+    # noon UTC on Sep 24: 07:00 CDT, 06:00 MDT. A state's zone gives 08:00 (Indiana as Eastern) and 05:00 (Arizona, no DST).
+    t = datetime(2026, 9, 24, 12, 0, tzinfo=ZoneInfo('UTC')).timestamp()
+    for q, want in (('South Hammond', '07:00'), ('Window Rock - Bashas Parking Lot', '06:00'), ('Flagstaff', '05:00')):
+        s = R.stops_matching(q)[0]; got = R.fmt_time(t, s)
+        assert got.endswith(want), (R.stop_name[s], got, want)
+
+
 print()
 for name, ok, info in results: print(('PASS ' if ok else 'FAIL ') + name + ('' if ok else '\n     ' + info))
 print(f'\n{sum(ok for _, ok, _ in results)}/{len(results)} passed')

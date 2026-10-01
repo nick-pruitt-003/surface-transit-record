@@ -34,11 +34,23 @@ LOCAL_SPEED = 15 / 3.6     # m/s effective
 # more_gtfs feeds that are intercity carriers; every other feed there is city transit. The 1.5-10 km local-transit
 # proxy link is only built when one end is an intercity stop: city-to-city-stop hops are covered by the real
 # city routes, and building them for every pair of city stops multiplied the footpaths ~9x (Sep 21 2026).
-INTERCITY_MORE = {'concord_coach', 'bustang', 'gobus', 'kimball', 'vttranslines'}
+INTERCITY_MORE = {'concord_coach', 'bustang', 'gobus', 'kimball', 'vttranslines', 'outrider'}
 LOCAL_PROXY_ALL = os.environ.get('BUS48_LOCAL_PROXY', 'intercity') == 'all'
 STOP_TZ_LOCAL = os.environ.get('BUS48_STOP_TZ') == '1'
 N_STATES = 48
 STATE_TZ = {'AL':'America/Chicago','AZ':'America/Phoenix','AR':'America/Chicago','CA':'America/Los_Angeles','CO':'America/Denver','CT':'America/New_York','DE':'America/New_York','FL':'America/New_York','GA':'America/New_York','ID':'America/Boise','IL':'America/Chicago','IN':'America/Indiana/Indianapolis','IA':'America/Chicago','KS':'America/Chicago','KY':'America/New_York','LA':'America/Chicago','ME':'America/New_York','MD':'America/New_York','MA':'America/New_York','MI':'America/Detroit','MN':'America/Chicago','MS':'America/Chicago','MO':'America/Chicago','MT':'America/Denver','NE':'America/Chicago','NV':'America/Los_Angeles','NH':'America/New_York','NJ':'America/New_York','NM':'America/Denver','NY':'America/New_York','NC':'America/New_York','ND':'America/Chicago','OH':'America/New_York','OK':'America/Chicago','OR':'America/Los_Angeles','PA':'America/New_York','RI':'America/New_York','SC':'America/New_York','SD':'America/Chicago','TN':'America/Chicago','TX':'America/Chicago','UT':'America/Denver','VT':'America/New_York','VA':'America/New_York','WA':'America/Los_Angeles','WV':'America/New_York','WI':'America/Chicago','WY':'America/Denver'}
+
+
+_TF = []
+def _tz_at(lon, lat):
+    """IANA zone at a point (timezonefinder, offline polygons), or None when it is not installed."""
+    if not _TF:
+        try:
+            from timezonefinder import TimezoneFinder; _TF.append(TimezoneFinder())
+        except ImportError:
+            print('timezonefinder not installed (pip install timezonefinder): printing state time zones', flush=True)
+            _TF.append(None)
+    return _TF[0].timezone_at(lng=lon, lat=lat) if _TF[0] else None
 
 
 def hms(t):
@@ -515,14 +527,25 @@ class TimeRouter:
         return merged
 
     def fmt_time(self, ts, stop):
-        ab = self.abbr[stop]
-        if not ab:   # outside the 48 (border towns): nearest stop with a state
-            lon, lat = self.stop_xy[stop]
-            j = min((i for i in range(self.N) if self.abbr[i]), key=lambda i: (self.stop_xy[i][0]-lon)**2 + (self.stop_xy[i][1]-lat)**2)
-            ab = self.abbr[j]
-        tz = ZoneInfo(STATE_TZ.get(ab, 'UTC'))
-        d = datetime.fromtimestamp(ts, tz); day = (d.date() - self.d0).days + 1
+        d = datetime.fromtimestamp(ts, self.stop_zone(stop)); day = (d.date() - self.d0).days + 1
         return f"d{day} {d.strftime('%a %H:%M')}"
+
+    def stop_zone(self, stop):
+        """The stop's own IANA zone, from its coordinates, for display. A state's zone is wrong wherever the state
+        spans two (South Hammond IN printed Eastern, Window Rock on the Navajo Nation printed Arizona time), and
+        those are exactly the edge stops a route leans on. Display only: connection times come from the feeds."""
+        zs = self.__dict__.setdefault('_zones', {})
+        if stop not in zs:
+            lon, lat = (float(v) for v in self.stop_xy[stop])
+            name = _tz_at(lon, lat)
+            if name is None:   # no timezonefinder, or open water: the state's zone as before
+                ab = self.abbr[stop]
+                if not ab:   # outside the 48 (border towns): nearest stop with a state
+                    j = min((i for i in range(self.N) if self.abbr[i]), key=lambda i: (self.stop_xy[i][0]-lon)**2 + (self.stop_xy[i][1]-lat)**2)
+                    ab = self.abbr[j]
+                name = STATE_TZ.get(ab, 'UTC')
+            zs[stop] = ZoneInfo(name)
+        return zs[stop]
 
     def describe(self, legs):
         lines = []

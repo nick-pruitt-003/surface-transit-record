@@ -210,3 +210,17 @@ timetable.
 Display bugs seen (absolute times correct, only `fmt_time` shows the wrong zone): South Hammond IN prints
 Eastern (Lake County is Central); Navajo Nation stops in Arizona print Arizona time (the Nation keeps
 Mountain daylight time).
+
+**More Four Corners data (later Oct 1).** Added Bustang Outrider (`outrider.zip`, intercity: Durango 06:40 ->
+Grand Junction 12:25, Grand Junction 13:54 -> Durango 19:10, daily, plus Trinidad - Pueblo, Alamosa - Pueblo,
+Lamar, Craig, Sterling), Hopi Senom Transit (`hopi.zip`: Flagstaff Greyhound <-> Kykotsmovi <-> Tuba City,
+Winslow Amtrak, weekdays), NTS Route 1 Tuba City <-> Ft. Defiance (Mon-Thu), Page Express routes B and F (Page
+<-> Tuba City, Page <-> Wahweap Housing on Stateline Dr, which gets a Utah walk-in about 1 km from the line),
+and the Las Vegas - Page shuttle both ways (in: Treasure Island 05:15 -> Page 10:00; out: Page 14:30 ->
+Kanab -> St George -> Las Vegas 20:00 PDT, published times inconsistent at Kanab, see the row). The four
+corner states still take **22.8 h** by the same St George - Flagstaff - Albuquerque - Trinidad route: none of
+it helps a four-state region. Whether Outrider helps a whole route (Zephyr to Grand Junction, Outrider to
+Durango, Greyhound to Albuquerque) is a full-search question, not a region one.
+
+The time-zone display bugs above are fixed: `fmt_time` uses each stop's own zone from its coordinates
+(`timezonefinder`), checked in `regress.py`.
