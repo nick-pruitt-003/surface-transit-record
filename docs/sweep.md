@@ -62,9 +62,19 @@ England). Independent convergence like that is the best evidence a sweep can giv
   Mt Shasta, Covington, West Wendover), which is the same pattern the record routes show: put the sparse states at
   the ends.
 
+## Focused follow-ups (Oct 2 morning)
+
+Each family got a 60-minute search of its own, seeded from its sweep run (same endpoints), 16 workers.
+
+| family | sweep | focused | what changed |
+|---|---|---|---|
+| **St George -> Sheridan (reversed X)** | 240.0 | **235.58 (RX)** | start moved to Las Vegas Thu 10:00; Utah comes later anyway on the Denver -> Pasco Greyhound. Verified from its latest start, all 48 states. Rerun with no fixed finish: unchanged, the Billings -> Sheridan ending stays. See `docs/routes.md`. |
+| New Orleans -> Louisville | 243.6 | 243.6 | nothing; New Orleans Thu 05:05 -> Mobile -> Jacksonville -> Floridian overnight -> New England -> Midwest -> West -> Nashville -> Louisville |
+
+So the sweep's best family became the second-fastest route we have, and a different one from anything designed by
+hand. The New Orleans family is real (three seeds converged on it) but about 5 h behind the record.
+
 ## Next
 
-1. Read the full ranked table (`out/sweep/summary.md`) once all 24 runs are in.
-2. Give the top new families a focused search of their own, one at a time, built the head-and-tail way that worked
-   for X: **St George → Wyoming** first, then **New Orleans → Kentucky**. A 13-minute run from a crude seed is a lower
-   bound on what these shapes can do, not their best.
+- More sweeps with other random seeds: one 5-hour sweep found RX, the cheapest new-family finder we have.
+- Block tests on RX, as for Wheeling (HANDOFF 29): start, front to Jacksonville, Northeast, Midwest, West.
