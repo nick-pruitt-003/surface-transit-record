@@ -1568,3 +1568,28 @@ Memphis) and, in X, KY (Louisville round trip), then AR (Conway) and CA (the Bar
 - North-entry head via Nashville -> NYC, as a full Sheridan -> MS search.
 - (Checked Oct 1: spawned search workers on Windows exit within seconds of their parent being killed, old code
   included; the leftovers seen once were the launcher chain, not workers. No fix needed.)
+
+## 29. Oct 1 (late night): Wheeling is optimal at every joint; where under-234 has to come from
+
+Block tests on the 234.24 h Wheeling route, each solved on its own (the X method):
+
+| block | test | result |
+|---|---|---|
+| start | Wheeling 04:00 Ohio Coach is the latest that makes the Columbus 06:50 Barons | already harvested (HANDOFF 20) |
+| front, 29 states | fixed start Wheeling Sep 24 03:55 ET, earliest arrival at Oklahoma City over every order | **Thu 06:43, the route's own** (a gain needs a whole day, to make the daily 06:55 Greyhound a day earlier) |
+| finish, 19 states | fixed start Oklahoma City Thu 06:43 | **62.5 h, the route's own** (1529 orders, stopped on exhaustion) |
+| finish, free | the same 19 states from anywhere in Texas, any day | 58.5 h (Vidor TX Sat 00:25 -> Floridian -> ... -> WRJ), against Wheeling's 58.8 h from its first Texas bus; starts 13 h too late to join |
+
+So under 234 needs a different shape. The finish is gated by two clocks (Nick's Acela point):
+
+- **Acela window.** Washington -> Boston Acela runs about 04:47 to 16:20; after that the 22:00 overnight
+  Regional (Boston 09:58) or, with a 16 min transfer at Penn, the **05:27 Acela out of New York** (Boston 09:25).
+  The last evening trains out of New York are the 19:37 Acela and 19:50 Regional. DC by 21:55 means Boston 09:25,
+  4.3 h ahead of Meteor + Acela (13:46).
+- **Jacksonville by about 14:10.** Flix Jacksonville 14:15 (Nick saw 14:30) -> Savannah -> Fayetteville -> Raleigh
+  -> Richmond -> Washington 03:55, then the 04:47 Acela: Boston 11:33, finish 20:44 instead of 22:14 (-1.5 h). The
+  Wheeling shape reaches Jacksonville 14:50 on the only westward arrival (Greyhound from Tallahassee 11:25;
+  RedCoach from Tallahassee goes only to Gainesville or Orlando). That Flix has no South Carolina stop.
+- **Atlanta in the morning gets there:** Flix Atlanta 07:00 -> Jacksonville 13:35. A shape entering Florida from
+  Atlanta rather than along the Gulf could take the Flix + 04:47 Acela finish, if South Carolina and TX LA AL MS
+  are placed elsewhere. Next test: the finish block from Atlanta.
