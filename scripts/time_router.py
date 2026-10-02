@@ -127,10 +127,32 @@ class Feed:
         return self.agency_tz.get(trip['agency'], self.tz)
 
     def sane(self, t):
-        """Reject trips whose timetable implies impossible speeds or negative
-        segments (some merged-feed carriers carry placeholder times)."""
+        """Repair trips whose timetable implies an impossible speed or a negative segment (merged feeds carry
+        placeholder and rounded times, and some stops are mislocated) by dropping the offending stop, and reject
+        the trip only when fewer than two stops survive.
+
+        It used to reject the whole trip on the first bad segment. On Oct 1 2026 that was 128 trips that run in
+        the search window, 2298 service-days, nearly all daily intercity services lost over one stop: Salt Lake
+        Express SLC -> St George (Parowan -> Cedar City listed 2 min apart), Boise -> Pocatello (Bliss -> Wendell,
+        26 km in 5 min), Jefferson Minneapolis -> Tulsa, Vonlane Nashville <-> Memphis, Amtrak's Mardi Gras
+        Service. A filter that erases a whole service for one bad minute is the failure this project keeps
+        relearning; dropping the stop keeps every other stop's real time and invents no speed."""
         if 'sane' in t: return t['sane']
-        ok = True; st = t['stops']
+        st = list(t['stops']); dropped = 0
+        while len(st) >= 2:
+            i = self._bad_segment(st, t)
+            if i is None: break
+            # drop the later stop if the trip is consistent across the gap, else the earlier one
+            if i + 2 < len(st) and self._bad_segment(st[i:i + 1] + st[i + 2:i + 3], t) is None: del st[i + 1]
+            elif i == 0 or self._bad_segment(st[i - 1:i] + st[i + 1:i + 2], t) is None: del st[i]
+            else: del st[i + 1]
+            dropped += 1
+        if dropped: t['stops'] = st; t['dropped'] = dropped
+        t['sane'] = len(st) >= 2
+        return t['sane']
+
+    def _bad_segment(self, st, t):
+        """Index i of the first segment st[i] -> st[i + 1] that is negative or faster than max_speed, else None."""
         # Fixed service day so DST-correct elapsed time across stop_timezone boundaries
         d = date(2026, 9, 24); bases = {}
         def base_for(tz):
@@ -140,9 +162,8 @@ class Feed:
         for i in range(len(st) - 1):
             dist = hav(self.stops[st[i][1]][2:4], self.stops[st[i + 1][1]][2:4])
             dt = (base_for(self._tz_for(st[i + 1][1], t)) + st[i + 1][2]) - (base_for(self._tz_for(st[i][1], t)) + st[i][3])
-            if dt < -60 or (dist > 25 and dist / max(dt, 1) * 3600 > self.max_speed): ok = False; break
-        t['sane'] = ok
-        return ok
+            if dt < -60 or (dist > 25 and dist / max(dt, 1) * 3600 > self.max_speed): return i
+        return None
 
     def runs_on(self, service, d):
         ds = d.strftime('%Y%m%d'); dow = ['monday','tuesday','wednesday','thursday','friday','saturday','sunday'][d.weekday()]
@@ -168,8 +189,8 @@ class Feed:
             for tid, t in self.trips.items():
                 if len(t['stops']) < 2 or not self.runs_on(t['service'], d): continue
                 key = (trip_base, tid, di)
-                st = t['stops']
                 if not self.sane(t): continue
+                st = t['stops']   # after sane(), which may drop a stop with an impossible time
                 for i in range(len(st) - 1):
                     a = stop_index[self.stops[st[i][1]][0]]; b = stop_index[self.stops[st[i + 1][1]][0]]
                     dep = base_for(self._tz_for(st[i][1], t)) + st[i][3]
@@ -257,7 +278,9 @@ class TimeRouter:
         self.ctrip = [c[4] for c in conns]
         self._init_fast()
         bad = sum(1 for f in feeds for t in f.trips.values() if t.get('sane') is False)
-        print(f'{self.N} stops, {sum(len(v) for v in self.foot.values())} footpaths, {len(conns)} connections over {days} days, {bad} trips rejected as implausible')
+        fixed = [t['dropped'] for f in feeds for t in f.trips.values() if t.get('sane') and t.get('dropped')]
+        print(f'{self.N} stops, {sum(len(v) for v in self.foot.values())} footpaths, {len(conns)} connections over {days} days, '
+              f'{bad} trips rejected as implausible, {len(fixed)} repaired by dropping {sum(fixed)} stops')
 
     def stops_matching(self, q):
         q = q.lower(); return [i for i, nm in enumerate(self.stop_name) if q in nm.lower()]
@@ -594,7 +617,7 @@ class ExtraFeed:
                 self.trips[f't{k}'] = dict(service=svc, agency=r['agency'], route=r['route'], headsign='', stops=seq, tz=ZoneInfo(r['tz']))
                 self.agency_tz[r['agency']] = ZoneInfo(r['tz'])
         print(f'extra: {len(self.trips)} manual trips')
-    sane = Feed.sane; runs_on = Feed.runs_on; connections = Feed.connections
+    sane = Feed.sane; _bad_segment = Feed._bad_segment; runs_on = Feed.runs_on; connections = Feed.connections
 
     def _tz_for(self, sid, trip):
         # Each row's own tz column. agency_tz holds one zone per agency, so the last row of an agency used to set
