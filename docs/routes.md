@@ -1,0 +1,98 @@
+# Every route at or under the record
+
+Record: **238.83 h** (White River Junction → Huntington). Five of our routes beat it, all re-evaluated on the
+corrected data of Oct 1 2026 (repaired trips, per-stop time zones, the TOML manual trips, new feeds). The full
+leg tables, waits and connection lists are generated into [`routes_data.md`](routes_data.md) by
+`scripts/route_report.py`; rerun it whenever the data changes.
+
+| route | hours | start | finish | family |
+|---|---|---|---|---|
+| **Wheeling** | **234.24** | Wheeling WV, Ohio Coach 04:00 (03:00 verified: 235.24) | VT line from Hanover, Sat 22:14 | WV → VT |
+| **Control** | **237.24** | Huntington WV, Thu 01:00 | VT line from Hanover, Sat 22:14 | WV → VT |
+| **MEX** | **237.75** | Huntington WV, Tue 01:00 | Portland ME, Thu 22:45 | WV → ME |
+| **X_TOL** | **237.91** | Sheridan WY, Thu 22:20 | VT line from Hanover, Sun 22:14 | WY → VT |
+| **X** | **238.11** | Sheridan WY, Sat 22:20 | MS line at Southaven, Tue 21:26 | WY → MS |
+
+## How to read the analysis
+
+For every ride the report gives its **miss penalty**: how much later you would reach the same stop on the next
+departure that gets there at all. **+24 h is a once-daily anchor.** A wait in front of an anchor is slack you can
+only spend by reaching that anchor a whole day earlier, so it is not really available. Waits in front of
+frequent services (a few hours of miss penalty) are the only soft spots. The **marginal cost** of a state is how
+much earlier the route finishes if that state is dropped and the same order re-timed.
+
+## Have the shapes been squeezed dry?
+
+Mostly yes, and the numbers say why.
+
+- **Every long wait in the WV → VT family sits in front of a once-daily anchor.** Omaha 4.8 h (Jefferson to Sioux
+  Falls), Salt Lake 2.5 h (Salt Lake Express), Detroit 2.3 h (Greyhound Detroit → Indianapolis), Newton 1.2 h
+  (BeeLine), Las Vegas 1.2 h (702 Shuttles), Billings 1.1 h (Jefferson to Spokane), Lake Charles 1.0 h (Houston →
+  Orlando): all +24 h. None of it is spendable without moving something upstream by a full day.
+- **The one soft spot was at the very start**, the control's 2.0 h in Columbus, and the Wheeling start already
+  harvested it (237.24 → 234.24). That is why the Wheeling route is the same as the control from Columbus on, to
+  the minute.
+- **Marginal costs:** in the control family only the two ends cost anything (ME 5.0 h, VT 4.3 h) plus FL 1.5 h.
+  In X and X_TOL no single state costs even a minute: anchors absorb every saving.
+- **X is pinned at both ends of its middle.** The head must catch the Silver Meteor at Jacksonville Thu 16:11,
+  which fixes Hanover Friday 22:00; the tail is already the fastest possible (Sat 03:00 out of Hanover, 91.4 h,
+  checked over a whole week). Its 4.5 h at Hanover is the gap between them; the Dartmouth Coach is frequent
+  (+1.7 h) but leaving later only waits elsewhere, because the tail's own anchors (Harrisburg 14:50, the Barons
+  out of Indianapolis, Jefferson) are daily.
+
+Where some slack is still not proven useless:
+
+1. **X_TOL's interior** has the most waits in front of non-daily-anchor services: Columbus 4.1 h for the Barons
+   to Chicago (next option +16 h), Kansas City 4.1 h (+13.9 h), Pittsburgh 2.4 h (+12.7 h), Nashville 1.8 h
+   (+17.9 h), Memphis 1.2 h (+11.5 h). Each is a place where arriving later, or taking a different service, might
+   save time without a day's shift. A search seeded from X_TOL's own order (same endpoints) is the way to test it.
+2. **The Wisconsin block** in the WV → VT family: Minneapolis 3.9 h (next option +7.7 h) and Eau Claire 2.4 h
+   (+3.1 h) are the only multi-hour waits in front of frequent services. They are absorbed downstream today
+   (dropping WI saves nothing, because the Jefferson Minneapolis → Billings it returns for is daily), so a gain
+   there needs a different way west, not a faster Wisconsin.
+3. **New shapes rather than tweaks:** the north-entry X head (Nashville → NYC overnight, skipping the Meteor
+   anchor), and a Cody ending built like X (fix Fargo 15:15 → Billings → Cody, solve the tail into Fargo, then the
+   head). Both are in HANDOFF 28 as open.
+
+## The routes
+
+### Wheeling, 234.24 h (WV → VT)
+
+The control with a different first hour: start at the Wheeling Jaguar stop and take the Ohio Coach to Columbus,
+arriving for the same 06:50 Barons to Detroit the control sits two hours waiting for. Identical to the control from
+Columbus on, finishing Sat 22:14. The 04:00 passage rests on transposed running times; the 03:00 is verified and
+gives 235.24 h. Tight points: Columbus (6 min), Indianapolis (10 min), the Bellevue at Carr hop in Memphis (7 min),
+Conway AR (10 min), Spokane and Pasco (15 min each).
+
+### Control, 237.24 h (WV → VT)
+
+Huntington 01:00 → Columbus → Detroit → Indianapolis → Effingham → City of New Orleans → Memphis (MS on foot at
+Holmes) → Conway AR → Kansas City → Des Moines → Omaha → Sioux Falls → Fargo → Minneapolis → Eau Claire WI and
+back → Jefferson to Billings → Spokane → Pasco → Salt Lake →
+St George → Las Vegas → 702 to Victorville → Southwest Chief → Las Vegas NM → AE bus → Trinidad → Chief →
+Newton → BeeLine → Oklahoma City → Dallas → RedCoach → Houston → Flix to Lake Charles → Tallahassee → Jacksonville →
+Silver Meteor → Acela → Portland ME and back → Dartmouth Coach → Hanover → VT line. Ends: ME 5.0 h, VT 4.3 h.
+
+### MEX, 237.75 h (WV → ME)
+
+The control's body with the ending swapped: Hanover, Advance Transit to White River Junction for Vermont, the
+17:55 Greyhound to Boston, Concord Coach to Portland. Half an hour slower than the control because the Vermont
+round trip is longer than the Maine one (Nick's point). It needs a **weekday** in New England: on a Saturday
+Advance Transit runs a reduced schedule without the 17:10 that makes the 17:55, and the route falls to 245.3 h.
+
+### X_TOL, 237.91 h (WY → VT)
+
+Sheridan Thu 22:20 → Billings → Spokane → Pasco → Salt Lake → Las Vegas → Barstow → Chief → Albuquerque → Newton
+→ BeeLine → Heartland Flyer → Fort Worth → Texas Eagle → Longview → Shreveport → Texarkana → Nashville → Detroit
+→ Pittsburgh (WV) → Columbus → Barons to Chicago → Minneapolis → Fargo → Sioux Falls → Kansas City →
+Fayetteville → Memphis → Atlanta → Jacksonville → Meteor → Acela → Portland → Hanover → VT line, Sun 22:14. The loosest interior of
+the five (see above).
+
+### X, 238.11 h (WY → MS)
+
+Sheridan Sat 22:20, the same West as the control (Salt Lake → St George → Las Vegas → 702 → Victorville → Chief),
+Texas and the Gulf to the Meteor, Acela, Portland, Hanover Fri 22:00, then the tail: Dartmouth Coach 03:00 →
+Boston → Regional → Harrisburg 14:50 Greyhound via Wheeling → Indianapolis → Louisville and back → Detroit →
+Chicago → Minneapolis → Fargo → Sioux Falls → Kansas City → Fayetteville → Memphis → walk to the MS line, Tue 21:26.
+Built today as the fastest 22-state head joined to the fastest tail (HANDOFF 28), and still the only record route
+with a real tail out of Vermont.
