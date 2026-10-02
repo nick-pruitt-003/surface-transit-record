@@ -1,0 +1,36 @@
+agency = "PRE (OKC - Wichita - Salina)"
+
+# Nick screenshot Oct 2 2026, carrier booking page, "Schedule PRE 40" and "PRE 6", 10/22 -> 10/23, all local (Central).
+# Connects at Salina (Super 8) to the Greyhound 03:05 Salina -> Goodland -> Denver 09:30, already in the feed.
+[stops]
+okc_bus = "Oklahoma City Bus Station"
+wellington_ks = "Wellington"
+wichita = "Wichita Bus Stop"
+salina_super8 = "Salina (Super 8)"
+lindsborg = "Lindsborg"
+hutchinson = "Hutchinson Amtrak Station"
+south_hutchinson = "South Hutchinson"
+newton_amtrak = { name = "Newton (Amtrak) (PRE)", lon = -97.3445, lat = 38.0465 }
+
+[[trip]]
+id = "t146"
+route = "PRE 40 Oklahoma City 21:30 -> Wellington KS -> Wichita 00:35 (OKC Amtrak stop 21:35/21:45 omitted; daily assumed)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["okc_bus 21:30", "wellington_ks 23:40", "wichita 24:35"]
+
+[[trip]]
+id = "t147"
+route = "PRE 6 Wichita 00:50 -> Salina 02:05 (daily assumed)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["wichita 00:50", "salina_super8 02:05"]
+
+# Reverse direction (Nick screenshots Oct 2 2026): Greyhound Denver 19:25 -> Salina 04:10 (in the feed), PRE 1 to
+# Wichita, then the Greyhound Wichita 11:00 -> Perry -> Oklahoma City 13:55 (in the feed).
+[[trip]]
+id = "t148"
+route = "PRE 1 Salina 04:30 -> Lindsborg -> Hutchinson -> South Hutchinson -> Newton (Amtrak) -> Wichita 07:10 (daily assumed)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["salina_super8 04:30", "lindsborg 04:50", "hutchinson 05:40", "south_hutchinson 05:50", "newton_amtrak 06:30", "wichita 07:10"]
