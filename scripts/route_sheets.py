@@ -99,5 +99,9 @@ if __name__ == '__main__':
     sheet(wb, 'X_TOL 237.91', *legs_for(R.stops_matching('Sheridan WY Taco Bell')[0], datetime(2026, 9, 24, tzinfo=ZoneInfo('America/Denver')).timestamp(), xtol, end=st('VT'), fixed=False))
     j = pickle.load(open('../out/shapes/join.pkl', 'rb'))
     sheet(wb, 'X 238.11', *legs_for(R.stop_name.index(j['start']), j['t0'], j['order'], end=st('MS')))
+    led = R.stops_matching('Ledyard Lot')[0]; t_led = datetime(2026, 9, 24, 6, 0, tzinfo=ZoneInfo('America/New_York')).timestamp()
+    hx = lambda o: [st(a) for a in o.split(',')]
+    sheet(wb, 'HAR 237.69', *legs_for(led, t_led, hx('NH,VT,ME,GA,WV,MI,ND,NE,MT,OR,CA,OK,FL,AR')))
+    sheet(wb, 'HMS 238.19', *legs_for(led, t_led, hx('NH,VT,ME,GA,WV,MI,ND,NE,WY,OR,AZ,KS,LA,AR,FL,MS')))
     wb.save('../docs/route_legs.xlsx')
     print('wrote ../docs/route_legs.xlsx:', ', '.join(ws.title for ws in wb.worksheets))

@@ -132,6 +132,20 @@ Focused searches queued after it (`out/focus2/after_sweep2.sh`), one at a time: 
 OKC -> BeeLine to Salina -> Cheyenne -> Salt Lake -> Billings -> JL 938 via North Dakota; its head to Minneapolis is
 103.5 h, a day faster than without the Cheyenne chain), Sheridan -> Nebraska (239.17), runs 13, 07 and 15.
 
+## Focused round 3 (Oct 2 evening, `out/focus2/after_sweep2.sh`)
+
+| search | seed | result |
+|---|---|---|
+| **Portland ME -> Arkansas** (sweep 2 run 13) | 239.8 | **237.69 (HAR)**: start moved to Ledyard Lot, Hanover |
+| **Hanover -> Mississippi** (run 07) | 242.1 | **238.19 (HMS)**: same Ledyard Lot start |
+| Sheridan -> Nebraska, exact 239.17 setup, fixed start | 239.17 | 239.17 reproduced, nothing better |
+| Sheridan -> Nebraska, seed began WY,MT | 261.5 | 242.8: climbed back to a Spearfish start; the seed, not the family |
+| Nick's I-80 shape (Primm, OKC -> BeeLine -> Salina -> Cheyenne, JL 938 via ND) | 281.9 | 247.3: abandoned the Cheyenne chain for KC -> Denver -> Pasco -> Spokane -> Billings |
+| Weirton -> Portland ME (run 15) | 243.8 | 243.8 |
+
+Two new routes under the record, both without Ohio Coach (`docs/routes.md`). The I-80 Wyoming chain wins a head to
+Minneapolis by a day (103.5 h vs 127.5 h) but the search prefers RX's West block in a whole route.
+
 ## Next
 
 - More sweeps with other random seeds: one 5-hour sweep found RX, the cheapest new-family finder we have.

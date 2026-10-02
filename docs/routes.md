@@ -11,8 +11,10 @@ leg tables, waits and connection lists are generated into [`routes_data.md`](rou
 | **RX** | **234.75** | Primm NV, Thu 10:50 (702 Shuttles; Las Vegas 10:00 Greyhound: 235.58) | Sheridan WY (JL 702 from Billings), Sun 06:35 | X with the West at the end; found by the unguided sweep |
 | **Control** | **237.24** | Huntington WV, Thu 01:00 | VT line from Hanover, Sat 22:14 | WV → VT |
 | **MEX** | **237.75** | Huntington WV, Tue 01:00 | Portland ME, Thu 22:45 | WV → ME |
+| **HAR** | **237.69** (237.9 from the 06:10 walk) | Hanover NH (Ledyard Lot), Thu 06:23; Vermont on foot first | Forrest City AR, Sun 03:05 | NH → AR; found by sweep 2, focused |
 | **X_TOL** | **237.91** | Sheridan WY, Thu 22:20 | VT line from Hanover, Sun 22:14 | WY → VT |
 | **X** | **238.11** | Sheridan WY, Sat 22:20 | MS line at Southaven, Tue 21:26 | WY → MS |
+| **HMS** | **238.19** (238.4 from the walk) | Hanover NH (Ledyard Lot), Thu 06:23 | Biloxi MS, Sun 03:35 | NH → MS; sweep 2, focused |
 
 ## How to read the analysis
 
@@ -137,3 +139,24 @@ about 1.66 km), all every two hours. Route 5's 14:33 from South Street would mak
 before the Miller arrives, and route 2 leaves Everwise (on Portage) at 15:57 and 16:57, either side of the window.
 Miss the train and the router's plan is intact: 17:52 Blackthorn, 18:55 Greyhound. Not a time saving (the 22:00
 anchor absorbs it); about 4 h in Chicago instead of 1.5 h on a rural corner.
+
+### HAR, 237.69 h (NH → AR) and HMS, 238.19 h (NH → MS), found Oct 2 by sweep 2
+
+Two finishes on one spine, both found by the second unguided sweep (runs 13 and 07, 239.8 and 242.1 h) and moved
+under the record by focused searches, which both moved the start to Ledyard Lot in Hanover. Hours count from the
+first bus (Advance Transit 06:23); the route begins with a 06:10 walk over the Vermont line and back (add 0.2 h).
+Neither uses Ohio Coach.
+
+- **New England first:** Ledyard Lot, Vermont on foot, Advance Transit → Dartmouth Coach 06:40 → Boston → Portland ME
+  and back → Amtrak to Baltimore → Flix to Augusta GA → Camden SC → Charlotte → Barons to Columbus → Michigan City.
+- **Michigan on foot:** Michigan City Transit, then the measured Michiana run (4.5 km out, 6.9 km back to Carroll Ave
+  at Nick's running pace) → South Shore to Chicago.
+- **Plains:** Chicago → Minneapolis → Fargo → Sioux Falls; Nebraska rides out to Maryville and back in the dead time
+  before the once-daily 12:40 I-90 bus (measured: costs nothing), which then takes SD, WY and MT to Billings.
+- **West:** Billings → Spokane → Pasco → Salt Lake → St George → Las Vegas → San Bernardino → **Southwest Chief** to
+  Newton KS → BeeLine to Oklahoma City → Dallas → Houston → Tallahassee.
+- **HAR finish:** Tallahassee → Birmingham → Memphis → Greyhound 02:10 to Forrest City AR, Sun 03:05.
+- **HMS finish:** Memphis, the Big River Crossing walk at 06:30 (bridge hours kept) → Birmingham → Tallahassee →
+  Mobile → Biloxi MS, Sun 03:35.
+
+Risks: the Michiana run is the longest measured run in any record route; the HAR finish is a 02:10 departure.

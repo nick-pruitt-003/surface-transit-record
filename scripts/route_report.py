@@ -118,5 +118,13 @@ if __name__ == '__main__':
     rx = [st(a) if len(a) == 2 else a for a in 'NV,CA,AR,TN,@Baton Rouge Bus Station,LA,FL,VT,ME,KY,MI,ND,SD,OR,WY'.split(',')]
     out['RX'] = report('RX (Primm NV -> Sheridan WY)', lv, datetime(2026, 9, 23, 23, 0, tzinfo=ZoneInfo('America/Los_Angeles')).timestamp(),
                        rx, end=st('WY'), fixed=False, note='docs/sweep.md: the unguided sweep found its family (240.0); a focused search moved the start to Las Vegas; the 702 Shuttles 10:50 from Primm (Oct 2) starts it 50 min later for the same finish.')
+    # The Hanover spine (sweep 2 runs 13 and 07, focused Oct 2): Ledyard Lot start (Vermont on foot at 06:10), New
+    # England, Southeast, Michiana, Fargo, the I-90 bus, the West, Southwest Chief, BeeLine, Houston; two finishes.
+    led = R.stops_matching('Ledyard Lot')[0]; t_led = datetime(2026, 9, 24, 6, 0, tzinfo=ZoneInfo('America/New_York')).timestamp()
+    hx = lambda o: [st(a) for a in o.split(',')]
+    out['HAR'] = report('HAR (Hanover -> Forrest City AR)', led, t_led, hx('NH,VT,ME,GA,WV,MI,ND,NE,MT,OR,CA,OK,FL,AR'),
+                        note='docs/sweep.md: sweep 2 run 13 (239.8, from Portland ME), focused: start moved to Ledyard Lot. Hours count from the first bus (06:23); from the 06:10 walk add 0.2 h.')
+    out['HMS'] = report('HMS (Hanover -> Biloxi MS)', led, t_led, hx('NH,VT,ME,GA,WV,MI,ND,NE,WY,OR,AZ,KS,LA,AR,FL,MS'),
+                        note='docs/sweep.md: sweep 2 run 07 (242.1), focused. Hours count from the first bus (06:23); from the 06:10 walk add 0.2 h.')
     print('\n## Summary\n')
     for k, v in out.items(): print(f'- {k}: {v:.2f} h')
