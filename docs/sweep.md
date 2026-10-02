@@ -100,6 +100,38 @@ Nick's rule of thumb, which these fit: a sweep shape needs to land near 245 h or
 record. RX started at 240; the families that started above 250 moved 0 to 3 h, except Missoula -> Omaha, which
 changed shape (its start moved to Spearfish) rather than being tuned.
 
+## Sweep 2 (Oct 2 afternoon, seed 2026)
+
+24 new mechanical seeds (`random_seeds.py 24 2026`), same settings as sweep 1, run 12:03-16:22 with the day's data
+changes landing during it (walk-link fix, PRE/BeeLine OKC - Salina, Sioux City, Omaha Metro, Des Moines DART,
+Jefferson 938/805, Big River Crossing hours), so early and late runs did not see identical data. Full table:
+`out/sweep2/summary.md`.
+
+| rank | hours | run | start | finish | Ohio Coach |
+|---|---|---|---|---|---|
+| 1 | **239.8** | 13 | Portland ME Thu 04:15 | Forrest City AR Sun 03:05 | no |
+| 2 | 240.0 | 16 | Saint George Thu 06:35 | Sheridan WY Sun 06:35 (sweep 1 run 01 again: the RX family) | no |
+| 3 | 242.1 | 07 | Hanover NH Sat 06:40 | Memphis, MS walk-in | no |
+| 4 | 243.6 | 22 | New Orleans Thu 05:05 | (sweep 1's New Orleans family again) | **yes** |
+| 5 | 243.8 | 15 | Weirton WV Thu 06:10 | Portland ME Sun 09:55 | no |
+| 6-8 | 245.4-246.5 | 04, 19, 03 | Fargo / Moorhead | | |
+
+What it says:
+
+- **Two basins found by both sweeps from unrelated seeds:** Saint George -> Sheridan (RX's family, 240.0 both times)
+  and New Orleans (243.6 both times). Independent convergence is the strongest evidence a sweep gives.
+- **A new spine shared by runs 07, 13 and 15:** Minneapolis -> Fargo -> Sioux Falls -> (Nebraska in the dead time) ->
+  the 12:40 I-90 bus to Billings -> Spokane -> Pasco -> Salt Lake -> Las Vegas -> San Bernardino -> Southwest Chief
+  to Newton -> BeeLine to Oklahoma City -> Dallas / Houston -> Tallahassee. The Sioux Falls -> Maryville -> Sioux Falls
+  detour all three make costs nothing: it fills the wait for the once-daily I-90 bus (measured: Billings Tue 00:25
+  with or without Nebraska). Taking the I-90 bus straight from Minneapolis instead and fetching North Dakota and
+  Nebraska later costs at least 11.5 h (run 13: 239.8 -> 251.3 best), so the Fargo loop is the cheapest North Dakota.
+- **Fargo is a start basin** for these seeds (runs 03, 04, 09, 10, 11, 19), all at 245-254 h.
+
+Focused searches queued after it (`out/focus2/after_sweep2.sh`), one at a time: Nick's I-80 Wyoming shape (Primm ->
+OKC -> BeeLine to Salina -> Cheyenne -> Salt Lake -> Billings -> JL 938 via North Dakota; its head to Minneapolis is
+103.5 h, a day faster than without the Cheyenne chain), Sheridan -> Nebraska (239.17), runs 13, 07 and 15.
+
 ## Next
 
 - More sweeps with other random seeds: one 5-hour sweep found RX, the cheapest new-family finder we have.
