@@ -1,6 +1,6 @@
-agency = "PRE (OKC - Wichita - Salina)"
+agency = "BeeLine Express-Village Travel (PRE schedules: OKC - Wichita - Salina)"
 
-# Nick screenshot Oct 2 2026, carrier booking page, "Schedule PRE 40" and "PRE 6", 10/22 -> 10/23, all local (Central).
+# Nick screenshot Oct 2 2026, BeeLine booking page (Nick: PRE is BeeLine), "Schedule PRE 40" and "PRE 6", 10/22 -> 10/23, all local (Central).
 # Connects at Salina (Super 8) to the Greyhound 03:05 Salina -> Goodland -> Denver 09:30, already in the feed.
 [stops]
 okc_bus = "Oklahoma City Bus Station"
