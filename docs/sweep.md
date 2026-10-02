@@ -1,0 +1,51 @@
+# Unguided sweep (night of Oct 1–2 2026)
+
+The question: without shape ideas from anyone, can the search find good routes on its own? 24 seed tours were
+generated mechanically by `scripts/random_seeds.py` (random start state, noisy nearest-unvisited walk over state
+centres, straightened with 2-opt so each fits the 20-day timetable window). Each got one `time_search` run: free
+start, **no fixed end**, about 13 min at 16 workers (most stopped earlier on exhaustion or patience). One run at a
+time, detached, resumable (`out/sweep/queue.sh`; logs and the auto-generated ranked table are in `out/sweep/`,
+gitignored).
+
+Record 238.83 h, control 237.24 h, Wheeling 234.24 h.
+
+## First 15 runs (written at 02:45; the other 9 were still running)
+
+| hours | run | seed began in | start found | finish found |
+|---|---|---|---|---|
+| **240.0** | 01 | MT | Saint George UT, Thu 06:35 | Sheridan WY (JL 702 from Billings) |
+| **243.6** | 15 | SD | New Orleans, Thu 05:05 | Louisville KY |
+| 250.1 | 08 | TX | Needles CA (Amtrak), Wed 23:22 | West Wendover NV (the new Wendover Fun Bus) |
+| 254.6 | 02 | OR | Missoula MT | Cheyenne WY (LCCC) |
+| 256.0 | 14 | MT | Jacksonville FL | Missoula MT |
+| 258.2 | 04 | MN | Bemidji MN (RJC) | Barstow CA |
+| 259.2 | 12 | CT | Providence RI | Covington KY |
+| 259.4 | 05 | AL | Mobile AL | Missoula MT |
+| 262.0 | 07 | UT | Sallisaw OK | Barstow CA |
+| 265.0 | 06 | NH | Hanover NH | Mt Shasta CA |
+| 274.0 | 13 | SC | Charlotte NC | VT line at Hanover |
+| 275.3 | 10 | AR | Savannah GA | Trinidad CO |
+| 278.7 | 09 | OH | Wheeling WV | Cheyenne WY |
+| 284.9 | 11 | UT | Mt Shasta CA | Cheyenne WY (LCCC) |
+| 309.8 | 03 | NJ | Boston MA | Kansas City KS |
+
+## What it says so far
+
+- **Unguided search gets close fast.** From seeds evaluating at 285–377 h, the best runs reached 240.0 and 243.6 h in
+  about 13 minutes each, within 1.2 and 4.8 h of the record, with no start or end given.
+- **It does not just rediscover the known families.** None of the top three is a control or X shape:
+  - **240.0, St George → Sheridan** is a reversed X: Southwest, South and Florida, New England, then back west through
+    Kentucky, Michigan, North Dakota, Kansas and Washington, ending on JL 702 into Sheridan. HANDOFF 22 records
+    hand-built reversals of X at 265–297 h, so this is a much better version of that family than anything tried.
+  - **243.6, New Orleans → Louisville** is new.
+  - **250.1, Needles → West Wendover** ends on the Wendover Fun Bus added the same night.
+- **Where the endpoints land:** the runs end at sparse anchors over and over (Sheridan, Cheyenne, Missoula, Barstow,
+  Mt Shasta, Covington, West Wendover), which is the same pattern the record routes show: put the sparse states at
+  the ends.
+
+## Next
+
+1. Read the full ranked table (`out/sweep/summary.md`) once all 24 runs are in.
+2. Give the top new families a focused search of their own, one at a time, built the head-and-tail way that worked
+   for X: **St George → Wyoming** first, then **New Orleans → Kentucky**. A 13-minute run from a crude seed is a lower
+   bound on what these shapes can do, not their best.
