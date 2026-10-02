@@ -18,6 +18,11 @@ owatonna = "=ibus:1564"
 albert_lea = "=ibus:1630"
 clear_lake_ia = "=ibus:1748"   # Clear Lake Jct.
 ames = "=ibus:2536"
+osceola_ia = "=ibus:35"
+lamoni = "=ibus:1022"
+bethany_mo = "=ibus:2630"
+cameron_mo = "=ibus:374"
+kansas_city_bus_station = "=ibus:593"
 gillette = "=ibus:2375"   # Gillette
 buffalo = "=ibus:3226"   # Buffalo
 sheridan_wy_taco_bell_1655_coffeen_ave_j = { name = "Sheridan WY Taco Bell 1655 Coffeen Ave (Jefferson)", lon = -106.9446, lat = 44.7743 }
@@ -52,8 +57,8 @@ stops = ["mobridge 12:10", "mclaughlin 12:35", "fort_yates 13:00", "bismarck 14:
 
 # Nick screenshots Oct 2 2026, jeffersonlines.com (Google showed every time an hour early; Bismarck is Central).
 # The feed has Bismarck at 12:25 on Billings -> Minneapolis, Minneapolis -> Kansas City at 22:30 and no Jefferson
-# Des Moines -> Omaha. Des Moines arrival (03:15) and the Des Moines -> Omaha times (03:45 -> 06:00) are Google's
-# 02:15 / 02:45 -> 05:00 plus the same hour; not yet confirmed on the carrier site.
+# Des Moines -> Omaha. JL 805 south of Minneapolis is from a second Google screenshot that agrees with the site;
+# the Des Moines -> Omaha times (03:45 -> 06:00) are Google's 02:45 -> 05:00 plus the same hour, not yet confirmed.
 [[trip]]
 id = "t336"
 route = "JL 938 Bismarck 13:05 -> Fargo -> Moorhead -> St. Cloud -> Minneapolis 21:10 (daily assumed)"
@@ -63,10 +68,10 @@ stops = ["bismarck_jl 13:05", "jamestown_nd 14:40", "valley_city 15:20", "fargo_
 
 [[trip]]
 id = "t337"
-route = "JL 805 Minneapolis 21:45 -> St. Paul -> Albert Lea -> Clear Lake IA -> Ames -> Des Moines 03:15 (Des Moines time inferred; daily assumed)"
+route = "JL 805 Minneapolis 21:45 -> St. Paul -> Albert Lea -> Clear Lake IA -> Ames -> Des Moines 03:15/03:40 -> Bethany MO -> Kansas City 07:15 (Google, Nick Oct 2; daily assumed)"
 days = "1111111"
 tz = "America/Chicago"
-stops = ["minneapolis_jl 21:45", "st_paul_union_depot 22:10/22:15", "owatonna 23:30", "albert_lea 24:05", "clear_lake_ia 24:40/25:00", "ames 26:30/26:35", "des_moines_jl 27:15"]
+stops = ["minneapolis_jl 21:45", "st_paul_union_depot 22:10/22:15", "owatonna 23:30", "albert_lea 24:05", "clear_lake_ia 24:40/25:00", "ames 26:30/26:35", "des_moines_jl 27:15/27:40", "osceola_ia 28:30", "lamoni 29:00", "bethany_mo 29:25/29:40", "cameron_mo 30:20", "kansas_city_bus_station 31:15"]
 
 [[trip]]
 id = "t338"
