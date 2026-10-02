@@ -1,0 +1,21 @@
+agency = "Utah Trailways (Wendover Fun Bus)"
+
+[stops]
+slc_500s_main = { name = "Salt Lake City 500 S Main (Utah Trailways)", lon = -111.8916, lat = 40.7586 }
+wendover_nugget = { name = "West Wendover Nugget Casino (Utah Trailways)", lon = -114.0443, lat = 40.7348 }
+
+# West Wendover NV keeps Mountain time like Salt Lake, so every time here is Mountain (tz line, not per-stop zones).
+# Source: wendoverfunbus.com schedule, read Oct 1 2026. Tuesday-Sunday, no Monday service; Fri-Sun add later runs
+# (not entered). Le Bus (Fri-Sat, SLC 17:00-18:20 -> 20:00, back 02:00) gives no pickup addresses, so it is left out.
+[[trip]]
+route = "Wendover Fun Bus: Salt Lake City 08:20 -> West Wendover 10:30"
+days = "0111111"
+tz = "America/Denver"
+stops = ["slc_500s_main 08:20", "wendover_nugget 10:30"]
+
+[[trip]]
+route = "Wendover Fun Bus: West Wendover 16:30 -> Salt Lake City about 18:30"
+note = "drop-offs 18:05-18:45 across four Salt Lake stops; 500 S Main time approximate"
+days = "0111111"
+tz = "America/Denver"
+stops = ["wendover_nugget 16:30", "slc_500s_main 18:30"]
