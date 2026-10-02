@@ -1566,5 +1566,5 @@ Memphis) and, in X, KY (Louisville round trip), then AR (Conway) and CA (the Bar
   if it does not come close, build it like X: fix the Fargo -> Cody ending, solve the tail into Fargo by Monday
   15:10, then the head.
 - North-entry head via Nashville -> NYC, as a full Sheridan -> MS search.
-- Spawned search workers outlive a killed parent on Windows; a fix (watchdog on the parent) is written in
-  `time_search.py` but not yet verified, so not committed.
+- (Checked Oct 1: spawned search workers on Windows exit within seconds of their parent being killed, old code
+  included; the leftovers seen once were the launcher chain, not workers. No fix needed.)
