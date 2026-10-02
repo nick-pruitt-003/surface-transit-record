@@ -176,12 +176,12 @@ def main():
     # it rides to Holmes at Elvis Presley and walks 1.3 km to the line. Without this the search never collects
     # MS, MS stays owed for the rest of the route, and alight_ok then correctly refuses every stop east of
     # Texas because Mississippi can no longer be reached. time_router already built exactly these links, to the
-    # virtual border points at and beyond first_virtual, so read them off rather than invent a rule.
+    # virtual border points at and beyond first_virtual and to measured walk-link ends (R.walk_collects), so read them off rather than invent a rule.
     walkin = {}
     for i in range(R.N):
         near = {}
         for j, w in R.foot.get(i, ()):
-            if j >= R.first_virtual and R.state[j] >= 0:
+            if R.walk_collects(j):
                 y = int(R.state[j])
                 if y not in near or w < near[y]: near[y] = float(w)
         if near: walkin[i] = tuple(sorted(near.items()))
@@ -875,7 +875,7 @@ def main():
         # legs, and this replay follows rides, so read them off the route's own legs
         by_walk = {}
         for _l in legs:
-            if _l[0] == 'walk' and _l[2] >= R.first_virtual and R.state[_l[2]] >= 0:
+            if _l[0] == 'walk' and R.walk_collects(_l[2]):
                 by_walk.setdefault(_l[1], set()).add(int(R.state[_l[2]]))
         lost = 0
         tightest = [np.inf, '']

@@ -259,6 +259,7 @@ class TimeRouter:
             with open(wl) as fh: rows = list(csv.DictReader(fh))
             # a hand-made end point is reachable only by its measured link, never by the generic proxies
             only = {ix[r['to_uid']] for r in rows if r['to_uid'].startswith('extra:') and r['to_uid'] in ix}
+            self.link_ends = only   # measured, so walking into one may collect its state (see _crosses)
             for k in list(self.foot):
                 self.foot[k] = [] if k in only else [(j, w) for j, w in self.foot[k] if j not in only]
             for r in rows:
@@ -295,9 +296,16 @@ class TimeRouter:
         if isinstance(t, str) and t.startswith('@'): return set(self.stops_matching(t[1:]))
         return set(np.where(self.state == t)[0].tolist())
 
+    def walk_collects(self, j):
+        """A walk ending at stop j collects j's state: an automatic border walk-in point, or the end point of a
+        hand-measured walk link (data/walk_links.csv). Ordinary stops never do; a state is collected there by ride."""
+        return (j >= self.first_virtual or j in getattr(self, 'link_ends', ())) and self.state[j] >= 0
+
     def _crosses(self, i, j):
-        """Footpath i -> j crosses a state line into a real stop (border walk-in stops are exempt)."""
-        return j < self.first_virtual and int(self.state[i]) != int(self.state[j])
+        """Footpath i -> j crosses a state line into a real stop (border walk-in stops and the end points of
+        hand-measured walk links are exempt: both are walks to a line, timed, and meant to collect the state)."""
+        return (j < self.first_virtual and int(self.state[i]) != int(self.state[j])
+                and j not in getattr(self, 'link_ends', ()))
 
     def scan(self, labels, targets, guard=False):
         """CSA from initial labels {stop: (time, trip_key)}; returns arrival labels at

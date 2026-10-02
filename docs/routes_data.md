@@ -294,32 +294,33 @@ First bus d3 Sat 22:20 from Sheridan WY Taco Bell 1655 Coffeen Ave (Jefferson); 
 | 26 | d10 Sat 12:42 | Philadelphia | d10 Sat 14:26 | Harrisburg | Amtrak: Pennsylvanian | 0.27 h | +2.1 h |
 | 27 | d10 Sat 14:50 | Harrisburg Bus Station | d11 Sun 04:10 | Indianapolis Bus Station | Greyhound-us: New York - Pittsburgh - St. Louis | 0.39 h | +5.2 h |
 | 28 | d11 Sun 04:40 | Indianapolis Bus Station | d11 Sun 06:45 | Louisville Bus Station | Greyhound-us: Atlanta - Chicago | 0.50 h | +6.5 h |
-| 29 | d11 Sun 07:35 | Louisville Bus Station | d11 Sun 09:30 | Indianapolis Bus Station | Greyhound-us: Atlanta - Chicago | 0.83 h | +1.1 h |
-| 30 | d11 Sun 10:50 | Indianapolis | d11 Sun 15:55 | Detroit | Barons Bus Lines: Cincinnati (Greyhound) -> Detroit | 1.33 h | +24.0 h |
-| 31 | d11 Sun 16:20 | Detroit Bus Station | d11 Sun 21:25 | Chicago Bus Station | Greyhound-us: Chicago - Kalamazoo - Detroit | 0.41 h | +8.0 h |
-| 32 | d11 Sun 22:00 | Chicago Bus Station | d12 Mon 06:20 | Minneapolis Bus Station | Greyhound-us: Chicago - Milwaukee - Minneapolis | 0.58 h | +3.1 h |
-| 33 | d12 Mon 10:35 | Minneapolis | d12 Mon 14:55 | Fargo | Jefferson Lines: Minneapolis -> Billings | 4.24 h | +24.0 h |
-| 34 | d12 Mon 15:50 | Fargo | d12 Mon 19:50 | Sioux Falls | Jefferson Lines: Fargo -> Sioux Falls | 0.92 h | none in 72 h |
-| 35 | d12 Mon 20:05 | Sioux Falls | d13 Tue 04:15 | Kansas City | Jefferson Lines: Sioux Falls -> Kansas City | 0.25 h | +24.0 h |
-| 36 | d13 Tue 08:20 | Kansas City | d13 Tue 12:30 | Fayetteville | Jefferson Lines: Kansas City -> Texarkana | 4.08 h | +13.9 h |
-| 37 | d13 Tue 13:35 | Fayetteville | d13 Tue 20:05 | Memphis (MATA Airways Transit Cent | Jefferson Lines: Tulsa -> Memphis | 1.08 h | +24.0 h |
-| 38 | d13 Tue 20:19 | AIRWAYS BOULEVARD at BROOKS ROAD | d13 Tue 20:26 | BROOKS ROAD at COUGHLIN DRIVE | MATA: BROOKS | 0.12 h | +9.9 h |
-| 39 | d13 Tue 20:51 | ELVIS PRESLEY BLVD at SPRINGBROOK  | d13 Tue 21:07 | HOLMES at ELVIS PRESLEY | MATA: CROSSTOWN | 0.11 h | +8.0 h |
+| 29 | d11 Sun 07:35 | Louisville Bus Station | d11 Sun 12:35 | Gary Bus Station | Greyhound-us: Atlanta - Chicago | 0.83 h | +24.0 h |
+| 30 | d11 Sun 13:31 | Gary Metro Center | d11 Sun 13:41 | East Chicago | Northern Indiana Commuter Transportation District: Lakeshore | 0.91 h | +2.9 h |
+| 31 | d11 Sun 13:53 | East Chicago | d11 Sun 14:36 | Carroll Ave. (Michigan City) | Northern Indiana Commuter Transportation District: Lakeshore | 0.20 h | +2.4 h |
+| 32 | d11 Sun 19:05 | Carroll Ave. (Michigan City) | d11 Sun 20:29 | Museum Campus/11th St. | Northern Indiana Commuter Transportation District: Lakeshore | 1.65 h | +3.4 h |
+| 33 | d11 Sun 22:00 | Chicago Bus Station | d12 Mon 06:20 | Minneapolis Bus Station | Greyhound-us: Chicago - Milwaukee - Minneapolis | 0.89 h | +3.1 h |
+| 34 | d12 Mon 10:35 | Minneapolis | d12 Mon 14:55 | Fargo | Jefferson Lines: Minneapolis -> Billings | 4.24 h | +24.0 h |
+| 35 | d12 Mon 15:50 | Fargo | d12 Mon 19:50 | Sioux Falls | Jefferson Lines: Fargo -> Sioux Falls | 0.92 h | none in 72 h |
+| 36 | d12 Mon 20:05 | Sioux Falls | d13 Tue 04:15 | Kansas City | Jefferson Lines: Sioux Falls -> Kansas City | 0.25 h | +24.0 h |
+| 37 | d13 Tue 08:20 | Kansas City | d13 Tue 12:30 | Fayetteville | Jefferson Lines: Kansas City -> Texarkana | 4.08 h | +13.9 h |
+| 38 | d13 Tue 13:35 | Fayetteville | d13 Tue 20:05 | Memphis (MATA Airways Transit Cent | Jefferson Lines: Tulsa -> Memphis | 1.08 h | +24.0 h |
+| 39 | d13 Tue 20:19 | AIRWAYS BOULEVARD at BROOKS ROAD | d13 Tue 20:26 | BROOKS ROAD at COUGHLIN DRIVE | MATA: BROOKS | 0.12 h | +9.9 h |
+| 40 | d13 Tue 20:51 | ELVIS PRESLEY BLVD at SPRINGBROOK  | d13 Tue 21:07 | HOLMES at ELVIS PRESLEY | MATA: CROSSTOWN | 0.11 h | +8.0 h |
 
 **Waits over an hour** (slack; spendable only if the ride after it is not an anchor):
 
 - 4.5 h at Hanover (Hanover Inn) before leg 24 (Dartmouth Coach: Hanover -> Boston South Station 03:00); miss penalty +1.7 h
-- 4.2 h at Minneapolis before leg 33 (Jefferson Lines: Minneapolis -> Billings); miss penalty +24.0 h
-- 4.1 h at Kansas City before leg 36 (Jefferson Lines: Kansas City -> Texarkana); miss penalty +13.9 h
+- 4.2 h at Minneapolis before leg 34 (Jefferson Lines: Minneapolis -> Billings); miss penalty +24.0 h
+- 4.1 h at Kansas City before leg 37 (Jefferson Lines: Kansas City -> Texarkana); miss penalty +13.9 h
+- 1.6 h at Carroll Ave. (Michigan City) before leg 32 (Northern Indiana Commuter Transportation District: Lakeshore); miss penalty +3.4 h
 - 1.6 h at Las Vegas Bus Terminal before leg 7 (Greyhound-us: Los Angeles - Las Vegas); miss penalty +12.7 h
-- 1.3 h at Indianapolis before leg 30 (Barons Bus Lines: Cincinnati (Greyhound) -> Detroit); miss penalty +24.0 h
 - 1.3 h at Salt Lake City (Airport) before leg 5 (Salt Lake Express: SLE 7021 Salt Lake City (Airport) 04:45 -); miss penalty +1.2 h
 - 1.3 h at Houston Bus Station (Greyhound) before leg 16 (Greyhound-us: Orlando - Houston); miss penalty +24.0 h
 - 1.2 h at Newton (Amtrak) before leg 11 (BeeLine Express-Village Travel: Newton (Amtrak) -> Oklahoma ); miss penalty +24.0 h
-- 1.1 h at Fayetteville before leg 37 (Jefferson Lines: Tulsa -> Memphis); miss penalty +24.0 h
+- 1.1 h at Fayetteville before leg 38 (Jefferson Lines: Tulsa -> Memphis); miss penalty +24.0 h
 - 1.1 h at Billings before leg 2 (Jefferson Lines: Billings -> Spokane); miss penalty +24.0 h
 
-**Connections under 20 minutes:** leg 3 at Spokane (15 min); leg 4 at Pasco Bus Stop (15 min); leg 6 at Saint George (Bluff St Office) (10 min); leg 10 at Trinidad Amtrak (7 min); leg 12 at Oklahoma City Bus Station (12 min); leg 13 at BACHMAN STATION (7 min); leg 15 at Central Station Rusk EB (7 min); leg 18 at JRTC Bay H (9 min); leg 21 at Boston South Station (11 min); leg 26 at Philadelphia (16 min); leg 35 at Sioux Falls (15 min); leg 38 at AIRWAYS BOULEVARD at BROOKS ROAD (7 min); leg 39 at ELVIS PRESLEY BLVD at SPRINGBROOK AVENUE (7 min)
+**Connections under 20 minutes:** leg 3 at Spokane (15 min); leg 4 at Pasco Bus Stop (15 min); leg 6 at Saint George (Bluff St Office) (10 min); leg 10 at Trinidad Amtrak (7 min); leg 12 at Oklahoma City Bus Station (12 min); leg 13 at BACHMAN STATION (7 min); leg 15 at Central Station Rusk EB (7 min); leg 18 at JRTC Bay H (9 min); leg 21 at Boston South Station (11 min); leg 26 at Philadelphia (16 min); leg 31 at East Chicago (12 min); leg 36 at Sioux Falls (15 min); leg 39 at AIRWAYS BOULEVARD at BROOKS ROAD (7 min); leg 40 at ELVIS PRESLEY BLVD at SPRINGBROOK AVENUE (7 min)
 
 **Marginal state cost** (finish earlier when that state is dropped, same order): none over a minute; anchors absorb every single-state saving
 
@@ -350,12 +351,12 @@ First bus d1 Thu 10:50 from Primm Bus Stop (702 Shuttles); finish d11 Sun 06:35 
 | 17 | d6 Tue 02:15 | Boston (South Station) | d6 Tue 07:05 | New York Port Authority | Greyhound-us: Boston - New York (Express Service) | 0.25 h | +4.0 h |
 | 18 | d6 Tue 09:55 | New York Port Authority | d7 Wed 04:10 | Indianapolis Bus Station | Greyhound-us: New York - Pittsburgh - St. Louis | 2.83 h | +5.2 h |
 | 19 | d7 Wed 04:40 | Indianapolis Bus Station | d7 Wed 06:45 | Louisville Bus Station | Greyhound-us: Atlanta - Chicago | 0.50 h | +6.5 h |
-| 20 | d7 Wed 07:35 | Louisville Bus Station | d7 Wed 09:30 | Indianapolis Bus Station | Greyhound-us: Atlanta - Chicago | 0.83 h | +1.1 h |
-| 21 | d7 Wed 11:35 | Indianapolis | d7 Wed 14:40 | South Bend | Miller Transportation: Indianapolis -> Elkhart | 2.08 h | +24.0 h |
-| 22 | d7 Wed 15:24 | South Street Station | d7 Wed 15:52 | Adams & Dylan | Transpo (South Bend, IN): Blackthorn Express | 0.71 h | +2.0 h |
-| 23 | d7 Wed 17:52 | Adams & Dylan | d7 Wed 18:28 | South Street Station | Transpo (South Bend, IN): Blackthorn Express | 1.52 h | +14.0 h |
-| 24 | d7 Wed 18:55 | South Bend Transpo (S St Station) | d7 Wed 20:05 | Chicago Bus Station | Greyhound-us: Chicago - Cleveland - Washington | 0.44 h | +13.9 h |
-| 25 | d7 Wed 22:00 | Chicago Bus Station | d8 Thu 06:20 | Minneapolis Bus Station | Greyhound-us: Chicago - Milwaukee - Minneapolis | 1.92 h | +3.1 h |
+| 20 | d7 Wed 07:35 | Louisville Bus Station | d7 Wed 12:35 | Gary Bus Station | Greyhound-us: Atlanta - Chicago | 0.83 h | +24.0 h |
+| 21 | d7 Wed 12:50 | Gary Metro Center | d7 Wed 13:04 | Hammond Gateway | Northern Indiana Commuter Transportation District: Lakeshore | 0.23 h | +1.1 h |
+| 22 | d7 Wed 13:14 | Hammond Gateway | d7 Wed 13:57 | 11th St. (Michigan City) | Northern Indiana Commuter Transportation District: Lakeshore | 0.17 h | +1.1 h |
+| 23 | d7 Wed 14:51 | E 4th Street/Franklin Street       | d7 Wed 15:09 | Als Karwick | Michian City Transit: Franklin St./Washington Park/Lakeland/ | 0.63 h | +1.0 h |
+| 24 | d7 Wed 17:39 | Carroll Ave. (Michigan City) | d7 Wed 18:57 | Museum Campus/11th St. | Northern Indiana Commuter Transportation District: Lakeshore | 0.23 h | +10.5 h |
+| 25 | d7 Wed 22:00 | Chicago Bus Station | d8 Thu 06:20 | Minneapolis Bus Station | Greyhound-us: Chicago - Milwaukee - Minneapolis | 2.42 h | +3.1 h |
 | 26 | d8 Thu 10:35 | Minneapolis | d8 Thu 14:55 | Fargo | Jefferson Lines: Minneapolis -> Billings | 4.24 h | +24.0 h |
 | 27 | d8 Thu 15:50 | Fargo | d8 Thu 19:50 | Sioux Falls | Jefferson Lines: Fargo -> Sioux Falls | 0.92 h | +24.0 h |
 | 28 | d8 Thu 20:05 | Sioux Falls | d9 Fri 04:15 | Kansas City | Jefferson Lines: Sioux Falls -> Kansas City | 0.25 h | +24.0 h |
@@ -369,15 +370,13 @@ First bus d1 Thu 10:50 from Primm Bus Stop (702 Shuttles); finish d11 Sun 06:35 
 
 - 4.2 h at Minneapolis before leg 26 (Jefferson Lines: Minneapolis -> Billings); miss penalty +24.0 h
 - 2.8 h at New York Port Authority before leg 18 (Greyhound-us: New York - Pittsburgh - St. Louis); miss penalty +5.2 h
-- 2.1 h at Indianapolis before leg 21 (Miller Transportation: Indianapolis -> Elkhart); miss penalty +24.0 h
+- 2.4 h at Chicago Bus Station before leg 25 (Greyhound-us: Chicago - Milwaukee - Minneapolis); miss penalty +3.1 h
 - 2.0 h at Memphis (Airport) before leg 5 (Delta Bus Lines Inc.: Memphis -> Baton Rouge); miss penalty +24.0 h
-- 1.9 h at Chicago Bus Station before leg 25 (Greyhound-us: Chicago - Milwaukee - Minneapolis); miss penalty +3.1 h
 - 1.7 h at Baton Rouge Bus Station before leg 6 (Greyhound-us: Atlanta - New Orleans - Houston); miss penalty +0.8 h
-- 1.5 h at Adams & Dylan before leg 23 (Transpo (South Bend, IN): Blackthorn Express); miss penalty +14.0 h
 - 1.4 h at Oklahoma City Bus Station before leg 4 (Greyhound-us: Oklahoma City - Memphis); miss penalty +24.0 h
 - 1.3 h at Lafayette Transit System before leg 7 (Greyhound-us: Orlando - Houston); miss penalty +24.0 h
 
-**Connections under 20 minutes:** leg 2 at Barstow Station (15 min); leg 9 at JRTC Bay H (9 min); leg 13 at Main at Allen (8 min); leg 14 at White River Junction Bus Station (16 min); leg 15 at Boston South Station (9 min); leg 17 at Boston (South Station) (15 min); leg 28 at Sioux Falls (15 min); leg 29 at Kansas City Bus Station (19 min); leg 31 at Pasco Bus Stop (10 min); leg 32 at Spokane (9 min)
+**Connections under 20 minutes:** leg 2 at Barstow Station (15 min); leg 9 at JRTC Bay H (9 min); leg 13 at Main at Allen (8 min); leg 14 at White River Junction Bus Station (16 min); leg 15 at Boston South Station (9 min); leg 17 at Boston (South Station) (15 min); leg 21 at Gary Metro Center (14 min); leg 22 at Hammond Gateway (10 min); leg 24 at Carroll Ave. (Michigan City) (14 min); leg 28 at Sioux Falls (15 min); leg 29 at Kansas City Bus Station (19 min); leg 31 at Pasco Bus Stop (10 min); leg 32 at Spokane (9 min)
 
 **Marginal state cost** (finish earlier when that state is dropped, same order): none over a minute; anchors absorb every single-state saving
 

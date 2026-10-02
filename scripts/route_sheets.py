@@ -48,7 +48,7 @@ def sheet(wb, name, S, f, legs):
         if l[0] == 'walk':
             _, a, b, t0_, t1 = l
             new = set()
-            if b >= R.first_virtual and R.state[b] >= 0: new = {int(R.state[b])} - seen
+            if R.walk_collects(b): new = {int(R.state[b])} - seen
             seen |= new
             row = [n, 'walk', R.fmt_time(t0_, a), R.stop_name[a], R.abbr[a] or '', R.fmt_time(t1, b), R.stop_name[b], R.abbr[b] or '',
                    'walk / local', round((t1 - t0_) / 3600, 2), '', '', ' '.join(sorted(ABBR[R.state_names[s]] for s in new)), len(seen), '']

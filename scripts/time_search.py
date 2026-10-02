@@ -225,7 +225,7 @@ class Search:
         """States with an alighting-capable stop anywhere along the ridden trips."""
         seen = set()
         for l in legs:
-            if l[0] == 'walk' and l[2] >= self.R.first_virtual: seen.add(int(self.R.state[l[2]]))   # border walk-in
+            if l[0] == 'walk' and self.R.walk_collects(l[2]): seen.add(int(self.R.state[l[2]]))   # border walk-in or measured walk link
             if l[0] != 'ride': continue
             _, trip, bs, bt, al, at = l
             fi, tid, _ = trip; f = self.R.feeds[fi]; t = f.trips[tid]

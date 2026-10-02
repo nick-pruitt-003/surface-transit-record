@@ -86,6 +86,16 @@ from the sweep run with its start and finish states (`out/focus/queue.sh`).
 | Needles -> Salt Lake City | 250.1 | 250.2 | essentially unchanged |
 | Missoula -> Barstow | 254.6 | 254.6 | unchanged |
 
+**Missoula -> Omaha is really Sheridan -> Sioux City (239.17 h).** The Spearfish 18:45 is Jefferson's I-90 bus, which
+also stops at Sheridan at 22:20, and South Dakota comes later anyway (Fargo -> Sioux Falls), so boarding at Sheridan
+costs nothing: 240.33 h on the same order. Nick then had the finish leave the Jefferson bus at Sioux City (Sun 22:00)
+and walk the Veterans Memorial Bridge into Nebraska (30 min, `walk_links.csv`), not ride on to Omaha (23:40):
+**239.17 h**, all 48, 0.34 h off the record before any focused search. Getting that to count found a router bug:
+the guard against collecting a state by walking into a real stop also blocked every hand-measured walk link's
+end point, and coverage ignored them, so no measured border walk had ever collected its state. Fixed with
+`TimeRouter.walk_collects`; `regress.py` has a check that fails without it. A focused Sheridan -> Nebraska search
+is queued after sweep 2.
+
 Nick's rule of thumb, which these fit: a sweep shape needs to land near 245 h or better to be optimisable into a
 record. RX started at 240; the families that started above 250 moved 0 to 3 h, except Missoula -> Omaha, which
 changed shape (its start moved to Spearfish) rather than being tuned.

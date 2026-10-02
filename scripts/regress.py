@@ -283,6 +283,22 @@ def _():
     assert a == b and any(x != float('inf') for x in a), [(i, x, y) for i, (x, y) in enumerate(zip(a, b)) if x != y][:3]
 
 
+
+@check('a measured walk link collects its state: Sioux City -> Nebraska bank over the Veterans Bridge in 30 min')
+def _():
+    # The guard against collecting a state by walking into a real stop also caught the end points of
+    # walk_links.csv, so every hand-measured border walk (South Sioux City, Big River Crossing, Michiana, the
+    # Vermont runs) was silently unable to collect anything, and coverage ignored them too. Both halves fail here.
+    sc = R.idx['ibus:339']; ne = R.state_names.index('Nebraska')
+    bank = R.stops_matching('Nebraska bank at South Sioux City')[0]
+    assert R.walk_collects(bank) and not R._crosses(sc, bank), 'the measured link no longer counts as a walk-in'
+    t = datetime(2026, 10, 4, 21, 50, tzinfo=CT).timestamp()
+    S = Search(R, sc, t, [], 1, [s for s in range(N_STATES) if s != ne], end=ne)
+    ts._R, ts._START, ts._T0, ts._SELF, ts._BASE, ts._END = R, sc, t, S, None, ne
+    f, legs = S.evaluate([ne])
+    assert S.all_states(legs) and f - t <= 3600, (f - t, legs[-1:])
+
+
 print()
 for name, ok, info in results: print(('PASS ' if ok else 'FAIL ') + name + ('' if ok else '\n     ' + info))
 print(f'\n{sum(ok for _, ok, _ in results)}/{len(results)} passed')

@@ -6,6 +6,7 @@ arkansas_line_on_big_river_crossing_on_f = { name = "Arkansas line on Big River 
 michigan_line_at_michiana_on_foot_from_m = { name = "Michigan line at Michiana (on foot from Michigan City Carroll Ave)", lon = -86.8152, lat = 41.7612 }
 vermont_line_on_us_7_on_foot_from_willia = { name = "Vermont line on US-7 (on foot from Williamstown)", lon = -73.2141, lat = 42.7450 }
 vermont_line_on_west_rd_on_foot_from_nor = { name = "Vermont line on West Rd (on foot from North Adams Hospital)", lon = -73.1180, lat = 42.7432 }
+nebraska_bank_at_south_sioux_city = { name = "Nebraska bank at South Sioux City 1st Ave (on foot from Sioux City)", lon = -96.4132, lat = 42.4838 }
 
 [[trip]]
 id = "t50"
@@ -27,3 +28,10 @@ route = "stop definition for the North Adams run (never runs)"
 days = "0000000"
 tz = "America/New_York"
 stops = ["vermont_line_on_west_rd_on_foot_from_nor 00:00"]
+
+[[trip]]
+id = "t149"
+route = "stop definition for the Sioux City -> South Sioux City walk (never runs)"
+days = "0000000"
+tz = "America/Chicago"
+stops = ["nebraska_bank_at_south_sioux_city 00:00"]
