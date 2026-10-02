@@ -265,6 +265,7 @@ class TimeRouter:
             for r in rows:
                 a, b = ix.get(r['from_uid']), ix.get(r['to_uid'])
                 if a is None or b is None: print('walk link: unknown stop', r['from_uid'], r['to_uid']); continue
+                if not r['minutes'].strip(): continue   # blank: end point kept isolated, reached only by timed trips (opening hours)
                 w = int(float(r['minutes']) * 60); self.foot[a].append((b, w)); self.foot[b].append((a, w))
         # connections
         conns = []; self.trip_info = {}

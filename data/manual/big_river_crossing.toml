@@ -1,0 +1,1311 @@
+agency = "On foot (Big River Crossing, open 06:00-22:00)"
+
+[stops]
+memphis_amtrak = "=amtrak:MEM"
+ar_line = { name = "Arkansas line on Big River Crossing (on foot from Memphis Amtrak)", lon = -90.0850, lat = 35.1275 }
+
+# Google walking 1.3 mi, 31-33 min Memphis Amtrak -> mid-bridge (Arkansas line). The bridge is open 6 AM - 10 PM, so the
+# walk is a timetable, not an always-open link: first walk out leaves Amtrak 05:45 (on the bridge just after 06:00), last walk out 21:00, last walk back
+# leaves the line 21:45 (off the bridge by 22:00). Every 10 min; the true service is any time.
+
+[[trip]]
+id = "t150"
+route = "Memphis Amtrak -> Arkansas line on Big River Crossing (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_amtrak 05:45", "ar_line 06:18"]
+
+[[trip]]
+id = "t151"
+route = "Memphis Amtrak -> Arkansas line on Big River Crossing (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_amtrak 05:55", "ar_line 06:28"]
+
+[[trip]]
+id = "t152"
+route = "Memphis Amtrak -> Arkansas line on Big River Crossing (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_amtrak 06:05", "ar_line 06:38"]
+
+[[trip]]
+id = "t153"
+route = "Memphis Amtrak -> Arkansas line on Big River Crossing (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_amtrak 06:15", "ar_line 06:48"]
+
+[[trip]]
+id = "t154"
+route = "Memphis Amtrak -> Arkansas line on Big River Crossing (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_amtrak 06:25", "ar_line 06:58"]
+
+[[trip]]
+id = "t155"
+route = "Memphis Amtrak -> Arkansas line on Big River Crossing (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_amtrak 06:35", "ar_line 07:08"]
+
+[[trip]]
+id = "t156"
+route = "Memphis Amtrak -> Arkansas line on Big River Crossing (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_amtrak 06:45", "ar_line 07:18"]
+
+[[trip]]
+id = "t157"
+route = "Memphis Amtrak -> Arkansas line on Big River Crossing (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_amtrak 06:55", "ar_line 07:28"]
+
+[[trip]]
+id = "t158"
+route = "Memphis Amtrak -> Arkansas line on Big River Crossing (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_amtrak 07:05", "ar_line 07:38"]
+
+[[trip]]
+id = "t159"
+route = "Memphis Amtrak -> Arkansas line on Big River Crossing (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_amtrak 07:15", "ar_line 07:48"]
+
+[[trip]]
+id = "t160"
+route = "Memphis Amtrak -> Arkansas line on Big River Crossing (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_amtrak 07:25", "ar_line 07:58"]
+
+[[trip]]
+id = "t161"
+route = "Memphis Amtrak -> Arkansas line on Big River Crossing (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_amtrak 07:35", "ar_line 08:08"]
+
+[[trip]]
+id = "t162"
+route = "Memphis Amtrak -> Arkansas line on Big River Crossing (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_amtrak 07:45", "ar_line 08:18"]
+
+[[trip]]
+id = "t163"
+route = "Memphis Amtrak -> Arkansas line on Big River Crossing (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_amtrak 07:55", "ar_line 08:28"]
+
+[[trip]]
+id = "t164"
+route = "Memphis Amtrak -> Arkansas line on Big River Crossing (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_amtrak 08:05", "ar_line 08:38"]
+
+[[trip]]
+id = "t165"
+route = "Memphis Amtrak -> Arkansas line on Big River Crossing (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_amtrak 08:15", "ar_line 08:48"]
+
+[[trip]]
+id = "t166"
+route = "Memphis Amtrak -> Arkansas line on Big River Crossing (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_amtrak 08:25", "ar_line 08:58"]
+
+[[trip]]
+id = "t167"
+route = "Memphis Amtrak -> Arkansas line on Big River Crossing (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_amtrak 08:35", "ar_line 09:08"]
+
+[[trip]]
+id = "t168"
+route = "Memphis Amtrak -> Arkansas line on Big River Crossing (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_amtrak 08:45", "ar_line 09:18"]
+
+[[trip]]
+id = "t169"
+route = "Memphis Amtrak -> Arkansas line on Big River Crossing (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_amtrak 08:55", "ar_line 09:28"]
+
+[[trip]]
+id = "t170"
+route = "Memphis Amtrak -> Arkansas line on Big River Crossing (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_amtrak 09:05", "ar_line 09:38"]
+
+[[trip]]
+id = "t171"
+route = "Memphis Amtrak -> Arkansas line on Big River Crossing (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_amtrak 09:15", "ar_line 09:48"]
+
+[[trip]]
+id = "t172"
+route = "Memphis Amtrak -> Arkansas line on Big River Crossing (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_amtrak 09:25", "ar_line 09:58"]
+
+[[trip]]
+id = "t173"
+route = "Memphis Amtrak -> Arkansas line on Big River Crossing (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_amtrak 09:35", "ar_line 10:08"]
+
+[[trip]]
+id = "t174"
+route = "Memphis Amtrak -> Arkansas line on Big River Crossing (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_amtrak 09:45", "ar_line 10:18"]
+
+[[trip]]
+id = "t175"
+route = "Memphis Amtrak -> Arkansas line on Big River Crossing (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_amtrak 09:55", "ar_line 10:28"]
+
+[[trip]]
+id = "t176"
+route = "Memphis Amtrak -> Arkansas line on Big River Crossing (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_amtrak 10:05", "ar_line 10:38"]
+
+[[trip]]
+id = "t177"
+route = "Memphis Amtrak -> Arkansas line on Big River Crossing (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_amtrak 10:15", "ar_line 10:48"]
+
+[[trip]]
+id = "t178"
+route = "Memphis Amtrak -> Arkansas line on Big River Crossing (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_amtrak 10:25", "ar_line 10:58"]
+
+[[trip]]
+id = "t179"
+route = "Memphis Amtrak -> Arkansas line on Big River Crossing (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_amtrak 10:35", "ar_line 11:08"]
+
+[[trip]]
+id = "t180"
+route = "Memphis Amtrak -> Arkansas line on Big River Crossing (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_amtrak 10:45", "ar_line 11:18"]
+
+[[trip]]
+id = "t181"
+route = "Memphis Amtrak -> Arkansas line on Big River Crossing (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_amtrak 10:55", "ar_line 11:28"]
+
+[[trip]]
+id = "t182"
+route = "Memphis Amtrak -> Arkansas line on Big River Crossing (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_amtrak 11:05", "ar_line 11:38"]
+
+[[trip]]
+id = "t183"
+route = "Memphis Amtrak -> Arkansas line on Big River Crossing (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_amtrak 11:15", "ar_line 11:48"]
+
+[[trip]]
+id = "t184"
+route = "Memphis Amtrak -> Arkansas line on Big River Crossing (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_amtrak 11:25", "ar_line 11:58"]
+
+[[trip]]
+id = "t185"
+route = "Memphis Amtrak -> Arkansas line on Big River Crossing (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_amtrak 11:35", "ar_line 12:08"]
+
+[[trip]]
+id = "t186"
+route = "Memphis Amtrak -> Arkansas line on Big River Crossing (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_amtrak 11:45", "ar_line 12:18"]
+
+[[trip]]
+id = "t187"
+route = "Memphis Amtrak -> Arkansas line on Big River Crossing (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_amtrak 11:55", "ar_line 12:28"]
+
+[[trip]]
+id = "t188"
+route = "Memphis Amtrak -> Arkansas line on Big River Crossing (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_amtrak 12:05", "ar_line 12:38"]
+
+[[trip]]
+id = "t189"
+route = "Memphis Amtrak -> Arkansas line on Big River Crossing (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_amtrak 12:15", "ar_line 12:48"]
+
+[[trip]]
+id = "t190"
+route = "Memphis Amtrak -> Arkansas line on Big River Crossing (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_amtrak 12:25", "ar_line 12:58"]
+
+[[trip]]
+id = "t191"
+route = "Memphis Amtrak -> Arkansas line on Big River Crossing (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_amtrak 12:35", "ar_line 13:08"]
+
+[[trip]]
+id = "t192"
+route = "Memphis Amtrak -> Arkansas line on Big River Crossing (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_amtrak 12:45", "ar_line 13:18"]
+
+[[trip]]
+id = "t193"
+route = "Memphis Amtrak -> Arkansas line on Big River Crossing (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_amtrak 12:55", "ar_line 13:28"]
+
+[[trip]]
+id = "t194"
+route = "Memphis Amtrak -> Arkansas line on Big River Crossing (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_amtrak 13:05", "ar_line 13:38"]
+
+[[trip]]
+id = "t195"
+route = "Memphis Amtrak -> Arkansas line on Big River Crossing (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_amtrak 13:15", "ar_line 13:48"]
+
+[[trip]]
+id = "t196"
+route = "Memphis Amtrak -> Arkansas line on Big River Crossing (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_amtrak 13:25", "ar_line 13:58"]
+
+[[trip]]
+id = "t197"
+route = "Memphis Amtrak -> Arkansas line on Big River Crossing (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_amtrak 13:35", "ar_line 14:08"]
+
+[[trip]]
+id = "t198"
+route = "Memphis Amtrak -> Arkansas line on Big River Crossing (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_amtrak 13:45", "ar_line 14:18"]
+
+[[trip]]
+id = "t199"
+route = "Memphis Amtrak -> Arkansas line on Big River Crossing (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_amtrak 13:55", "ar_line 14:28"]
+
+[[trip]]
+id = "t200"
+route = "Memphis Amtrak -> Arkansas line on Big River Crossing (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_amtrak 14:05", "ar_line 14:38"]
+
+[[trip]]
+id = "t201"
+route = "Memphis Amtrak -> Arkansas line on Big River Crossing (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_amtrak 14:15", "ar_line 14:48"]
+
+[[trip]]
+id = "t202"
+route = "Memphis Amtrak -> Arkansas line on Big River Crossing (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_amtrak 14:25", "ar_line 14:58"]
+
+[[trip]]
+id = "t203"
+route = "Memphis Amtrak -> Arkansas line on Big River Crossing (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_amtrak 14:35", "ar_line 15:08"]
+
+[[trip]]
+id = "t204"
+route = "Memphis Amtrak -> Arkansas line on Big River Crossing (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_amtrak 14:45", "ar_line 15:18"]
+
+[[trip]]
+id = "t205"
+route = "Memphis Amtrak -> Arkansas line on Big River Crossing (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_amtrak 14:55", "ar_line 15:28"]
+
+[[trip]]
+id = "t206"
+route = "Memphis Amtrak -> Arkansas line on Big River Crossing (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_amtrak 15:05", "ar_line 15:38"]
+
+[[trip]]
+id = "t207"
+route = "Memphis Amtrak -> Arkansas line on Big River Crossing (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_amtrak 15:15", "ar_line 15:48"]
+
+[[trip]]
+id = "t208"
+route = "Memphis Amtrak -> Arkansas line on Big River Crossing (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_amtrak 15:25", "ar_line 15:58"]
+
+[[trip]]
+id = "t209"
+route = "Memphis Amtrak -> Arkansas line on Big River Crossing (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_amtrak 15:35", "ar_line 16:08"]
+
+[[trip]]
+id = "t210"
+route = "Memphis Amtrak -> Arkansas line on Big River Crossing (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_amtrak 15:45", "ar_line 16:18"]
+
+[[trip]]
+id = "t211"
+route = "Memphis Amtrak -> Arkansas line on Big River Crossing (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_amtrak 15:55", "ar_line 16:28"]
+
+[[trip]]
+id = "t212"
+route = "Memphis Amtrak -> Arkansas line on Big River Crossing (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_amtrak 16:05", "ar_line 16:38"]
+
+[[trip]]
+id = "t213"
+route = "Memphis Amtrak -> Arkansas line on Big River Crossing (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_amtrak 16:15", "ar_line 16:48"]
+
+[[trip]]
+id = "t214"
+route = "Memphis Amtrak -> Arkansas line on Big River Crossing (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_amtrak 16:25", "ar_line 16:58"]
+
+[[trip]]
+id = "t215"
+route = "Memphis Amtrak -> Arkansas line on Big River Crossing (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_amtrak 16:35", "ar_line 17:08"]
+
+[[trip]]
+id = "t216"
+route = "Memphis Amtrak -> Arkansas line on Big River Crossing (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_amtrak 16:45", "ar_line 17:18"]
+
+[[trip]]
+id = "t217"
+route = "Memphis Amtrak -> Arkansas line on Big River Crossing (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_amtrak 16:55", "ar_line 17:28"]
+
+[[trip]]
+id = "t218"
+route = "Memphis Amtrak -> Arkansas line on Big River Crossing (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_amtrak 17:05", "ar_line 17:38"]
+
+[[trip]]
+id = "t219"
+route = "Memphis Amtrak -> Arkansas line on Big River Crossing (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_amtrak 17:15", "ar_line 17:48"]
+
+[[trip]]
+id = "t220"
+route = "Memphis Amtrak -> Arkansas line on Big River Crossing (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_amtrak 17:25", "ar_line 17:58"]
+
+[[trip]]
+id = "t221"
+route = "Memphis Amtrak -> Arkansas line on Big River Crossing (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_amtrak 17:35", "ar_line 18:08"]
+
+[[trip]]
+id = "t222"
+route = "Memphis Amtrak -> Arkansas line on Big River Crossing (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_amtrak 17:45", "ar_line 18:18"]
+
+[[trip]]
+id = "t223"
+route = "Memphis Amtrak -> Arkansas line on Big River Crossing (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_amtrak 17:55", "ar_line 18:28"]
+
+[[trip]]
+id = "t224"
+route = "Memphis Amtrak -> Arkansas line on Big River Crossing (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_amtrak 18:05", "ar_line 18:38"]
+
+[[trip]]
+id = "t225"
+route = "Memphis Amtrak -> Arkansas line on Big River Crossing (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_amtrak 18:15", "ar_line 18:48"]
+
+[[trip]]
+id = "t226"
+route = "Memphis Amtrak -> Arkansas line on Big River Crossing (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_amtrak 18:25", "ar_line 18:58"]
+
+[[trip]]
+id = "t227"
+route = "Memphis Amtrak -> Arkansas line on Big River Crossing (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_amtrak 18:35", "ar_line 19:08"]
+
+[[trip]]
+id = "t228"
+route = "Memphis Amtrak -> Arkansas line on Big River Crossing (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_amtrak 18:45", "ar_line 19:18"]
+
+[[trip]]
+id = "t229"
+route = "Memphis Amtrak -> Arkansas line on Big River Crossing (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_amtrak 18:55", "ar_line 19:28"]
+
+[[trip]]
+id = "t230"
+route = "Memphis Amtrak -> Arkansas line on Big River Crossing (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_amtrak 19:05", "ar_line 19:38"]
+
+[[trip]]
+id = "t231"
+route = "Memphis Amtrak -> Arkansas line on Big River Crossing (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_amtrak 19:15", "ar_line 19:48"]
+
+[[trip]]
+id = "t232"
+route = "Memphis Amtrak -> Arkansas line on Big River Crossing (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_amtrak 19:25", "ar_line 19:58"]
+
+[[trip]]
+id = "t233"
+route = "Memphis Amtrak -> Arkansas line on Big River Crossing (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_amtrak 19:35", "ar_line 20:08"]
+
+[[trip]]
+id = "t234"
+route = "Memphis Amtrak -> Arkansas line on Big River Crossing (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_amtrak 19:45", "ar_line 20:18"]
+
+[[trip]]
+id = "t235"
+route = "Memphis Amtrak -> Arkansas line on Big River Crossing (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_amtrak 19:55", "ar_line 20:28"]
+
+[[trip]]
+id = "t236"
+route = "Memphis Amtrak -> Arkansas line on Big River Crossing (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_amtrak 20:05", "ar_line 20:38"]
+
+[[trip]]
+id = "t237"
+route = "Memphis Amtrak -> Arkansas line on Big River Crossing (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_amtrak 20:15", "ar_line 20:48"]
+
+[[trip]]
+id = "t238"
+route = "Memphis Amtrak -> Arkansas line on Big River Crossing (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_amtrak 20:25", "ar_line 20:58"]
+
+[[trip]]
+id = "t239"
+route = "Memphis Amtrak -> Arkansas line on Big River Crossing (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_amtrak 20:35", "ar_line 21:08"]
+
+[[trip]]
+id = "t240"
+route = "Memphis Amtrak -> Arkansas line on Big River Crossing (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_amtrak 20:45", "ar_line 21:18"]
+
+[[trip]]
+id = "t241"
+route = "Memphis Amtrak -> Arkansas line on Big River Crossing (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_amtrak 20:55", "ar_line 21:28"]
+
+[[trip]]
+id = "t242"
+route = "Arkansas line on Big River Crossing -> Memphis Amtrak (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["ar_line 06:10", "memphis_amtrak 06:43"]
+
+[[trip]]
+id = "t243"
+route = "Arkansas line on Big River Crossing -> Memphis Amtrak (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["ar_line 06:20", "memphis_amtrak 06:53"]
+
+[[trip]]
+id = "t244"
+route = "Arkansas line on Big River Crossing -> Memphis Amtrak (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["ar_line 06:30", "memphis_amtrak 07:03"]
+
+[[trip]]
+id = "t245"
+route = "Arkansas line on Big River Crossing -> Memphis Amtrak (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["ar_line 06:40", "memphis_amtrak 07:13"]
+
+[[trip]]
+id = "t246"
+route = "Arkansas line on Big River Crossing -> Memphis Amtrak (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["ar_line 06:50", "memphis_amtrak 07:23"]
+
+[[trip]]
+id = "t247"
+route = "Arkansas line on Big River Crossing -> Memphis Amtrak (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["ar_line 07:00", "memphis_amtrak 07:33"]
+
+[[trip]]
+id = "t248"
+route = "Arkansas line on Big River Crossing -> Memphis Amtrak (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["ar_line 07:10", "memphis_amtrak 07:43"]
+
+[[trip]]
+id = "t249"
+route = "Arkansas line on Big River Crossing -> Memphis Amtrak (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["ar_line 07:20", "memphis_amtrak 07:53"]
+
+[[trip]]
+id = "t250"
+route = "Arkansas line on Big River Crossing -> Memphis Amtrak (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["ar_line 07:30", "memphis_amtrak 08:03"]
+
+[[trip]]
+id = "t251"
+route = "Arkansas line on Big River Crossing -> Memphis Amtrak (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["ar_line 07:40", "memphis_amtrak 08:13"]
+
+[[trip]]
+id = "t252"
+route = "Arkansas line on Big River Crossing -> Memphis Amtrak (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["ar_line 07:50", "memphis_amtrak 08:23"]
+
+[[trip]]
+id = "t253"
+route = "Arkansas line on Big River Crossing -> Memphis Amtrak (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["ar_line 08:00", "memphis_amtrak 08:33"]
+
+[[trip]]
+id = "t254"
+route = "Arkansas line on Big River Crossing -> Memphis Amtrak (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["ar_line 08:10", "memphis_amtrak 08:43"]
+
+[[trip]]
+id = "t255"
+route = "Arkansas line on Big River Crossing -> Memphis Amtrak (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["ar_line 08:20", "memphis_amtrak 08:53"]
+
+[[trip]]
+id = "t256"
+route = "Arkansas line on Big River Crossing -> Memphis Amtrak (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["ar_line 08:30", "memphis_amtrak 09:03"]
+
+[[trip]]
+id = "t257"
+route = "Arkansas line on Big River Crossing -> Memphis Amtrak (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["ar_line 08:40", "memphis_amtrak 09:13"]
+
+[[trip]]
+id = "t258"
+route = "Arkansas line on Big River Crossing -> Memphis Amtrak (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["ar_line 08:50", "memphis_amtrak 09:23"]
+
+[[trip]]
+id = "t259"
+route = "Arkansas line on Big River Crossing -> Memphis Amtrak (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["ar_line 09:00", "memphis_amtrak 09:33"]
+
+[[trip]]
+id = "t260"
+route = "Arkansas line on Big River Crossing -> Memphis Amtrak (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["ar_line 09:10", "memphis_amtrak 09:43"]
+
+[[trip]]
+id = "t261"
+route = "Arkansas line on Big River Crossing -> Memphis Amtrak (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["ar_line 09:20", "memphis_amtrak 09:53"]
+
+[[trip]]
+id = "t262"
+route = "Arkansas line on Big River Crossing -> Memphis Amtrak (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["ar_line 09:30", "memphis_amtrak 10:03"]
+
+[[trip]]
+id = "t263"
+route = "Arkansas line on Big River Crossing -> Memphis Amtrak (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["ar_line 09:40", "memphis_amtrak 10:13"]
+
+[[trip]]
+id = "t264"
+route = "Arkansas line on Big River Crossing -> Memphis Amtrak (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["ar_line 09:50", "memphis_amtrak 10:23"]
+
+[[trip]]
+id = "t265"
+route = "Arkansas line on Big River Crossing -> Memphis Amtrak (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["ar_line 10:00", "memphis_amtrak 10:33"]
+
+[[trip]]
+id = "t266"
+route = "Arkansas line on Big River Crossing -> Memphis Amtrak (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["ar_line 10:10", "memphis_amtrak 10:43"]
+
+[[trip]]
+id = "t267"
+route = "Arkansas line on Big River Crossing -> Memphis Amtrak (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["ar_line 10:20", "memphis_amtrak 10:53"]
+
+[[trip]]
+id = "t268"
+route = "Arkansas line on Big River Crossing -> Memphis Amtrak (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["ar_line 10:30", "memphis_amtrak 11:03"]
+
+[[trip]]
+id = "t269"
+route = "Arkansas line on Big River Crossing -> Memphis Amtrak (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["ar_line 10:40", "memphis_amtrak 11:13"]
+
+[[trip]]
+id = "t270"
+route = "Arkansas line on Big River Crossing -> Memphis Amtrak (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["ar_line 10:50", "memphis_amtrak 11:23"]
+
+[[trip]]
+id = "t271"
+route = "Arkansas line on Big River Crossing -> Memphis Amtrak (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["ar_line 11:00", "memphis_amtrak 11:33"]
+
+[[trip]]
+id = "t272"
+route = "Arkansas line on Big River Crossing -> Memphis Amtrak (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["ar_line 11:10", "memphis_amtrak 11:43"]
+
+[[trip]]
+id = "t273"
+route = "Arkansas line on Big River Crossing -> Memphis Amtrak (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["ar_line 11:20", "memphis_amtrak 11:53"]
+
+[[trip]]
+id = "t274"
+route = "Arkansas line on Big River Crossing -> Memphis Amtrak (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["ar_line 11:30", "memphis_amtrak 12:03"]
+
+[[trip]]
+id = "t275"
+route = "Arkansas line on Big River Crossing -> Memphis Amtrak (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["ar_line 11:40", "memphis_amtrak 12:13"]
+
+[[trip]]
+id = "t276"
+route = "Arkansas line on Big River Crossing -> Memphis Amtrak (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["ar_line 11:50", "memphis_amtrak 12:23"]
+
+[[trip]]
+id = "t277"
+route = "Arkansas line on Big River Crossing -> Memphis Amtrak (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["ar_line 12:00", "memphis_amtrak 12:33"]
+
+[[trip]]
+id = "t278"
+route = "Arkansas line on Big River Crossing -> Memphis Amtrak (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["ar_line 12:10", "memphis_amtrak 12:43"]
+
+[[trip]]
+id = "t279"
+route = "Arkansas line on Big River Crossing -> Memphis Amtrak (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["ar_line 12:20", "memphis_amtrak 12:53"]
+
+[[trip]]
+id = "t280"
+route = "Arkansas line on Big River Crossing -> Memphis Amtrak (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["ar_line 12:30", "memphis_amtrak 13:03"]
+
+[[trip]]
+id = "t281"
+route = "Arkansas line on Big River Crossing -> Memphis Amtrak (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["ar_line 12:40", "memphis_amtrak 13:13"]
+
+[[trip]]
+id = "t282"
+route = "Arkansas line on Big River Crossing -> Memphis Amtrak (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["ar_line 12:50", "memphis_amtrak 13:23"]
+
+[[trip]]
+id = "t283"
+route = "Arkansas line on Big River Crossing -> Memphis Amtrak (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["ar_line 13:00", "memphis_amtrak 13:33"]
+
+[[trip]]
+id = "t284"
+route = "Arkansas line on Big River Crossing -> Memphis Amtrak (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["ar_line 13:10", "memphis_amtrak 13:43"]
+
+[[trip]]
+id = "t285"
+route = "Arkansas line on Big River Crossing -> Memphis Amtrak (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["ar_line 13:20", "memphis_amtrak 13:53"]
+
+[[trip]]
+id = "t286"
+route = "Arkansas line on Big River Crossing -> Memphis Amtrak (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["ar_line 13:30", "memphis_amtrak 14:03"]
+
+[[trip]]
+id = "t287"
+route = "Arkansas line on Big River Crossing -> Memphis Amtrak (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["ar_line 13:40", "memphis_amtrak 14:13"]
+
+[[trip]]
+id = "t288"
+route = "Arkansas line on Big River Crossing -> Memphis Amtrak (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["ar_line 13:50", "memphis_amtrak 14:23"]
+
+[[trip]]
+id = "t289"
+route = "Arkansas line on Big River Crossing -> Memphis Amtrak (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["ar_line 14:00", "memphis_amtrak 14:33"]
+
+[[trip]]
+id = "t290"
+route = "Arkansas line on Big River Crossing -> Memphis Amtrak (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["ar_line 14:10", "memphis_amtrak 14:43"]
+
+[[trip]]
+id = "t291"
+route = "Arkansas line on Big River Crossing -> Memphis Amtrak (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["ar_line 14:20", "memphis_amtrak 14:53"]
+
+[[trip]]
+id = "t292"
+route = "Arkansas line on Big River Crossing -> Memphis Amtrak (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["ar_line 14:30", "memphis_amtrak 15:03"]
+
+[[trip]]
+id = "t293"
+route = "Arkansas line on Big River Crossing -> Memphis Amtrak (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["ar_line 14:40", "memphis_amtrak 15:13"]
+
+[[trip]]
+id = "t294"
+route = "Arkansas line on Big River Crossing -> Memphis Amtrak (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["ar_line 14:50", "memphis_amtrak 15:23"]
+
+[[trip]]
+id = "t295"
+route = "Arkansas line on Big River Crossing -> Memphis Amtrak (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["ar_line 15:00", "memphis_amtrak 15:33"]
+
+[[trip]]
+id = "t296"
+route = "Arkansas line on Big River Crossing -> Memphis Amtrak (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["ar_line 15:10", "memphis_amtrak 15:43"]
+
+[[trip]]
+id = "t297"
+route = "Arkansas line on Big River Crossing -> Memphis Amtrak (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["ar_line 15:20", "memphis_amtrak 15:53"]
+
+[[trip]]
+id = "t298"
+route = "Arkansas line on Big River Crossing -> Memphis Amtrak (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["ar_line 15:30", "memphis_amtrak 16:03"]
+
+[[trip]]
+id = "t299"
+route = "Arkansas line on Big River Crossing -> Memphis Amtrak (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["ar_line 15:40", "memphis_amtrak 16:13"]
+
+[[trip]]
+id = "t300"
+route = "Arkansas line on Big River Crossing -> Memphis Amtrak (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["ar_line 15:50", "memphis_amtrak 16:23"]
+
+[[trip]]
+id = "t301"
+route = "Arkansas line on Big River Crossing -> Memphis Amtrak (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["ar_line 16:00", "memphis_amtrak 16:33"]
+
+[[trip]]
+id = "t302"
+route = "Arkansas line on Big River Crossing -> Memphis Amtrak (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["ar_line 16:10", "memphis_amtrak 16:43"]
+
+[[trip]]
+id = "t303"
+route = "Arkansas line on Big River Crossing -> Memphis Amtrak (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["ar_line 16:20", "memphis_amtrak 16:53"]
+
+[[trip]]
+id = "t304"
+route = "Arkansas line on Big River Crossing -> Memphis Amtrak (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["ar_line 16:30", "memphis_amtrak 17:03"]
+
+[[trip]]
+id = "t305"
+route = "Arkansas line on Big River Crossing -> Memphis Amtrak (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["ar_line 16:40", "memphis_amtrak 17:13"]
+
+[[trip]]
+id = "t306"
+route = "Arkansas line on Big River Crossing -> Memphis Amtrak (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["ar_line 16:50", "memphis_amtrak 17:23"]
+
+[[trip]]
+id = "t307"
+route = "Arkansas line on Big River Crossing -> Memphis Amtrak (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["ar_line 17:00", "memphis_amtrak 17:33"]
+
+[[trip]]
+id = "t308"
+route = "Arkansas line on Big River Crossing -> Memphis Amtrak (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["ar_line 17:10", "memphis_amtrak 17:43"]
+
+[[trip]]
+id = "t309"
+route = "Arkansas line on Big River Crossing -> Memphis Amtrak (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["ar_line 17:20", "memphis_amtrak 17:53"]
+
+[[trip]]
+id = "t310"
+route = "Arkansas line on Big River Crossing -> Memphis Amtrak (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["ar_line 17:30", "memphis_amtrak 18:03"]
+
+[[trip]]
+id = "t311"
+route = "Arkansas line on Big River Crossing -> Memphis Amtrak (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["ar_line 17:40", "memphis_amtrak 18:13"]
+
+[[trip]]
+id = "t312"
+route = "Arkansas line on Big River Crossing -> Memphis Amtrak (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["ar_line 17:50", "memphis_amtrak 18:23"]
+
+[[trip]]
+id = "t313"
+route = "Arkansas line on Big River Crossing -> Memphis Amtrak (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["ar_line 18:00", "memphis_amtrak 18:33"]
+
+[[trip]]
+id = "t314"
+route = "Arkansas line on Big River Crossing -> Memphis Amtrak (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["ar_line 18:10", "memphis_amtrak 18:43"]
+
+[[trip]]
+id = "t315"
+route = "Arkansas line on Big River Crossing -> Memphis Amtrak (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["ar_line 18:20", "memphis_amtrak 18:53"]
+
+[[trip]]
+id = "t316"
+route = "Arkansas line on Big River Crossing -> Memphis Amtrak (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["ar_line 18:30", "memphis_amtrak 19:03"]
+
+[[trip]]
+id = "t317"
+route = "Arkansas line on Big River Crossing -> Memphis Amtrak (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["ar_line 18:40", "memphis_amtrak 19:13"]
+
+[[trip]]
+id = "t318"
+route = "Arkansas line on Big River Crossing -> Memphis Amtrak (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["ar_line 18:50", "memphis_amtrak 19:23"]
+
+[[trip]]
+id = "t319"
+route = "Arkansas line on Big River Crossing -> Memphis Amtrak (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["ar_line 19:00", "memphis_amtrak 19:33"]
+
+[[trip]]
+id = "t320"
+route = "Arkansas line on Big River Crossing -> Memphis Amtrak (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["ar_line 19:10", "memphis_amtrak 19:43"]
+
+[[trip]]
+id = "t321"
+route = "Arkansas line on Big River Crossing -> Memphis Amtrak (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["ar_line 19:20", "memphis_amtrak 19:53"]
+
+[[trip]]
+id = "t322"
+route = "Arkansas line on Big River Crossing -> Memphis Amtrak (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["ar_line 19:30", "memphis_amtrak 20:03"]
+
+[[trip]]
+id = "t323"
+route = "Arkansas line on Big River Crossing -> Memphis Amtrak (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["ar_line 19:40", "memphis_amtrak 20:13"]
+
+[[trip]]
+id = "t324"
+route = "Arkansas line on Big River Crossing -> Memphis Amtrak (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["ar_line 19:50", "memphis_amtrak 20:23"]
+
+[[trip]]
+id = "t325"
+route = "Arkansas line on Big River Crossing -> Memphis Amtrak (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["ar_line 20:00", "memphis_amtrak 20:33"]
+
+[[trip]]
+id = "t326"
+route = "Arkansas line on Big River Crossing -> Memphis Amtrak (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["ar_line 20:10", "memphis_amtrak 20:43"]
+
+[[trip]]
+id = "t327"
+route = "Arkansas line on Big River Crossing -> Memphis Amtrak (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["ar_line 20:20", "memphis_amtrak 20:53"]
+
+[[trip]]
+id = "t328"
+route = "Arkansas line on Big River Crossing -> Memphis Amtrak (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["ar_line 20:30", "memphis_amtrak 21:03"]
+
+[[trip]]
+id = "t329"
+route = "Arkansas line on Big River Crossing -> Memphis Amtrak (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["ar_line 20:40", "memphis_amtrak 21:13"]
+
+[[trip]]
+id = "t330"
+route = "Arkansas line on Big River Crossing -> Memphis Amtrak (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["ar_line 20:50", "memphis_amtrak 21:23"]
+
+[[trip]]
+id = "t331"
+route = "Arkansas line on Big River Crossing -> Memphis Amtrak (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["ar_line 21:00", "memphis_amtrak 21:33"]
+
+[[trip]]
+id = "t332"
+route = "Arkansas line on Big River Crossing -> Memphis Amtrak (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["ar_line 21:10", "memphis_amtrak 21:43"]
+
+[[trip]]
+id = "t333"
+route = "Arkansas line on Big River Crossing -> Memphis Amtrak (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["ar_line 21:20", "memphis_amtrak 21:53"]
+
+[[trip]]
+id = "t334"
+route = "Arkansas line on Big River Crossing -> Memphis Amtrak (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["ar_line 21:30", "memphis_amtrak 22:03"]
+
+[[trip]]
+id = "t335"
+route = "Arkansas line on Big River Crossing -> Memphis Amtrak (walk)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["ar_line 21:40", "memphis_amtrak 22:13"]

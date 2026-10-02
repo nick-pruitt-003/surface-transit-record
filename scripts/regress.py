@@ -299,6 +299,26 @@ def _():
     assert S.all_states(legs) and f - t <= 3600, (f - t, legs[-1:])
 
 
+
+@check('the Big River Crossing walk keeps the bridge hours (06:00-22:00): Arkansas by 10:45 from 10:00, not by bridge at 23:00')
+def _():
+    # A walk link is open at every hour, so the bridge is timetabled walks instead (big_river_crossing.toml) and
+    # its mid-bridge point must stay unreachable by any footpath; otherwise a night search walks over a closed bridge.
+    mem = R.idx['amtrak:MEM']; ar = R.state_names.index('Arkansas')
+    mid = R.stops_matching('Arkansas line on Big River Crossing')[0]
+    assert not R.foot.get(mid) and all(j != mid for i in R.foot for j, _ in R.foot[i]), 'mid-bridge point has a footpath'
+    def reach(h):
+        t = datetime(2026, 9, 30, h, 0, tzinfo=CT).timestamp()
+        S = Search(R, mem, t, [], 1, [s for s in range(N_STATES) if s != ar], end=ar)
+        ts._R, ts._START, ts._T0, ts._SELF, ts._BASE, ts._END = R, mem, t, S, None, ar
+        f, legs = S.evaluate([ar]); return f - t, legs
+    d, legs = reach(10)
+    assert d <= 45 * 60 and any(l[0] == 'ride' and l[4] == mid for l in legs), (d / 60, legs[-1:])
+    d, legs = reach(23)
+    at_mid = [l[5] if l[0] == 'ride' else l[4] for l in legs if (l[4] if l[0] == 'ride' else l[2]) == mid]
+    assert all(6 <= datetime.fromtimestamp(x, CT).hour < 22 for x in at_mid), ('on the bridge while closed', legs)
+
+
 print()
 for name, ok, info in results: print(('PASS ' if ok else 'FAIL ') + name + ('' if ok else '\n     ' + info))
 print(f'\n{sum(ok for _, ok, _ in results)}/{len(results)} passed')

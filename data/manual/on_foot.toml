@@ -2,7 +2,6 @@ agency = "On foot"
 
 [stops]
 wisconsin_line_at_wolff_ln_on_foot_from_ = { name = "Wisconsin line at Wolff Ln (on foot from Dubuque via East Dubuque)", lon = -90.6255, lat = 42.5090 }
-arkansas_line_on_big_river_crossing_on_f = { name = "Arkansas line on Big River Crossing (on foot from Memphis Amtrak)", lon = -90.0850, lat = 35.1275 }
 michigan_line_at_michiana_on_foot_from_m = { name = "Michigan line at Michiana (on foot from Michigan City Carroll Ave)", lon = -86.8152, lat = 41.7612 }
 vermont_line_on_us_7_on_foot_from_willia = { name = "Vermont line on US-7 (on foot from Williamstown)", lon = -73.2141, lat = 42.7450 }
 vermont_line_on_west_rd_on_foot_from_nor = { name = "Vermont line on West Rd (on foot from North Adams Hospital)", lon = -73.1180, lat = 42.7432 }
@@ -13,7 +12,7 @@ id = "t50"
 route = "stop definitions for walk links (never runs)"
 days = "0000000"
 tz = "America/Chicago"
-stops = ["wisconsin_line_at_wolff_ln_on_foot_from_ 00:00", "arkansas_line_on_big_river_crossing_on_f 00:01", "michigan_line_at_michiana_on_foot_from_m 00:00"]
+stops = ["wisconsin_line_at_wolff_ln_on_foot_from_ 00:00", "michigan_line_at_michiana_on_foot_from_m 00:00"]
 
 [[trip]]
 id = "t127"
