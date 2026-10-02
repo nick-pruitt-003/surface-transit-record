@@ -1593,3 +1593,17 @@ So under 234 needs a different shape. The finish is gated by two clocks (Nick's 
 - **Atlanta in the morning gets there:** Flix Atlanta 07:00 -> Jacksonville 13:35. A shape entering Florida from
   Atlanta rather than along the Gulf could take the Flix + 04:47 Acela finish, if South Carolina and TX LA AL MS
   are placed elsewhere. Next test: the finish block from Atlanta.
+
+Follow-ups the same night:
+
+- **Salt Lake -> Las Vegas.** SLE 7021 (SLC Airport 04:45 -> St George 10:20) and SLE 8035 (St George 10:30 ->
+  Beaver Dam -> Mesquite -> Las Vegas 11:40) are in `data/manual/salt_lake_express.toml`, and a hypothetical
+  overnight (SLC 03:00 -> Las Vegas 07:00 PDT) was tried in memory. All three record routes take the earlier bus
+  and finish unchanged: the daily 702 Shuttles 15:15 and the anchors after it absorb an earlier Las Vegas.
+- **Finish block from Atlanta** (owing FL GA SC NC VA, the corridor and New England): 39.2 h on the Meteor, the same
+  evening chain as every record route, because the Jacksonville 14:15 Flix skips South Carolina. **With SC already
+  done: 37.7 h**, Atlanta Fri 07:00 -> Jacksonville 13:35 -> Flix 14:15 -> Washington 03:55 -> 04:48 Acela -> Boston
+  11:48 -> Portland and back -> Dartmouth 17:30 -> VT line Sat 20:44, 1.5 h ahead of the Meteor ending.
+- **A front to feed it** (33 states including SC, Atlanta by Fri 06:55 ET): no complete route found; the seed
+  (WV start, West, Plains, South, SC, Atlanta) needs 214.8 h against the 196.5 h that would beat 234.24, about 260 h
+  total. South Carolina before Atlanta is the cost. Dead, as Nick expected.
