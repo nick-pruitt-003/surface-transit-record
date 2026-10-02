@@ -600,7 +600,21 @@ class Search:
         return best[:3]
 
 
+def _yield_cpu():
+    """Run below normal priority unless BUS48_NICE=0. Sixteen workers at full load starved NordVPN's software
+    encryption on the Windows box and throttled Nick's whole connection (Oct 1 2026); at lower priority the
+    VPN, browser and calls get the CPU first and the search takes what is left. Workers inherit it."""
+    if os.environ.get('BUS48_NICE', '1') == '0': return
+    try:
+        if os.name == 'nt':
+            import ctypes
+            ctypes.windll.kernel32.SetPriorityClass(ctypes.windll.kernel32.GetCurrentProcess(), 0x4000)   # BELOW_NORMAL
+        else: os.nice(10)
+    except Exception as e: print('could not lower priority:', e, flush=True)
+
+
 def main():
+    _yield_cpu()
     ap = argparse.ArgumentParser()
     ap.add_argument('--start', required=True, help='start stop name, or "free" / "free:WV" to begin anywhere in the first state of the order'); ap.add_argument('--at', required=True); ap.add_argument('--tz', default='America/Denver')
     ap.add_argument('--seed', help='result pickle'); ap.add_argument('--seed-states', help='comma list of state abbreviations (or @stop pins) in visiting order'); ap.add_argument('--prefix', default='')
