@@ -1,0 +1,244 @@
+agency = "Dartmouth Coach"
+
+[stops]
+hanover_hanover_inn = "=ibus:900"   # Hanover (Hanover Inn)
+boston_south_station = "=ibus:3598"   # Boston South Station
+dartmouth_coach_nyc_150_e_42nd_st = { name = "Dartmouth Coach NYC (150 E 42nd St)", lon = -73.9759, lat = 40.7510 }
+
+[[trip]]
+id = "t14"
+route = "Hanover -> Boston South Station 03:00"
+days = "1111111"
+tz = "America/New_York"
+stops = ["hanover_hanover_inn 03:00", "boston_south_station 06:00"]
+
+[[trip]]
+id = "t15"
+route = "Hanover -> Boston South Station 04:40"
+days = "1111111"
+tz = "America/New_York"
+stops = ["hanover_hanover_inn 04:40", "boston_south_station 07:40"]
+
+[[trip]]
+id = "t16"
+route = "Hanover -> Boston South Station 06:40"
+days = "1111111"
+tz = "America/New_York"
+stops = ["hanover_hanover_inn 06:40", "boston_south_station 09:30"]
+
+[[trip]]
+id = "t17"
+route = "Hanover -> Boston South Station 07:40"
+days = "1111111"
+tz = "America/New_York"
+stops = ["hanover_hanover_inn 07:40", "boston_south_station 10:25"]
+
+[[trip]]
+id = "t18"
+route = "Hanover -> Boston South Station 08:40"
+days = "1111111"
+tz = "America/New_York"
+stops = ["hanover_hanover_inn 08:40", "boston_south_station 11:25"]
+
+[[trip]]
+id = "t19"
+route = "Hanover -> Boston South Station 09:40"
+days = "1111111"
+tz = "America/New_York"
+stops = ["hanover_hanover_inn 09:40", "boston_south_station 12:25"]
+
+[[trip]]
+id = "t20"
+route = "Hanover -> Boston South Station 10:40"
+days = "1111111"
+tz = "America/New_York"
+stops = ["hanover_hanover_inn 10:40", "boston_south_station 13:25"]
+
+[[trip]]
+id = "t21"
+route = "Hanover -> Boston South Station 11:40"
+days = "1111111"
+tz = "America/New_York"
+stops = ["hanover_hanover_inn 11:40", "boston_south_station 14:25"]
+
+[[trip]]
+id = "t22"
+route = "Hanover -> Boston South Station 12:40"
+days = "1111111"
+tz = "America/New_York"
+stops = ["hanover_hanover_inn 12:40", "boston_south_station 15:25"]
+
+[[trip]]
+id = "t23"
+route = "Hanover -> Boston South Station 13:40"
+days = "1111111"
+tz = "America/New_York"
+stops = ["hanover_hanover_inn 13:40", "boston_south_station 16:25"]
+
+[[trip]]
+id = "t24"
+route = "Hanover -> Boston South Station 14:40"
+days = "1111111"
+tz = "America/New_York"
+stops = ["hanover_hanover_inn 14:40", "boston_south_station 17:25"]
+
+[[trip]]
+id = "t25"
+route = "Hanover -> Boston South Station 16:40"
+days = "1111111"
+tz = "America/New_York"
+stops = ["hanover_hanover_inn 16:40", "boston_south_station 19:25"]
+
+[[trip]]
+id = "t26"
+route = "Boston South Station -> Hanover 07:30"
+days = "1111111"
+tz = "America/New_York"
+stops = ["boston_south_station 07:30", "hanover_hanover_inn 10:30"]
+
+[[trip]]
+id = "t27"
+route = "Boston South Station -> Hanover 09:30"
+days = "1111111"
+tz = "America/New_York"
+stops = ["boston_south_station 09:30", "hanover_hanover_inn 12:00"]
+
+[[trip]]
+id = "t28"
+route = "Boston South Station -> Hanover 11:30"
+days = "1111111"
+tz = "America/New_York"
+stops = ["boston_south_station 11:30", "hanover_hanover_inn 14:00"]
+
+[[trip]]
+id = "t29"
+route = "Boston South Station -> Hanover 12:30"
+days = "1111111"
+tz = "America/New_York"
+stops = ["boston_south_station 12:30", "hanover_hanover_inn 15:00"]
+
+[[trip]]
+id = "t30"
+route = "Boston South Station -> Hanover 13:30"
+days = "1111111"
+tz = "America/New_York"
+stops = ["boston_south_station 13:30", "hanover_hanover_inn 16:00"]
+
+[[trip]]
+id = "t31"
+route = "Boston South Station -> Hanover 14:30"
+days = "1111111"
+tz = "America/New_York"
+stops = ["boston_south_station 14:30", "hanover_hanover_inn 17:00"]
+
+[[trip]]
+id = "t32"
+route = "Boston South Station -> Hanover 15:30"
+days = "1111111"
+tz = "America/New_York"
+stops = ["boston_south_station 15:30", "hanover_hanover_inn 18:30"]
+
+[[trip]]
+id = "t33"
+route = "Boston South Station -> Hanover 16:30"
+days = "1111111"
+tz = "America/New_York"
+stops = ["boston_south_station 16:30", "hanover_hanover_inn 19:30"]
+
+[[trip]]
+id = "t34"
+route = "Boston South Station -> Hanover 17:30"
+days = "1111111"
+tz = "America/New_York"
+stops = ["boston_south_station 17:30", "hanover_hanover_inn 20:30"]
+
+[[trip]]
+id = "t35"
+route = "Boston South Station -> Hanover 18:30"
+days = "1111111"
+tz = "America/New_York"
+stops = ["boston_south_station 18:30", "hanover_hanover_inn 21:00"]
+
+[[trip]]
+id = "t36"
+route = "Boston South Station -> Hanover 19:30"
+days = "1111111"
+tz = "America/New_York"
+stops = ["boston_south_station 19:30", "hanover_hanover_inn 22:00"]
+
+[[trip]]
+id = "t37"
+route = "Boston South Station -> Hanover 21:30"
+days = "1111111"
+tz = "America/New_York"
+stops = ["boston_south_station 21:30", "hanover_hanover_inn 24:00"]
+
+[[trip]]
+id = "t38"
+route = "Hanover -> New York 06:30"
+days = "1111111"
+tz = "America/New_York"
+stops = ["hanover_hanover_inn 06:30", "dartmouth_coach_nyc_150_e_42nd_st 11:30"]
+
+[[trip]]
+id = "t39"
+route = "Hanover -> New York 09:30"
+days = "0000111"
+tz = "America/New_York"
+stops = ["hanover_hanover_inn 09:30", "dartmouth_coach_nyc_150_e_42nd_st 14:45"]
+
+[[trip]]
+id = "t40"
+route = "Hanover -> New York 14:30"
+days = "1111101"
+tz = "America/New_York"
+stops = ["hanover_hanover_inn 14:30", "dartmouth_coach_nyc_150_e_42nd_st 19:30"]
+
+[[trip]]
+id = "t41"
+route = "New York -> Hanover 08:30"
+days = "1111110"
+tz = "America/New_York"
+stops = ["dartmouth_coach_nyc_150_e_42nd_st 08:30", "hanover_hanover_inn 13:15"]
+
+[[trip]]
+id = "t42"
+route = "New York -> Hanover 10:30 (Sun)"
+days = "0000001"
+tz = "America/New_York"
+stops = ["dartmouth_coach_nyc_150_e_42nd_st 10:30", "hanover_hanover_inn 15:15"]
+
+[[trip]]
+id = "t43"
+route = "New York -> Hanover 13:30"
+days = "1110000"
+tz = "America/New_York"
+stops = ["dartmouth_coach_nyc_150_e_42nd_st 13:30", "hanover_hanover_inn 19:00"]
+
+[[trip]]
+id = "t44"
+route = "New York -> Hanover 13:30 (Thu Fri)"
+days = "0001100"
+tz = "America/New_York"
+stops = ["dartmouth_coach_nyc_150_e_42nd_st 13:30", "hanover_hanover_inn 19:30"]
+
+[[trip]]
+id = "t45"
+route = "New York -> Hanover 13:30 (Sat Sun)"
+days = "0000011"
+tz = "America/New_York"
+stops = ["dartmouth_coach_nyc_150_e_42nd_st 13:30", "hanover_hanover_inn 18:45"]
+
+[[trip]]
+id = "t46"
+route = "New York -> Hanover 16:30 (Fri)"
+days = "0000100"
+tz = "America/New_York"
+stops = ["dartmouth_coach_nyc_150_e_42nd_st 16:30", "hanover_hanover_inn 22:45"]
+
+[[trip]]
+id = "t47"
+route = "New York -> Hanover 16:30 (Sun)"
+days = "0000001"
+tz = "America/New_York"
+stops = ["dartmouth_coach_nyc_150_e_42nd_st 16:30", "hanover_hanover_inn 21:15"]

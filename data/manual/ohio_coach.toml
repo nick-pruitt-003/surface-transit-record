@@ -1,0 +1,27 @@
+agency = "Ohio Coach"
+
+[stops]
+new_york_59_canal_st_jaguar = { name = "New York 59 Canal St (Jaguar)", lon = -73.9920, lat = 40.7147 }
+wheeling_949_main_st_jaguar = { name = "Wheeling 949 Main St (Jaguar)", lon = -80.7230, lat = 40.0690 }
+columbus_213_e_rich_st_jaguar = { name = "Columbus 213 E Rich St (Jaguar)", lon = -82.9930, lat = 39.9580 }
+
+[[trip]]
+id = "t106"
+route = "OH001 NYC -> Wheeling -> Columbus dep 21:00 (Nick card and site screenshots Sep 26 2026 from 59 Canal St; site shows dep 21:00 with arrivals 03:00 +1 (6h) and 06:00 +1 (9h) and NO destination labels; read as Wheeling then Columbus by distance (NYC-Wheeling ~400 mi vs NYC-Columbus ~535 mi) and by the eastbound Jaguar row's stop set; stop names byte-identical to that row so they reuse its stops rather than duplicating them)"
+days = "1111111"
+tz = "America/New_York"
+stops = ["new_york_59_canal_st_jaguar 21:00", "wheeling_949_main_st_jaguar 27:00", "columbus_213_e_rich_st_jaguar 30:00"]
+
+[[trip]]
+id = "t107"
+route = "OH001 NYC -> Wheeling -> Columbus dep 20:00 (departure printed on the ticket-office card: every day 8pm 9pm 10pm from New York; RUNNING TIMES ASSUMED equal to the 21:00 trip and NOT verified)"
+days = "1111111"
+tz = "America/New_York"
+stops = ["new_york_59_canal_st_jaguar 20:00", "wheeling_949_main_st_jaguar 26:00", "columbus_213_e_rich_st_jaguar 29:00"]
+
+[[trip]]
+id = "t108"
+route = "OH001 NYC -> Wheeling -> Columbus dep 22:00 (departure printed on the ticket-office card; RUNNING TIMES ASSUMED equal to the 21:00 trip and NOT verified)"
+days = "1111111"
+tz = "America/New_York"
+stops = ["new_york_59_canal_st_jaguar 22:00", "wheeling_949_main_st_jaguar 28:00", "columbus_213_e_rich_st_jaguar 31:00"]

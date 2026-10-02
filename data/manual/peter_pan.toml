@@ -1,0 +1,63 @@
+agency = "Peter Pan"
+
+[stops]
+new_york_p_a_b_t = "=ibus:1514"   # New York (P.A.B.T.)
+great_barrington = "=ibus:498"   # Great Barrington
+stockbridge = "=ibus:37"   # Stockbridge
+lee_premium_outlets = "=ibus:1914"   # Lee (Premium Outlets)
+lenox = "=ibus:1565"   # Lenox
+pittsfield = "=ibus:309"   # Pittsfield
+williamstown = "=ibus:153"   # Williamstown
+boston_south_station = "=ibus:2671"   # Boston (South Station)
+worcester_union_station = "=ibus:925"   # Worcester (Union Station)
+springfield = "=ibus:1797"   # Springfield
+albany_trailways_bus_terminal = "=ibus:3094"   # Albany (Trailways Bus Terminal)
+
+[[trip]]
+id = "t116"
+route = "BZ 0708B New York -> Williamstown (Nick screenshot Oct 1 2026; all stops; feed has an older 10:15 run; daily assumed)"
+days = "1111111"
+tz = "America/New_York"
+stops = ["new_york_p_a_b_t 08:40", "great_barrington 11:45", "stockbridge 12:05", "lee_premium_outlets 12:15", "lenox 12:20", "pittsfield 12:45/12:55", "williamstown 13:20"]
+
+[[trip]]
+id = "t117"
+route = "BZ 0721B Williamstown -> New York (Nick screenshot Oct 1 2026; all stops; feed has an older 16:00 run; daily assumed)"
+days = "1111111"
+tz = "America/New_York"
+stops = ["williamstown 15:30", "pittsfield 16:15", "lenox 16:30", "lee_premium_outlets 16:40", "stockbridge 16:55", "great_barrington 17:10", "new_york_p_a_b_t 20:15"]
+
+[[trip]]
+id = "t118"
+route = "PPB 6723P Boston -> Springfield (Nick screenshot Oct 1 2026 for Fri Oct 2; daily assumed)"
+days = "1111111"
+tz = "America/New_York"
+stops = ["boston_south_station 15:25", "worcester_union_station 16:25", "springfield 17:30"]
+
+[[trip]]
+id = "t119"
+route = "BZ 1421B Springfield -> Albany (Nick screenshot Oct 1 2026 for Fri Oct 2; daily assumed)"
+days = "1111111"
+tz = "America/New_York"
+stops = ["springfield 17:45", "lee_premium_outlets 18:25", "lenox 18:40", "pittsfield 18:55", "albany_trailways_bus_terminal 19:55"]
+
+[[trip]]
+id = "t120"
+route = "BZ 1411B Springfield -> Albany (Nick screenshot Oct 1 2026 for Fri Oct 2; daily assumed)"
+days = "1111111"
+tz = "America/New_York"
+stops = ["springfield 11:45", "lee_premium_outlets 12:25", "lenox 12:40", "pittsfield 12:55", "albany_trailways_bus_terminal 13:55"]
+
+[[trip]]
+id = "t121"
+route = "BZ 1410B Albany -> Springfield (Nick screenshot Oct 1 2026 for Fri Oct 2; daily assumed)"
+days = "1111111"
+tz = "America/New_York"
+stops = ["albany_trailways_bus_terminal 09:15", "pittsfield 10:15", "lenox 10:30", "lee_premium_outlets 10:45", "springfield 11:25"]
+
+[[trip]]
+id = "t122"
+route = "BZ 1422B Albany -> Springfield (Nick screenshot Oct 1 2026 for Fri Oct 2; daily assumed)"
+days = "1111111"
+tz = "America/New_York"
+stops = ["albany_trailways_bus_terminal 15:15", "pittsfield 16:15", "lenox 16:30", "lee_premium_outlets 16:45", "springfield 17:25"]

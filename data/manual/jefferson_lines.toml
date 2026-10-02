@@ -1,0 +1,21 @@
+agency = "Jefferson Lines"
+
+[stops]
+gillette = "=ibus:2375"   # Gillette
+buffalo = "=ibus:3226"   # Buffalo
+sheridan_wy_taco_bell_1655_coffeen_ave_j = { name = "Sheridan WY Taco Bell 1655 Coffeen Ave (Jefferson)", lon = -106.9446, lat = 44.7743 }
+billings = "=ibus:22"   # Billings
+
+[[trip]]
+id = "t104"
+route = "JL 701 Gillette -> Buffalo -> Sheridan -> Billings (Nick screenshots Sep 22 2026: jeffersonlines.com 09/29 and Google Thu 09/24; feed trip 1902 has Gillette and Buffalo but skips Sheridan; times from it shifted to Mountain as the router does; daily assumed; Sheridan Taco Bell point approximate)"
+days = "1111111"
+tz = "America/Denver"
+stops = ["gillette 20:10", "buffalo 21:40", "sheridan_wy_taco_bell_1655_coffeen_ave_j 22:20", "billings 24:25"]
+
+[[trip]]
+id = "t105"
+route = "JL 702 Billings -> Sheridan (Nick screenshot Sep 22 2026: jeffersonlines.com 09/29 4:30 AM -> 6:35 AM; feed trip 1632 skips Sheridan; daily assumed; Sheridan Taco Bell point approximate)"
+days = "1111111"
+tz = "America/Denver"
+stops = ["billings 04:30", "sheridan_wy_taco_bell_1655_coffeen_ave_j 06:35"]

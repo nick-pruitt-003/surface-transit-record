@@ -1,0 +1,19 @@
+agency = "MBTA Commuter Rail"
+
+[stops]
+boston_south_station = "=ibus:3598"   # Boston South Station
+providence = "=amtrak:PVD"   # Providence
+
+[[trip]]
+id = "t11"
+route = "Providence Line 885 South Station -> Providence"
+days = "1111111"
+tz = "America/New_York"
+stops = ["boston_south_station 21:40", "providence 22:56"]
+
+[[trip]]
+id = "t12"
+route = "Providence Line Providence -> South Station (arrival assumed)"
+days = "1111111"
+tz = "America/New_York"
+stops = ["providence 23:25", "boston_south_station 24:40"]

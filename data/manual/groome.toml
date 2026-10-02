@@ -1,0 +1,117 @@
+agency = "Groome"
+
+[stops]
+denver_int_l_airport_groome_a_line = { name = "Denver Int'l Airport (Groome/A Line)", lon = -104.6737, lat = 39.8494 }
+cheyenne_groome_stop_warren_afb_area = { name = "Cheyenne Groome stop (Warren AFB area)", lon = -104.8600, lat = 41.1400 }
+
+[[trip]]
+id = "t54"
+route = "DEN -> Cheyenne (groometransportation.com/wyoming Sep 18 2026; daily; Cheyenne stop near Warren AFB per Nick; point approximate)"
+days = "1111111"
+tz = "America/Denver"
+stops = ["denver_int_l_airport_groome_a_line 01:10", "cheyenne_groome_stop_warren_afb_area 03:10"]
+
+[[trip]]
+id = "t55"
+route = "DEN -> Cheyenne (groometransportation.com/wyoming Sep 18 2026; daily; Cheyenne stop near Warren AFB per Nick; point approximate)"
+days = "1111111"
+tz = "America/Denver"
+stops = ["denver_int_l_airport_groome_a_line 04:50", "cheyenne_groome_stop_warren_afb_area 06:50"]
+
+[[trip]]
+id = "t56"
+route = "DEN -> Cheyenne (groometransportation.com/wyoming Sep 18 2026; daily; Cheyenne stop near Warren AFB per Nick; point approximate)"
+days = "1111111"
+tz = "America/Denver"
+stops = ["denver_int_l_airport_groome_a_line 08:50", "cheyenne_groome_stop_warren_afb_area 10:50"]
+
+[[trip]]
+id = "t57"
+route = "DEN -> Cheyenne (groometransportation.com/wyoming Sep 18 2026; daily; Cheyenne stop near Warren AFB per Nick; point approximate)"
+days = "1111111"
+tz = "America/Denver"
+stops = ["denver_int_l_airport_groome_a_line 10:50", "cheyenne_groome_stop_warren_afb_area 12:50"]
+
+[[trip]]
+id = "t58"
+route = "DEN -> Cheyenne (groometransportation.com/wyoming Sep 18 2026; daily; Cheyenne stop near Warren AFB per Nick; point approximate)"
+days = "1111111"
+tz = "America/Denver"
+stops = ["denver_int_l_airport_groome_a_line 12:50", "cheyenne_groome_stop_warren_afb_area 14:50"]
+
+[[trip]]
+id = "t59"
+route = "DEN -> Cheyenne (groometransportation.com/wyoming Sep 18 2026; daily; Cheyenne stop near Warren AFB per Nick; point approximate)"
+days = "1111111"
+tz = "America/Denver"
+stops = ["denver_int_l_airport_groome_a_line 15:50", "cheyenne_groome_stop_warren_afb_area 17:50"]
+
+[[trip]]
+id = "t60"
+route = "DEN -> Cheyenne (groometransportation.com/wyoming Sep 18 2026; daily; Cheyenne stop near Warren AFB per Nick; point approximate)"
+days = "1111111"
+tz = "America/Denver"
+stops = ["denver_int_l_airport_groome_a_line 17:50", "cheyenne_groome_stop_warren_afb_area 19:50"]
+
+[[trip]]
+id = "t61"
+route = "DEN -> Cheyenne (groometransportation.com/wyoming Sep 18 2026; daily; Cheyenne stop near Warren AFB per Nick; point approximate)"
+days = "1111111"
+tz = "America/Denver"
+stops = ["denver_int_l_airport_groome_a_line 22:50", "cheyenne_groome_stop_warren_afb_area 24:50"]
+
+[[trip]]
+id = "t62"
+route = "Cheyenne -> DEN (groometransportation.com/wyoming Sep 18 2026; daily; Cheyenne stop near Warren AFB per Nick; point approximate)"
+days = "1111111"
+tz = "America/Denver"
+stops = ["cheyenne_groome_stop_warren_afb_area 01:55", "denver_int_l_airport_groome_a_line 04:05"]
+
+[[trip]]
+id = "t63"
+route = "Cheyenne -> DEN (groometransportation.com/wyoming Sep 18 2026; daily; Cheyenne stop near Warren AFB per Nick; point approximate)"
+days = "1111111"
+tz = "America/Denver"
+stops = ["cheyenne_groome_stop_warren_afb_area 03:55", "denver_int_l_airport_groome_a_line 06:05"]
+
+[[trip]]
+id = "t64"
+route = "Cheyenne -> DEN (groometransportation.com/wyoming Sep 18 2026; daily; Cheyenne stop near Warren AFB per Nick; point approximate)"
+days = "1111111"
+tz = "America/Denver"
+stops = ["cheyenne_groome_stop_warren_afb_area 07:55", "denver_int_l_airport_groome_a_line 10:05"]
+
+[[trip]]
+id = "t65"
+route = "Cheyenne -> DEN (groometransportation.com/wyoming Sep 18 2026; daily; Cheyenne stop near Warren AFB per Nick; point approximate)"
+days = "1111111"
+tz = "America/Denver"
+stops = ["cheyenne_groome_stop_warren_afb_area 11:55", "denver_int_l_airport_groome_a_line 14:05"]
+
+[[trip]]
+id = "t66"
+route = "Cheyenne -> DEN (groometransportation.com/wyoming Sep 18 2026; daily; Cheyenne stop near Warren AFB per Nick; point approximate)"
+days = "1111111"
+tz = "America/Denver"
+stops = ["cheyenne_groome_stop_warren_afb_area 13:55", "denver_int_l_airport_groome_a_line 16:05"]
+
+[[trip]]
+id = "t67"
+route = "Cheyenne -> DEN (groometransportation.com/wyoming Sep 18 2026; daily; Cheyenne stop near Warren AFB per Nick; point approximate)"
+days = "1111111"
+tz = "America/Denver"
+stops = ["cheyenne_groome_stop_warren_afb_area 15:55", "denver_int_l_airport_groome_a_line 18:05"]
+
+[[trip]]
+id = "t68"
+route = "Cheyenne -> DEN (groometransportation.com/wyoming Sep 18 2026; daily; Cheyenne stop near Warren AFB per Nick; point approximate)"
+days = "1111111"
+tz = "America/Denver"
+stops = ["cheyenne_groome_stop_warren_afb_area 18:55", "denver_int_l_airport_groome_a_line 21:05"]
+
+[[trip]]
+id = "t69"
+route = "Cheyenne -> DEN (groometransportation.com/wyoming Sep 18 2026; daily; Cheyenne stop near Warren AFB per Nick; point approximate)"
+days = "1111111"
+tz = "America/Denver"
+stops = ["cheyenne_groome_stop_warren_afb_area 20:55", "denver_int_l_airport_groome_a_line 23:05"]

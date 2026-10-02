@@ -1,0 +1,63 @@
+agency = "Page Express"
+
+[stops]
+page_elm_st_transfer_center = { name = "Page Elm St Transfer Center", lon = -111.4613, lat = 36.9151 }
+basha_s = "=hopi:1052"   # Basha's
+tuba_city_reg_health_care = "=hopi:1022"   # Tuba City Reg. Health Care
+wahweap_housing_stateline_dr = { name = "Wahweap Housing (Stateline Dr)", lon = -111.4975, lat = 36.9910 }
+
+[[trip]]
+id = "t133"
+route = "Express B Page -> Tuba City AM (brochure eff. July 2025; Navajo daylight time assumed (Nick Oct 1); Mon-Fri; TC Super gas 160/264 modelled at Basha's; intermediate stops omitted)"
+days = "1111100"
+tz = "America/Denver"
+stops = ["page_elm_st_transfer_center 04:00", "basha_s 06:02", "tuba_city_reg_health_care 06:09"]
+
+[[trip]]
+id = "t134"
+route = "Express B Tuba City -> Page AM (brochure eff. July 2025; Navajo daylight time assumed (Nick Oct 1); Mon-Fri; TC Super gas 160/264 modelled at Basha's)"
+days = "1111100"
+tz = "America/Denver"
+stops = ["basha_s 07:00", "page_elm_st_transfer_center 08:27"]
+
+[[trip]]
+id = "t135"
+route = "Express B Page -> Tuba City PM (brochure eff. July 2025; Navajo daylight time assumed (Nick Oct 1); Mon-Fri)"
+days = "1111100"
+tz = "America/Denver"
+stops = ["page_elm_st_transfer_center 15:27", "basha_s 17:02", "tuba_city_reg_health_care 17:25"]
+
+[[trip]]
+id = "t136"
+route = "Express B Tuba City -> Page PM (brochure eff. July 2025; Navajo daylight time assumed (Nick Oct 1); Mon-Fri)"
+days = "1111100"
+tz = "America/Denver"
+stops = ["basha_s 17:30", "page_elm_st_transfer_center 19:40"]
+
+[[trip]]
+id = "t137"
+route = "Express G Page -> Wahweap 13:00 (brochure; Mon-Fri; Wahweap Housing on Stateline Dr from OSM about 1 km south of the UT line)"
+days = "1111100"
+tz = "America/Phoenix"
+stops = ["page_elm_st_transfer_center 13:00", "wahweap_housing_stateline_dr 13:33"]
+
+[[trip]]
+id = "t138"
+route = "Express G Wahweap -> Page 13:33"
+days = "1111100"
+tz = "America/Phoenix"
+stops = ["wahweap_housing_stateline_dr 13:33", "page_elm_st_transfer_center 14:00"]
+
+[[trip]]
+id = "t139"
+route = "Express G Page -> Wahweap 14:00"
+days = "1111100"
+tz = "America/Phoenix"
+stops = ["page_elm_st_transfer_center 14:00", "wahweap_housing_stateline_dr 14:33"]
+
+[[trip]]
+id = "t140"
+route = "Express G Wahweap -> Page 14:33"
+days = "1111100"
+tz = "America/Phoenix"
+stops = ["wahweap_housing_stateline_dr 14:33", "page_elm_st_transfer_center 15:00"]

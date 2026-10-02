@@ -1,0 +1,13 @@
+agency = "Salt Lake Express"
+
+[stops]
+salt_lake_city_airport = "=ibus:2060"   # Salt Lake City (Airport)
+saint_george_bluff_st_office = "=ibus:2067"   # Saint George (Bluff St Office)
+las_vegas_airport = "=ibus:735"   # Las Vegas (Airport)
+
+[[trip]]
+id = "t129"
+route = "SLC Airport -> St George -> Las Vegas Airport (Nick screenshots Oct 1 2026 for Oct 16: 06:00 airport; 06:30 Midvale not modelled; St George 11:30/12:00; Las Vegas 13:10 Pacific = 14:10 in this row Mountain tz; feed has the older 06:30 shop -> 13:50 run; daily assumed)"
+days = "1111111"
+tz = "America/Denver"
+stops = ["salt_lake_city_airport 06:00", "saint_george_bluff_st_office 11:30/12:00", "las_vegas_airport 14:10"]

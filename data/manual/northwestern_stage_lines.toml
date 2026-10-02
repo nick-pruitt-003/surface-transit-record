@@ -1,0 +1,31 @@
+agency = "Northwestern Stage Lines"
+
+[stops]
+spokane = "Spokane"
+ritzville = "Ritzville"
+pasco_bus_stop = "Pasco Bus Stop"
+boise_airport = "=ibus:1465"   # Boise (Airport)
+la_grande_bus_station = "=flix:1e6e4e25-e311-47fd-92cf-c4829424d136"   # La Grande Bus Station
+pasco_bus_stop_2 = "=ibus:2048"   # Pasco Bus Stop
+spokane_2 = "=ibus:9"   # Spokane
+
+[[trip]]
+id = "t0"
+route = "NWL 710 Spokane -> Pasco"
+days = "1111111"
+tz = "America/Los_Angeles"
+stops = ["spokane 10:45", "ritzville 11:45/11:55", "pasco_bus_stop 13:10"]
+
+[[trip]]
+id = "t1"
+route = "NWL Boise -> Pasco (OR stop is really Hermiston; La Grande used as stand-in)"
+days = "1111111"
+tz = "America/Los_Angeles"
+stops = ["boise_airport 07:15", "la_grande_bus_station 10:35/10:40", "pasco_bus_stop_2 13:10"]
+
+[[trip]]
+id = "t2"
+route = "NWL Pasco -> Spokane 15:00"
+days = "1111111"
+tz = "America/Los_Angeles"
+stops = ["pasco_bus_stop_2 15:00", "spokane_2 17:05"]

@@ -10,7 +10,7 @@ Until 78ada1b the forward scan could not reach its ending at all: a 57 min proxy
 minutes before the MATA bus arrived, and a walk-derived label does not license an onward walk, so the
 1142 s step over the state line was never relaxed.
 
-The start stop needs JL 701 and JL 702 in data/extra_trips.csv (7fd3c55). Without them Wyoming has no
+The start stop needs JL 701 and JL 702 in data/manual/jefferson_lines.toml (7fd3c55). Without them Wyoming has no
 Sheridan at all, and the name match here used to be the bare word, which found Hollywood Sheridan Tri-Rail
 in FLORIDA and reported X at 309.98 h. Matching 'Sheridan WY' and starting at 22:00 are both deliberate.
 

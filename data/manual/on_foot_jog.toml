@@ -1,0 +1,19 @@
+agency = "On foot (jog)"
+
+[stops]
+hanover_hanover_inn = "=ibus:900"   # Hanover (Hanover Inn)
+ledyard_bridge_vermont_end = { name = "Ledyard Bridge Vermont end", lon = -72.3003, lat = 43.7036 }
+
+[[trip]]
+id = "t9"
+route = "Hanover Inn -> Vermont end of Ledyard Bridge"
+days = "1111111"
+tz = "America/New_York"
+stops = ["hanover_hanover_inn 13:16", "ledyard_bridge_vermont_end 13:27"]
+
+[[trip]]
+id = "t10"
+route = "Vermont end of Ledyard Bridge -> Hanover Inn"
+days = "1111111"
+tz = "America/New_York"
+stops = ["ledyard_bridge_vermont_end 13:28", "hanover_hanover_inn 13:39"]

@@ -1,0 +1,43 @@
+agency = "Barons Bus Lines"
+
+[stops]
+huntington = "=ibus:2032"   # Huntington
+ashland = "=ibus:1#1164"   # Ashland
+portsmouth = "=ibus:3014"   # Portsmouth
+chillicothe = "=ibus:2218"   # Chillicothe
+columbus_e_mound_st = "=ibus:3102"   # Columbus (E Mound St)
+columbus = "=ibus:3258"   # Columbus
+kenton = "=ibus:1746"   # Kenton
+bowling_green = "=ibus:2#536"   # Bowling Green
+toledo_amtrak = "=ibus:2825"   # Toledo (Amtrak)
+ann_arbor = "=ibus:439"   # Ann Arbor
+detroit = "=ibus:3469"   # Detroit
+angola = "=ibus:2#2785"   # Angola
+lagrange = "=ibus:564"   # Lagrange
+shipshewana = "=ibus:630"   # Shipshewana
+elkhart_barons_bus = "=ibus:97"   # Elkhart (Barons Bus)
+south_bend = "=ibus:3443"   # South Bend
+merrillville = "=ibus:141"   # Merrillville
+gary = "=ibus:3304"   # Gary
+chicago = "=ibus:2009"   # Chicago
+
+[[trip]]
+id = "t48"
+route = "BSB 33 Huntington -> Columbus (real times; intermediate assumed)"
+days = "1111111"
+tz = "America/New_York"
+stops = ["huntington 00:45", "ashland 01:10/01:15", "portsmouth 01:50/02:05", "chillicothe 03:00", "columbus_e_mound_st 04:15", "columbus 04:30"]
+
+[[trip]]
+id = "t49"
+route = "BSB 33A Columbus -> Detroit (real times; intermediate assumed)"
+days = "1111111"
+tz = "America/New_York"
+stops = ["columbus 06:50", "columbus_e_mound_st 07:05/07:10", "kenton 08:20", "bowling_green 09:15/09:25", "toledo_amtrak 09:45/09:50", "ann_arbor 10:40/10:45", "detroit 11:30"]
+
+[[trip]]
+id = "t130"
+route = "BSB 25 Toledo -> Chicago (Nick screenshot Oct 1 2026; local times; Merrillville Gary Chicago are Central so +1 h in this Eastern row; daily assumed)"
+days = "1111111"
+tz = "America/New_York"
+stops = ["toledo_amtrak 18:20", "angola 19:50", "lagrange 20:15", "shipshewana 20:30", "elkhart_barons_bus 20:45/21:00", "south_bend 21:30/21:35", "merrillville 22:55", "gary 23:10/23:15", "chicago 23:55"]

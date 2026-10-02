@@ -1,0 +1,34 @@
+agency = "Green Mountain Express"
+
+[stops]
+field_park = "=gmx:4258626"   # Field Park
+svmc_pownal_campus = "=gmx:4248598"   # SVMC Pownal Campus
+bus_terminal_at_215_pleasant_st = "=gmx:770794"   # Bus Terminal at 215 Pleasant St.
+
+[[trip]]
+id = "t123"
+route = "Purple Line Field Park -> Pownal -> Bennington (official weekday timetable greenmountainexpress.com Purple-Line.jpg Nov 2025; the feed starts these return legs past Field Park)"
+days = "1111100"
+tz = "America/New_York"
+stops = ["field_park 07:25", "svmc_pownal_campus 07:40", "bus_terminal_at_215_pleasant_st 08:10"]
+
+[[trip]]
+id = "t124"
+route = "Purple Line Field Park -> Pownal -> Bennington (official timetable as above)"
+days = "1111100"
+tz = "America/New_York"
+stops = ["field_park 09:10", "svmc_pownal_campus 09:20", "bus_terminal_at_215_pleasant_st 09:35"]
+
+[[trip]]
+id = "t125"
+route = "Purple Line Field Park -> Pownal -> Bennington (official timetable as above)"
+days = "1111100"
+tz = "America/New_York"
+stops = ["field_park 14:30", "svmc_pownal_campus 14:40", "bus_terminal_at_215_pleasant_st 15:05"]
+
+[[trip]]
+id = "t126"
+route = "Purple Line Field Park -> Pownal -> Bennington (official timetable as above)"
+days = "1111100"
+tz = "America/New_York"
+stops = ["field_park 15:45", "svmc_pownal_campus 15:55", "bus_terminal_at_215_pleasant_st 16:20"]

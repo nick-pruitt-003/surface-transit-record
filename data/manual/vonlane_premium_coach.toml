@@ -1,0 +1,61 @@
+agency = "Vonlane (premium coach)"
+
+[stops]
+dallas_doubletree_love_field_vonlane = { name = "Dallas DoubleTree Love Field (Vonlane)", lon = -96.8505, lat = 32.8390 }
+houston_hyatt_regency_downtown_vonlane = { name = "Houston Hyatt Regency Downtown (Vonlane)", lon = -95.3688, lat = 29.7577 }
+
+[[trip]]
+id = "t86"
+route = "Dallas Love Field -> Houston Downtown (Nick screenshot Sep 19 2026; Mon 9/28 shown - weekdays assumed)"
+days = "1111100"
+tz = "America/Chicago"
+stops = ["dallas_doubletree_love_field_vonlane 06:00", "houston_hyatt_regency_downtown_vonlane 09:45"]
+
+[[trip]]
+id = "t87"
+route = "Dallas Love Field -> Houston Downtown (Nick screenshot Sep 19 2026; Mon 9/28 shown - weekdays assumed)"
+days = "1111100"
+tz = "America/Chicago"
+stops = ["dallas_doubletree_love_field_vonlane 07:00", "houston_hyatt_regency_downtown_vonlane 10:45"]
+
+[[trip]]
+id = "t88"
+route = "Dallas Love Field -> Houston Downtown (Nick screenshot Sep 19 2026; Mon 9/28 shown - weekdays assumed)"
+days = "1111100"
+tz = "America/Chicago"
+stops = ["dallas_doubletree_love_field_vonlane 10:30", "houston_hyatt_regency_downtown_vonlane 14:15"]
+
+[[trip]]
+id = "t89"
+route = "Dallas Love Field -> Houston Downtown (Nick screenshot Sep 19 2026; Mon 9/28 shown - weekdays assumed)"
+days = "1111100"
+tz = "America/Chicago"
+stops = ["dallas_doubletree_love_field_vonlane 11:30", "houston_hyatt_regency_downtown_vonlane 15:15"]
+
+[[trip]]
+id = "t90"
+route = "Dallas Love Field -> Houston Downtown (Nick screenshot Sep 19 2026; Mon 9/28 shown - weekdays assumed)"
+days = "1111100"
+tz = "America/Chicago"
+stops = ["dallas_doubletree_love_field_vonlane 15:00", "houston_hyatt_regency_downtown_vonlane 18:45"]
+
+[[trip]]
+id = "t91"
+route = "Dallas Love Field -> Houston Downtown (Nick screenshot Sep 19 2026; Mon 9/28 shown - weekdays assumed)"
+days = "1111100"
+tz = "America/Chicago"
+stops = ["dallas_doubletree_love_field_vonlane 16:00", "houston_hyatt_regency_downtown_vonlane 19:45"]
+
+[[trip]]
+id = "t92"
+route = "Dallas Love Field -> Houston Downtown (Nick screenshot Sep 19 2026; Mon 9/28 shown - weekdays assumed)"
+days = "1111100"
+tz = "America/Chicago"
+stops = ["dallas_doubletree_love_field_vonlane 19:30", "houston_hyatt_regency_downtown_vonlane 23:15"]
+
+[[trip]]
+id = "t93"
+route = "Dallas Love Field -> Houston Downtown (Nick screenshot Sep 19 2026; Mon 9/28 shown - weekdays assumed)"
+days = "1111100"
+tz = "America/Chicago"
+stops = ["dallas_doubletree_love_field_vonlane 20:30", "houston_hyatt_regency_downtown_vonlane 24:15"]

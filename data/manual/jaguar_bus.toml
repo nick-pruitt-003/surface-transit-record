@@ -1,0 +1,13 @@
+agency = "Jaguar Bus"
+
+[stops]
+columbus_213_e_rich_st_jaguar = { name = "Columbus 213 E Rich St (Jaguar)", lon = -82.9930, lat = 39.9580 }
+wheeling_949_main_st_jaguar = { name = "Wheeling 949 Main St (Jaguar)", lon = -80.7230, lat = 40.0690 }
+new_york_59_canal_st_jaguar = { name = "New York 59 Canal St (Jaguar)", lon = -73.9920, lat = 40.7147 }
+
+[[trip]]
+id = "t95"
+route = "Columbus -> Wheeling -> NYC (Nick screenshots Sep 19 2026; daily assumed)"
+days = "1111111"
+tz = "America/New_York"
+stops = ["columbus_213_e_rich_st_jaguar 22:30", "wheeling_949_main_st_jaguar 24:35", "new_york_59_canal_st_jaguar 31:30"]

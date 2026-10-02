@@ -1495,3 +1495,17 @@ First router build is about 75 s, then `cached_router` reloads in about 2 s.
 
 The script ends by printing the search the measurements point at (`--goal`, not the default slack key) with
 its budget notes, so whoever runs it next does not have to reconstruct that from the history.
+
+## 27. Oct 1 (late): manual trips moved to data/manual/*.toml
+
+`data/extra_trips.csv` is gone. Hand-entered trips now live in one TOML file per carrier under `data/manual/`
+(format in the `ExtraFeed` docstring in `time_router.py`): stops defined once (`"=feed:uid"`, a stop name, or
+`{name, lon, lat}`), trips as `"stopkey HH:MM"` or `"stopkey HH:MM/HH:MM"`. A trip without a `tz` line gives
+**each stop's local clock**, as carriers print them, with the zone from the stop's coordinates and midnight
+rolled over automatically; that is the format for new entries. The 145 converted CSV rows keep their `tz`, trip
+id (`t<row>`) and route text, and the router built from them was checked identical to the CSV build, connection
+array for connection array. Earlier sections that say "extra_trips row" mean an entry in these files.
+
+Same evening: whole-trip rejection of implausible timetables became stop repair (104 real trips back, 24 placeholder
+timetables still rejected), the stale ibus copies of RedCoach and Limousine Express were dropped in favour of
+verified trips from their sites, and the control still evaluates and replays as before. See `docs/regions.md`.

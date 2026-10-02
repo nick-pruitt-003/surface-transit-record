@@ -89,7 +89,7 @@ def main():
     order = [R.state_names.index(inv[x]) for x in ['OH'] + [x for x in ctrl if x not in ('KY', 'OH')]]
     whl = [i for i, n in enumerate(R.stop_name) if n == START]
     if not whl:
-        raise SystemExit(f'{START} is not in the feed. data/extra_trips.csv needs the Jaguar and Ohio '
+        raise SystemExit(f'{START} is not in the feed. data/manual/ needs the Jaguar and Ohio '
                          f'Coach rows (7fd3c55, 81640e5).')
     whl = whl[0]
     print(f'start {R.stop_name[whl]}, state {ABBR[R.state_names[R.state[whl]]]} '

@@ -1,0 +1,41 @@
+agency = "El Expreso"
+
+[stops]
+tornado_el_expreso_bus_company_southwest = "=ibus:2957"   # Tornado & El Expreso Bus Company Southwest
+tornado_el_expreso_bus_company_katy = "=ibus:1632"   # Tornado & El Expreso Bus Company Katy
+tornado_el_expreso_bus_company_austin = "=ibus:2953"   # Tornado & El Expreso Bus Company Austin
+tornado_el_expreso_bus_company_san_anton = "=ibus:3108"   # Tornado & El Expreso Bus Company San Antonio
+tornado_el_expreso_bus_company_el_paso = "=ibus:3345"   # Tornado & El Expreso Bus Company El Paso
+tornado_el_expreso_bus_company_dallas_i_ = "=ibus:1341"   # Tornado & El Expreso Bus Company Dallas I-30
+tyler = "=ibus:320"   # Tyler
+longview = "=ibus:2823"   # Longview
+marshall = "=ibus:3224"   # Marshall
+quiktrip_gas_station_exit_8_shreveport = "=ibus:1781"   # QuikTrip Gas Station (exit 8)-Shreveport
+kangaroo_express_monroe = "=ibus:2417"   # Kangaroo Express-Monroe
+jackson_ms_flying_j_travel_center = "=ibus:529"   # Jackson, MS(Flying J Travel center)
+meridian_bus_stop = "=ibus:1027"   # Meridian Bus Stop
+tuscaloosa_bus_stop = "=ibus:1383"   # Tuscaloosa Bus Stop
+birmingham_express_carriers = "=ibus:3401"   # Birmingham (Express Carriers)
+oxford_al_race_trac_el_expreso = { name = "Oxford AL Race-Trac (El Expreso)", lon = -85.8350, lat = 33.6140 }
+doraville = "=ibus:1#3441"   # Doraville
+bbwireless_near_jefferson_ga_el_expreso = { name = "BBWireless near Jefferson GA (El Expreso)", lon = -82.5500, lat = 34.1200 }
+restaurant_el_jinete_jefferson_ga_el_exp = { name = "Restaurant El Jinete-Jefferson GA (El Expreso)", lon = -82.4690, lat = 34.1170 }
+flying_j_i_85_sc_el_expreso_approx = { name = "Flying J I-85 SC (El Expreso approx)", lon = -82.1000, lat = 34.5500 }
+taqueria_guadalajara_3_el_expreso_approx = { name = "Taqueria Guadalajara #3 (El Expreso approx)", lon = -81.8500, lat = 34.8000 }
+servicios_zapata_el_expreso_approx = { name = "Servicios Zapata (El Expreso approx)", lon = -81.5500, lat = 35.0000 }
+gastonia = "=ibus:1044"   # Gastonia
+charlotte_bus_station = "=ibus:2883"   # Charlotte Bus Station
+
+[[trip]]
+id = "t99"
+route = "Houston Southwest -> El Paso (Nick screenshots Sep 21 2026; Fri 9/25; daily assumed; Houston 9:00 PM and El Paso 6:45 AM MDT kept; screenshot Austin 10:35/SA 11:00 PM implied ~200 km/h so stretched to 12:30/2:00 AM CDT)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["tornado_el_expreso_bus_company_southwest 21:00", "tornado_el_expreso_bus_company_katy 21:30", "tornado_el_expreso_bus_company_austin 24:30", "tornado_el_expreso_bus_company_san_anton 26:00", "tornado_el_expreso_bus_company_el_paso 31:45"]
+
+[[trip]]
+id = "t100"
+route = "Dallas I-30 -> Gastonia NC via Atlanta (Nick screenshots Sep 21 2026; Fri 9/25 7:15 PM Dallas; daily assumed; all clocks treated as America/Chicago as on booking UI; I-85 curbside stops approx; Charlotte ~30 min after Gastonia per Nick)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["tornado_el_expreso_bus_company_dallas_i_ 19:15", "tyler 20:45", "longview 21:20", "marshall 21:40", "quiktrip_gas_station_exit_8_shreveport 22:20", "kangaroo_express_monroe 23:50", "jackson_ms_flying_j_travel_center 25:35", "meridian_bus_stop 26:54", "tuscaloosa_bus_stop 28:39", "birmingham_express_carriers 29:29", "oxford_al_race_trac_el_expreso 30:39", "doraville 32:19", "bbwireless_near_jefferson_ga_el_expreso 34:10", "restaurant_el_jinete_jefferson_ga_el_exp 34:25", "flying_j_i_85_sc_el_expreso_approx 35:35", "taqueria_guadalajara_3_el_expreso_approx 36:40", "servicios_zapata_el_expreso_approx 37:25", "gastonia 38:10", "charlotte_bus_station 38:40"]

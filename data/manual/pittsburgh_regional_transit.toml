@@ -1,0 +1,12 @@
+agency = "Pittsburgh Regional Transit"
+
+[stops]
+park_manor_blvd_ikea_prt = { name = "Park Manor Blvd + Ikea (PRT)", lon = -80.1675, lat = 40.4525 }
+east_busway_near_amtrak_greyhound_prt = { name = "East Busway near Amtrak/Greyhound (PRT)", lon = -79.9915, lat = 40.4455 }
+
+[[trip]]
+id = "t98"
+route = "29 Robinson -> Downtown (Nick screenshot Sep 19 2026; one trip entered; weekdays assumed)"
+days = "1111100"
+tz = "America/New_York"
+stops = ["park_manor_blvd_ikea_prt 07:15", "east_busway_near_amtrak_greyhound_prt 08:02"]

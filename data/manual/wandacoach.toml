@@ -1,0 +1,12 @@
+agency = "Wandacoach"
+
+[stops]
+florence_sc_ta_gas_station_2301_w_lucas_ = { name = "Florence SC TA Gas Station 2301 W Lucas St (Wandacoach)", lon = -79.8060, lat = 34.2362 }
+jacksonville_gate_station_570_busch_dr_w = { name = "Jacksonville Gate Station 570 Busch Dr (Wandacoach)", lon = -81.6436, lat = 30.4228 }
+
+[[trip]]
+id = "t53"
+route = "257 Florence SC -> Jacksonville (Nick screenshot Sep 18 2026; daily assumed; only end stops entered)"
+days = "1111111"
+tz = "America/New_York"
+stops = ["florence_sc_ta_gas_station_2301_w_lucas_ 06:00", "jacksonville_gate_station_570_busch_dr_w 11:15"]

@@ -1,0 +1,12 @@
+agency = "MBTA subway"
+
+[stops]
+boston = "=amtrak:BON"   # Boston
+boston_south_station = "=ibus:3598"   # Boston South Station
+
+[[trip]]
+id = "t13"
+route = "North Station -> South Station (Orange + Red Line; times assumed)"
+days = "1111111"
+tz = "America/New_York"
+stops = ["boston 21:12", "boston_south_station 21:32"]

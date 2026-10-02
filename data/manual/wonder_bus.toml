@@ -1,0 +1,16 @@
+agency = "Wonder Bus"
+
+[stops]
+knoxville_wonder_approx = { name = "Knoxville (Wonder - approx)", lon = -83.9200, lat = 35.9700 }
+winchester_992_millwood_pike_wonder = { name = "Winchester 992 Millwood Pike (Wonder)", lon = -78.1370, lat = 39.1680 }
+martinsburg_14634_apple_harvest_dr_wonde = { name = "Martinsburg 14634 Apple Harvest Dr (Wonder)", lon = -77.9900, lat = 39.4430 }
+hagerstown_1729_massey_blvd_wonder = { name = "Hagerstown 1729 Massey Blvd (Wonder)", lon = -77.7680, lat = 39.6190 }
+chambersburg_1080_wayne_ave_wonder = { name = "Chambersburg 1080 Wayne Ave (Wonder)", lon = -77.6390, lat = 39.9230 }
+new_york_120_e_broadway_wonder = { name = "New York 120 E Broadway (Wonder)", lon = -73.9930, lat = 40.7137 }
+
+[[trip]]
+id = "t96"
+route = "I-81 Knoxville -> NYC (Nick screenshots Sep 19 2026; Knoxville 6 PM per Nick - stop location approximate; Chambersburg 2:20 per Nick (site says 2:00); daily assumed; stops between Knoxville and Winchester unknown)"
+days = "1111111"
+tz = "America/New_York"
+stops = ["knoxville_wonder_approx 18:00", "winchester_992_millwood_pike_wonder 25:00", "martinsburg_14634_apple_harvest_dr_wonde 25:30", "hagerstown_1729_massey_blvd_wonder 25:50", "chambersburg_1080_wayne_ave_wonder 26:20", "new_york_120_e_broadway_wonder 31:00"]

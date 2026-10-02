@@ -1,0 +1,85 @@
+agency = "Standing Rock Public Transit"
+
+[stops]
+mobridge = "=ibus:417"   # Mobridge
+fort_yates = "=ibus:1958"   # Fort Yates
+mclaughlin = "=ibus:881"   # McLaughlin
+mandan_spirit_of_life = { name = "Mandan (Spirit of Life)", lon = -100.8890, lat = 46.8270 }
+bismarck = "=ibus:289"   # Bismarck
+
+[[trip]]
+id = "t73"
+route = "SRPT 1 Mobridge -> Fort Yates (schedule at a glance Aug 2026; reservation)"
+days = "1111100"
+tz = "America/Chicago"
+stops = ["mobridge 06:20", "fort_yates 07:50"]
+
+[[trip]]
+id = "t74"
+route = "SRPT 1 Fort Yates -> Mobridge"
+days = "1111100"
+tz = "America/Chicago"
+stops = ["fort_yates 16:30", "mobridge 17:35"]
+
+[[trip]]
+id = "t75"
+route = "SRPT 2 McLaughlin -> Fort Yates"
+days = "1111100"
+tz = "America/Chicago"
+stops = ["mclaughlin 07:10", "fort_yates 07:50"]
+
+[[trip]]
+id = "t76"
+route = "SRPT 2 Fort Yates -> McLaughlin"
+days = "1111100"
+tz = "America/Chicago"
+stops = ["fort_yates 16:30", "mclaughlin 17:05"]
+
+[[trip]]
+id = "t77"
+route = "SRPT 4 Mandan -> Fort Yates"
+days = "1111100"
+tz = "America/Chicago"
+stops = ["mandan_spirit_of_life 06:23", "fort_yates 07:45"]
+
+[[trip]]
+id = "t78"
+route = "SRPT 4 Fort Yates -> Mandan"
+days = "1111100"
+tz = "America/Chicago"
+stops = ["fort_yates 16:30", "mandan_spirit_of_life 18:15"]
+
+[[trip]]
+id = "t79"
+route = "SRPT 5 Fort Yates -> Bismarck"
+days = "1111100"
+tz = "America/Chicago"
+stops = ["fort_yates 08:15", "mandan_spirit_of_life 09:10", "bismarck 10:00"]
+
+[[trip]]
+id = "t80"
+route = "SRPT 5 Bismarck -> Fort Yates"
+days = "1111100"
+tz = "America/Chicago"
+stops = ["bismarck 14:00", "mandan_spirit_of_life 14:15", "fort_yates 15:30"]
+
+[[trip]]
+id = "t81"
+route = "SRPT 9 McLaughlin -> Mobridge"
+days = "1111000"
+tz = "America/Chicago"
+stops = ["mclaughlin 10:00", "mobridge 10:45"]
+
+[[trip]]
+id = "t82"
+route = "SRPT 9 Mobridge -> McLaughlin"
+days = "1111000"
+tz = "America/Chicago"
+stops = ["mobridge 14:00", "mclaughlin 15:00"]
+
+[[trip]]
+id = "t83"
+route = "SRPT 12 Fort Yates loop"
+days = "1111000"
+tz = "America/Chicago"
+stops = ["fort_yates 12:00", "mclaughlin 12:45", "mobridge 14:30", "fort_yates 15:40"]

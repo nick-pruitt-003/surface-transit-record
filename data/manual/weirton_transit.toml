@@ -1,0 +1,12 @@
+agency = "Weirton Transit"
+
+[stops]
+weirton_mary_h_weir_public_library = { name = "Weirton Mary H Weir Public Library", lon = -80.5890, lat = 40.4190 }
+ikea_robinson = { name = "Ikea-Robinson", lon = -80.1680, lat = 40.4530 }
+
+[[trip]]
+id = "t97"
+route = "Robinson: Weirton -> Ikea Robinson (Nick screenshot Sep 19 2026; weekdays assumed; modified schedule noted)"
+days = "1111100"
+tz = "America/New_York"
+stops = ["weirton_mary_h_weir_public_library 06:10", "ikea_robinson 07:05"]

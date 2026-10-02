@@ -613,33 +613,67 @@ def best_time(out, pred, s):
 
 
 class ExtraFeed:
-    """Manual trips from data/extra_trips.csv (agency,route,days,tz,stops with
-    Name@HH:MM or Name@arr/dep separated by |). Stop names must match a stop in
-    another feed (or give =uid, e.g. =ibus:1304); the first match is used."""
+    """Hand-entered trips, one TOML file per carrier in data/manual/ (they replaced data/extra_trips.csv).
+
+        agency = "Barons Bus Lines"
+        [stops]                                  # each stop once
+        toledo = "=ibus:2825"                    # a stop of another feed by uid
+        dallas = "Dallas"                        # or by name (exact, then substring; Amtrak last)
+        kanab = { name = "Kanab Glazier's Market", lon = -112.5273, lat = 37.0437 }   # or a new stop
+        [[trip]]
+        route = "BSB 25 Toledo -> Chicago"
+        note = "Nick screenshot Oct 1 2026; daily assumed"
+        days = "1111111"                         # Mon..Sun
+        stops = ["toledo 18:20", "elkhart 20:45/21:00", "chicago 22:55"]
+
+    Times are each stop's LOCAL clock, as carriers print them; the zone comes from the stop's coordinates and
+    a clock that goes backwards rolls over midnight. A trip may instead give tz = "America/Denver" to have every
+    time read in that one zone, which is how the rows converted from the CSV keep their exact meaning. Trips
+    converted from the CSV keep their old id (t<row>) and order, so stored results and connections line up."""
     def __init__(self, path, others):
+        import glob, tomllib
         self.name = 'extra'; self.stops = {}; self.trips = {}; self.tz_mode = 'agency'; self.calendar_mode = 'weekday'
         self.cal = {}; self.cal_dates = {}; self.agency_tz = {}; self.stop_tz = {}; self.max_speed = 160; self.tz = timezone.utc   # hand-entered times are trusted
-        if not os.path.exists(path): return
         allstops = [(uid, nm, lon, lat) for f in others for (uid, nm, lon, lat) in f.stops.values()]
-        for k, r in enumerate(csv.DictReader(open(path))):
-            if (r.get('agency') or '').startswith('#'): continue   # disabled row, kept for reference
-            seq = []
-            for i, item in enumerate(r['stops'].split('|')):
-                nm, tm = item.split('@'); tm = tm.strip()
-                arr, dep = (tm.split('/') + [tm])[:2] if '/' in tm else (tm, tm)
-                if nm.strip().startswith('+'):   # new stop: +Name;lon;lat
-                    n2, lo, la = nm.strip()[1:].split(';'); hit = ('extra:' + n2, n2, float(lo), float(la))
-                else: hit = None
-                hit = hit or next((s for s in allstops if nm.strip().startswith('=') and s[0] == nm.strip()[1:]), None) or next((s for s in allstops if s[1].lower() == nm.strip().lower() and not s[0].startswith('amtrak:')), None) or next((s for s in allstops if s[1].lower() == nm.strip().lower()), None) or next((s for s in allstops if nm.strip().lower() in s[1].lower()), None)
-                if hit is None: print('extra trip: no stop named', nm); break
-                sid = f'x{k}_{i}'; self.stops[sid] = (hit[0], hit[1], hit[2], hit[3])
-                seq.append((i, sid, hms(arr + ':00'), hms(dep + ':00')))
-            else:
-                svc = f'svc{k}'; days = r['days']
-                self.cal[svc] = {d: days[j] for j, d in enumerate(('monday','tuesday','wednesday','thursday','friday','saturday','sunday'))}
-                self.cal[svc].update(start_date='20000101', end_date='20991231')
-                self.trips[f't{k}'] = dict(service=svc, agency=r['agency'], route=r['route'], headsign='', stops=seq, tz=ZoneInfo(r['tz']))
-                self.agency_tz[r['agency']] = ZoneInfo(r['tz'])
+        def resolve(ref):
+            if isinstance(ref, dict): return ('extra:' + ref['name'], ref['name'], float(ref['lon']), float(ref['lat']))
+            q = ref.strip()
+            return (next((s for s in allstops if q.startswith('=') and s[0] == q[1:]), None) or next((s for s in allstops if s[1].lower() == q.lower() and not s[0].startswith('amtrak:')), None)
+                    or next((s for s in allstops if s[1].lower() == q.lower()), None) or next((s for s in allstops if q.lower() in s[1].lower()), None))
+        found = []
+        for fp in sorted(glob.glob(os.path.join(path, '*.toml'))):
+            doc = tomllib.load(open(fp, 'rb')); stem = os.path.splitext(os.path.basename(fp))[0]
+            hits = {key: resolve(ref) for key, ref in doc.get('stops', {}).items()}
+            for key, h in hits.items():
+                if h is None: print(f'manual {stem}: no stop for {key} = {doc["stops"][key]!r}')
+            for n, tr in enumerate(doc.get('trip', [])):
+                tid = tr.get('id') or f'{stem}:{n}'
+                found.append((int(tid[1:]) if tid[0] == 't' and tid[1:].isdigit() else 10 ** 9, stem, n, tid, doc.get('agency', stem), tr, hits))
+        ref = date(2026, 9, 24)
+        for _, stem, n, tid, agency, tr, hits in sorted(found, key=lambda x: x[:3]):
+            if tr.get('disabled'): continue
+            fixed = ZoneInfo(tr['tz']) if tr.get('tz') else None
+            seq = []; zones = {}; prev = None; roll = 0
+            for i, item in enumerate(tr['stops']):
+                key, tm = item.rsplit(' ', 1); h = hits.get(key)
+                if h is None: print(f'manual {stem} {tid}: unknown stop {key}'); seq = None; break
+                arr, dep = tm.split('/') if '/' in tm else (tm, tm)
+                a, d = hms(arr + ':00'), hms(dep + ':00')
+                sid = f'x{tid}_{i}'; self.stops[sid] = h
+                if fixed is None:   # local clocks: roll a time that goes backwards past midnight
+                    zones[sid] = ZoneInfo(_tz_at(h[2], h[3]) or 'UTC')
+                    off = -datetime(ref.year, ref.month, ref.day, 12, tzinfo=zones[sid]).utcoffset().total_seconds()
+                    if prev is not None and a + roll + off < prev - 60: roll += 86400
+                    a += roll
+                    if d + roll + off < a + off - 60: roll += 86400
+                    d += roll; prev = d + off
+                seq.append((i, sid, a, d))
+            if seq is None: continue
+            svc = f'svc{tid}'; days = tr['days']
+            self.cal[svc] = {dd: days[j] for j, dd in enumerate(('monday','tuesday','wednesday','thursday','friday','saturday','sunday'))}
+            self.cal[svc].update(start_date='20000101', end_date='20991231')
+            self.trips[tid] = dict(service=svc, agency=agency, route=tr['route'], headsign='', stops=seq, tz=fixed, zones=zones)
+            if fixed: self.agency_tz[agency] = fixed
         print(f'extra: {len(self.trips)} manual trips')
     sane = Feed.sane; _bad_segment = Feed._bad_segment; runs_on = Feed.runs_on; connections = Feed.connections
 
@@ -647,7 +681,9 @@ class ExtraFeed:
         # Each row's own tz column. agency_tz holds one zone per agency, so the last row of an agency used to set
         # the zone for all of them: AE bus Las Vegas NV -> El Paso, written in Pacific, ran an hour early in Mountain
         # because the Greeley row came after it (found Oct 1 2026).
-        return trip.get('tz') or self.agency_tz.get(trip['agency'], self.tz)
+        if trip.get('tz'): return trip['tz']
+        if sid in trip.get('zones', {}): return trip['zones'][sid]   # local clock at this stop
+        return self.agency_tz.get(trip['agency'], self.tz)
 
 
 def load_feeds():
@@ -656,8 +692,11 @@ def load_feeds():
         Feed(os.path.join(DATA_DIR, 'amtrak_gtfs.zip'), 'amtrak', 'agency', 'dates', max_speed=220),
         Feed(os.path.join(DATA_DIR, 'intercity_merged_gtfs.zip'), 'ibus', 'infer', 'weekday', skip_agencies=('Greyhound-us', 'FlixBus-us', 'Concord Coach Lines', 'Omnibus Express',
                                                                                                   # stale: RedCoach's site (Oct 1 2026) runs Dallas -> Houston 12:35, 16:25, 18:55, the feed
-                                                                                                  # 09:30, 10:00, 16:00, 18:00; verified departures are extra_trips rows instead
-                                                                                                  'RedCoach')),
+                                                                                                  # 09:30, 10:00, 16:00, 18:00; verified departures are in data/manual/redcoach.toml
+                                                                                                  'RedCoach',
+                                                                                                  # stale too: the feed runs LA -> El Paso an hour behind Limo Express's site (Oct 1 2026);
+                                                                                                  # verified runs are in data/manual/limousine_express.toml
+                                                                                                  'Limousine Express')),
     ]
     # carriers whose merged-feed times are known to be Eastern (Amtrak-sourced thruway)
     feeds[2].agency_tz['BeeLine Express-Village Travel'] = ZoneInfo('America/New_York')
@@ -672,7 +711,7 @@ def load_feeds():
         nm = os.path.splitext(os.path.basename(z))[0]
         more.append(Feed(z, nm, 'agency', 'dates', max_speed=200, keep_routes=set(keep[nm]) if nm in keep else None))
         more[-1].city = nm not in INTERCITY_MORE
-    feeds.append(ExtraFeed(os.path.join(DATA_DIR, 'extra_trips.csv'), feeds + more))
+    feeds.append(ExtraFeed(os.path.join(DATA_DIR, 'manual'), feeds + more))
     return feeds + more
 
 

@@ -1,0 +1,50 @@
+agency = "Limousine Express"
+
+[stops]
+fontana_futuranet_16803_valley_blvd_limo = { name = "Fontana Futuranet 16803 Valley Blvd (Limo Express)", lon = -117.4375, lat = 34.0700 }
+san_bernardino_limo_express_2102 = { name = "San Bernardino (Limo Express 2102)", lon = -117.2870, lat = 34.1060 }
+indio_taco_jalisco_limo_express_2102 = { name = "Indio Taco Jalisco (Limo Express 2102)", lon = -116.2156, lat = 33.7206 }
+blythe_mcdonalds_limo_express_2102 = { name = "Blythe McDonalds (Limo Express 2102)", lon = -114.5964, lat = 33.6103 }
+phoenix_limousine_express_terminal_2102 = { name = "Phoenix Limousine Express Terminal (2102)", lon = -112.0700, lat = 33.4400 }
+tucson_limo_express_2102 = { name = "Tucson (Limo Express 2102)", lon = -110.9700, lat = 32.2217 }
+willcox_limo_express_2102 = { name = "Willcox (Limo Express 2102)", lon = -109.8320, lat = 32.2529 }
+deming_limo_express_2102 = { name = "Deming (Limo Express 2102)", lon = -107.7586, lat = 32.2687 }
+las_cruces_limo_express_2102 = { name = "Las Cruces (Limo Express 2102)", lon = -106.7637, lat = 32.3199 }
+anthony_tx_limo_express_2102 = { name = "Anthony TX (Limo Express 2102)", lon = -106.6053, lat = 31.9990 }
+el_paso_limousine_express_terminal_720_s = { name = "El Paso Limousine Express Terminal 720 S Oregon (2102)", lon = -106.4880, lat = 31.7520 }
+la_limo = "=ibus:1093"   # Los Angeles
+east_la = "=ibus:2992"   # East Los Angeles
+el_monte = "=ibus:253"   # El Monte
+ontario = "=ibus:921"   # Ontario (Convention Center)
+san_bernardino_limo = "=ibus:1912"   # San Bernardino (Limo Express)
+indio = "=ibus:3112"   # Indio (Taco Jalisco)
+blythe = "=ibus:2694"   # Blythe (McDonald's)
+phoenix_limo = "=ibus:308"   # Phoenix (Limousine Express Bus Terminal)
+eloy = "=ibus:406"   # Eloy
+tucson_limo = "=ibus:2458"   # Tucson
+willcox = "=ibus:1#3286"   # Willcox
+lordsburg = "=ibus:245"   # Lordsburg
+deming = "=ibus:3517"   # Deming
+las_cruces = "=ibus:1763"   # Las Cruces
+anthony = "=ibus:1892"   # Anthony
+el_paso_limo = "=ibus:3012"   # El Paso (Limo Express)
+
+[[trip]]
+id = "t110"
+route = "LXUS 2102 Fontana -> El Paso (Nick screenshot Sep 28 2026; feed's Fontana run leaves 18:51; daily assumed; points approximate; times in Pacific: El Paso 9:30 AM MDT)"
+days = "1111111"
+tz = "America/Los_Angeles"
+stops = ["fontana_futuranet_16803_valley_blvd_limo 19:20", "san_bernardino_limo_express_2102 19:45", "indio_taco_jalisco_limo_express_2102 21:00", "blythe_mcdonalds_limo_express_2102 22:35", "phoenix_limousine_express_terminal_2102 25:45", "tucson_limo_express_2102 27:15", "willcox_limo_express_2102 28:35", "deming_limo_express_2102 30:35", "las_cruces_limo_express_2102 31:30", "anthony_tx_limo_express_2102 32:00", "el_paso_limousine_express_terminal_720_s 32:30"]
+
+# Times below are each stop's local clock, as Limo Express's site prints them (no tz line).
+[[trip]]
+route = "LXUS 2101 Los Angeles -> El Paso"
+note = "Nick screenshot of limoexpress Oct 1 2026; daily assumed; El Paso arrival not visible, set 20 min after Anthony as in the feed"
+days = "1111111"
+stops = ["la_limo 16:00", "east_la 16:20", "el_monte 17:00", "ontario 17:35", "san_bernardino_limo 18:05", "indio 19:25", "blythe 21:30", "phoenix_limo 00:15", "tucson_limo 01:35", "willcox 03:00", "deming 06:00", "las_cruces 07:00", "anthony 07:20", "el_paso_limo 07:40"]
+
+[[trip]]
+route = "Limo Express Los Angeles 19:30 -> El Paso"
+note = "Nick screenshot of limoexpress Oct 1 2026; daily assumed; El Paso arrival not visible, set 20 min after Anthony as in the feed"
+days = "1111111"
+stops = ["la_limo 19:30", "east_la 19:50", "el_monte 20:30", "san_bernardino_limo 21:00", "indio 22:50", "blythe 00:05", "phoenix_limo 02:50", "eloy 03:40", "tucson_limo 04:35", "willcox 05:50", "lordsburg 07:45", "deming 09:05", "las_cruces 10:05", "anthony 10:30", "el_paso_limo 10:50"]

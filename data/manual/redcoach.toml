@@ -1,0 +1,26 @@
+agency = "RedCoach"
+
+[stops]
+dallas_1376_marilla_st_redcoach = { name = "Dallas 1376 Marilla St (RedCoach)", lon = -96.7975, lat = 32.7760 }
+houston_808_jefferson_st_redcoach = { name = "Houston 808 Jefferson St (RedCoach)", lon = -95.3640, lat = 29.7510 }
+
+[[trip]]
+id = "t94"
+route = "Dallas -> Houston 12:35 (Nick screenshot Sep 19 2026; only this departure seen; daily assumed)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["dallas_1376_marilla_st_redcoach 12:35", "houston_808_jefferson_st_redcoach 16:40"]
+
+[[trip]]
+id = "t143"
+route = "Dallas -> Houston 16:25 (Nick screenshot of redcoachusa Oct 1 2026; daily assumed)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["dallas_1376_marilla_st_redcoach 16:25", "houston_808_jefferson_st_redcoach 20:20"]
+
+[[trip]]
+id = "t144"
+route = "Dallas -> Houston 18:55 (Nick screenshot of redcoachusa Oct 1 2026; daily assumed)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["dallas_1376_marilla_st_redcoach 18:55", "houston_808_jefferson_st_redcoach 22:50"]

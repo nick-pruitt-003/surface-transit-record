@@ -1,0 +1,48 @@
+agency = "TARTA"
+
+[stops]
+tarta_downtown_hub = { name = "TARTA downtown hub", lon = -83.5317, lat = 41.6557 }
+brooke_park_jackman_tarta_18 = { name = "Brooke Park & Jackman (TARTA 18)", lon = -83.5845, lat = 41.7289 }
+michigan_state_line_on_jackman_rd_walk = { name = "Michigan state line on Jackman Rd (walk)", lon = -83.5847, lat = 41.7342 }
+
+[[trip]]
+id = "t3"
+route = "Route 18 to Meijer Alexis then walk into Michigan"
+days = "0000010"
+tz = "America/New_York"
+stops = ["tarta_downtown_hub 13:30", "brooke_park_jackman_tarta_18 13:57", "michigan_state_line_on_jackman_rd_walk 14:05"]
+
+[[trip]]
+id = "t4"
+route = "Route 18 to Meijer Alexis then walk into Michigan"
+days = "0000010"
+tz = "America/New_York"
+stops = ["tarta_downtown_hub 16:30", "brooke_park_jackman_tarta_18 16:57", "michigan_state_line_on_jackman_rd_walk 17:05"]
+
+[[trip]]
+id = "t5"
+route = "Route 18 to Meijer Alexis then walk into Michigan"
+days = "0000010"
+tz = "America/New_York"
+stops = ["tarta_downtown_hub 19:30", "brooke_park_jackman_tarta_18 19:57", "michigan_state_line_on_jackman_rd_walk 20:05"]
+
+[[trip]]
+id = "t6"
+route = "Walk back from Michigan then Route 18 to Downtown"
+days = "0000010"
+tz = "America/New_York"
+stops = ["michigan_state_line_on_jackman_rd_walk 15:40", "brooke_park_jackman_tarta_18 15:48", "tarta_downtown_hub 16:15"]
+
+[[trip]]
+id = "t7"
+route = "Walk back from Michigan then Route 18 to Downtown"
+days = "0000010"
+tz = "America/New_York"
+stops = ["michigan_state_line_on_jackman_rd_walk 18:40", "brooke_park_jackman_tarta_18 18:48", "tarta_downtown_hub 19:15"]
+
+[[trip]]
+id = "t8"
+route = "Walk back from Michigan then Route 18 to Downtown"
+days = "0000010"
+tz = "America/New_York"
+stops = ["michigan_state_line_on_jackman_rd_walk 20:16", "brooke_park_jackman_tarta_18 20:24", "tarta_downtown_hub 20:51"]

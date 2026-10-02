@@ -1,0 +1,54 @@
+agency = "AE bus"
+
+[stops]
+las_vegas_amtrak_station = "=amtrak:LSV"   # Las Vegas Amtrak Station
+trinidad_co_ae_bus = { name = "Trinidad CO (AE bus)", lon = -104.5006, lat = 37.1695 }
+walsenburg_co_ae_bus = { name = "Walsenburg CO (AE bus)", lon = -104.7803, lat = 37.6247 }
+pueblo = "=ibus:2325"   # Pueblo
+fountain_co_ae_bus = { name = "Fountain CO (AE bus)", lon = -104.7008, lat = 38.6822 }
+colorado_springs = "=ibus:3453"   # Colorado Springs
+denver_limo_express = "=ibus:375"   # Denver (Limo Express)
+las_vegas_nv_ae_bus = { name = "Las Vegas NV (AE bus)", lon = -115.1450, lat = 36.1680 }
+kingman_az_ae_bus = { name = "Kingman AZ (AE bus)", lon = -114.0530, lat = 35.1894 }
+phoenix_az_ae_bus = { name = "Phoenix AZ (AE bus)", lon = -112.0740, lat = 33.4480 }
+tucson_az_ae_bus = { name = "Tucson AZ (AE bus)", lon = -110.9700, lat = 32.2217 }
+el_paso_via_internacional_ae_bus = { name = "El Paso Via Internacional (AE bus)", lon = -106.4880, lat = 31.7580 }
+greeley_co_ae_bus = { name = "Greeley CO (AE bus)", lon = -104.7091, lat = 40.4233 }
+longmont_co_ae_bus = { name = "Longmont CO (AE bus)", lon = -105.1019, lat = 40.1672 }
+colorado_springs_co_ae_bus = { name = "Colorado Springs CO (AE bus)", lon = -104.8214, lat = 38.8339 }
+houston_telephone_rd_ae_bus = { name = "Houston Telephone Rd (AE bus)", lon = -95.3000, lat = 29.6950 }
+lake_charles_city_point = "=ibus:2707"   # Lake Charles (City Point)
+baton_rouge_la_ae_bus = { name = "Baton Rouge LA (AE bus)", lon = -91.1540, lat = 30.4515 }
+mobile_al_ae_bus = { name = "Mobile AL (AE bus)", lon = -88.0430, lat = 30.6950 }
+tallahassee_fl_ae_bus = { name = "Tallahassee FL (AE bus)", lon = -84.2807, lat = 30.4383 }
+lake_city_fl_ae_bus = { name = "Lake City FL (AE bus)", lon = -82.6390, lat = 30.1897 }
+
+[[trip]]
+id = "t52"
+route = "Las Vegas NM -> Denver (Nick screenshot Sep 23 2026; daily and boards at Las Vegas NM Amtrak per Nick)"
+days = "1111111"
+tz = "America/Denver"
+stops = ["las_vegas_amtrak_station 15:05", "trinidad_co_ae_bus 16:55", "walsenburg_co_ae_bus 17:25", "pueblo 18:05", "fountain_co_ae_bus 18:45", "colorado_springs 19:05", "denver_limo_express 20:15"]
+
+[[trip]]
+id = "t70"
+route = "Las Vegas NV -> El Paso (Nick screenshot Sep 18 2026; 09/29 departure; daily assumed; stop points approximate; times in Pacific: El Paso 6:29 AM MDT)"
+days = "1111111"
+tz = "America/Los_Angeles"
+stops = ["las_vegas_nv_ae_bus 18:00", "kingman_az_ae_bus 19:45", "phoenix_az_ae_bus 23:30", "tucson_az_ae_bus 25:30", "el_paso_via_internacional_ae_bus 29:29"]
+
+[[trip]]
+id = "t71"
+route = "Greeley -> El Paso (Nick screenshot Sep 18 2026; 09/29 departure; daily assumed; stop points approximate)"
+days = "1111111"
+tz = "America/Denver"
+stops = ["greeley_co_ae_bus 18:01", "longmont_co_ae_bus 19:00", "denver_limo_express 20:00", "colorado_springs_co_ae_bus 21:15", "pueblo 22:00", "las_vegas_amtrak_station 25:00", "el_paso_via_internacional_ae_bus 32:01"]
+
+[[trip]]
+id = "t72"
+disabled = true
+agency = "#AE bus"
+route = "Houston -> Lake City FL (DISABLED Sep 21 2026: Nick says the times are very inaccurate; re-enable with an authoritative schedule; Nick screenshot Sep 18 2026; 09/29 departure; daily assumed; Tallahassee 9:05 AM ET per Nick; Lake City 11:00 AM ET assumed)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["houston_telephone_rd_ae_bus 19:30", "lake_charles_city_point 22:35", "baton_rouge_la_ae_bus 24:55", "mobile_al_ae_bus 27:30", "tallahassee_fl_ae_bus 32:05", "lake_city_fl_ae_bus 34:00"]

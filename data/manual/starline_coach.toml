@@ -1,0 +1,22 @@
+agency = "StarLine Coach"
+
+[stops]
+new_york_chinatown_starline = { name = "New York Chinatown (StarLine)", lon = -73.9937, lat = 40.7138 }
+jacksonville_old_st_augustine_rd_starlin = { name = "Jacksonville Old St Augustine Rd (StarLine)", lon = -81.5480, lat = 30.2130 }
+orlando_w_colonial_emeralda_starline = { name = "Orlando W Colonial & Emeralda (StarLine)", lon = -81.4230, lat = 28.5530 }
+tampa_oceanic_oriental_supermarket_starl = { name = "Tampa Oceanic Oriental Supermarket (StarLine)", lon = -82.4590, lat = 28.0340 }
+savannah_1a_gateway_blvd_e_mcdonalds_sta = { name = "Savannah 1A Gateway Blvd E McDonalds (StarLine - I-95 exit 94)", lon = -81.2560, lat = 31.9760 }
+
+[[trip]]
+id = "t84"
+route = "StarLine NYC -> Florida (checkmybus Oct 2026; daily assumed; I-95 intermediate stops not timed)"
+days = "1111111"
+tz = "America/New_York"
+stops = ["new_york_chinatown_starline 18:00", "jacksonville_old_st_augustine_rd_starlin 35:15", "orlando_w_colonial_emeralda_starline 37:50", "tampa_oceanic_oriental_supermarket_starl 39:00"]
+
+[[trip]]
+id = "t85"
+route = "StarLine Florida -> NYC (checkmybus Oct 2026; daily assumed; I-95 intermediate stops not timed)"
+days = "1111111"
+tz = "America/New_York"
+stops = ["tampa_oceanic_oriental_supermarket_starl 11:30", "orlando_w_colonial_emeralda_starline 15:00", "jacksonville_old_st_augustine_rd_starlin 17:00", "savannah_1a_gateway_blvd_e_mcdonalds_sta 20:00", "new_york_chinatown_starline 35:00"]

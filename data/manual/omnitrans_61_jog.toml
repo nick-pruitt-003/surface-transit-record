@@ -1,0 +1,12 @@
+agency = "Omnitrans 61 + jog"
+
+[stops]
+ontario_mills_1090_ontario_mills_dr_702_ = { name = "Ontario Mills 1090 Ontario Mills Dr (702 Shuttles)", lon = -117.5461, lat = 34.0769 }
+fontana_futuranet_16803_valley_blvd_limo = { name = "Fontana Futuranet 16803 Valley Blvd (Limo Express)", lon = -117.4375, lat = 34.0700 }
+
+[[trip]]
+id = "t111"
+route = "Ontario Mills -> Limo Express Fontana (Nick allows it Sep 28 2026: walk 0.3 mi to 4th St at Franklin; weekday 61 at 18:48 -> Marygold at Juniper 19:13; then 0.5 mi in 7 min to make the 19:20; Google says 19:23; modelled as reaching the Limo stop 19:15 so the router's 5 min boarding margin allows the 19:20)"
+days = "1111100"
+tz = "America/Los_Angeles"
+stops = ["ontario_mills_1090_ontario_mills_dr_702_ 18:43", "fontana_futuranet_16803_valley_blvd_limo 19:15"]

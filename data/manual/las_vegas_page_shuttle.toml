@@ -1,0 +1,21 @@
+agency = "Las Vegas - Page Shuttle"
+
+[stops]
+las_vegas_treasure_island = { name = "Las Vegas Treasure Island", lon = -115.1719, lat = 36.1246 }
+page_burger_king_807_us_89 = { name = "Page Burger King (807 US-89)", lon = -111.4817, lat = 36.9078 }
+kanab_glazier_s_market = { name = "Kanab Glazier's Market", lon = -112.5273, lat = 37.0437 }
+st_george_ramada_1440_e_st_george_blvd = { name = "St George Ramada (1440 E St George Blvd)", lon = -113.5530, lat = 37.1095 }
+
+[[trip]]
+id = "t141"
+route = "LV -> Page shuttle (Nick screenshot Oct 1 2026; summer season 05:15 -> about 10:00 local; Page Arizona time = PDT in summer; daily assumed; one-way)"
+days = "1111111"
+tz = "America/Los_Angeles"
+stops = ["las_vegas_treasure_island 05:15", "page_burger_king_807_us_89 10:00"]
+
+[[trip]]
+id = "t142"
+route = "Page -> Kanab -> St George -> LV shuttle (Nick screenshots Oct 1 2026; summer; Page 14:30 Arizona = 15:30 here; Kanab 16:45 from its own leg (the Page leg says arr 17:15); St George 19:30 as published; LV 20:00 PDT = 21:00 here; daily assumed)"
+days = "1111111"
+tz = "America/Denver"
+stops = ["page_burger_king_807_us_89 15:30", "kanab_glazier_s_market 16:45", "st_george_ramada_1440_e_st_george_blvd 19:30", "las_vegas_treasure_island 21:00"]

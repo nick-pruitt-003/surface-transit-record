@@ -1,0 +1,35 @@
+agency = "Navajo Transit System"
+
+[stops]
+tuba_city_reg_health_care = "=hopi:1022"   # Tuba City Reg. Health Care
+basha_s = "=hopi:1052"   # Basha's
+coalmine_hapter_house = "=hopi:1025"   # Coalmine - hapter House
+dinnebito_junction_road_stop = "=hopi:1002"   # Dinnebito Junction - Road Stop
+hotevilla_c_store = "=hopi:1008"   # Hotevilla - C Store
+cellular_one = "=hopi:cell1"   # Cellular One
+hopi_cultural_center = "=hopi:1006"   # Hopi Cultural Center
+second_mesa_post_office = "=hopi:1014"   # Second Mesa Post Office
+hopi_health_care = "=hopi:1013"   # Hopi Health Care
+polacca_circle_m = "=hopi:1011"   # Polacca Circle M
+keams_canyon_c_store = "=hopi:1009"   # Keams Canyon C Store
+steamboat_canyon_dino_mart_store = "=navajo:1108"   # Steamboat Canyon - Dino Mart Store
+burnside_lok_aah_ni_teel_shopping_ctr = "=navajo:1001"   # Burnside - Lok' aah Ni Teel Shopping Ctr
+ganado_sage_memorial_hospital = "=navajo:10490"   # Ganado - Sage Memorial Hospital
+ganado_post_office = "=navajo:1033"   # Ganado - Post Office
+kinlichee_junction_road_stop = "=navajo:1010"   # Kinlichee Junction - Road Stop
+window_rock_bashas_parking_lot = "=navajo:1081"   # Window Rock - Bashas Parking Lot
+ft_defiance_navajo_transit_building = "=navajo:1144"   # Ft.Defiance - Navajo Transit Building
+
+[[trip]]
+id = "t131"
+route = "NTS 1 Tuba City -> Ft. Defiance (PDF rev 08/27/2026; Mon-Thu; Marathon Jeddito Holbrook Jct omitted; Old Cellone as Cellular One)"
+days = "1111000"
+tz = "America/Denver"
+stops = ["tuba_city_reg_health_care 06:00", "basha_s 06:10", "coalmine_hapter_house 06:29", "dinnebito_junction_road_stop 06:53", "hotevilla_c_store 07:00", "cellular_one 07:09", "hopi_cultural_center 07:18", "second_mesa_post_office 07:27", "hopi_health_care 07:33", "polacca_circle_m 07:39", "keams_canyon_c_store 07:55", "steamboat_canyon_dino_mart_store 08:32", "burnside_lok_aah_ni_teel_shopping_ctr 08:54", "ganado_sage_memorial_hospital 09:04", "ganado_post_office 09:06", "kinlichee_junction_road_stop 09:14", "window_rock_bashas_parking_lot 09:37", "ft_defiance_navajo_transit_building 09:57"]
+
+[[trip]]
+id = "t132"
+route = "NTS 1 Ft. Defiance -> Tuba City (PDF rev 08/27/2026; Mon-Thu; Marathon Jeddito Holbrook Jct omitted; Old Cellone as Cellular One)"
+days = "1111000"
+tz = "America/Denver"
+stops = ["ft_defiance_navajo_transit_building 14:45", "window_rock_bashas_parking_lot 15:15", "kinlichee_junction_road_stop 15:43", "ganado_post_office 15:50", "ganado_sage_memorial_hospital 15:54", "burnside_lok_aah_ni_teel_shopping_ctr 16:06", "steamboat_canyon_dino_mart_store 16:26", "keams_canyon_c_store 17:05", "polacca_circle_m 17:20", "hopi_health_care 17:26", "second_mesa_post_office 17:33", "hopi_cultural_center 17:42", "cellular_one 17:50", "hotevilla_c_store 18:00", "dinnebito_junction_road_stop 18:08", "coalmine_hapter_house 18:34", "basha_s 18:57", "tuba_city_reg_health_care 19:04"]

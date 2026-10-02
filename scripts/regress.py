@@ -204,7 +204,7 @@ def _():
     """Two halves of the same escape.
 
     Geography first. Route X is the second forward gate, and it starts at the Jefferson Lines stop in
-    Sheridan WY that data/extra_trips.csv defines by hand (JL 701, with JL 702 as the return). Drop those
+    Sheridan WY that data/manual/jefferson_lines.toml defines by hand (JL 701, with JL 702 as the return). Drop those
     rows and Wyoming has no Sheridan at all, x_forward.py's name match lands on Hollywood Sheridan Tri-Rail
     in Florida, and a route that costs 238.32 h is reported at 309.98. So assert the stop AND that something
     departs from it, because a stop definition with no service would pass the first half and still not start
@@ -218,7 +218,7 @@ def _():
     ordering instead, and this asserts nobody reintroduces the guard."""
     x = R.stops_matching('Sheridan WY Taco Bell')
     assert x, ('Sheridan WY is gone from the feed, so route X cannot start and the second forward gate is '
-               'measuring nothing. data/extra_trips.csv needs the JL 701 and JL 702 rows (7fd3c55).')
+               'measuring nothing. data/manual/jefferson_lines.toml needs the JL 701 and JL 702 trips (7fd3c55).')
     deps = sum(1 for c in range(len(R.dep)) if R.cfrom[c] == x[0])
     assert deps, f'{R.stop_name[x[0]]} exists as a stop but nothing departs from it, so no route starts there'
 
@@ -250,24 +250,25 @@ def _():
         assert got.endswith(want), (R.stop_name[s], got, want)
 
 
-@check('every extra_trips row departs at its own stated clock in its own tz column (zones are per row, not per agency)')
+@check("manual trips (data/manual) run on their own clocks: a tz line for the whole trip, else each stop's local zone")
 def _():
-    import csv, os
-    # ExtraFeed numbers trips t{k} over every csv row, disabled '#' rows included
     ex = next(f for f in R.feeds if f.name == 'extra'); bad = []; n = 0
-    for k, r in enumerate(csv.DictReader(open(os.path.join(tr.DATA_DIR, 'extra_trips.csv'), encoding='utf-8'))):
-        t = ex.trips.get(f't{k}')
-        if t is None: continue
-        n += 1; z = str(ex._tz_for(None, t))
-        if z != r['tz']: bad.append((r['agency'], r['route'][:40], r['tz'], z))
-    assert n > 100 and not bad, (n, bad[:5])
-    # and end to end: AE bus Las Vegas NV leaves at its stated Pacific clock, not an hour early
+    for tid, t in ex.trips.items():
+        for _, sid, _, _ in t['stops']:
+            n += 1; z = ex._tz_for(sid, t)
+            want = t['tz'] if t.get('tz') else ZoneInfo(tr._tz_at(*ex.stops[sid][2:4]) or 'UTC')
+            if str(z) != str(want): bad.append((t['route'][:40], ex.stops[sid][1], str(z), str(want)))
+    assert n > 500 and not bad, (n, bad[:5])
+    # end to end, one of each kind: AE bus Las Vegas NV (tz line, Pacific) leaves at its written clock, and
+    # Limo Express LXUS 2101 (local clocks) reaches Deming at 06:00 Mountain after Willcox 03:00 Arizona
     fi = R.feeds.index(ex)
+    def conns(tid): return sorted((i for i, c in enumerate(R.ctrip) if c[0] == fi and c[1] == tid), key=lambda i: R.dep[i])
     tid = next(k for k, t in ex.trips.items() if t['agency'] == 'AE bus' and 'Las Vegas NV' in t['route'])
-    first = ex.trips[tid]['stops'][0][3]   # seconds after midnight, as written in the row
-    deps = sorted(R.dep[i] for i, c in enumerate(R.ctrip) if c[0] == fi and c[1] == tid)
-    loc = datetime.fromtimestamp(deps[0], ZoneInfo('America/Los_Angeles'))
-    assert loc.hour * 3600 + loc.minute * 60 == first, (loc, first)
+    loc = datetime.fromtimestamp(R.dep[conns(tid)[0]], ZoneInfo('America/Los_Angeles'))
+    assert loc.hour * 3600 + loc.minute * 60 == ex.trips[tid]['stops'][0][3], loc
+    tid = next(k for k, t in ex.trips.items() if t['route'].startswith('LXUS 2101'))
+    c = conns(tid); dem = next(i for i in c if R.stop_name[R.cto[i]] == 'Deming')
+    assert R.fmt_time(R.arr[dem], R.cto[dem]).endswith('06:00'), R.fmt_time(R.arr[dem], R.cto[dem])
 
 
 @check('prefix-shared scoring (finish_many / _finish_block) equals one-at-a-time _finish on all 24 orders of AZ UT CO NM')

@@ -1,0 +1,24 @@
+agency = "702 Shuttles"
+
+[stops]
+las_vegas_dean_martin_blue_diamond_702_s = { name = "Las Vegas Dean Martin Blue Diamond (702 Shuttles)", lon = -115.1868, lat = 36.0414 }
+jean_nv_161_702_shuttles = { name = "Jean NV 161 (702 Shuttles)", lon = -115.3238, lat = 35.7788 }
+primm_bus_stop_702_shuttles = { name = "Primm Bus Stop (702 Shuttles)", lon = -115.3886, lat = 35.6122 }
+baker_blvd_702_shuttles = { name = "Baker Blvd (702 Shuttles)", lon = -116.0717, lat = 35.2653 }
+newberry_springs_702_shuttles = { name = "Newberry Springs (702 Shuttles)", lon = -116.6886, lat = 34.8269 }
+barstow_east_main_st_1611_702_shuttles = { name = "Barstow East Main St 1611 (702 Shuttles)", lon = -117.0034, lat = 34.8958 }
+victorville_15445_palmdale_rd_702_shuttl = { name = "Victorville 15445 Palmdale Rd (702 Shuttles)", lon = -117.3606, lat = 34.5220 }
+hesperia_main_st_702_shuttles = { name = "Hesperia Main St (702 Shuttles)", lon = -117.3009, lat = 34.4264 }
+fontana_3892_sierra_ave_ampm_702_shuttle = { name = "Fontana 3892 Sierra Ave ampm (702 Shuttles)", lon = -117.4379, lat = 34.1825 }
+ontario_mills_1090_ontario_mills_dr_702_ = { name = "Ontario Mills 1090 Ontario Mills Dr (702 Shuttles)", lon = -117.5461, lat = 34.0769 }
+claremont_indian_hill_blvd_702_shuttles = { name = "Claremont Indian Hill Blvd (702 Shuttles)", lon = -117.7189, lat = 34.0960 }
+pomona_gillette_rd_702_shuttles = { name = "Pomona Gillette Rd (702 Shuttles)", lon = -117.7800, lat = 34.0800 }
+el_monte_valley_blvd_702_shuttles = { name = "El Monte Valley Blvd (702 Shuttles)", lon = -118.0290, lat = 34.0736 }
+los_angeles_main_and_7th_702_shuttles = { name = "Los Angeles Main and 7th (702 Shuttles)", lon = -118.2537, lat = 34.0433 }
+
+[[trip]]
+id = "t109"
+route = "Las Vegas -> Los Angeles (Nick screenshot Sep 28 2026; daily assumed; stop points approximate)"
+days = "1111111"
+tz = "America/Los_Angeles"
+stops = ["las_vegas_dean_martin_blue_diamond_702_s 15:15", "jean_nv_161_702_shuttles 15:35", "primm_bus_stop_702_shuttles 15:50", "baker_blvd_702_shuttles 16:35", "newberry_springs_702_shuttles 17:10", "barstow_east_main_st_1611_702_shuttles 17:27", "victorville_15445_palmdale_rd_702_shuttl 18:04", "hesperia_main_st_702_shuttles 18:11", "fontana_3892_sierra_ave_ampm_702_shuttle 18:27", "ontario_mills_1090_ontario_mills_dr_702_ 18:37", "claremont_indian_hill_blvd_702_shuttles 18:52", "pomona_gillette_rd_702_shuttles 18:57", "el_monte_valley_blvd_702_shuttles 19:10", "los_angeles_main_and_7th_702_shuttles 19:50"]
