@@ -106,13 +106,18 @@ Barstow, walking to Barstow Station for the 12:55 Greyhound, reaches the same Sa
 50 min later for the same finish: 234.75 h. It is **X with the West moved to the end**:
 
 - **South first:** Primm Thu 10:50 → Barstow → San Bernardino → Greyhound across Arizona and New Mexico to Oklahoma City
-  (Fri 21:15) → Memphis → New Orleans → Lafayette → Tallahassee → Jacksonville → **Silver Meteor** → Acela → Boston.
+  (Fri 21:15) → Memphis → New Orleans → (20:50 via Biloxi) Mobile → (03:45) Tallahassee → Jacksonville → **Silver Meteor** → Acela → Boston.
 - **New England:** Dartmouth Coach to Hanover → Advance Transit to White River Junction (VT) → Greyhound to Boston →
   Concord Coach to Portland ME → overnight back through Boston to New York.
 - **X's tail, mostly:** Greyhound New York → Indianapolis (PA, WV, OH) → Louisville and back → South Bend (Michigan
   via a Transpo bus near the line) → Chicago → Minneapolis → Fargo → Sioux Falls → Kansas City.
 - **The West last:** Kansas City → Denver → Greyhound over I-70 and through Salt Lake and Boise to Pasco → Spokane →
   Billings → **JL 702 into Sheridan** for Wyoming, Sun 06:35.
+
+The Gulf leg is pinned through New Orleans and Mobile. The router's tie was New Orleans 18:00 west to Lafayette to
+board the Orlando bus at 22:35; Nick's booking of the same day (Oct 2) gives the 20:50 via Biloxi to Mobile and the
+03:45 from Mobile, the same Orlando bus to the same Tallahassee 11:00, with no backtrack and bookable as one Greyhound
+itinerary. Mississippi is already collected on the Memphis -> New Orleans bus. Equal time; chosen for bookability.
 
 Risks: two hand-entered legs (Dartmouth Coach 14:30, JL 702), several 8–10 minute connections, and the Advance
 Transit link at Hanover only runs on weekdays (it falls on a Monday here). Wyoming is only reached by the final

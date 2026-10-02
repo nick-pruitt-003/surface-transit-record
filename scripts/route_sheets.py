@@ -85,7 +85,8 @@ if __name__ == '__main__':
     c = pickle.load(open('../out/res_starttest.pkl', 'rb'))
     sheet(wb, 'Control 237.24', *legs_for(R.stop_name.index(c['start']), c['t0'], c['order']))
     lv = R.stops_matching('Primm Bus Stop (702 Shuttles)')[0]   # 702 Shuttles 10:50 (Oct 2 screenshot): 50 min better than the Las Vegas 10:00 Greyhound
-    rx = [st(a) for a in 'NV,CA,AR,TN,LA,FL,VT,ME,KY,MI,ND,SD,OR,WY'.split(',')]
+    # pin New Orleans and Mobile: Greyhound Memphis -> New Orleans, the 20:50 via Biloxi, then the 03:45 Orlando bus. Ties the Lafayette backtrack, and is bookable
+    rx = [st(a) if len(a) == 2 else a for a in 'NV,CA,AR,TN,@New Orleans Bus Station,LA,@Mobile Bus Station,FL,VT,ME,KY,MI,ND,SD,OR,WY'.split(',')]
     sheet(wb, 'RX 234.75', *legs_for(lv, datetime(2026, 9, 23, 23, 0, tzinfo=ZoneInfo('America/Los_Angeles')).timestamp(), rx, end=st('WY'), fixed=False))
     mex = [x for x in c['order'] if x not in (st('VT'), st('ME'))] + ['@Hanover (Hanover Inn)', '@White River Junction Bus Station', '@Boston South Station', st('ME')]
     sheet(wb, 'MEX 237.75', *legs_for(R.stop_name.index(c['start']), c['t0'], mex, end=st('ME'), fixed=False))
