@@ -1,0 +1,12 @@
+agency = "CoachRun"
+
+[stops]
+nashville_nolensville_pike = { name = "Nashville 4225 Nolensville Pike (K&S World Market)", lon = -86.7257, lat = 36.0752 }
+new_york_127_e_broadway = { name = "New York 127 E Broadway", lon = -73.9922, lat = 40.7141 }
+
+# Local clocks per stop (no tz line). CoachRun (Nick), schedule code CHR02042.
+[[trip]]
+route = "CHR02042 Nashville -> New York"
+note = "Nick screenshot Oct 1 2026: 2:30 PM Nashville -> 7:00 AM +1 New York, 16h30m; no intermediate stops shown, so only TN and NY are collected; daily assumed"
+days = "1111111"
+stops = ["nashville_nolensville_pike 14:30", "new_york_127_e_broadway 07:00"]
