@@ -1509,3 +1509,62 @@ array for connection array. Earlier sections that say "extra_trips row" mean an 
 Same evening: whole-trip rejection of implausible timetables became stop repair (104 real trips back, 24 placeholder
 timetables still rejected), the stale ibus copies of RedCoach and Limousine Express were dropped in favour of
 verified trips from their sites, and the control still evaluates and replays as before. See `docs/regions.md`.
+
+## 28. Oct 1 (night): new shapes, and route X taken apart
+
+Full searches on the corrected data (repairs, per-stop zones, new feeds), one at a time, 16 workers:
+
+| run | idea | result |
+|---|---|---|
+| A | Pasco WA start (the 26.6 h W7 region opening) -> Portland ME | 251.2 h; the search moved the start to Wheeling and drifted to a control-like shape with a Boston -> Hanover -> WRJ -> Boston Vermont round trip |
+| B | Pasco WA -> VT line | 284.8 h (Coeur d'Alene start) |
+| X re-evaluated | route X's own order (Sheridan -> MS line) on today's data | **238.3 h**, still under the record; its Southwest now runs SLC 06:00 -> 702 -> Victorville -> Chief |
+
+Starting in the West loses even with the best West opening: the Northwest first means backtracking across the
+north-central states, which the control's westward sweep avoids.
+
+### X as head + tail (Nick's decomposition)
+
+X is the only record-beating route with a real tail out of Vermont, so the tail was solved on its own first.
+
+- **Tail** (from Hanover, owing WV OH IN KY MI IL WI MN ND SD IA NE MO AR TN MS): fixed at X's clock it cannot beat
+  X (Tue 21:18 at the MS line); with a free clock over a week the best is still **Sat 03:00 Dartmouth Coach ->
+  Boston -> Regional -> Harrisburg 14:50 Greyhound (Wheeling) -> Indianapolis -> Louisville and back -> Detroit ->
+  Chicago -> Minneapolis -> Fargo -> Sioux Falls -> Kansas City -> Tulsa or Fayetteville -> Memphis -> walk to MS,
+  91.4 h**. Thursday departures run 92-103 h. Nick's bet that the tail has no saving was right.
+- The tail collects 25 states (its 16 plus CT KS MA NH NJ NY OK PA RI in passing), so the **head owes 22**: AL AZ CA
+  CO DE FL GA ID LA MD ME MT NC NM NV OR SC TX UT VA WA WY, with VT free by reaching Hanover by Sat 02:30.
+- **Head** (free start, finish Hanover): kept **Sheridan**, 141.7 h, 2 h under X's front.
+- **Joined and evaluated as one route: 238.1 h**, Sheridan Sat 22:20 -> MS line Tue 21:26. The head's 2 h do not
+  carry through: the head must still catch the **Silver Meteor at Jacksonville, Thu 16:11**, which fixes Boston
+  Friday, Hanover 22:00 and the Saturday 03:00 tail. For this shape the Meteor is the binding anchor; a better head
+  has to catch it a day earlier or not need it.
+
+### Marginal cost per state (drop the state, re-time the same route)
+
+Control: ME 5.0 h, VT 4.3 h, FL 1.5 h, every other state 0.0. X: 0.0 for every state. Zero is not "easy": once-daily
+anchors absorb the saving (drop KY from X and it still waits in Indianapolis for the 10:50 Barons). The states
+shapes bend around are ME and VT (round trips), WY (sparse; X starts there to get it free), MS (on foot from
+Memphis) and, in X, KY (Louisville round trip), then AR (Conway) and CA (the Barstow depot).
+
+### Corridors checked and why they are unused
+
+- **Greyhound Baltimore 05:45 -> Washington -> Frederick -> Morgantown WV 12:05 -> Pittsburgh 13:30**, and eastbound
+  **Cleveland 15:10 -> Pittsburgh -> Morgantown 20:25 -> Washington 01:05 -> Baltimore 02:00**. Unused because the
+  control starts in WV and X's tail gets WV with OH and IN on one overnight (Harrisburg 14:50 via Wheeling); the tail
+  search could route through Baltimore and found it a day slower. The eastbound overnight (OH PA WV MD, DC before
+  dawn) fits shapes that cross from the Great Lakes to the Mid-Atlantic.
+- **North entries to New York**: Buffalo and Cleveland have plenty (Greyhound, Flix, NY Trailways, Empire Service,
+  Lake Shore); Nashville had none until today's Wonder Bus (13:15/14:00 -> I-81 -> NYC 07:00, TN VA WV MD PA NY
+  overnight) and CoachRun (14:30 -> NYC 07:00, endpoints only) entries in `data/manual/`. A head that enters New
+  England from the west lets the tail collect the corridor states and skips the Meteor anchor. Not yet run.
+
+### Open
+
+- **Cody ending** (Jefferson Fargo 15:15 -> Billings 00:40, Express Arrow Billings 04:45 -> Cody 06:40, both in the
+  data): ND MT WY at the very end, so the head need not start in Sheridan. A full search from a crude seed is running;
+  if it does not come close, build it like X: fix the Fargo -> Cody ending, solve the tail into Fargo by Monday
+  15:10, then the head.
+- North-entry head via Nashville -> NYC, as a full Sheridan -> MS search.
+- Spawned search workers outlive a killed parent on Windows; a fix (watchdog on the parent) is written in
+  `time_search.py` but not yet verified, so not committed.
