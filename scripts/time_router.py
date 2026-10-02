@@ -654,7 +654,10 @@ def load_feeds():
     feeds = [
         Feed(os.path.join(DATA_DIR, 'flix_gtfs.zip'), 'flix', 'utc', 'dates'),
         Feed(os.path.join(DATA_DIR, 'amtrak_gtfs.zip'), 'amtrak', 'agency', 'dates', max_speed=220),
-        Feed(os.path.join(DATA_DIR, 'intercity_merged_gtfs.zip'), 'ibus', 'infer', 'weekday', skip_agencies=('Greyhound-us', 'FlixBus-us', 'Concord Coach Lines', 'Omnibus Express')),
+        Feed(os.path.join(DATA_DIR, 'intercity_merged_gtfs.zip'), 'ibus', 'infer', 'weekday', skip_agencies=('Greyhound-us', 'FlixBus-us', 'Concord Coach Lines', 'Omnibus Express',
+                                                                                                  # stale: RedCoach's site (Oct 1 2026) runs Dallas -> Houston 12:35, 16:25, 18:55, the feed
+                                                                                                  # 09:30, 10:00, 16:00, 18:00; verified departures are extra_trips rows instead
+                                                                                                  'RedCoach')),
     ]
     # carriers whose merged-feed times are known to be Eastern (Amtrak-sourced thruway)
     feeds[2].agency_tz['BeeLine Express-Village Travel'] = ZoneInfo('America/New_York')
