@@ -6,6 +6,8 @@ fort_yates = "=ibus:1958"   # Fort Yates
 mclaughlin = "=ibus:881"   # McLaughlin
 mandan_spirit_of_life = { name = "Mandan (Spirit of Life)", lon = -100.8890, lat = 46.8270 }
 bismarck = "=ibus:289"   # Bismarck
+eagle_butte = { name = "Eagle Butte SD (Cheyenne River Transit)", lon = -101.2343, lat = 45.0004 }
+grand_river_casino = { name = "Mobridge Grand River Casino (hotel lobby)", lon = -100.5065, lat = 45.5616 }
 
 [[trip]]
 id = "t73"
@@ -79,7 +81,23 @@ stops = ["mobridge 14:00", "mclaughlin 15:00"]
 
 [[trip]]
 id = "t83"
+disabled = true   # Nick's Oct 2 2026 sheet shows Route 12 as the Eagle Butte - Bismarck shuttle below, not this loop
 route = "SRPT 12 Fort Yates loop"
 days = "1111000"
 tz = "America/Chicago"
 stops = ["fort_yates 12:00", "mclaughlin 12:45", "mobridge 14:30", "fort_yates 15:40"]
+
+# Route 12, Eagle Butte - Bismarck shuttle, Mondays and Thursdays (Nick's sheet, Oct 2 2026). Written in Central with
+# a tz line: the Grand River Casino sits west of the Missouri in Corson County, which is on Mountain time, but the
+# sheet gives its times in Central; Eagle Butte's 9:30 / 6:30 PM MT are 10:30 / 7:30 PM here.
+[[trip]]
+route = "SRPT 12 Eagle Butte 09:30 MT -> Mobridge (Grand River Casino) -> Fort Yates -> Bismarck 14:50"
+days = "1001000"
+tz = "America/Chicago"
+stops = ["eagle_butte 10:30", "grand_river_casino 12:00/12:30", "fort_yates 13:35", "bismarck 14:50"]
+
+[[trip]]
+route = "SRPT 12 Bismarck 14:15 -> Fort Yates -> Mobridge (Grand River Casino) -> Eagle Butte 18:30 MT"
+days = "1001000"
+tz = "America/Chicago"
+stops = ["bismarck 14:15", "fort_yates 16:30", "grand_river_casino 17:30/18:00", "eagle_butte 19:30"]
