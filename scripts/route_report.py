@@ -112,5 +112,10 @@ if __name__ == '__main__':
     j = pickle.load(open('../out/shapes/join.pkl', 'rb'))
     out['X'] = report('X (Sheridan -> Mississippi line at Southaven)', R.stop_name.index(j['start']), j['t0'], j['order'], end=st('MS'),
                       note='HANDOFF 28: route X rebuilt as the fastest head (22 states, to Hanover) joined to the fastest tail.')
+    # RX: found by the unguided sweep (run 01, 240.0) and a focused search (Oct 2 2026): X with the West at the end.
+    lv = R.stops_matching('Las Vegas Bus Terminal')[0]
+    rx = [st(a) for a in 'NV,CA,AR,TN,LA,FL,VT,ME,KY,MI,ND,SD,OR,WY'.split(',')]
+    out['RX'] = report('RX (Las Vegas -> Sheridan WY)', lv, datetime(2026, 9, 23, 23, 0, tzinfo=ZoneInfo('America/Los_Angeles')).timestamp(),
+                       rx, end=st('WY'), fixed=False, note='docs/sweep.md: the unguided sweep found its family (240.0); a focused search moved the start to Las Vegas.')
     print('\n## Summary\n')
     for k, v in out.items(): print(f'- {k}: {v:.2f} h')

@@ -1,6 +1,6 @@
 # Every route at or under the record
 
-Record: **238.83 h** (White River Junction → Huntington). Five of our routes beat it, all re-evaluated on the
+Record: **238.83 h** (White River Junction → Huntington). Six of our routes beat it, all re-evaluated on the
 corrected data of Oct 1 2026 (repaired trips, per-stop time zones, the TOML manual trips, new feeds). The full
 leg tables, waits and connection lists are generated into [`routes_data.md`](routes_data.md) by
 `scripts/route_report.py`; rerun it whenever the data changes.
@@ -8,6 +8,7 @@ leg tables, waits and connection lists are generated into [`routes_data.md`](rou
 | route | hours | start | finish | family |
 |---|---|---|---|---|
 | **Wheeling** | **234.24** | Wheeling WV, Ohio Coach 04:00 (03:00 verified: 235.24) | VT line from Hanover, Sat 22:14 | WV → VT |
+| **RX** | **235.58** | Las Vegas NV, Thu 10:00 | Sheridan WY (JL 702 from Billings), Sun 06:35 | X with the West at the end; found by the unguided sweep |
 | **Control** | **237.24** | Huntington WV, Thu 01:00 | VT line from Hanover, Sat 22:14 | WV → VT |
 | **MEX** | **237.75** | Huntington WV, Tue 01:00 | Portland ME, Thu 22:45 | WV → ME |
 | **X_TOL** | **237.91** | Sheridan WY, Thu 22:20 | VT line from Hanover, Sun 22:14 | WY → VT |
@@ -96,3 +97,22 @@ Boston → Regional → Harrisburg 14:50 Greyhound via Wheeling → Indianapolis
 Chicago → Minneapolis → Fargo → Sioux Falls → Kansas City → Fayetteville → Memphis → walk to the MS line, Tue 21:26.
 Built today as the fastest 22-state head joined to the fastest tail (HANDOFF 28), and still the only record route
 with a real tail out of Vermont.
+
+### RX, 235.58 h (NV → WY), found Oct 2 by the unguided sweep
+
+Not designed by anyone: the overnight sweep (`docs/sweep.md`) found its family from a mechanical seed at 240.0 h, and
+a focused search moved the start to Las Vegas. It is **X with the West moved to the end**:
+
+- **South first:** Las Vegas Thu 10:00 → San Bernardino → Greyhound across Arizona and New Mexico to Oklahoma City
+  (Fri 21:15) → Memphis → New Orleans → Lafayette → Tallahassee → Jacksonville → **Silver Meteor** → Acela → Boston.
+- **New England:** Dartmouth Coach to Hanover → Advance Transit to White River Junction (VT) → Greyhound to Boston →
+  Concord Coach to Portland ME → overnight back through Boston to New York.
+- **X's tail, mostly:** Greyhound New York → Indianapolis (PA, WV, OH) → Louisville and back → South Bend (Michigan
+  via a Transpo bus near the line) → Chicago → Minneapolis → Fargo → Sioux Falls → Kansas City.
+- **The West last:** Kansas City → Denver → Greyhound over I-70 and through Salt Lake and Boise to Pasco → Spokane →
+  Billings → **JL 702 into Sheridan** for Wyoming, Sun 06:35.
+
+Risks: two hand-entered legs (Dartmouth Coach 14:30, JL 702), several 8–10 minute connections, and the Advance
+Transit link at Hanover only runs on weekdays (it falls on a Monday here). Wyoming is only reached by the final
+Billings → Sheridan run, since the Denver → Pasco Greyhound takes I-70, not Wyoming; a West taken the other way round
+(Denver → Cheyenne → Billings → Spokane → Salt Lake) is being searched.
