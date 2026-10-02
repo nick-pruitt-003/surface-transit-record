@@ -270,6 +270,18 @@ def _():
     assert loc.hour * 3600 + loc.minute * 60 == first, (loc, first)
 
 
+@check('prefix-shared scoring (finish_many / _finish_block) equals one-at-a-time _finish on all 24 orders of AZ UT CO NM')
+def _():
+    import itertools
+    t0 = datetime(2026, 9, 24, tzinfo=ZoneInfo('America/Denver')).timestamp()
+    four = [R.state_names.index(n) for n in ('Arizona', 'Utah', 'Colorado', 'New Mexico')]
+    S = Search(R, ts.FREE, t0, [], 1, [s for s in range(N_STATES) if s not in four])
+    ts._R, ts._START, ts._T0, ts._SELF, ts._END, ts._BASE = R, ts.FREE, t0, S, None, None
+    perms = [list(p) for p in itertools.permutations(four)]
+    a, b = ts._finish_block(perms), [ts._finish(o) for o in perms]
+    assert a == b and any(x != float('inf') for x in a), [(i, x, y) for i, (x, y) in enumerate(zip(a, b)) if x != y][:3]
+
+
 print()
 for name, ok, info in results: print(('PASS ' if ok else 'FAIL ') + name + ('' if ok else '\n     ' + info))
 print(f'\n{sum(ok for _, ok, _ in results)}/{len(results)} passed')

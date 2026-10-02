@@ -35,6 +35,21 @@ def _finish(order):
     f, m = _R.finish(st, _T0, o, base, profile=True)
     return f + TIE_W * (m - _T0) if f is not None else float('inf')
 
+def _finish_block(orders):
+    """_finish for a block of orders, sharing scan layers across their common prefixes (TimeRouter.finish_many).
+    Orders should be in lexicographic order, as enumerate_all hands them out. A free start groups by first state,
+    since that state is where the route starts rather than a layer."""
+    out = [float('inf')] * len(orders); groups = {}
+    for i, o in enumerate(orders):
+        if _END is not None and (not o or o[-1] != _END): continue
+        st, rest = _src(_START, o)
+        if st is None: continue
+        groups.setdefault(o[0] if _START == FREE else None, (st, []))[1].append((i, rest))
+    for st, items in groups.values():
+        for (i, _), (f, m) in zip(items, _R.finish_many(st, _T0, [r for _, r in items])):
+            if f is not None: out[i] = f + TIE_W * (m - _T0)
+    return out
+
 def _elapsed_eval(order):
     """Worker side of enumerate_all: hours from the first bus to the finish, routing from the window start.
     inf when the route does not finish or does not cover every state."""
@@ -493,10 +508,15 @@ class Search:
         perms = [self.prefix + list(p) + tail for p in itertools.permutations(ow)]
         print(f'exhaustive: scoring all {len(perms)} orders of {len(ow)} owed states', flush=True)
         self.live(force=True, phase='exhaustive', note=f'scoring all {len(perms)} orders')
-        fs, es = [], []
+        # contiguous blocks, so each worker's orders share prefixes; about four blocks per worker for balance
+        nb = max(1, min(len(perms), 4 * max(1, self.workers)))
+        blocks = [perms[i * len(perms) // nb:(i + 1) * len(perms) // nb] for i in range(nb)]
+        fs = [f for b in (pool.map(_finish_block, blocks) if pool else map(_finish_block, blocks)) for f in b]
+        memo = self.__dict__.setdefault('_memo', {}); key = (int(self.start), self.t0)
+        memo.update(((key, tuple(o)), f) for o, f in zip(perms, fs)); self._new = self.__dict__.get('_new', 0) + len(perms)
+        es = []
         for i in range(0, len(perms), 2000):
             chunk = perms[i:i + 2000]
-            fs += self.score(chunk, pool)
             es += pool.map(_elapsed_eval, chunk) if pool else [_elapsed_eval(o) for o in chunk]
         pick = [i for key in (fs, es) for i in np.argsort(key)[:top] if key[i] < float('inf')]
         ranked = [perms[i] for i in dict.fromkeys(pick)]
@@ -584,7 +604,9 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--start', required=True, help='start stop name, or "free" / "free:WV" to begin anywhere in the first state of the order'); ap.add_argument('--at', required=True); ap.add_argument('--tz', default='America/Denver')
     ap.add_argument('--seed', help='result pickle'); ap.add_argument('--seed-states', help='comma list of state abbreviations (or @stop pins) in visiting order'); ap.add_argument('--prefix', default='')
-    ap.add_argument('--budget', type=float, default=900); ap.add_argument('--workers', type=int, default=1)
+    ap.add_argument('--budget', type=float, default=900)
+    # default 1 (the Mac is shared); a dedicated machine sets BUS48_WORKERS, e.g. 16 on the 24-thread Windows box
+    ap.add_argument('--workers', type=int, default=int(os.environ.get('BUS48_WORKERS', 1)))
     ap.add_argument('--days', type=int, default=20); ap.add_argument('--out', required=True)
     ap.add_argument('--done', default='', help='comma list of state abbreviations already collected before --start')
     ap.add_argument('--seed-pins', action='store_true', help='keep the seed pickle\'s @stop pins (by default only states are kept)')

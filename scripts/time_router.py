@@ -518,6 +518,30 @@ class TimeRouter:
         # has no layers to average; its profile is just the finish
         return (f, sum(mins) / len(mins) if mins else f) if profile else f
 
+    def finish_many(self, start_stop, start_time, orders):
+        """_finish_fast(..., profile=True) for each order, sharing layers across common prefixes.
+
+        Orders sorted lexicographically (itertools.permutations already is) share long prefixes: all 720 orders
+        of six states need 1956 layer scans this way against 4320 one by one. A stack holds the layers of the
+        previous order; each order rescans only from where it first differs. Same numbers as one at a time."""
+        if self._fast is None: return [self.finish(start_stop, start_time, o, profile=True) for o in orders]
+        s0 = np.atleast_1d(np.asarray(start_stop, dtype=np.int64))
+        root = (s0, np.full(len(s0), float(start_time)), np.full(len(s0), -1, dtype=np.int32))
+        stack = []; out = []   # stack[i] = (target, layer after it or None when nothing survives, min time)
+        for o in orders:
+            k = 0
+            while k < len(stack) and k < len(o) and stack[k][0] == o[k]: k += 1
+            del stack[k:]
+            while len(stack) < len(o) and (not stack or stack[-1][1] is not None):
+                lab = stack[-1][1] if stack else root
+                s, t, tr = self._scan_fast(*lab, o[len(stack)])
+                stack.append((o[len(stack)], (s, t, tr), float(t.min())) if len(s) else (o[len(stack)], None, None))
+            if any(stack[i][1] is None for i in range(len(o))): out.append((None, None)); continue
+            if not o: out.append((float(start_time), float(start_time))); continue
+            mins = [stack[i][2] for i in range(len(o))]
+            out.append((mins[-1], sum(mins) / len(mins)))
+        return out
+
     def _finish_py(self, start_stop, start_time, order, base=None):
         """Finish time only. base=(order, outs) lets a shared prefix reuse cached layer labels."""
         labels = {int(s): (start_time, None) for s in np.atleast_1d(np.asarray(start_stop, dtype=np.int64))}; k = 0
