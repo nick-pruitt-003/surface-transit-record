@@ -4,6 +4,12 @@ agency = "Salt Lake Express"
 salt_lake_city_airport = "=ibus:2060"   # Salt Lake City (Airport)
 saint_george_bluff_st_office = "=ibus:2067"   # Saint George (Bluff St Office)
 las_vegas_airport = "=ibus:735"   # Las Vegas (Airport)
+slc_airport = "Salt Lake City (Airport)"
+stg_bluff = "Saint George (Bluff St Office)"
+stg_sun_river = "Saint George (Sun River)"
+beaver_dam = "Beaver Dam"
+mesquite_virgin_river = "Mesquite (Virgin River)"
+lv_airport = "Las Vegas (Airport)"
 
 [[trip]]
 id = "t129"
@@ -11,3 +17,17 @@ route = "SLC Airport -> St George -> Las Vegas Airport (Nick screenshots Oct 1 2
 days = "1111111"
 tz = "America/Denver"
 stops = ["salt_lake_city_airport 06:00", "saint_george_bluff_st_office 11:30/12:00", "las_vegas_airport 14:10"]
+
+# Local clocks per stop (no tz line): Utah Mountain daylight, Beaver Dam Arizona, Mesquite and Las Vegas Pacific.
+# 7021's stops between the airport and St George are all in Utah and left out.
+[[trip]]
+route = "SLE 7021 Salt Lake City (Airport) 04:45 -> Saint George (Bluff St Office) 10:20"
+note = "Nick screenshot Oct 1 2026 (Google, Salt Lake Express); daily assumed"
+days = "1111111"
+stops = ["slc_airport 04:45", "stg_bluff 10:20"]
+
+[[trip]]
+route = "SLE 8035 Saint George (Bluff St Office) 10:30 -> Las Vegas (Airport) 11:40"
+note = "Nick screenshot Oct 1 2026 (Salt Lake Express site, local times); daily assumed"
+days = "1111111"
+stops = ["stg_bluff 10:30", "stg_sun_river 10:35", "beaver_dam 10:05", "mesquite_virgin_river 10:15", "lv_airport 11:40"]
