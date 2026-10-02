@@ -1,0 +1,9 @@
+[
+  {"name": "RX / St George -> Sheridan", "start": ["Saint George", "Las Vegas", "Primm"], "finish": ["Sheridan WY"]},
+  {"name": "New Orleans", "start": ["New Orleans Bus Station"], "finish": []},
+  {"name": "Sheridan -> Nebraska (Missoula/Spearfish family)", "start": ["Sheridan WY", "Spearfish", "Gillette"], "finish": ["Omaha", "Nebraska bank", "7th & Walnut"]},
+  {"name": "Fargo / Moorhead start", "start": ["Fargo", "Moorhead"], "finish": []},
+  {"name": "Portland ME -> Arkansas (sweep 2 run 13)", "start": ["Portland, ME"], "finish": ["Forrest City", "Arkansas"]},
+  {"name": "Hanover -> Mississippi (sweep 2 run 07)", "start": ["Hanover"], "finish": ["MS state line", "HOLMES", "AIRWAYS"]},
+  {"name": "Weirton -> Portland ME (sweep 2 run 15)", "start": ["Weirton"], "finish": ["Portland"]}
+]
