@@ -74,6 +74,22 @@ Each family got a 60-minute search of its own, seeded from its sweep run (same e
 So the sweep's best family became the second-fastest route we have, and a different one from anything designed by
 hand. The New Orleans family is real (three seeds converged on it) but about 5 h behind the record.
 
+## Focused follow-ups, round 2 (Oct 2 midday)
+
+The four sweep families without Ohio Coach (Nick's rule: skip it) and not yet focused, one hour each at most, seeded
+from the sweep run with its start and finish states (`out/focus/queue.sh`).
+
+| family | sweep | focused | notes |
+|---|---|---|---|
+| **Missoula -> Omaha** | 254.6 | **243.9** | start moved to Spearfish SD Thu 18:45 (Jefferson's I-90 bus: SD WY MT in one ride to Billings), West, then the Southwest Chief San Bernardino -> Newton and BeeLine Newton -> OKC -> Dallas -> Houston -> Tallahassee, Silver Meteor, New England, back west via Memphis (Holmes walk-in) and Kalamazoo, Empire Builder to Fargo, finish Omaha Sun 23:40. Under 245: worth optimising. Ran before the PRE trips existed. |
+| Perry OK -> Brattleboro VT | 254.1 | 250.9 | |
+| Needles -> Salt Lake City | 250.1 | 250.2 | essentially unchanged |
+| Missoula -> Barstow | 254.6 | 254.6 | unchanged |
+
+Nick's rule of thumb, which these fit: a sweep shape needs to land near 245 h or better to be optimisable into a
+record. RX started at 240; the families that started above 250 moved 0 to 3 h, except Missoula -> Omaha, which
+changed shape (its start moved to Spearfish) rather than being tuned.
+
 ## Next
 
 - More sweeps with other random seeds: one 5-hour sweep found RX, the cheapest new-family finder we have.
