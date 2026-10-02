@@ -14,6 +14,7 @@ ontario_mills_1090_ontario_mills_dr_702_ = { name = "Ontario Mills 1090 Ontario 
 claremont_indian_hill_blvd_702_shuttles = { name = "Claremont Indian Hill Blvd (702 Shuttles)", lon = -117.7189, lat = 34.0960 }
 pomona_gillette_rd_702_shuttles = { name = "Pomona Gillette Rd (702 Shuttles)", lon = -117.7800, lat = 34.0800 }
 el_monte_valley_blvd_702_shuttles = { name = "El Monte Valley Blvd (702 Shuttles)", lon = -118.0290, lat = 34.0736 }
+ontario_fwy_15_702_shuttles = { name = "Ontario FWY 15 (702 Shuttles)", lon = -117.5390, lat = 34.0640 }
 los_angeles_main_and_7th_702_shuttles = { name = "Los Angeles Main and 7th (702 Shuttles)", lon = -118.2537, lat = 34.0433 }
 
 [[trip]]
@@ -22,3 +23,10 @@ route = "Las Vegas -> Los Angeles (Nick screenshot Sep 28 2026; daily assumed; s
 days = "1111111"
 tz = "America/Los_Angeles"
 stops = ["las_vegas_dean_martin_blue_diamond_702_s 15:15", "jean_nv_161_702_shuttles 15:35", "primm_bus_stop_702_shuttles 15:50", "baker_blvd_702_shuttles 16:35", "newberry_springs_702_shuttles 17:10", "barstow_east_main_st_1611_702_shuttles 17:27", "victorville_15445_palmdale_rd_702_shuttl 18:04", "hesperia_main_st_702_shuttles 18:11", "fontana_3892_sierra_ave_ampm_702_shuttle 18:27", "ontario_mills_1090_ontario_mills_dr_702_ 18:37", "claremont_indian_hill_blvd_702_shuttles 18:52", "pomona_gillette_rd_702_shuttles 18:57", "el_monte_valley_blvd_702_shuttles 19:10", "los_angeles_main_and_7th_702_shuttles 19:50"]
+
+[[trip]]
+id = "t145"
+route = "Las Vegas -> Ontario (Nick screenshot Oct 2 2026, Primm 10:50 to Ontario 13:37; Las Vegas and Jean times inferred from the 15:15 run; daily assumed; Ontario stop point approximate)"
+days = "1111111"
+tz = "America/Los_Angeles"
+stops = ["las_vegas_dean_martin_blue_diamond_702_s 10:15", "jean_nv_161_702_shuttles 10:35", "primm_bus_stop_702_shuttles 10:50", "baker_blvd_702_shuttles 11:35", "newberry_springs_702_shuttles 12:10", "barstow_east_main_st_1611_702_shuttles 12:27", "victorville_15445_palmdale_rd_702_shuttl 13:04", "hesperia_main_st_702_shuttles 13:11", "fontana_3892_sierra_ave_ampm_702_shuttle 13:27", "ontario_fwy_15_702_shuttles 13:37"]

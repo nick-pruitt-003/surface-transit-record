@@ -175,7 +175,7 @@ First bus d6 Tue 01:00 from Huntington; finish d15 Thu 22:45 at Portland.
 | 37 | d15 Thu 06:45 | Washington Union Station | d15 Thu 13:56 | Boston | Amtrak: Acela | 0.33 h | +1.5 h |
 | 38 | d15 Thu 14:30 | Boston South Station | d15 Thu 17:00 | Hanover (Hanover Inn) | Dartmouth Coach: Boston South Station -> Hanover 14:30 | 0.42 h | +1.5 h |
 | 39 | d15 Thu 17:10 | Main at Allen | d15 Thu 17:38 | Sykes Ave @ Greyhound | Advance Transit: Yellow Route | 0.14 h | +1.5 h |
-| 40 | d15 Thu 17:55 | White River Junction Bus Station | d15 Thu 20:15 | Boston (South Station) | Greyhound-us: Boston - Burlington - MontrÃ©al | 0.27 h | +4.4 h |
+| 40 | d15 Thu 17:55 | White River Junction Bus Station | d15 Thu 20:15 | Boston (South Station) | Greyhound-us: Boston - Burlington - Montréal | 0.27 h | +4.4 h |
 | 41 | d15 Thu 20:25 | Boston South Station | d15 Thu 22:45 | Portland, ME | Concord Coach Lines: Portland, ME to/from Boston & Logan Air | 0.15 h | +1.4 h |
 
 **Waits over an hour** (slack; spendable only if the ride after it is not an anchor):
@@ -323,58 +323,59 @@ First bus d3 Sat 22:20 from Sheridan WY Taco Bell 1655 Coffeen Ave (Jefferson); 
 
 **Marginal state cost** (finish earlier when that state is dropped, same order): none over a minute; anchors absorb every single-state saving
 
-## RX (Las Vegas -> Sheridan WY): 235.58 h
+## RX (Primm NV -> Sheridan WY): 234.75 h
 
-docs/sweep.md: the unguided sweep found its family (240.0); a focused search moved the start to Las Vegas.
+docs/sweep.md: the unguided sweep found its family (240.0); a focused search moved the start to Las Vegas; the 702 Shuttles 10:50 from Primm (Oct 2) starts it 50 min later for the same finish.
 
-First bus d1 Thu 10:00 from Las Vegas Bus Terminal; finish d11 Sun 06:35 at Sheridan WY Taco Bell 1655 Coffeen Ave (Jefferson).
+First bus d1 Thu 10:50 from Primm Bus Stop (702 Shuttles); finish d11 Sun 06:35 at Sheridan WY Taco Bell 1655 Coffeen Ave (Jefferson).
 
 | # | depart | from | arrive | to | service | wait before | miss penalty |
 |---|---|---|---|---|---|---|---|
-| 1 | d1 Thu 10:00 | Las Vegas Bus Terminal | d1 Thu 14:35 | San Bernardino Depot | Greyhound-us: Los Angeles - Las Vegas |  | +3.7 h |
-| 2 | d1 Thu 15:10 | San Bernardino Depot | d2 Fri 21:15 | Oklahoma City Bus Station | Greyhound-us: St Louis - Albuquerque - Los Angeles | 0.58 h | +24.0 h |
-| 3 | d2 Fri 22:40 | Oklahoma City Bus Station | d3 Sat 08:00 | Memphis Bus Station | Greyhound-us: Oklahoma City - Memphis | 1.42 h | +24.0 h |
-| 4 | d3 Sat 08:50 | Memphis Bus Station | d3 Sat 17:50 | New Orleans Bus Station | Greyhound-us: Baton Rouge - New Orleans - Memphis | 0.83 h | +11.9 h |
-| 5 | d3 Sat 18:00 | New Orleans Bus Station | d3 Sat 21:15 | Lafayette Transit System | Greyhound-us: Atlanta - New Orleans - Houston | 0.17 h | +11.8 h |
-| 6 | d3 Sat 22:35 | Lafayette Transit System | d4 Sun 11:00 | Tallahassee (CK Steele Bus Plaza) | Greyhound-us: Orlando - Houston | 1.33 h | +24.0 h |
-| 7 | d4 Sun 11:25 | Tallahassee (CK Steele Bus Plaza) | d4 Sun 14:50 | Jacksonville (Downtown) | Greyhound-us: Jacksonville - Mobile | 0.42 h | +5.8 h |
-| 8 | d4 Sun 15:00 | JRTC Bay H | d4 Sun 15:27 | Amtrak Station | Jacksonville Transportation Authority: Kings Road | 0.15 h | +1.0 h |
-| 9 | d4 Sun 16:11 | Jacksonville | d5 Mon 06:25 | Washington Union Station | Amtrak: Silver Meteor | 0.59 h | +8.8 h |
-| 10 | d5 Mon 06:45 | Washington Union Station | d5 Mon 13:56 | Boston | Amtrak: Acela | 0.33 h | +1.5 h |
-| 11 | d5 Mon 14:30 | Boston South Station | d5 Mon 17:00 | Hanover (Hanover Inn) | Dartmouth Coach: Boston South Station -> Hanover 14:30 | 0.42 h | +1.5 h |
-| 12 | d5 Mon 17:10 | Main at Allen | d5 Mon 17:38 | Sykes Ave @ Greyhound | Advance Transit: Yellow Route | 0.14 h | +1.5 h |
-| 13 | d5 Mon 17:55 | White River Junction Bus Station | d5 Mon 20:15 | Boston (South Station) | Greyhound-us: Boston - Burlington - MontrÃ©al | 0.27 h | +4.4 h |
-| 14 | d5 Mon 20:25 | Boston South Station | d5 Mon 22:45 | Portland, ME | Concord Coach Lines: Portland, ME to/from Boston & Logan Air | 0.15 h | +1.4 h |
-| 15 | d5 Mon 23:59 | City of Portland | d6 Tue 02:00 | Boston (South Station) | FlixBus-us: NYC - Boston - Portland - Bangor | 0.91 h | +14.2 h |
-| 16 | d6 Tue 02:15 | Boston (South Station) | d6 Tue 07:05 | New York Port Authority | Greyhound-us: Boston - New York (Express Service) | 0.25 h | +4.0 h |
-| 17 | d6 Tue 09:55 | New York Port Authority | d7 Wed 04:10 | Indianapolis Bus Station | Greyhound-us: New York - Pittsburgh - St. Louis | 2.83 h | +5.2 h |
-| 18 | d7 Wed 04:40 | Indianapolis Bus Station | d7 Wed 06:45 | Louisville Bus Station | Greyhound-us: Atlanta - Chicago | 0.50 h | +6.5 h |
-| 19 | d7 Wed 07:35 | Louisville Bus Station | d7 Wed 09:30 | Indianapolis Bus Station | Greyhound-us: Atlanta - Chicago | 0.83 h | +1.1 h |
-| 20 | d7 Wed 11:35 | Indianapolis | d7 Wed 14:40 | South Bend | Miller Transportation: Indianapolis -> Elkhart | 2.08 h | +24.0 h |
-| 21 | d7 Wed 15:24 | South Street Station | d7 Wed 15:52 | Adams & Dylan | Transpo (South Bend, IN): Blackthorn Express | 0.71 h | +2.0 h |
-| 22 | d7 Wed 17:52 | Adams & Dylan | d7 Wed 18:28 | South Street Station | Transpo (South Bend, IN): Blackthorn Express | 1.52 h | +14.0 h |
-| 23 | d7 Wed 18:55 | South Bend Transpo (S St Station) | d7 Wed 20:05 | Chicago Bus Station | Greyhound-us: Chicago - Cleveland - Washington | 0.44 h | +13.9 h |
-| 24 | d7 Wed 22:00 | Chicago Bus Station | d8 Thu 06:20 | Minneapolis Bus Station | Greyhound-us: Chicago - Milwaukee - Minneapolis | 1.92 h | +3.1 h |
-| 25 | d8 Thu 10:35 | Minneapolis | d8 Thu 14:55 | Fargo | Jefferson Lines: Minneapolis -> Billings | 4.24 h | +24.0 h |
-| 26 | d8 Thu 15:50 | Fargo | d8 Thu 19:50 | Sioux Falls | Jefferson Lines: Fargo -> Sioux Falls | 0.92 h | +24.0 h |
-| 27 | d8 Thu 20:05 | Sioux Falls | d9 Fri 04:15 | Kansas City | Jefferson Lines: Sioux Falls -> Kansas City | 0.25 h | +24.0 h |
-| 28 | d9 Fri 04:35 | Kansas City Bus Station | d9 Fri 16:05 | Denver Union Station Bus Concourse | Greyhound-us: St Louis - Denver | 0.32 h | +17.4 h |
-| 29 | d9 Fri 16:35 | Denver Union Station Bus Concourse | d10 Sat 14:30 | Pasco Bus Stop | Greyhound-us: Seattle-Boise-SLC-Denver | 0.50 h | +24.0 h |
-| 30 | d10 Sat 14:40 | Pasco Bus Stop | d10 Sat 17:00 | Spokane Station | FlixBus-us: Portland - Boise | 0.17 h | +24.0 h |
-| 31 | d10 Sat 17:10 | Spokane | d11 Sun 04:05 | Billings | Jefferson Lines: Spokane -> Billings | 0.16 h | +24.0 h |
-| 32 | d11 Sun 04:30 | Billings | d11 Sun 06:35 | Sheridan WY Taco Bell 1655 Coffeen | Jefferson Lines: JL 702 Billings -> Sheridan (Nick screensho | 0.42 h | +24.0 h |
+| 1 | d1 Thu 10:50 | Primm Bus Stop (702 Shuttles) | d1 Thu 12:27 | Barstow East Main St 1611 (702 Shu | 702 Shuttles: Las Vegas -> Ontario (Nick screenshot Oct 2 20 |  | +5.0 h |
+| 2 | d1 Thu 12:55 | Barstow Station | d1 Thu 14:35 | San Bernardino Depot | Greyhound-us: Los Angeles - Las Vegas | 0.25 h | +3.7 h |
+| 3 | d1 Thu 15:10 | San Bernardino Depot | d2 Fri 21:15 | Oklahoma City Bus Station | Greyhound-us: St Louis - Albuquerque - Los Angeles | 0.58 h | +24.0 h |
+| 4 | d2 Fri 22:40 | Oklahoma City Bus Station | d3 Sat 08:00 | Memphis Bus Station | Greyhound-us: Oklahoma City - Memphis | 1.42 h | +24.0 h |
+| 5 | d3 Sat 08:50 | Memphis Bus Station | d3 Sat 17:50 | New Orleans Bus Station | Greyhound-us: Baton Rouge - New Orleans - Memphis | 0.83 h | +11.9 h |
+| 6 | d3 Sat 18:00 | New Orleans Bus Station | d3 Sat 21:15 | Lafayette Transit System | Greyhound-us: Atlanta - New Orleans - Houston | 0.17 h | +11.8 h |
+| 7 | d3 Sat 22:35 | Lafayette Transit System | d4 Sun 11:00 | Tallahassee (CK Steele Bus Plaza) | Greyhound-us: Orlando - Houston | 1.33 h | +24.0 h |
+| 8 | d4 Sun 11:25 | Tallahassee (CK Steele Bus Plaza) | d4 Sun 14:50 | Jacksonville (Downtown) | Greyhound-us: Jacksonville - Mobile | 0.42 h | +5.8 h |
+| 9 | d4 Sun 15:00 | JRTC Bay H | d4 Sun 15:27 | Amtrak Station | Jacksonville Transportation Authority: Kings Road | 0.15 h | +1.0 h |
+| 10 | d4 Sun 16:11 | Jacksonville | d5 Mon 06:25 | Washington Union Station | Amtrak: Silver Meteor | 0.59 h | +8.8 h |
+| 11 | d5 Mon 06:45 | Washington Union Station | d5 Mon 13:56 | Boston | Amtrak: Acela | 0.33 h | +1.5 h |
+| 12 | d5 Mon 14:30 | Boston South Station | d5 Mon 17:00 | Hanover (Hanover Inn) | Dartmouth Coach: Boston South Station -> Hanover 14:30 | 0.42 h | +1.5 h |
+| 13 | d5 Mon 17:10 | Main at Allen | d5 Mon 17:38 | Sykes Ave @ Greyhound | Advance Transit: Yellow Route | 0.14 h | +1.5 h |
+| 14 | d5 Mon 17:55 | White River Junction Bus Station | d5 Mon 20:15 | Boston (South Station) | Greyhound-us: Boston - Burlington - Montréal | 0.27 h | +4.4 h |
+| 15 | d5 Mon 20:25 | Boston South Station | d5 Mon 22:45 | Portland, ME | Concord Coach Lines: Portland, ME to/from Boston & Logan Air | 0.15 h | +1.4 h |
+| 16 | d5 Mon 23:59 | City of Portland | d6 Tue 02:00 | Boston (South Station) | FlixBus-us: NYC - Boston - Portland - Bangor | 0.91 h | +14.2 h |
+| 17 | d6 Tue 02:15 | Boston (South Station) | d6 Tue 07:05 | New York Port Authority | Greyhound-us: Boston - New York (Express Service) | 0.25 h | +4.0 h |
+| 18 | d6 Tue 09:55 | New York Port Authority | d7 Wed 04:10 | Indianapolis Bus Station | Greyhound-us: New York - Pittsburgh - St. Louis | 2.83 h | +5.2 h |
+| 19 | d7 Wed 04:40 | Indianapolis Bus Station | d7 Wed 06:45 | Louisville Bus Station | Greyhound-us: Atlanta - Chicago | 0.50 h | +6.5 h |
+| 20 | d7 Wed 07:35 | Louisville Bus Station | d7 Wed 09:30 | Indianapolis Bus Station | Greyhound-us: Atlanta - Chicago | 0.83 h | +1.1 h |
+| 21 | d7 Wed 11:35 | Indianapolis | d7 Wed 14:40 | South Bend | Miller Transportation: Indianapolis -> Elkhart | 2.08 h | +24.0 h |
+| 22 | d7 Wed 15:24 | South Street Station | d7 Wed 15:52 | Adams & Dylan | Transpo (South Bend, IN): Blackthorn Express | 0.71 h | +2.0 h |
+| 23 | d7 Wed 17:52 | Adams & Dylan | d7 Wed 18:28 | South Street Station | Transpo (South Bend, IN): Blackthorn Express | 1.52 h | +14.0 h |
+| 24 | d7 Wed 18:55 | South Bend Transpo (S St Station) | d7 Wed 20:05 | Chicago Bus Station | Greyhound-us: Chicago - Cleveland - Washington | 0.44 h | +13.9 h |
+| 25 | d7 Wed 22:00 | Chicago Bus Station | d8 Thu 06:20 | Minneapolis Bus Station | Greyhound-us: Chicago - Milwaukee - Minneapolis | 1.92 h | +3.1 h |
+| 26 | d8 Thu 10:35 | Minneapolis | d8 Thu 14:55 | Fargo | Jefferson Lines: Minneapolis -> Billings | 4.24 h | +24.0 h |
+| 27 | d8 Thu 15:50 | Fargo | d8 Thu 19:50 | Sioux Falls | Jefferson Lines: Fargo -> Sioux Falls | 0.92 h | +24.0 h |
+| 28 | d8 Thu 20:05 | Sioux Falls | d9 Fri 04:15 | Kansas City | Jefferson Lines: Sioux Falls -> Kansas City | 0.25 h | +24.0 h |
+| 29 | d9 Fri 04:35 | Kansas City Bus Station | d9 Fri 16:05 | Denver Union Station Bus Concourse | Greyhound-us: St Louis - Denver | 0.32 h | +17.4 h |
+| 30 | d9 Fri 16:35 | Denver Union Station Bus Concourse | d10 Sat 14:30 | Pasco Bus Stop | Greyhound-us: Seattle-Boise-SLC-Denver | 0.50 h | +24.0 h |
+| 31 | d10 Sat 14:40 | Pasco Bus Stop | d10 Sat 17:00 | Spokane Station | FlixBus-us: Portland - Boise | 0.17 h | +24.0 h |
+| 32 | d10 Sat 17:10 | Spokane | d11 Sun 04:05 | Billings | Jefferson Lines: Spokane -> Billings | 0.16 h | +24.0 h |
+| 33 | d11 Sun 04:30 | Billings | d11 Sun 06:35 | Sheridan WY Taco Bell 1655 Coffeen | Jefferson Lines: JL 702 Billings -> Sheridan (Nick screensho | 0.42 h | +24.0 h |
 
 **Waits over an hour** (slack; spendable only if the ride after it is not an anchor):
 
-- 4.2 h at Minneapolis before leg 25 (Jefferson Lines: Minneapolis -> Billings); miss penalty +24.0 h
-- 2.8 h at New York Port Authority before leg 17 (Greyhound-us: New York - Pittsburgh - St. Louis); miss penalty +5.2 h
-- 2.1 h at Indianapolis before leg 20 (Miller Transportation: Indianapolis -> Elkhart); miss penalty +24.0 h
-- 1.9 h at Chicago Bus Station before leg 24 (Greyhound-us: Chicago - Milwaukee - Minneapolis); miss penalty +3.1 h
-- 1.5 h at Adams & Dylan before leg 22 (Transpo (South Bend, IN): Blackthorn Express); miss penalty +14.0 h
-- 1.4 h at Oklahoma City Bus Station before leg 3 (Greyhound-us: Oklahoma City - Memphis); miss penalty +24.0 h
-- 1.3 h at Lafayette Transit System before leg 6 (Greyhound-us: Orlando - Houston); miss penalty +24.0 h
+- 4.2 h at Minneapolis before leg 26 (Jefferson Lines: Minneapolis -> Billings); miss penalty +24.0 h
+- 2.8 h at New York Port Authority before leg 18 (Greyhound-us: New York - Pittsburgh - St. Louis); miss penalty +5.2 h
+- 2.1 h at Indianapolis before leg 21 (Miller Transportation: Indianapolis -> Elkhart); miss penalty +24.0 h
+- 1.9 h at Chicago Bus Station before leg 25 (Greyhound-us: Chicago - Milwaukee - Minneapolis); miss penalty +3.1 h
+- 1.5 h at Adams & Dylan before leg 23 (Transpo (South Bend, IN): Blackthorn Express); miss penalty +14.0 h
+- 1.4 h at Oklahoma City Bus Station before leg 4 (Greyhound-us: Oklahoma City - Memphis); miss penalty +24.0 h
+- 1.3 h at Lafayette Transit System before leg 7 (Greyhound-us: Orlando - Houston); miss penalty +24.0 h
 
-**Connections under 20 minutes:** leg 5 at New Orleans Bus Station (10 min); leg 8 at JRTC Bay H (9 min); leg 12 at Main at Allen (8 min); leg 13 at White River Junction Bus Station (16 min); leg 14 at Boston South Station (9 min); leg 16 at Boston (South Station) (15 min); leg 27 at Sioux Falls (15 min); leg 28 at Kansas City Bus Station (19 min); leg 30 at Pasco Bus Stop (10 min); leg 31 at Spokane (9 min)
+**Connections under 20 minutes:** leg 2 at Barstow Station (15 min); leg 6 at New Orleans Bus Station (10 min); leg 9 at JRTC Bay H (9 min); leg 13 at Main at Allen (8 min); leg 14 at White River Junction Bus Station (16 min); leg 15 at Boston South Station (9 min); leg 17 at Boston (South Station) (15 min); leg 28 at Sioux Falls (15 min); leg 29 at Kansas City Bus Station (19 min); leg 31 at Pasco Bus Stop (10 min); leg 32 at Spokane (9 min)
 
 **Marginal state cost** (finish earlier when that state is dropped, same order): none over a minute; anchors absorb every single-state saving
 
@@ -385,4 +386,4 @@ First bus d1 Thu 10:00 from Las Vegas Bus Terminal; finish d11 Sun 06:35 at Sher
 - MEX: 237.75 h
 - X_TOL: 237.91 h
 - X: 238.11 h
-- RX: 235.58 h
+- RX: 234.75 h

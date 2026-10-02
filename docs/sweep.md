@@ -68,7 +68,7 @@ Each family got a 60-minute search of its own, seeded from its sweep run (same e
 
 | family | sweep | focused | what changed |
 |---|---|---|---|
-| **St George -> Sheridan (reversed X)** | 240.0 | **235.58 (RX)** | start moved to Las Vegas Thu 10:00; Utah comes later anyway on the Denver -> Pasco Greyhound. Verified from its latest start, all 48 states. Rerun with no fixed finish: unchanged, the Billings -> Sheridan ending stays. See `docs/routes.md`. |
+| **St George -> Sheridan (reversed X)** | 240.0 | **235.58 (RX)**, 234.75 with the Primm start | start moved to Las Vegas Thu 10:00 (later Primm 10:50 on the 702 Shuttles, added Oct 2); Utah comes later anyway on the Denver -> Pasco Greyhound. Verified from its latest start, all 48 states. Rerun with no fixed finish: unchanged, the Billings -> Sheridan ending stays. See `docs/routes.md`. |
 | New Orleans -> Louisville | 243.6 | 243.6 | nothing; New Orleans Thu 05:05 -> Mobile -> Jacksonville -> Floridian overnight -> New England -> Midwest -> West -> Nashville -> Louisville |
 
 So the sweep's best family became the second-fastest route we have, and a different one from anything designed by

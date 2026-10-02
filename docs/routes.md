@@ -8,7 +8,7 @@ leg tables, waits and connection lists are generated into [`routes_data.md`](rou
 | route | hours | start | finish | family |
 |---|---|---|---|---|
 | **Wheeling** | **234.24** | Wheeling WV, Ohio Coach 04:00 (03:00 verified: 235.24) | VT line from Hanover, Sat 22:14 | WV → VT |
-| **RX** | **235.58** | Las Vegas NV, Thu 10:00 | Sheridan WY (JL 702 from Billings), Sun 06:35 | X with the West at the end; found by the unguided sweep |
+| **RX** | **234.75** | Primm NV, Thu 10:50 (702 Shuttles; Las Vegas 10:00 Greyhound: 235.58) | Sheridan WY (JL 702 from Billings), Sun 06:35 | X with the West at the end; found by the unguided sweep |
 | **Control** | **237.24** | Huntington WV, Thu 01:00 | VT line from Hanover, Sat 22:14 | WV → VT |
 | **MEX** | **237.75** | Huntington WV, Tue 01:00 | Portland ME, Thu 22:45 | WV → ME |
 | **X_TOL** | **237.91** | Sheridan WY, Thu 22:20 | VT line from Hanover, Sun 22:14 | WY → VT |
@@ -98,12 +98,14 @@ Chicago → Minneapolis → Fargo → Sioux Falls → Kansas City → Fayettevil
 Built today as the fastest 22-state head joined to the fastest tail (HANDOFF 28), and still the only record route
 with a real tail out of Vermont.
 
-### RX, 235.58 h (NV → WY), found Oct 2 by the unguided sweep
+### RX, 234.75 h (NV → WY), found Oct 2 by the unguided sweep
 
 Not designed by anyone: the overnight sweep (`docs/sweep.md`) found its family from a mechanical seed at 240.0 h, and
-a focused search moved the start to Las Vegas. It is **X with the West moved to the end**:
+a focused search moved the start to Las Vegas (235.58 h). The 702 Shuttles 10:50 from Primm NV (screenshot Oct 2) to
+Barstow, walking to Barstow Station for the 12:55 Greyhound, reaches the same San Bernardino 15:10 anchor and starts
+50 min later for the same finish: 234.75 h. It is **X with the West moved to the end**:
 
-- **South first:** Las Vegas Thu 10:00 → San Bernardino → Greyhound across Arizona and New Mexico to Oklahoma City
+- **South first:** Primm Thu 10:50 → Barstow → San Bernardino → Greyhound across Arizona and New Mexico to Oklahoma City
   (Fri 21:15) → Memphis → New Orleans → Lafayette → Tallahassee → Jacksonville → **Silver Meteor** → Acela → Boston.
 - **New England:** Dartmouth Coach to Hanover → Advance Transit to White River Junction (VT) → Greyhound to Boston →
   Concord Coach to Portland ME → overnight back through Boston to New York.
