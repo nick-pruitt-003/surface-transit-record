@@ -106,7 +106,7 @@ Barstow, walking to Barstow Station for the 12:55 Greyhound, reaches the same Sa
 50 min later for the same finish: 234.75 h. It is **X with the West moved to the end**:
 
 - **South first:** Primm Thu 10:50 → Barstow → San Bernardino → Greyhound across Arizona and New Mexico to Oklahoma City
-  (Fri 21:15) → Memphis → New Orleans → (20:50 via Biloxi) Mobile → (03:45) Tallahassee → Jacksonville → **Silver Meteor** → Acela → Boston.
+  (Fri 21:15) → Memphis → Delta Bus Lines to Baton Rouge → (23:55) Tallahassee → Jacksonville → **Silver Meteor** → Acela → Boston.
 - **New England:** Dartmouth Coach to Hanover → Advance Transit to White River Junction (VT) → Greyhound to Boston →
   Concord Coach to Portland ME → overnight back through Boston to New York.
 - **X's tail, mostly:** Greyhound New York → Indianapolis (PA, WV, OH) → Louisville and back → South Bend (Michigan
@@ -114,10 +114,12 @@ Barstow, walking to Barstow Station for the 12:55 Greyhound, reaches the same Sa
 - **The West last:** Kansas City → Denver → Greyhound over I-70 and through Salt Lake and Boise to Pasco → Spokane →
   Billings → **JL 702 into Sheridan** for Wyoming, Sun 06:35.
 
-The Gulf leg is pinned through New Orleans and Mobile. The router's tie was New Orleans 18:00 west to Lafayette to
-board the Orlando bus at 22:35; Nick's booking of the same day (Oct 2) gives the 20:50 via Biloxi to Mobile and the
-03:45 from Mobile, the same Orlando bus to the same Tallahassee 11:00, with no backtrack and bookable as one Greyhound
-itinerary. Mississippi is already collected on the Memphis -> New Orleans bus. Equal time; chosen for bookability.
+The Gulf leg as booked (Nick, Oct 2): Memphis Sat 10:00 Delta Bus Lines to Baton Rouge 18:30 (Mississippi on the way),
+then Greyhound 23:55 from Baton Rouge straight through Mobile, Pensacola and Panama City Beach to Tallahassee 11:00,
+and the 11:25 to Jacksonville 14:50: one Greyhound itinerary, no backtrack. `route_report.py` pins Baton Rouge, but
+the router breaks the exact tie by hopping to Lafayette at 20:10 to board the same Orlando bus there at 22:35, so
+`routes_data.md` and `route_legs.xlsx` show that loop; it changes nothing after Tallahassee. Other equal-time Gulf
+options: Greyhound Memphis -> New Orleans, the 20:50 via Biloxi to Mobile, then the same bus at 03:45.
 
 Risks: two hand-entered legs (Dartmouth Coach 14:30, JL 702), several 8–10 minute connections, and the Advance
 Transit link at Hanover only runs on weekdays (it falls on a Monday here). Wyoming is only reached by the final

@@ -335,9 +335,9 @@ First bus d1 Thu 10:50 from Primm Bus Stop (702 Shuttles); finish d11 Sun 06:35 
 | 2 | d1 Thu 12:55 | Barstow Station | d1 Thu 14:35 | San Bernardino Depot | Greyhound-us: Los Angeles - Las Vegas | 0.25 h | +3.7 h |
 | 3 | d1 Thu 15:10 | San Bernardino Depot | d2 Fri 21:15 | Oklahoma City Bus Station | Greyhound-us: St Louis - Albuquerque - Los Angeles | 0.58 h | +24.0 h |
 | 4 | d2 Fri 22:40 | Oklahoma City Bus Station | d3 Sat 08:00 | Memphis Bus Station | Greyhound-us: Oklahoma City - Memphis | 1.42 h | +24.0 h |
-| 5 | d3 Sat 08:50 | Memphis Bus Station | d3 Sat 17:50 | New Orleans Bus Station | Greyhound-us: Baton Rouge - New Orleans - Memphis | 0.83 h | +11.9 h |
-| 6 | d3 Sat 20:50 | New Orleans Bus Station | d3 Sat 23:20 | Mobile Bus Station | Greyhound-us: Atlanta - New Orleans - Houston | 3.00 h | +8.2 h |
-| 7 | d4 Sun 03:45 | Mobile Bus Station | d4 Sun 11:00 | Tallahassee (CK Steele Bus Plaza) | Greyhound-us: Orlando - Houston | 4.42 h | +5.4 h |
+| 5 | d3 Sat 10:00 | Memphis (Airport) | d3 Sat 18:30 | Baton Rouge | Delta Bus Lines Inc.: Memphis -> Baton Rouge | 2.00 h | +24.0 h |
+| 6 | d3 Sat 20:10 | Baton Rouge Bus Station | d3 Sat 21:15 | Lafayette Transit System | Greyhound-us: Atlanta - New Orleans - Houston | 1.66 h | +0.8 h |
+| 7 | d3 Sat 22:35 | Lafayette Transit System | d4 Sun 11:00 | Tallahassee (CK Steele Bus Plaza) | Greyhound-us: Orlando - Houston | 1.33 h | +24.0 h |
 | 8 | d4 Sun 11:25 | Tallahassee (CK Steele Bus Plaza) | d4 Sun 14:50 | Jacksonville (Downtown) | Greyhound-us: Jacksonville - Mobile | 0.42 h | +5.8 h |
 | 9 | d4 Sun 15:00 | JRTC Bay H | d4 Sun 15:27 | Amtrak Station | Jacksonville Transportation Authority: Kings Road | 0.15 h | +1.0 h |
 | 10 | d4 Sun 16:11 | Jacksonville | d5 Mon 06:25 | Washington Union Station | Amtrak: Silver Meteor | 0.59 h | +8.8 h |
@@ -367,14 +367,15 @@ First bus d1 Thu 10:50 from Primm Bus Stop (702 Shuttles); finish d11 Sun 06:35 
 
 **Waits over an hour** (slack; spendable only if the ride after it is not an anchor):
 
-- 4.4 h at Mobile Bus Station before leg 7 (Greyhound-us: Orlando - Houston); miss penalty +5.4 h
 - 4.2 h at Minneapolis before leg 26 (Jefferson Lines: Minneapolis -> Billings); miss penalty +24.0 h
-- 3.0 h at New Orleans Bus Station before leg 6 (Greyhound-us: Atlanta - New Orleans - Houston); miss penalty +8.2 h
 - 2.8 h at New York Port Authority before leg 18 (Greyhound-us: New York - Pittsburgh - St. Louis); miss penalty +5.2 h
 - 2.1 h at Indianapolis before leg 21 (Miller Transportation: Indianapolis -> Elkhart); miss penalty +24.0 h
+- 2.0 h at Memphis (Airport) before leg 5 (Delta Bus Lines Inc.: Memphis -> Baton Rouge); miss penalty +24.0 h
 - 1.9 h at Chicago Bus Station before leg 25 (Greyhound-us: Chicago - Milwaukee - Minneapolis); miss penalty +3.1 h
+- 1.7 h at Baton Rouge Bus Station before leg 6 (Greyhound-us: Atlanta - New Orleans - Houston); miss penalty +0.8 h
 - 1.5 h at Adams & Dylan before leg 23 (Transpo (South Bend, IN): Blackthorn Express); miss penalty +14.0 h
 - 1.4 h at Oklahoma City Bus Station before leg 4 (Greyhound-us: Oklahoma City - Memphis); miss penalty +24.0 h
+- 1.3 h at Lafayette Transit System before leg 7 (Greyhound-us: Orlando - Houston); miss penalty +24.0 h
 
 **Connections under 20 minutes:** leg 2 at Barstow Station (15 min); leg 9 at JRTC Bay H (9 min); leg 13 at Main at Allen (8 min); leg 14 at White River Junction Bus Station (16 min); leg 15 at Boston South Station (9 min); leg 17 at Boston (South Station) (15 min); leg 28 at Sioux Falls (15 min); leg 29 at Kansas City Bus Station (19 min); leg 31 at Pasco Bus Stop (10 min); leg 32 at Spokane (9 min)
 
