@@ -1,6 +1,23 @@
 agency = "Jefferson Lines"
 
 [stops]
+bismarck_jl = "=ibus:289"   # Bismarck
+minneapolis_jl = "=ibus:15"   # Minneapolis
+des_moines_jl = "=ibus:2813"   # Des Moines
+omaha_burlington = "=ibus:1679"   # Omaha (Burlington Trailways Station)
+jamestown_nd = "=ibus:463"   # Jamestown ND
+valley_city = "=ibus:1305"
+fargo_jl = "=ibus:2162"   # Fargo
+moorhead_msu = "=ibus:3485"   # Moorhead (MSU - Comstock)
+fergus_falls = "=ibus:1742"
+alexandria_mn = "=ibus:1743"
+st_cloud_jl = "=ibus:3395"   # St. Cloud
+maple_grove = "=ibus:2315"
+st_paul_union_depot = "=ibus:2531"
+owatonna = "=ibus:1564"
+albert_lea = "=ibus:1630"
+clear_lake_ia = "=ibus:1748"   # Clear Lake Jct.
+ames = "=ibus:2536"
 gillette = "=ibus:2375"   # Gillette
 buffalo = "=ibus:3226"   # Buffalo
 sheridan_wy_taco_bell_1655_coffeen_ave_j = { name = "Sheridan WY Taco Bell 1655 Coffeen Ave (Jefferson)", lon = -106.9446, lat = 44.7743 }
@@ -32,3 +49,29 @@ note = "Nick screenshot of jeffersonlines.com Oct 2 2026; not in the feed (its 0
 days = "1111111"
 tz = "America/Chicago"
 stops = ["mobridge 12:10", "mclaughlin 12:35", "fort_yates 13:00", "bismarck 14:30"]
+
+# Nick screenshots Oct 2 2026, jeffersonlines.com (Google showed every time an hour early; Bismarck is Central).
+# The feed has Bismarck at 12:25 on Billings -> Minneapolis, Minneapolis -> Kansas City at 22:30 and no Jefferson
+# Des Moines -> Omaha. Des Moines arrival (03:15) and the Des Moines -> Omaha times (03:45 -> 06:00) are Google's
+# 02:15 / 02:45 -> 05:00 plus the same hour; not yet confirmed on the carrier site.
+[[trip]]
+id = "t336"
+route = "JL 938 Bismarck 13:05 -> Fargo -> Moorhead -> St. Cloud -> Minneapolis 21:10 (daily assumed)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["bismarck_jl 13:05", "jamestown_nd 14:40", "valley_city 15:20", "fargo_jl 16:20/16:40", "moorhead_msu 17:00", "fergus_falls 18:00", "alexandria_mn 18:40/19:00", "st_cloud_jl 20:05", "maple_grove 20:50", "minneapolis_jl 21:10"]
+
+[[trip]]
+id = "t337"
+route = "JL 805 Minneapolis 21:45 -> St. Paul -> Albert Lea -> Clear Lake IA -> Ames -> Des Moines 03:15 (Des Moines time inferred; daily assumed)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["minneapolis_jl 21:45", "st_paul_union_depot 22:10/22:15", "owatonna 23:30", "albert_lea 24:05", "clear_lake_ia 24:40/25:00", "ames 26:30/26:35", "des_moines_jl 27:15"]
+
+[[trip]]
+id = "t338"
+route = "JL Des Moines 03:45 -> Omaha 06:00 (non-stop; inferred from Google 02:45 -> 05:00 plus an hour; daily assumed)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["des_moines_jl 03:45", "omaha_burlington 06:00"]
+
