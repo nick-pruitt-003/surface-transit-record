@@ -1,7 +1,7 @@
 """Mechanical seed orders for an unguided search sweep: no shape ideas, just many different plausible tours.
 
 Each seed starts in a random state and repeatedly moves to a near unvisited state, picking among the nearest
-few with random weights, so tours differ but stay geographic (a purely random order of 48 states evaluates to
+few with random weights, then straightens the tour with 2-opt, so tours differ but stay geographic (a purely random order of 48 states evaluates to
 hundreds of hours and local search cannot climb out of it). Centroids are the mean of each state's stops.
 
 Leaf script: nothing imports it.   python3 random_seeds.py N SEED > seeds.txt   (one comma list per line)
@@ -24,4 +24,14 @@ for _ in range(n):
         near = sorted(left, key=lambda s: km(cur, s))[:4]
         cur = rng.choices(near, weights=[8, 4, 2, 1][:len(near)])[0]
         order.append(cur); left.discard(cur)
+    # 2-opt on the open path (start kept fixed): the noisy walk strands far states at the end (SC -> WA -> TX), and a
+    # tour like that runs past the router's 20-day window, so every seed straightens out its crossings first
+    better = True
+    while better:
+        better = False
+        for i in range(1, len(order) - 1):
+            for j in range(i + 1, len(order)):
+                a, b = order[i - 1], order[i]; c = order[j]; d = order[j + 1] if j + 1 < len(order) else None
+                old = km(a, b) + (km(c, d) if d is not None else 0); new = km(a, c) + (km(b, d) if d is not None else 0)
+                if new < old - 1e-6: order[i:j + 1] = order[i:j + 1][::-1]; better = True
     print(','.join(ABBR[R.state_names[s]] for s in order))
