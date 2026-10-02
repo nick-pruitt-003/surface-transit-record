@@ -118,3 +118,15 @@ Risks: two hand-entered legs (Dartmouth Coach 14:30, JL 702), several 8–10 min
 Transit link at Hanover only runs on weekdays (it falls on a Monday here). Wyoming is only reached by the final
 Billings → Sheridan run, since the Denver → Pasco Greyhound takes I-70, not Wyoming; a West taken the other way round
 (Denver → Cheyenne → Billings → Spokane → Salt Lake) is being searched.
+
+**Optional South Bend variant (same 234.75 h, more time in Chicago).** The router waits 1.5 h at Adams & Dylan
+for the 17:52 Blackthorn back, then takes the 18:55 Greyhound to Chicago (20:05) and waits for the 22:00 to
+Minneapolis. Instead: off the 15:52 Blackthorn at Adams & Dylan, about a mile on Mayflower to the Michigan line
+(around 16:06), then about 6.5 miles to South Bend Airport for the **South Shore Line 16:52** (Chicago Millennium
+17:55 CT, Illinois at Hegewisch). That is 7.5 miles in 60 minutes, about 7.5 mph or an 8:00 mile, and nearer
+8.2 mph with five minutes to board; a ride-hail does it easily. No bus fills the gap: the Transpo stops nearest the line are all on
+routes 5 and 16 (Adams & Dylan 0.90 km; FedEx Ground on Dylan 1.63 km; Auten & Oakland, Hammerschmidt and SR 933
+about 1.66 km), all every two hours. Route 5's 14:33 from South Street would make it easy but leaves seven minutes
+before the Miller arrives, and route 2 leaves Everwise (on Portage) at 15:57 and 16:57, either side of the window.
+Miss the train and the router's plan is intact: 17:52 Blackthorn, 18:55 Greyhound. Not a time saving (the 22:00
+anchor absorbs it); about 4 h in Chicago instead of 1.5 h on a rural corner.
