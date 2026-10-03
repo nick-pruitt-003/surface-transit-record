@@ -509,6 +509,69 @@ First bus d1 Thu 06:23 from Ledyard Lot; finish d11 Sun 03:35 at Biloxi Transit 
 
 **Marginal state cost** (finish earlier when that state is dropped, same order): MS 8.2 h
 
+## HT (Hanover -> Tallahassee FL): 230.02 h
+
+HMS with Mississippi before Florida: Tupelo on the 09:00 Memphis -> Birmingham Greyhound replaces the Tallahassee -> Mobile -> Biloxi finish. Hours count from the first bus (06:23); from the 06:10 walk add 0.2 h.
+
+First bus d1 Thu 06:23 from Ledyard Lot; finish d10 Sat 20:25 at Tallahassee (CK Steele Bus Plaza).
+
+| # | depart | from | arrive | to | service | wait before | miss penalty |
+|---|---|---|---|---|---|---|---|
+| 1 | d1 Thu 06:23 | Ledyard Lot | d1 Thu 06:25 | Parkhurst | Advance Transit: Pink Route | 0.25 h | +0.2 h |
+| 2 | d1 Thu 06:40 | Hanover (Hanover Inn) | d1 Thu 09:30 | Boston South Station | Dartmouth Coach: Hanover -> Boston South Station 06:40 | 0.11 h | +0.9 h |
+| 3 | d1 Thu 10:00 | Boston South Station | d1 Thu 11:55 | Portland, ME | Concord Coach Lines: Portland, ME to/from Boston & Logan Air | 0.49 h | +1.2 h |
+| 4 | d1 Thu 12:30 | Portland, ME | d1 Thu 14:25 | Boston South Station | Concord Coach Lines: Portland, ME to/from Boston & Logan Air | 0.58 h | +1.0 h |
+| 5 | d1 Thu 15:10 | Boston | d1 Thu 21:44 | Baltimore Penn Station | Amtrak: Acela | 0.61 h | +0.8 h |
+| 6 | d1 Thu 23:25 | Baltimore Downtown Bus Station | d2 Fri 11:25 | Augusta | FlixBus-us: NYC Chinatown - Atlanta | 0.91 h | +24.0 h |
+| 7 | d2 Fri 12:05 | Augusta | d2 Fri 13:55 | Camden (McDonald's) | Greyhound-us: Atlanta - Columbia - Raleigh (Subsidy) | 0.67 h | +22.2 h |
+| 8 | d2 Fri 15:15 | Camden (McDonald's) | d2 Fri 16:55 | Charlotte Bus Station | Greyhound-us: Raleigh - Jacksonville | 1.33 h | +24.0 h |
+| 9 | d2 Fri 17:45 | Charlotte | d3 Sat 04:30 | Columbus (E Mound St) | Barons Bus Lines: Charlotte -> Columbus | 0.83 h | +24.0 h |
+| 10 | d3 Sat 06:15 | Columbus (E Mound St) | d3 Sat 12:20 | Michigan City | Barons Bus Lines: Columbus (E Mound St) -> Chicago | 1.75 h | +24.0 h |
+| 11 | d3 Sat 12:38 | Marquette Mall Transfer Point | d3 Sat 13:09 | Als Karwick | Michian City Transit: Franklin St./Washington Park/Lakeland/ | 0.27 h | +1.0 h |
+| 12 | d3 Sat 15:55 | Carroll Ave. (Michigan City) | d3 Sat 17:19 | Museum Campus/11th St. | Northern Indiana Commuter Transportation District: Lakeshore | 0.50 h | +1.5 h |
+| 13 | d3 Sat 22:00 | Chicago Bus Station | d4 Sun 06:20 | Minneapolis Bus Station | Greyhound-us: Chicago - Milwaukee - Minneapolis | 4.05 h | +3.1 h |
+| 14 | d4 Sun 10:35 | Minneapolis | d4 Sun 14:55 | Fargo | Jefferson Lines: Minneapolis -> Billings | 4.24 h | +24.0 h |
+| 15 | d4 Sun 15:50 | Fargo | d4 Sun 19:50 | Sioux Falls | Jefferson Lines: Fargo -> Sioux Falls | 0.92 h | +24.0 h |
+| 16 | d4 Sun 20:05 | Sioux Falls | d5 Mon 02:15 | Maryville | Jefferson Lines: Sioux Falls -> Kansas City | 0.25 h | +24.0 h |
+| 17 | d5 Mon 03:25 | Maryville | d5 Mon 10:05 | Sioux Falls | Jefferson Lines: Kansas City -> Sioux Falls | 1.17 h | +24.0 h |
+| 18 | d5 Mon 12:40 | Sioux Falls | d6 Tue 00:25 | Billings | Jefferson Lines: Minneapolis -> Billings | 2.58 h | +24.0 h |
+| 19 | d6 Tue 01:30 | Billings | d6 Tue 10:30 | Spokane | Jefferson Lines: Billings -> Spokane | 1.08 h | +24.0 h |
+| 20 | d6 Tue 10:45 | Spokane | d6 Tue 13:10 | Pasco Bus Stop | Northwestern Stage Lines: NWL 710 Spokane -> Pasco | 0.25 h | +24.0 h |
+| 21 | d6 Tue 13:25 | Pasco Bus Stop | d7 Wed 02:30 | Salt Lake City Intermodal Trans Ct | Greyhound-us: Seattle-Boise-SLC-Denver | 0.25 h | +24.0 h |
+| 22 | d7 Wed 04:45 | Salt Lake City (Airport) | d7 Wed 10:20 | Saint George (Bluff St Office) | Salt Lake Express: SLE 7021 Salt Lake City (Airport) 04:45 - | 1.30 h | +1.2 h |
+| 23 | d7 Wed 10:30 | Saint George (Bluff St Office) | d7 Wed 11:40 | Las Vegas (Airport) | Salt Lake Express: SLE 8035 Saint George (Bluff St Office) 1 | 0.17 h | +1.5 h |
+| 24 | d7 Wed 14:00 | Las Vegas Bus Terminal | d7 Wed 18:15 | San Bernardino Depot | Greyhound-us: Los Angeles - Las Vegas | 1.56 h | +12.7 h |
+| 25 | d7 Wed 18:43 | San Bernardino | d9 Fri 01:47 | Newton | Amtrak: Southwest Chief | 0.43 h | +24.0 h |
+| 26 | d9 Fri 03:00 | Newton (Amtrak) | d9 Fri 06:38 | Oklahoma (Amtrak) | BeeLine Express-Village Travel: Newton (Amtrak) -> Oklahoma  | 1.21 h | +24.0 h |
+| 27 | d9 Fri 08:25 | Oklahoma City | d9 Fri 12:27 | Fort Worth | Amtrak: Heartland Flyer | 1.78 h | +24.0 h |
+| 28 | d9 Fri 14:23 | Fort Worth | d9 Fri 18:18 | Longview | Amtrak: Texas Eagle | 1.93 h | +24.0 h |
+| 29 | d9 Fri 18:30 | Longview | d9 Fri 19:50 | Shreveport Sportran Intermodal Ter | Amtrak Chartered Vehicle: Amtrak Thruway Connecting Service | 0.20 h | +14.7 h |
+| 30 | d9 Fri 20:50 | Shreveport Bus Station | d9 Fri 22:10 | Texarkana (Travel Stop) | Greyhound-us: Texarkana - Houston | 1.00 h | +24.0 h |
+| 31 | d9 Fri 22:40 | Texarkana (Travel Stop) | d10 Sat 03:45 | Memphis Bus Station | Greyhound-us: Dallas - Nashville - Detroit | 0.50 h | +8.2 h |
+| 32 | d10 Sat 05:45 | Memphis | d10 Sat 06:18 | Arkansas line on Big River Crossin | On foot (Big River Crossing, open 06:00-22:00): Memphis Amtr | 0.84 h | +0.2 h |
+| 33 | d10 Sat 06:30 | Arkansas line on Big River Crossin | d10 Sat 07:03 | Memphis | On foot (Big River Crossing, open 06:00-22:00): Arkansas lin | 0.20 h | +0.2 h |
+| 34 | d10 Sat 09:00 | Memphis Bus Station | d10 Sat 13:25 | Birmingham Intermodal Facility | Greyhound-us: Atlanta - Memphis | 0.79 h | +12.5 h |
+| 35 | d10 Sat 13:50 | Birmingham Intermodal Facility | d10 Sat 20:25 | Tallahassee (CK Steele Bus Plaza) | Greyhound-us: Nashville - Tallahassee | 0.42 h | +24.0 h |
+
+**Waits over an hour** (slack; spendable only if the ride after it is not an anchor):
+
+- 4.2 h at Minneapolis before leg 14 (Jefferson Lines: Minneapolis -> Billings); miss penalty +24.0 h
+- 4.1 h at Chicago Bus Station before leg 13 (Greyhound-us: Chicago - Milwaukee - Minneapolis); miss penalty +3.1 h
+- 2.6 h at Sioux Falls before leg 18 (Jefferson Lines: Minneapolis -> Billings); miss penalty +24.0 h
+- 1.9 h at Fort Worth before leg 28 (Amtrak: Texas Eagle); miss penalty +24.0 h
+- 1.8 h at Oklahoma City before leg 27 (Amtrak: Heartland Flyer); miss penalty +24.0 h
+- 1.8 h at Columbus (E Mound St) before leg 10 (Barons Bus Lines: Columbus (E Mound St) -> Chicago); miss penalty +24.0 h
+- 1.6 h at Las Vegas Bus Terminal before leg 24 (Greyhound-us: Los Angeles - Las Vegas); miss penalty +12.7 h
+- 1.3 h at Camden (McDonald's) before leg 8 (Greyhound-us: Raleigh - Jacksonville); miss penalty +24.0 h
+- 1.3 h at Salt Lake City (Airport) before leg 22 (Salt Lake Express: SLE 7021 Salt Lake City (Airport) 04:45 -); miss penalty +1.2 h
+- 1.2 h at Newton (Amtrak) before leg 26 (BeeLine Express-Village Travel: Newton (Amtrak) -> Oklahoma ); miss penalty +24.0 h
+- 1.2 h at Maryville before leg 17 (Jefferson Lines: Kansas City -> Sioux Falls); miss penalty +24.0 h
+- 1.1 h at Billings before leg 19 (Jefferson Lines: Billings -> Spokane); miss penalty +24.0 h
+
+**Connections under 20 minutes:** leg 1 at Ledyard Lot (15 min); leg 2 at Hanover (Hanover Inn) (6 min); leg 11 at Marquette Mall Transfer Point (16 min); leg 16 at Sioux Falls (15 min); leg 20 at Spokane (15 min); leg 21 at Pasco Bus Stop (15 min); leg 23 at Saint George (Bluff St Office) (10 min); leg 29 at Longview (12 min); leg 33 at Arkansas line on Big River Crossing (on foot from Memphis Amtrak) (12 min)
+
+**Marginal state cost** (finish earlier when that state is dropped, same order): none over a minute; anchors absorb every single-state saving
+
 ## Summary
 
 - Wheeling: 234.24 h
@@ -519,3 +582,4 @@ First bus d1 Thu 06:23 from Ledyard Lot; finish d11 Sun 03:35 at Biloxi Transit 
 - RX: 234.75 h
 - HAR: 237.69 h
 - HMS: 238.19 h
+- HT: 230.02 h

@@ -7,6 +7,7 @@ leg tables, waits and connection lists are generated into [`routes_data.md`](rou
 
 | route | hours | start | finish | family |
 |---|---|---|---|---|
+| **HT** | **230.02** (230.2 from the 06:10 walk) | Hanover NH (Ledyard Lot), Thu 06:23; Vermont on foot first | Tallahassee FL, Sat 20:25 | NH → FL; HMS without its forced Mississippi finish |
 | **Wheeling** | **234.24** | Wheeling WV, Ohio Coach 04:00 (03:00 verified: 235.24) | VT line from Hanover, Sat 22:14 | WV → VT |
 | **RX** | **234.75** | Primm NV, Thu 10:50 (702 Shuttles; Las Vegas 10:00 Greyhound: 235.58) | Sheridan WY (JL 702 from Billings), Sun 06:35 | X with the West at the end; found by the unguided sweep |
 | **Control** | **237.24** | Huntington WV, Thu 01:00 | VT line from Hanover, Sat 22:14 | WV → VT |
@@ -160,3 +161,21 @@ Neither uses Ohio Coach.
   Mobile → Biloxi MS, Sun 03:35.
 
 Risks: the Michiana run is the longest measured run in any record route; the HAR finish is a 02:10 departure.
+
+### HT, 230.02 h (NH → FL): the fastest route we have, found Oct 2
+
+HMS with one change. HMS's focused search had been told to finish in Mississippi, copied from where its sweep run
+happened to end, so it spent its last seven hours on Tallahassee → Mobile → Biloxi. But the 09:00 Memphis →
+Birmingham Greyhound stops at **Tupelo MS (10:40)**, so Mississippi comes free on a bus the route already rides, and
+the route ends at Tallahassee on Saturday 20:25: **230.02 h** from the first bus (230.2 from the 06:10 walk), 4.2 h
+under Wheeling, 8.8 under the record, no Ohio Coach. Everything up to Newton is HAR/HMS; from there:
+
+- Newton → BeeLine to Oklahoma City → Heartland Flyer to Fort Worth → Texas Eagle to Longview → Amtrak bus to
+  Shreveport (LA) → Greyhound to Texarkana → overnight to Memphis (03:45, Tennessee).
+- **Big River Crossing walk 05:45-07:03** for Arkansas (the first walk of the day; the bridge opens at 06:00).
+- Memphis 09:00 → Tupelo MS → Birmingham AL 13:25 → Tallahassee FL 20:25.
+
+Risks: the Michiana run; the 05:45 bridge walk is the first one possible and 12-minute turnarounds follow; the
+Longview → Shreveport link is an Amtrak bus with a 12-minute connection off the Texas Eagle.
+
+The lesson, again: a fixed finish copied from a sweep run is a guess, not a constraint. HMS's finish cost 8.2 h.

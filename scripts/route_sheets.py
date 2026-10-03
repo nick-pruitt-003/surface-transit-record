@@ -103,5 +103,6 @@ if __name__ == '__main__':
     hx = lambda o: [st(a) for a in o.split(',')]
     sheet(wb, 'HAR 237.69', *legs_for(led, t_led, hx('NH,VT,ME,GA,WV,MI,ND,NE,MT,OR,CA,OK,FL,AR')))
     sheet(wb, 'HMS 238.19', *legs_for(led, t_led, hx('NH,VT,ME,GA,WV,MI,ND,NE,WY,OR,AZ,KS,LA,AR,FL,MS')))
+    sheet(wb, 'HT 230.02', *legs_for(led, t_led, hx('NH,VT,ME,GA,WV,MI,ND,NE,WY,OR,AZ,KS,LA,AR,MS,FL')))
     wb.save('../docs/route_legs.xlsx')
     print('wrote ../docs/route_legs.xlsx:', ', '.join(ws.title for ws in wb.worksheets))

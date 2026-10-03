@@ -126,5 +126,9 @@ if __name__ == '__main__':
                         note='docs/sweep.md: sweep 2 run 13 (239.8, from Portland ME), focused: start moved to Ledyard Lot. Hours count from the first bus (06:23); from the 06:10 walk add 0.2 h.')
     out['HMS'] = report('HMS (Hanover -> Biloxi MS)', led, t_led, hx('NH,VT,ME,GA,WV,MI,ND,NE,WY,OR,AZ,KS,LA,AR,FL,MS'),
                         note='docs/sweep.md: sweep 2 run 07 (242.1), focused. Hours count from the first bus (06:23); from the 06:10 walk add 0.2 h.')
+    # HT: HMS without its forced Mississippi finish. Mississippi comes at Tupelo on the Memphis -> Birmingham bus, so
+    # the route ends at Tallahassee (Oct 2: HMS's focused search had been given --end MS from its sweep run).
+    out['HT'] = report('HT (Hanover -> Tallahassee FL)', led, t_led, hx('NH,VT,ME,GA,WV,MI,ND,NE,WY,OR,AZ,KS,LA,AR,MS,FL'),
+                       note='HMS with Mississippi before Florida: Tupelo on the 09:00 Memphis -> Birmingham Greyhound replaces the Tallahassee -> Mobile -> Biloxi finish. Hours count from the first bus (06:23); from the 06:10 walk add 0.2 h.')
     print('\n## Summary\n')
     for k, v in out.items(): print(f'- {k}: {v:.2f} h')
