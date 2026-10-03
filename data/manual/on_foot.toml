@@ -9,6 +9,8 @@ nebraska_bank_at_south_sioux_city = { name = "Nebraska bank at South Sioux City 
 
 sc_bank_at_north_augusta_landing_dr = { name = "South Carolina bank at North Augusta Landing Dr (on foot from Augusta Greyhound)", lon = -81.9748, lat = 33.4925 }
 
+foley_park_vermont_end_of_ledyard_bridge = { name = "Foley Park at the Vermont end of Ledyard Bridge (on foot to the Hanover Inn)", lon = -72.3046, lat = 43.7036 }
+
 [[trip]]
 id = "t50"
 route = "stop definitions for walk links (never runs)"
@@ -43,3 +45,10 @@ route = "stop definition for the Augusta -> North Augusta walk (never runs)"
 days = "0000000"
 tz = "America/New_York"
 stops = ["sc_bank_at_north_augusta_landing_dr 00:00"]
+
+[[trip]]
+id = "t340"
+route = "stop definition for the Foley Park -> Hanover Inn walk (never runs)"
+days = "0000000"
+tz = "America/New_York"
+stops = ["foley_park_vermont_end_of_ledyard_bridge 00:00"]

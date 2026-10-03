@@ -103,7 +103,8 @@ if __name__ == '__main__':
     hx = lambda o: [a if a.startswith('@') else st(a) for a in o.split(',')]   # '@stop' items are pins
     sheet(wb, 'HAR 237.69', *legs_for(led, t_led, hx('NH,VT,ME,GA,WV,MI,ND,NE,MT,OR,CA,OK,FL,AR')))
     sheet(wb, 'HMS 238.19', *legs_for(led, t_led, hx('NH,VT,ME,GA,WV,MI,ND,NE,WY,OR,AZ,KS,LA,AR,FL,MS')))
-    sheet(wb, 'HT 230.02', *legs_for(led, t_led, hx('NH,VT,ME,@Washington Union Station,GA,WV,MI,ND,NE,WY,OR,AZ,KS,LA,AR,MS,FL')))
+    fp = R.stops_matching('Foley Park at the Vermont end')[0]; t_fp = datetime(2026, 9, 24, 6, 19, tzinfo=ZoneInfo('America/New_York')).timestamp()
+    sheet(wb, 'HT 230.10', *legs_for(fp, t_fp, hx('ME,@Washington Union Station,GA,WV,MI,ND,NE,WY,OR,AZ,KS,LA,AR,MS,FL')))
     nba = R.stops_matching('New Buffalo Amtrak')[0]; t_nba = datetime(2026, 9, 30, 21, 37, tzinfo=ZoneInfo('America/New_York')).timestamp()
     sheet(wb, 'NBA 237.52', *legs_for(nba, t_nba, hx('ND,MO,WA,AZ,OK,LA,FL,ME,VT,WV,MS,AR')))
     wb.save('../docs/route_legs.xlsx')

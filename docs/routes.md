@@ -7,7 +7,7 @@ leg tables, waits and connection lists are generated into [`routes_data.md`](rou
 
 | route | hours | start | finish | family |
 |---|---|---|---|---|
-| **HT** | **230.02** (230.2 from the 06:10 walk) | Hanover NH (Ledyard Lot), Thu 06:23; Vermont on foot first | Tallahassee FL, Sat 20:25 | NH → FL; HMS without its forced Mississippi finish |
+| **HT** | **230.10** from the first step (229.75 from the first bus) | Foley Park VT (Ledyard Bridge), on foot 06:19 → Dartmouth Coach 06:40 | Tallahassee FL, Sat 20:25 | VT → FL; HMS without its forced Mississippi finish |
 | **Wheeling** | **234.24** | Wheeling WV, Ohio Coach 04:00 (03:00 verified: 235.24) | VT line from Hanover, Sat 22:14 | WV → VT |
 | **RX** | **234.75** | Primm NV, Thu 10:50 (702 Shuttles; Las Vegas 10:00 Greyhound: 235.58) | Sheridan WY (JL 702 from Billings), Sun 06:35 | X with the West at the end; found by the unguided sweep |
 | **Control** | **237.24** | Huntington WV, Thu 01:00 | VT line from Hanover, Sat 22:14 | WV → VT |
@@ -178,6 +178,11 @@ under Wheeling, 8.8 under the record, no Ohio Coach. Everything up to Newton is 
 
 Boston → DC: stay on the 15:10 Acela to Washington Union Station (22:22) and board the same Flix there at 00:30, a
 same-station connection, instead of Baltimore Penn → Baltimore downtown bus station (Nick); same 230.02 h.
+
+Start (Nick, Oct 3): stand at Foley Park on the Vermont end of the Ledyard Bridge and walk 16 min (0.6 mi, W Wheelock
+St) to the Hanover Inn for the 06:40 Dartmouth Coach. 06:19 is the latest start under the 5-minute rule (06:20
+loses the coach and a day); about 06:24 with no margin. Vermont at the start, New Hampshire on the coach, and Advance
+Transit is no longer needed. 230.10 h from the first step, down from 230.25 with the 06:10 Ledyard Lot start.
 
 Risks: the Michiana run; the 05:45 bridge walk is the first one possible and 12-minute turnarounds follow; the
 Longview → Shreveport link is an Amtrak bus timed to the Texas Eagle, which waits for the train (Nick), so its
