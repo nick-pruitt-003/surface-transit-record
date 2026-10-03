@@ -1,0 +1,102 @@
+agency = "Four Winds Casino Shuttle (Chinatown)"
+
+# fourwindscasinoshuttle.com/chinatown (Nick, Oct 3 2026). All times CST as printed, so tz = America/Chicago even though
+# the casino (New Buffalo MI) keeps Eastern. 21+ with photo ID; $10 fare with $20 slot play. The Wed-Sat runs are the
+# expansion "starting Wednesday, October 28, 2026". Return arrival times in Chicago are not published: assumed equal
+# to the outbound 1 h 40 min (casino -> 35th & State). Casino point approximate.
+[stops]
+ct_35th_state = { name = "35th & State St (Four Winds shuttle)", lon = -87.6266, lat = 41.8307 }
+ct_archer_wentworth = { name = "Archer and Wentworth (Four Winds shuttle)", lon = -87.6322, lat = 41.8517 }
+ct_wentworth_depot = { name = "2734 S. Wentworth Bus Depot (Four Winds shuttle)", lon = -87.6317, lat = 41.8437 }
+four_winds_new_buffalo = { name = "Four Winds Casino New Buffalo MI (shuttle)", lon = -86.7208, lat = 41.7762 }
+
+[[trip]]
+id = "t341"
+route = "Chinatown 07:50 -> Four Winds New Buffalo (daily)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["ct_35th_state 07:50", "ct_archer_wentworth 08:00", "ct_wentworth_depot 08:05", "four_winds_new_buffalo 09:30"]
+
+[[trip]]
+id = "t342"
+route = "Chinatown 09:50 -> Four Winds New Buffalo (Wed-Sat, from Oct 28 2026)"
+days = "0011110"
+tz = "America/Chicago"
+stops = ["ct_35th_state 09:50", "ct_archer_wentworth 10:00", "ct_wentworth_depot 10:05", "four_winds_new_buffalo 11:30"]
+
+[[trip]]
+id = "t343"
+route = "Chinatown 11:50 -> Four Winds New Buffalo (daily)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["ct_35th_state 11:50", "ct_archer_wentworth 12:00", "ct_wentworth_depot 12:05", "four_winds_new_buffalo 13:30"]
+
+[[trip]]
+id = "t344"
+route = "Chinatown 13:50 -> Four Winds New Buffalo (Wed-Sat, from Oct 28 2026)"
+days = "0011110"
+tz = "America/Chicago"
+stops = ["ct_35th_state 13:50", "ct_archer_wentworth 14:00", "ct_wentworth_depot 14:05", "four_winds_new_buffalo 15:30"]
+
+[[trip]]
+id = "t345"
+route = "Chinatown 15:50 -> Four Winds New Buffalo (Wed-Sat, from Oct 28 2026)"
+days = "0011110"
+tz = "America/Chicago"
+stops = ["ct_35th_state 15:50", "ct_archer_wentworth 16:00", "ct_wentworth_depot 16:05", "four_winds_new_buffalo 17:30"]
+
+[[trip]]
+id = "t346"
+route = "Chinatown 17:50 -> Four Winds New Buffalo (Wed-Sat, from Oct 28 2026)"
+days = "0011110"
+tz = "America/Chicago"
+stops = ["ct_35th_state 17:50", "ct_archer_wentworth 18:00", "ct_wentworth_depot 18:05", "four_winds_new_buffalo 19:30"]
+
+[[trip]]
+id = "t347"
+route = "Four Winds New Buffalo 10:00 -> Chinatown (arrival assumed +1 h 40 min; daily)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["four_winds_new_buffalo 10:00", "ct_wentworth_depot 11:25", "ct_archer_wentworth 11:30", "ct_35th_state 11:40"]
+
+[[trip]]
+id = "t348"
+route = "Four Winds New Buffalo 12:00 -> Chinatown (arrival assumed +1 h 40 min; Wed-Sat)"
+days = "0011110"
+tz = "America/Chicago"
+stops = ["four_winds_new_buffalo 12:00", "ct_wentworth_depot 13:25", "ct_archer_wentworth 13:30", "ct_35th_state 13:40"]
+
+[[trip]]
+id = "t349"
+route = "Four Winds New Buffalo 14:00 -> Chinatown (arrival assumed +1 h 40 min; daily)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["four_winds_new_buffalo 14:00", "ct_wentworth_depot 15:25", "ct_archer_wentworth 15:30", "ct_35th_state 15:40"]
+
+[[trip]]
+id = "t350"
+route = "Four Winds New Buffalo 16:00 -> Chinatown (arrival assumed +1 h 40 min; Wed-Sat)"
+days = "0011110"
+tz = "America/Chicago"
+stops = ["four_winds_new_buffalo 16:00", "ct_wentworth_depot 17:25", "ct_archer_wentworth 17:30", "ct_35th_state 17:40"]
+
+[[trip]]
+id = "t351"
+route = "Four Winds New Buffalo 18:00 -> Chinatown (arrival assumed +1 h 40 min; daily)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["four_winds_new_buffalo 18:00", "ct_wentworth_depot 19:25", "ct_archer_wentworth 19:30", "ct_35th_state 19:40"]
+
+[[trip]]
+id = "t352"
+route = "Four Winds New Buffalo 20:00 -> Chinatown (arrival assumed +1 h 40 min; Wed-Sat)"
+days = "0011110"
+tz = "America/Chicago"
+stops = ["four_winds_new_buffalo 20:00", "ct_wentworth_depot 21:25", "ct_archer_wentworth 21:30", "ct_35th_state 21:40"]
+
+[[trip]]
+id = "t353"
+route = "Four Winds New Buffalo 00:00 -> Chinatown (arrival assumed +1 h 40 min; Wed-Sat)"
+days = "0011110"
+tz = "America/Chicago"
+stops = ["four_winds_new_buffalo 24:00", "ct_wentworth_depot 25:25", "ct_archer_wentworth 25:30", "ct_35th_state 25:40"]
