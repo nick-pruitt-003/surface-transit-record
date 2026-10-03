@@ -552,6 +552,11 @@ class Search:
         self.live_point(current_h=self.el_h(f, legs))
         self.live(force=True, budget=budget, phase='starting', current=self.legs_json(legs), note=f'seed: {self.el_h(f, legs):.1f} h')
         deadline = time.time() + budget
+        # The seed as given, settled. The descent below ranks on finish from the fixed clock, not on hours from the
+        # first bus, and can walk away from a seed whose value only shows once its start day is chosen: a sweep
+        # result seeded at 240.5 h came back 243.8 h (Oct 3). Kept as a candidate, as the exhaustive path keeps its own.
+        sd = self.settle(order)
+        sd = (list(order), sd[3], sd[4], sd[0], sd[1], sd[2]) if sd is not None else None
         ex = None
         if 0 < len(self.owed()) <= self.exhaustive:
             order, f, legs, pool = self.enumerate_all(order, f, legs, pool)
@@ -559,9 +564,10 @@ class Search:
             if ex is not None: ex = (order, ex[3], ex[4], ex[0], ex[1], ex[2])
         order, f, legs, pool = self.local_opt(order, f, legs, deadline, pool)
         el, f, legs, pool = self.adopt(order, pool)
-        if ex is not None and ex[3] < el - 60:
-            order, f, legs, el = ex[:4]
-            if (self.start, self.t0) != ex[4:6]: pool = self.set_start(ex[4], ex[5], order, pool)
+        for c in (ex, sd):
+            if c is not None and c[3] < el - 60:
+                order, f, legs, el = c[:4]
+                if (self.start, self.t0) != c[4:6]: pool = self.set_start(c[4], c[5], order, pool)
         print('settled', round(el / 3600, 1), 'h from first bus', flush=True)
         self.live_point(best_h=round(el / 3600, 2))
         self.live(force=True, best=self.legs_json(legs), start=self.start_name(legs), note=f'first best: {el / 3600:.1f} h from first bus')
