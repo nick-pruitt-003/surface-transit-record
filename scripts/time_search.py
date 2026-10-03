@@ -285,7 +285,8 @@ class Search:
         """_finish for each order, memoised on (start, clock, order). _finish is a pure function of those three
         for one search (_BASE only speeds it up), so an order is scored once per start however often the local
         search, a kick or a pair move comes back to it. Only unseen orders go to the pool; self._new counts them,
-        which is how run() knows a kick taught it nothing."""
+        which is how run() knows a kick taught it nothing. The key needs no more: done and _END are fixed for a
+        Search instance, and a moved start or clock is a new (start, t0), so a stale entry is never read."""
         memo = self.__dict__.setdefault('_memo', {})
         key = (int(self.start), self.t0)
         ks = [(key, tuple(o)) for o in orders]

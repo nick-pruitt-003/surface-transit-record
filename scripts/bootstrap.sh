@@ -35,8 +35,9 @@ PY
 
 echo
 echo "=== 2. csa.so ==="
-# Unconditional. cached_router keys on data/, time_router.py and common.py but NOT on csa.c, so there is
-# no mechanism that would notice a stale object; rebuilding costs a second and removes the whole class.
+# Unconditional. _bind_fast rebuilds csa.so when it is older than csa.c by mtime, but a fresh checkout can
+# give the two any mtimes, and cached_router keys on data/, time_router.py and common.py, NOT on csa.c, so a
+# cached router never notices a changed signature. Rebuilding costs a second and removes the whole class.
 cc -O3 -shared -fPIC csa.c -o csa.so
 echo "built $(ls -la csa.so | awk '{print $5}') bytes from csa.c"
 

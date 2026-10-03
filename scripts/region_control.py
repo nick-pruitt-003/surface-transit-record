@@ -43,7 +43,7 @@ for k, key in enumerate(R.ctrip):
 
 touch = {int(R.state[start]): first_bus} if R.state[start] >= 0 else {}
 for l in legs:
-    if l[0] == 'walk' and l[2] >= R.first_virtual:
+    if l[0] == 'walk' and R.walk_collects(l[2]):
         touch.setdefault(int(R.state[l[2]]), l[4])
     if l[0] != 'ride': continue
     _, trip, bs, bt, al, at = l
