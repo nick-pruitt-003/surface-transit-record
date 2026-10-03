@@ -176,6 +176,7 @@ under Wheeling, 8.8 under the record, no Ohio Coach. Everything up to Newton is 
 - Memphis 09:00 → Tupelo MS → Birmingham AL 13:25 → Tallahassee FL 20:25.
 
 Risks: the Michiana run; the 05:45 bridge walk is the first one possible and 12-minute turnarounds follow; the
-Longview → Shreveport link is an Amtrak bus with a 12-minute connection off the Texas Eagle.
+Longview → Shreveport link is an Amtrak bus timed to the Texas Eagle, which waits for the train (Nick), so its
+12-minute connection is not a risk.
 
 The lesson, again: a fixed finish copied from a sweep run is a guess, not a constraint. HMS's finish cost 8.2 h.
