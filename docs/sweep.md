@@ -171,6 +171,11 @@ flat:
 
 The HT / HAR / HMS focused searches of Oct 2 ran before both fixes; their families may have more in them.
 
+Follow-ups (Oct 3): HT focused again with both fixes (start Ledyard Lot, settled at its own 230.0 h, free end):
+converged at **230.02**, nothing better in an hour. NBA's ending re-timed with Arkansas and Mississippi at every
+position: as found (237.52) is best; both are only reachable from Memphis at the end, any other placement costs
+1 to 46 h.
+
 ## Next
 
 - More sweeps with other random seeds: one 5-hour sweep found RX, the cheapest new-family finder we have.
