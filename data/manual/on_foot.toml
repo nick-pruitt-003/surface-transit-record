@@ -7,6 +7,8 @@ vermont_line_on_us_7_on_foot_from_willia = { name = "Vermont line on US-7 (on fo
 vermont_line_on_west_rd_on_foot_from_nor = { name = "Vermont line on West Rd (on foot from North Adams Hospital)", lon = -73.1180, lat = 42.7432 }
 nebraska_bank_at_south_sioux_city = { name = "Nebraska bank at South Sioux City 1st Ave (on foot from Sioux City)", lon = -96.4132, lat = 42.4838 }
 
+sc_bank_at_north_augusta_landing_dr = { name = "South Carolina bank at North Augusta Landing Dr (on foot from Augusta Greyhound)", lon = -81.9748, lat = 33.4925 }
+
 [[trip]]
 id = "t50"
 route = "stop definitions for walk links (never runs)"
@@ -34,3 +36,10 @@ route = "stop definition for the Sioux City -> South Sioux City walk (never runs
 days = "0000000"
 tz = "America/Chicago"
 stops = ["nebraska_bank_at_south_sioux_city 00:00"]
+
+[[trip]]
+id = "t339"
+route = "stop definition for the Augusta -> North Augusta walk (never runs)"
+days = "0000000"
+tz = "America/New_York"
+stops = ["sc_bank_at_north_augusta_landing_dr 00:00"]
