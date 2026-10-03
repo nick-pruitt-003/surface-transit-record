@@ -121,14 +121,14 @@ if __name__ == '__main__':
     # The Hanover spine (sweep 2 runs 13 and 07, focused Oct 2): Ledyard Lot start (Vermont on foot at 06:10), New
     # England, Southeast, Michiana, Fargo, the I-90 bus, the West, Southwest Chief, BeeLine, Houston; two finishes.
     led = R.stops_matching('Ledyard Lot')[0]; t_led = datetime(2026, 9, 24, 6, 0, tzinfo=ZoneInfo('America/New_York')).timestamp()
-    hx = lambda o: [st(a) for a in o.split(',')]
+    hx = lambda o: [a if a.startswith('@') else st(a) for a in o.split(',')]   # '@stop' items are pins
     out['HAR'] = report('HAR (Hanover -> Forrest City AR)', led, t_led, hx('NH,VT,ME,GA,WV,MI,ND,NE,MT,OR,CA,OK,FL,AR'),
                         note='docs/sweep.md: sweep 2 run 13 (239.8, from Portland ME), focused: start moved to Ledyard Lot. Hours count from the first bus (06:23); from the 06:10 walk add 0.2 h.')
     out['HMS'] = report('HMS (Hanover -> Biloxi MS)', led, t_led, hx('NH,VT,ME,GA,WV,MI,ND,NE,WY,OR,AZ,KS,LA,AR,FL,MS'),
                         note='docs/sweep.md: sweep 2 run 07 (242.1), focused. Hours count from the first bus (06:23); from the 06:10 walk add 0.2 h.')
     # HT: HMS without its forced Mississippi finish. Mississippi comes at Tupelo on the Memphis -> Birmingham bus, so
     # the route ends at Tallahassee (Oct 2: HMS's focused search had been given --end MS from its sweep run).
-    out['HT'] = report('HT (Hanover -> Tallahassee FL)', led, t_led, hx('NH,VT,ME,GA,WV,MI,ND,NE,WY,OR,AZ,KS,LA,AR,MS,FL'),
+    out['HT'] = report('HT (Hanover -> Tallahassee FL)', led, t_led, hx('NH,VT,ME,@Washington Union Station,GA,WV,MI,ND,NE,WY,OR,AZ,KS,LA,AR,MS,FL'),
                        note='HMS with Mississippi before Florida: Tupelo on the 09:00 Memphis -> Birmingham Greyhound replaces the Tallahassee -> Mobile -> Biloxi finish. Hours count from the first bus (06:23); from the 06:10 walk add 0.2 h.')
     # NBA: sweep 3 run 22 (240.5), focused with the fixed search (d90d8f0): New Buffalo MI -> Big River Crossing AR line.
     nba = R.stops_matching('New Buffalo Amtrak')[0]; t_nba = datetime(2026, 9, 30, 21, 37, tzinfo=ZoneInfo('America/New_York')).timestamp()

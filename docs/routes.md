@@ -176,6 +176,9 @@ under Wheeling, 8.8 under the record, no Ohio Coach. Everything up to Newton is 
 - **Big River Crossing walk 05:45-07:03** for Arkansas (the first walk of the day; the bridge opens at 06:00).
 - Memphis 09:00 → Tupelo MS → Birmingham AL 13:25 → Tallahassee FL 20:25.
 
+Boston → DC: stay on the 15:10 Acela to Washington Union Station (22:22) and board the same Flix there at 00:30, a
+same-station connection, instead of Baltimore Penn → Baltimore downtown bus station (Nick); same 230.02 h.
+
 Risks: the Michiana run; the 05:45 bridge walk is the first one possible and 12-minute turnarounds follow; the
 Longview → Shreveport link is an Amtrak bus timed to the Texas Eagle, which waits for the train (Nick), so its
 12-minute connection is not a risk.

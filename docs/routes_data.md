@@ -521,8 +521,8 @@ First bus d1 Thu 06:23 from Ledyard Lot; finish d10 Sat 20:25 at Tallahassee (CK
 | 2 | d1 Thu 06:40 | Hanover (Hanover Inn) | d1 Thu 09:30 | Boston South Station | Dartmouth Coach: Hanover -> Boston South Station 06:40 | 0.11 h | +0.9 h |
 | 3 | d1 Thu 10:00 | Boston South Station | d1 Thu 11:55 | Portland, ME | Concord Coach Lines: Portland, ME to/from Boston & Logan Air | 0.49 h | +1.2 h |
 | 4 | d1 Thu 12:30 | Portland, ME | d1 Thu 14:25 | Boston South Station | Concord Coach Lines: Portland, ME to/from Boston & Logan Air | 0.58 h | +1.0 h |
-| 5 | d1 Thu 15:10 | Boston | d1 Thu 21:44 | Baltimore Penn Station | Amtrak: Acela | 0.61 h | +0.8 h |
-| 6 | d1 Thu 23:25 | Baltimore Downtown Bus Station | d2 Fri 11:25 | Augusta | FlixBus-us: NYC Chinatown - Atlanta | 0.91 h | +24.0 h |
+| 5 | d1 Thu 15:10 | Boston | d1 Thu 22:22 | Washington Union Station | Amtrak: Acela | 0.61 h | +0.9 h |
+| 6 | d2 Fri 00:30 | Washington Union Station | d2 Fri 11:25 | Augusta | FlixBus-us: NYC Chinatown - Atlanta | 2.12 h | +24.0 h |
 | 7 | d2 Fri 12:05 | Augusta | d2 Fri 13:55 | Camden (McDonald's) | Greyhound-us: Atlanta - Columbia - Raleigh (Subsidy) | 0.67 h | +22.2 h |
 | 8 | d2 Fri 15:15 | Camden (McDonald's) | d2 Fri 16:55 | Charlotte Bus Station | Greyhound-us: Raleigh - Jacksonville | 1.33 h | +24.0 h |
 | 9 | d2 Fri 17:45 | Charlotte | d3 Sat 04:30 | Columbus (E Mound St) | Barons Bus Lines: Charlotte -> Columbus | 0.83 h | +24.0 h |
@@ -558,6 +558,7 @@ First bus d1 Thu 06:23 from Ledyard Lot; finish d10 Sat 20:25 at Tallahassee (CK
 - 4.2 h at Minneapolis before leg 14 (Jefferson Lines: Minneapolis -> Billings); miss penalty +24.0 h
 - 4.1 h at Chicago Bus Station before leg 13 (Greyhound-us: Chicago - Milwaukee - Minneapolis); miss penalty +3.1 h
 - 2.6 h at Sioux Falls before leg 18 (Jefferson Lines: Minneapolis -> Billings); miss penalty +24.0 h
+- 2.1 h at Washington Union Station before leg 6 (FlixBus-us: NYC Chinatown - Atlanta); miss penalty +24.0 h
 - 1.9 h at Fort Worth before leg 28 (Amtrak: Texas Eagle); miss penalty +24.0 h
 - 1.8 h at Oklahoma City before leg 27 (Amtrak: Heartland Flyer); miss penalty +24.0 h
 - 1.8 h at Columbus (E Mound St) before leg 10 (Barons Bus Lines: Columbus (E Mound St) -> Chicago); miss penalty +24.0 h
