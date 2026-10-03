@@ -3,7 +3,7 @@
   {"name": "New Orleans", "start": ["New Orleans Bus Station"], "finish": []},
   {"name": "Sheridan -> Nebraska (Missoula/Spearfish family)", "start": ["Sheridan WY", "Spearfish", "Gillette"], "finish": ["Omaha", "Nebraska bank", "7th & Walnut"]},
   {"name": "Fargo / Moorhead start", "start": ["Fargo", "Moorhead"], "finish": []},
-  {"name": "Hanover spine: HT / HAR / HMS (sweep 2 runs 07, 13)", "start": ["Hanover", "Ledyard", "Portland, ME"], "finish": ["Tallahassee", "Forrest City", "Biloxi", "MS state line", "HOLMES", "AIRWAYS", "Arkansas"]},
+  {"name": "Hanover spine: HT / HAR / HMS (sweep 2 runs 07, 13)", "start": ["Hanover (Hanover Inn)", "Hanover Inn", "Ledyard", "Foley Park", "Portland, ME"], "finish": ["Tallahassee", "Forrest City", "Biloxi", "MS state line", "HOLMES", "AIRWAYS", "Arkansas"]},
   {"name": "Weirton -> Portland ME (sweep 2 run 15)", "start": ["Weirton"], "finish": ["Portland"]},
   {"name": "NBA: New Buffalo MI -> Big River Crossing / Vermont line (sweep 3 run 22)", "start": ["New Buffalo"], "finish": ["Arkansas line", "VT state line", "Big River"]},
   {"name": "Omaha -> Fargo, Empire Builder finish (sweep 3 run 10)", "start": ["Omaha"], "finish": ["Fargo"]},
