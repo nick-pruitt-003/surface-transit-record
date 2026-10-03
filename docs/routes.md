@@ -184,6 +184,12 @@ St) to the Hanover Inn for the 06:40 Dartmouth Coach. 06:19 is the latest start 
 loses the coach and a day); about 06:24 with no margin. Vermont at the start, New Hampshire on the coach, and Advance
 Transit is no longer needed. 230.10 h from the first step, down from 230.25 with the 06:10 Ledyard Lot start.
 
+Memphis, Saturday, Big River Crossing → Airways Greyhound terminal for the 09:00 to Birmingham, on real MATA (the
+router had been bridging it with a local-transit proxy until the MATA allowlist was removed): walk to 2nd St at Butler,
+**route 39 at 07:23 → Brooks Rd, route 30 at 07:55 → Airways Transit Center 08:15**. Backups (Nick, Google): from the
+bridge 06:36, walk 31 min, route 57 at 07:07, route 32 at 08:03 → 08:17; from the bridge 07:29, walk 25 min, route 39
+at 07:54 → Hudson, route 28 at 08:15 → 08:34. Weekday times differ (route 12 07:25 → 08:03 runs only on weekdays).
+
 Risks: the Michiana run; the 05:45 bridge walk is the first one possible and 12-minute turnarounds follow; the
 Longview → Shreveport link is an Amtrak bus timed to the Texas Eagle, which waits for the train (Nick), so its
 12-minute connection is not a risk.

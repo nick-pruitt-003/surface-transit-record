@@ -1,3 +1,58 @@
+flix: 1042 stops, 7839 trips, tz UTC, 1042 stop_tz, calendar dates
+amtrak: 645 stops, 2920 trips, tz America/New_York, 645 stop_tz, calendar dates
+ibus: 3919 stops, 2482 trips, tz UTC, 1963 stop_tz, calendar weekday
+advance_transit: 203 stops, 1322 trips, tz America/New_York, 203 stop_tz, calendar dates
+augusta_transit: 622 stops, 328 trips, tz America/New_York, calendar dates
+bisman: 57 stops, 335 trips, tz America/Chicago, calendar dates
+brta: 208 stops, 538 trips, tz America/New_York, 208 stop_tz, calendar dates
+bustang: 58 stops, 257 trips, tz America/Denver, calendar dates
+cat_savannah: 1159 stops, 2169 trips, tz America/New_York, calendar dates
+coast: 423 stops, 512 trips, tz America/New_York, calendar dates
+concord_coach: 36 stops, 124 trips, tz America/New_York, calendar dates
+dart: 343 stops, 1246 trips, tz America/Chicago, calendar dates
+ddot: 1252 stops, 2689 trips, tz America/Detroit, calendar dates
+dsm_dart: 937 stops, 1712 trips, tz America/Chicago, calendar dates
+fourcounty: 176 stops, 105 trips, tz America/New_York, 176 stop_tz, calendar dates
+gmx: 109 stops, 172 trips, tz America/New_York, 109 stop_tz, calendar dates
+gobus: 66 stops, 30 trips, tz America/New_York, calendar dates
+hopi: 41 stops, 20 trips, tz America/Phoenix, calendar dates
+jta: 93 stops, 142 trips, tz America/New_York, calendar dates
+jule: 103 stops, 46 trips, tz America/Chicago, calendar dates
+kcata: 478 stops, 677 trips, tz America/Chicago, calendar dates
+kimball: 74 stops, 16 trips, tz America/Denver, 74 stop_tz, calendar dates
+lake_erie: 111 stops, 162 trips, tz America/New_York, calendar dates
+lct: 21 stops, 140 trips, tz America/New_York, 21 stop_tz, calendar dates
+marc: 79 stops, 179 trips, tz America/New_York, calendar dates
+mata: 3849 stops, 1398 trips, tz America/Chicago, calendar dates
+metra: 28 stops, 823 trips, tz America/Chicago, calendar dates
+metro: 2035 stops, 5493 trips, tz America/Chicago, calendar dates
+mlta: 13 stops, 11 trips, tz US/Eastern, calendar dates
+navajo: 103 stops, 22 trips, tz America/Denver, calendar dates
+omaha_metro: 2064 stops, 2842 trips, tz America/Chicago, calendar dates
+outrider: 83 stops, 18 trips, tz America/Denver, 81 stop_tz, calendar dates
+rtc: 1426 stops, 8272 trips, tz America/Los_Angeles, calendar dates
+rtd: 1009 stops, 7296 trips, tz America/Denver, calendar dates
+scrtd: 176 stops, 214 trips, tz America/Denver, calendar dates
+siouxcity: 679 stops, 600 trips, tz America/Chicago, 679 stop_tz, calendar dates
+starmetro: 486 stops, 611 trips, tz America/New_York, calendar dates
+sunmetro: 855 stops, 2621 trips, tz America/Denver, calendar dates
+svrta: 16 stops, 22 trips, tz America/New_York, calendar dates
+tarta: 322 stops, 283 trips, tz America/New_York, calendar dates
+transpo: 928 stops, 951 trips, tz America/Indiana/Indianapolis, calendar dates
+tri_valley_transit: 466 stops, 394 trips, tz America/New_York, 466 stop_tz, calendar dates
+uta: 1125 stops, 3150 trips, tz America/Denver, calendar dates
+vttranslines: 28 stops, 4 trips, tz America/New_York, 28 stop_tz, calendar dates
+vvta: 229 stops, 398 trips, tz America/Los_Angeles, calendar dates
+zz_mct: 124 stops, 105 trips, tz America/Chicago, calendar dates
+zz_nictd: 21 stops, 139 trips, tz America/Chicago, 21 stop_tz, calendar dates
+zz_omnitrans: 2276 stops, 3442 trips, tz America/Los_Angeles, calendar dates
+zz_opt: 46 stops, 28 trips, tz America/Denver, calendar dates
+zz_tank: 809 stops, 2024 trips, tz America/New_York, calendar dates
+zz_yankee: 16 stops, 5 trips, tz America/New_York, calendar dates
+extra: 350 manual trips
+450 walk-in border points within 1.4 km
+32017 stops, 1617562 footpaths, 16385720 connections over 20 days, 24 trips rejected as implausible, 75 repaired by dropping 178 stops
+pruned old router cache router_6d1c020a40807f73.pkl
 
 ## Wheeling (Ohio Coach 04:00 passage, transposed): 234.24 h
 
@@ -259,11 +314,11 @@ First bus d1 Thu 22:20 from Sheridan WY Taco Bell 1655 Coffeen Ave (Jefferson); 
 
 **Marginal state cost** (finish earlier when that state is dropped, same order): none over a minute; anchors absorb every single-state saving
 
-## X (Sheridan -> Mississippi line at Southaven): 238.11 h
+## X (Sheridan -> Mississippi line at Southaven): 238.05 h
 
 HANDOFF 28: route X rebuilt as the fastest head (22 states, to Hanover) joined to the fastest tail.
 
-First bus d3 Sat 22:20 from Sheridan WY Taco Bell 1655 Coffeen Ave (Jefferson); finish d13 Tue 21:26 at MS state line (walk from HOLMES at ELVIS PRESLEY).
+First bus d3 Sat 22:20 from Sheridan WY Taco Bell 1655 Coffeen Ave (Jefferson); finish d13 Tue 21:23 at MS state line (walk from HORN LAKE ROAD at HOLMES ROAD).
 
 | # | depart | from | arrive | to | service | wait before | miss penalty |
 |---|---|---|---|---|---|---|---|
@@ -305,8 +360,8 @@ First bus d3 Sat 22:20 from Sheridan WY Taco Bell 1655 Coffeen Ave (Jefferson); 
 | 36 | d12 Mon 20:05 | Sioux Falls | d13 Tue 04:15 | Kansas City | Jefferson Lines: Sioux Falls -> Kansas City | 0.25 h | +24.0 h |
 | 37 | d13 Tue 08:20 | Kansas City | d13 Tue 12:30 | Fayetteville | Jefferson Lines: Kansas City -> Texarkana | 4.08 h | +13.9 h |
 | 38 | d13 Tue 13:35 | Fayetteville | d13 Tue 20:05 | Memphis (MATA Airways Transit Cent | Jefferson Lines: Tulsa -> Memphis | 1.08 h | +24.0 h |
-| 39 | d13 Tue 20:19 | AIRWAYS BOULEVARD at BROOKS ROAD | d13 Tue 20:26 | BROOKS ROAD at COUGHLIN DRIVE | MATA: BROOKS | 0.12 h | +9.9 h |
-| 40 | d13 Tue 20:51 | ELVIS PRESLEY BLVD at SPRINGBROOK  | d13 Tue 21:07 | HOLMES at ELVIS PRESLEY | MATA: CROSSTOWN | 0.11 h | +8.0 h |
+| 39 | d13 Tue 20:19 | AIRWAYS BOULEVARD at BROOKS ROAD | d13 Tue 20:36 | BROOKS RD at 3RD ST | MATA: BROOKS | 0.12 h | +9.9 h |
+| 40 | d13 Tue 20:43 | BROOKS RD at 3RD ST | d13 Tue 21:03 | HORN LAKE ROAD at HOLMES ROAD | MATA: SOUTH THIRD | 0.13 h | +10.0 h |
 
 **Waits over an hour** (slack; spendable only if the ride after it is not an anchor):
 
@@ -321,7 +376,7 @@ First bus d3 Sat 22:20 from Sheridan WY Taco Bell 1655 Coffeen Ave (Jefferson); 
 - 1.1 h at Fayetteville before leg 38 (Jefferson Lines: Tulsa -> Memphis); miss penalty +24.0 h
 - 1.1 h at Billings before leg 2 (Jefferson Lines: Billings -> Spokane); miss penalty +24.0 h
 
-**Connections under 20 minutes:** leg 3 at Spokane (15 min); leg 4 at Pasco Bus Stop (15 min); leg 6 at Saint George (Bluff St Office) (10 min); leg 10 at Trinidad Amtrak (7 min); leg 12 at Oklahoma City Bus Station (12 min); leg 13 at BACHMAN STATION (7 min); leg 15 at Central Station Rusk EB (7 min); leg 18 at JRTC Bay H (9 min); leg 21 at Boston South Station (11 min); leg 26 at Philadelphia (16 min); leg 31 at East Chicago (12 min); leg 36 at Sioux Falls (15 min); leg 39 at AIRWAYS BOULEVARD at BROOKS ROAD (7 min); leg 40 at ELVIS PRESLEY BLVD at SPRINGBROOK AVENUE (7 min)
+**Connections under 20 minutes:** leg 3 at Spokane (15 min); leg 4 at Pasco Bus Stop (15 min); leg 6 at Saint George (Bluff St Office) (10 min); leg 10 at Trinidad Amtrak (7 min); leg 12 at Oklahoma City Bus Station (12 min); leg 13 at BACHMAN STATION (7 min); leg 15 at Central Station Rusk EB (7 min); leg 18 at JRTC Bay H (9 min); leg 21 at Boston South Station (11 min); leg 26 at Philadelphia (16 min); leg 31 at East Chicago (12 min); leg 36 at Sioux Falls (15 min); leg 39 at AIRWAYS BOULEVARD at BROOKS ROAD (7 min); leg 40 at BROOKS RD at 3RD ST (8 min)
 
 **Marginal state cost** (finish earlier when that state is dropped, same order): none over a minute; anchors absorb every single-state saving
 
@@ -641,7 +696,7 @@ First bus d7 Wed 21:47 from New Buffalo Amtrak; finish d17 Sat 18:18 at Arkansas
 - control: 237.24 h
 - MEX: 237.75 h
 - X_TOL: 237.91 h
-- X: 238.11 h
+- X: 238.05 h
 - RX: 234.75 h
 - HAR: 237.69 h
 - HMS: 238.19 h
