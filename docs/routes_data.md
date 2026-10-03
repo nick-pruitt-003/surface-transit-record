@@ -572,6 +572,69 @@ First bus d1 Thu 06:23 from Ledyard Lot; finish d10 Sat 20:25 at Tallahassee (CK
 
 **Marginal state cost** (finish earlier when that state is dropped, same order): none over a minute; anchors absorb every single-state saving
 
+## NBA (New Buffalo MI -> Arkansas line, Big River Crossing): 237.52 h
+
+Sweep 3 run 22 (240.5 h), focused from its real start stop with the fixed search. Ends on foot at the Arkansas line mid-bridge, inside the bridge hours.
+
+First bus d7 Wed 21:47 from New Buffalo Amtrak; finish d17 Sat 18:18 at Arkansas line on Big River Crossing (on foot from Memphis Amtrak).
+
+| # | depart | from | arrive | to | service | wait before | miss penalty |
+|---|---|---|---|---|---|---|---|
+| 1 | d7 Wed 21:47 | New Buffalo Amtrak | d7 Wed 22:25 | Chicago Union Station | Amtrak: Wolverine |  | +13.3 h |
+| 2 | d8 Thu 00:30 | Chicago Bus Station | d8 Thu 08:45 | Saint Paul Union Depot | Greyhound-us: Chicago - Milwaukee - Minneapolis | 1.88 h | +9.0 h |
+| 3 | d8 Thu 09:00 | St. Paul (Union Depot) | d8 Thu 09:25 | Minneapolis | Jefferson Lines: Kansas City -> Minneapolis | 0.25 h | +2.2 h |
+| 4 | d8 Thu 10:35 | Minneapolis | d8 Thu 14:55 | Fargo | Jefferson Lines: Minneapolis -> Billings | 1.17 h | +24.0 h |
+| 5 | d8 Thu 15:50 | Fargo | d8 Thu 19:50 | Sioux Falls | Jefferson Lines: Fargo -> Sioux Falls | 0.92 h | +24.0 h |
+| 6 | d8 Thu 20:05 | Sioux Falls | d9 Fri 02:15 | Maryville | Jefferson Lines: Sioux Falls -> Kansas City | 0.25 h | +24.0 h |
+| 7 | d9 Fri 03:25 | Maryville | d9 Fri 10:05 | Sioux Falls | Jefferson Lines: Kansas City -> Sioux Falls | 1.17 h | +24.0 h |
+| 8 | d9 Fri 12:40 | Sioux Falls | d10 Sat 00:25 | Billings | Jefferson Lines: Minneapolis -> Billings | 2.58 h | +24.0 h |
+| 9 | d10 Sat 01:30 | Billings | d10 Sat 10:30 | Spokane | Jefferson Lines: Billings -> Spokane | 1.08 h | +24.0 h |
+| 10 | d10 Sat 10:45 | Spokane | d10 Sat 13:10 | Pasco Bus Stop | Northwestern Stage Lines: NWL 710 Spokane -> Pasco | 0.25 h | +24.0 h |
+| 11 | d10 Sat 13:25 | Pasco Bus Stop | d11 Sun 02:30 | Salt Lake City Intermodal Trans Ct | Greyhound-us: Seattle-Boise-SLC-Denver | 0.25 h | +24.0 h |
+| 12 | d11 Sun 04:45 | Salt Lake City (Airport) | d11 Sun 10:20 | Saint George (Bluff St Office) | Salt Lake Express: SLE 7021 Salt Lake City (Airport) 04:45 - | 1.30 h | +1.2 h |
+| 13 | d11 Sun 10:30 | Saint George (Bluff St Office) | d11 Sun 11:40 | Las Vegas (Airport) | Salt Lake Express: SLE 8035 Saint George (Bluff St Office) 1 | 0.17 h | +1.5 h |
+| 14 | d11 Sun 14:00 | Las Vegas Bus Terminal | d11 Sun 18:15 | San Bernardino Depot | Greyhound-us: Los Angeles - Las Vegas | 1.56 h | +12.7 h |
+| 15 | d11 Sun 18:43 | San Bernardino | d13 Tue 01:47 | Newton | Amtrak: Southwest Chief | 0.43 h | +24.0 h |
+| 16 | d13 Tue 03:00 | Newton (Amtrak) | d13 Tue 06:43 | Oklahoma City | BeeLine Express-Village Travel: Newton (Amtrak) -> Oklahoma  | 1.21 h | +24.0 h |
+| 17 | d13 Tue 06:55 | Oklahoma City Bus Station | d13 Tue 11:10 | Dallas Bus Station | Greyhound-us: Dallas - Oklahoma City - Kansas City | 0.19 h | +0.8 h |
+| 18 | d13 Tue 11:30 | Dallas Bus Station | d13 Tue 16:20 | Downtown Houston (Gray St.) | FlixBus-us: Dallas - Houston | 0.33 h | +1.9 h |
+| 19 | d13 Tue 16:50 | Central Station Rusk EB | d13 Tue 17:06 | Magnolia Park Transit Center EB | Metropolitan Transit Authority of Harris County: METRORAIL G | 0.11 h | +0.2 h |
+| 20 | d13 Tue 18:35 | Houston Bus Station (Greyhound) | d14 Wed 11:00 | Tallahassee (CK Steele Bus Plaza) | Greyhound-us: Orlando - Houston | 1.46 h | +24.0 h |
+| 21 | d14 Wed 11:25 | Tallahassee (CK Steele Bus Plaza) | d14 Wed 14:50 | Jacksonville (Downtown) | Greyhound-us: Jacksonville - Mobile | 0.42 h | +5.8 h |
+| 22 | d14 Wed 15:00 | JRTC Bay H | d14 Wed 15:29 | Amtrak Station | Jacksonville Transportation Authority: Kings Road | 0.15 h | +0.5 h |
+| 23 | d14 Wed 16:11 | Jacksonville | d15 Thu 06:25 | Washington Union Station | Amtrak: Silver Meteor | 0.56 h | +8.8 h |
+| 24 | d15 Thu 06:45 | Washington Union Station | d15 Thu 13:56 | Boston | Amtrak: Acela | 0.33 h | +1.5 h |
+| 25 | d15 Thu 14:15 | Boston South Station | d15 Thu 16:10 | Portland, ME | Concord Coach Lines: Portland, ME to/from Boston & Logan Air | 0.18 h | +1.0 h |
+| 26 | d15 Thu 16:45 | Portland, ME | d15 Thu 18:40 | Boston South Station | Concord Coach Lines: Portland, ME to/from Boston & Logan Air | 0.58 h | +1.2 h |
+| 27 | d15 Thu 19:30 | Boston South Station | d15 Thu 22:00 | Hanover (Hanover Inn) | Dartmouth Coach: Boston South Station -> Hanover 19:30 | 0.83 h | +2.0 h |
+| 28 | d16 Fri 03:00 | Hanover (Hanover Inn) | d16 Fri 06:00 | Boston South Station | Dartmouth Coach: Hanover -> Boston South Station 03:00 | 4.52 h | +1.7 h |
+| 29 | d16 Fri 07:00 | Boston | d16 Fri 12:17 | Philadelphia | Amtrak: Acela | 0.85 h | +1.9 h |
+| 30 | d16 Fri 12:42 | Philadelphia | d16 Fri 14:26 | Harrisburg | Amtrak: Pennsylvanian | 0.42 h | +0.9 h |
+| 31 | d16 Fri 14:50 | Harrisburg Bus Station | d17 Sat 04:10 | Indianapolis Bus Station | Greyhound-us: New York - Pittsburgh - St. Louis | 0.39 h | +5.2 h |
+| 32 | d17 Sat 04:40 | Indianapolis Bus Station | d17 Sat 09:35 | Nashville Bus Station | Greyhound-us: Atlanta - Chicago | 0.50 h | +6.5 h |
+| 33 | d17 Sat 11:30 | Nashville Bus Station | d17 Sat 15:00 | Memphis Bus Station | FlixBus-us: Dallas - Nashville | 1.92 h | +5.9 h |
+| 34 | d17 Sat 15:15 | AIRWAYS TRANSIT CENTER | d17 Sat 15:34 | AIRWAYS BOULEVARD at HOLMES ROAD | MATA: CROSSTOWN | 0.25 h | +0.8 h |
+| 35 | d17 Sat 16:19 | AIRWAYS BOULEVARD at HOLMES ROAD | d17 Sat 16:49 | ELVIS PRESLEY BLVD at SOUTH PARKWA | MATA: CROSSTOWN | 0.09 h | +0.8 h |
+| 36 | d17 Sat 17:45 | Memphis | d17 Sat 18:18 | Arkansas line on Big River Crossin | On foot (Big River Crossing, open 06:00-22:00): Memphis Amtr | 0.14 h | +0.2 h |
+
+**Waits over an hour** (slack; spendable only if the ride after it is not an anchor):
+
+- 4.5 h at Hanover (Hanover Inn) before leg 28 (Dartmouth Coach: Hanover -> Boston South Station 03:00); miss penalty +1.7 h
+- 2.6 h at Sioux Falls before leg 8 (Jefferson Lines: Minneapolis -> Billings); miss penalty +24.0 h
+- 1.9 h at Nashville Bus Station before leg 33 (FlixBus-us: Dallas - Nashville); miss penalty +5.9 h
+- 1.9 h at Chicago Bus Station before leg 2 (Greyhound-us: Chicago - Milwaukee - Minneapolis); miss penalty +9.0 h
+- 1.6 h at Las Vegas Bus Terminal before leg 14 (Greyhound-us: Los Angeles - Las Vegas); miss penalty +12.7 h
+- 1.5 h at Houston Bus Station (Greyhound) before leg 20 (Greyhound-us: Orlando - Houston); miss penalty +24.0 h
+- 1.3 h at Salt Lake City (Airport) before leg 12 (Salt Lake Express: SLE 7021 Salt Lake City (Airport) 04:45 -); miss penalty +1.2 h
+- 1.2 h at Newton (Amtrak) before leg 16 (BeeLine Express-Village Travel: Newton (Amtrak) -> Oklahoma ); miss penalty +24.0 h
+- 1.2 h at Maryville before leg 7 (Jefferson Lines: Kansas City -> Sioux Falls); miss penalty +24.0 h
+- 1.2 h at Minneapolis before leg 4 (Jefferson Lines: Minneapolis -> Billings); miss penalty +24.0 h
+- 1.1 h at Billings before leg 9 (Jefferson Lines: Billings -> Spokane); miss penalty +24.0 h
+
+**Connections under 20 minutes:** leg 3 at St. Paul (Union Depot) (15 min); leg 6 at Sioux Falls (15 min); leg 10 at Spokane (15 min); leg 11 at Pasco Bus Stop (15 min); leg 13 at Saint George (Bluff St Office) (10 min); leg 17 at Oklahoma City Bus Station (12 min); leg 19 at Central Station Rusk EB (7 min); leg 22 at JRTC Bay H (9 min); leg 25 at Boston South Station (11 min); leg 34 at AIRWAYS TRANSIT CENTER (15 min); leg 35 at AIRWAYS BOULEVARD at HOLMES ROAD (6 min); leg 36 at Memphis (9 min)
+
+**Marginal state cost** (finish earlier when that state is dropped, same order): AR 2.4 h, MS 1.7 h
+
 ## Summary
 
 - Wheeling: 234.24 h
@@ -583,3 +646,4 @@ First bus d1 Thu 06:23 from Ledyard Lot; finish d10 Sat 20:25 at Tallahassee (CK
 - HAR: 237.69 h
 - HMS: 238.19 h
 - HT: 230.02 h
+- NBA: 237.52 h

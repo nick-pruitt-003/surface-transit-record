@@ -12,6 +12,7 @@ leg tables, waits and connection lists are generated into [`routes_data.md`](rou
 | **RX** | **234.75** | Primm NV, Thu 10:50 (702 Shuttles; Las Vegas 10:00 Greyhound: 235.58) | Sheridan WY (JL 702 from Billings), Sun 06:35 | X with the West at the end; found by the unguided sweep |
 | **Control** | **237.24** | Huntington WV, Thu 01:00 | VT line from Hanover, Sat 22:14 | WV → VT |
 | **MEX** | **237.75** | Huntington WV, Tue 01:00 | Portland ME, Thu 22:45 | WV → ME |
+| **NBA** | **237.52** | New Buffalo MI (Amtrak), Wed 21:47 | Arkansas line on the Big River Crossing, Sat 18:18 | MI → AR; sweep 3, focused |
 | **HAR** | **237.69** (237.9 from the 06:10 walk) | Hanover NH (Ledyard Lot), Thu 06:23; Vermont on foot first | Forrest City AR, Sun 03:05 | NH → AR; found by sweep 2, focused |
 | **X_TOL** | **237.91** | Sheridan WY, Thu 22:20 | VT line from Hanover, Sun 22:14 | WY → VT |
 | **X** | **238.11** | Sheridan WY, Sat 22:20 | MS line at Southaven, Tue 21:26 | WY → MS |
@@ -180,3 +181,15 @@ Longview → Shreveport link is an Amtrak bus timed to the Texas Eagle, which wa
 12-minute connection is not a risk.
 
 The lesson, again: a fixed finish copied from a sweep run is a guess, not a constraint. HMS's finish cost 8.2 h.
+
+### NBA, 237.52 h (MI → AR), found Oct 3 by sweep 3
+
+Sweep 3 run 22 (240.5 h), focused from its real start stop with the fixed search (d90d8f0). The Hanover-spine
+pieces in another order: New Buffalo → Chicago → St Paul → Minneapolis → Fargo → Sioux Falls (Nebraska in the
+Maryville dead time) → I-90 bus → Billings → Spokane → Pasco → Salt Lake → Las Vegas → San Bernardino → Southwest Chief
+→ BeeLine → Dallas → Houston → Tallahassee → Jacksonville → Silver Meteor → Boston → Portland ME → Hanover overnight →
+Philadelphia → Harrisburg → Indianapolis → Nashville → Memphis, then the Holmes walk for Mississippi and the Big River
+Crossing walk to the Arkansas line (17:45-18:18, inside the bridge hours). No Ohio Coach.
+
+Lead: the report's marginal costs put Arkansas at 2.4 h and Mississippi at 1.7 h, both bought by the final Memphis
+walks. That is the shape that turned HMS (238.19) into HT (230.02); worth a "state given free" pass.

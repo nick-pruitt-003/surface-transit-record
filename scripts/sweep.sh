@@ -4,7 +4,7 @@
 #   bash sweep.sh ../out/sweep3 [budget=780] [patience=240] [grace=300]
 # A run whose best route settles into a family in known_families.json after `grace` seconds is stopped and logged
 # ABORTED, and the queue moves on. Families stay covered by the focused searches.
-cd "$(dirname "$0")"
+cd "$(dirname "$0")" || exit 1
 O=$1; BUDGET=${2:-780}; PATIENCE=${3:-240}; GRACE=${4:-300}
 export BUS48_MIN_TRANSFER=5 BUS48_WALKIN_KM=1.4 BUS48_WORKERS=${BUS48_WORKERS:-16} PYTHONUNBUFFERED=1
 PY=${PY:-py}
@@ -22,7 +22,7 @@ while IFS= read -r seed; do
     age=$($PY -c "import json,time;L=json.load(open('$live'));print(int(L['now']-L['started']))" 2>/dev/null || echo 0)
     if [[ $v == ABORT* && $age -ge $GRACE ]]; then
       winpid=$(cat /proc/$pid/winpid 2>/dev/null)
-      [ -n "$winpid" ] && taskkill //F //T //PID $winpid > /dev/null 2>&1 || kill $pid 2>/dev/null
+      if [ -n "$winpid" ]; then taskkill //F //T //PID $winpid > /dev/null 2>&1; else kill $pid 2>/dev/null; fi
       wait $pid 2>/dev/null
       echo "ABORTED $v" >> $log; echo "run $n aborted $(date): $v" >> $O/progress.txt
       break

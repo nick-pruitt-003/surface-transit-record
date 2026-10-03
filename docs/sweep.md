@@ -146,6 +146,31 @@ OKC -> BeeLine to Salina -> Cheyenne -> Salt Lake -> Billings -> JL 938 via Nort
 Two new routes under the record, both without Ohio Coach (`docs/routes.md`). The I-80 Wyoming chain wins a head to
 Minneapolis by a day (103.5 h vs 127.5 h) but the search prefers RX's West block in a whole route.
 
+## Sweep 3 (Oct 2-3 overnight, seed 3001, early abort on known families)
+
+`scripts/sweep.sh` with `family_watch.py`: a run whose best settles into a family in `known_families.json` after 5
+minutes is stopped. Two were (runs 04 and 06, both RX; run 04 had found RX's exact 234.75 from Primm on its own).
+
+| rank | sweep | run | start -> finish | focused (fixed search, real start stop) |
+|---|---|---|---|---|
+| 1 | **238.0** | 10 | Omaha -> Fargo (Empire Builder) | 238.0: the Fargo finish carries ND, MN and WI, so it is not an HT case |
+| 2 | 240.5 | 22 | New Buffalo MI -> Vermont line | **237.52 (NBA)**, now ending on the Big River Crossing |
+| 3 | 240.8 | 08 | Menomonie WI -> Vermont | 240.8 |
+| 4 | 244.6 | 05 | Ohio (RJC) -> Texas | 244.6 |
+
+Two defects found by these runs, both in how focused searches start, and the reason the first focused pass looked
+flat:
+
+- **Free start re-settles from scratch.** `--start free:<state> --seed run.pkl` re-chose the start stop and began
+  4-20 h worse than the sweep result (run 22: 240.5 -> 260.2), so a search spent its hour climbing back. Use
+  `--start "<the result's START stop>" --seed run.pkl --seed-pins`, and check the log's `settled` equals the sweep
+  FINAL.
+- **The descent could leave a good seed** (fixed in d90d8f0): it ranks on finish from the fixed clock and settles
+  the start day only afterwards, so run 22 came back 243.8 from a 240.5 seed. The settled seed is now kept as a
+  candidate. With both fixes run 22 went 240.5 -> 237.52.
+
+The HT / HAR / HMS focused searches of Oct 2 ran before both fixes; their families may have more in them.
+
 ## Next
 
 - More sweeps with other random seeds: one 5-hour sweep found RX, the cheapest new-family finder we have.

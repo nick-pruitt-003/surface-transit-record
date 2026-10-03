@@ -130,5 +130,9 @@ if __name__ == '__main__':
     # the route ends at Tallahassee (Oct 2: HMS's focused search had been given --end MS from its sweep run).
     out['HT'] = report('HT (Hanover -> Tallahassee FL)', led, t_led, hx('NH,VT,ME,GA,WV,MI,ND,NE,WY,OR,AZ,KS,LA,AR,MS,FL'),
                        note='HMS with Mississippi before Florida: Tupelo on the 09:00 Memphis -> Birmingham Greyhound replaces the Tallahassee -> Mobile -> Biloxi finish. Hours count from the first bus (06:23); from the 06:10 walk add 0.2 h.')
+    # NBA: sweep 3 run 22 (240.5), focused with the fixed search (d90d8f0): New Buffalo MI -> Big River Crossing AR line.
+    nba = R.stops_matching('New Buffalo Amtrak')[0]; t_nba = datetime(2026, 9, 30, 21, 37, tzinfo=ZoneInfo('America/New_York')).timestamp()
+    out['NBA'] = report('NBA (New Buffalo MI -> Arkansas line, Big River Crossing)', nba, t_nba, hx('ND,MO,WA,AZ,OK,LA,FL,ME,VT,WV,MS,AR'),
+                        note='Sweep 3 run 22 (240.5 h), focused from its real start stop with the fixed search. Ends on foot at the Arkansas line mid-bridge, inside the bridge hours.')
     print('\n## Summary\n')
     for k, v in out.items(): print(f'- {k}: {v:.2f} h')

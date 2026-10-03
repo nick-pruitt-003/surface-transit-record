@@ -658,7 +658,7 @@ class ExtraFeed:
             for n, tr in enumerate(doc.get('trip', [])):
                 tid = tr.get('id') or f'{stem}:{n}'
                 found.append((int(tid[1:]) if tid[0] == 't' and tid[1:].isdigit() else 10 ** 9, stem, n, tid, doc.get('agency', stem), tr, hits))
-        ref = date(2026, 9, 24)
+        ref = date(2026, 9, 24)   # rollover offsets taken on one date: right while the window has no DST change (US: Nov 1)
         for _, stem, n, tid, agency, tr, hits in sorted(found, key=lambda x: x[:3]):
             if tr.get('disabled'): continue
             fixed = ZoneInfo(tr['tz']) if tr.get('tz') else None
