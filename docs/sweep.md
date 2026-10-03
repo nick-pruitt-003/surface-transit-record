@@ -176,6 +176,15 @@ converged at **230.02**, nothing better in an hour. NBA's ending re-timed with A
 position: as found (237.52) is best; both are only reachable from Memphis at the end, any other placement costs
 1 to 46 h.
 
+HT split at its once-daily I-90 bus (Sioux Falls Mon 12:40) and each half searched with the other fixed (Oct 3):
+- **Tail** (fixed start Chicago Museum Campus Sat 17:19 with HT's 21 states done, free order and finish): 170.1 h,
+  HT's own tail; converged.
+- **Front** (free start, be at Sioux Falls by Mon 12:35 holding the 28 states HT has there): HT's own front, same
+  start and chain; converged.
+So HT is locally optimal on both sides of its key anchor under current data. A faster route needs a different
+family: HT already has the least useful riding (~173 h once the Maryville loop is counted as waiting); its ~49 h of
+waiting, half of it in the Plains before the I-90 bus, is where a better shape would have to save.
+
 ## Next
 
 - More sweeps with other random seeds: one 5-hour sweep found RX, the cheapest new-family finder we have.
