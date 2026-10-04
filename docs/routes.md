@@ -9,6 +9,7 @@ leg tables, waits and connection lists are generated into [`routes_data.md`](rou
 |---|---|---|---|---|
 | **HT** | **230.10** from the first step (229.75 from the first bus) | Foley Park VT (Ledyard Bridge), on foot 06:19 → Dartmouth Coach 06:40 | Tallahassee FL, Sat 20:25 | VT → FL; HMS without its forced Mississippi finish |
 | **Wheeling** | **234.24** | Wheeling WV, Ohio Coach 04:00 (03:00 verified: 235.24) | VT line from Hanover, Sat 22:14 | WV → VT |
+| **HUN** | **235.7** | Huntington WV, Thu 01:00 (Barons 00:45 area) | VT line from Hanover, Sat 20:44 | WV → VT; HT's middle and tail first, East last; Michiana run |
 | **RX** | **234.75** | Primm NV, Thu 10:50 (702 Shuttles; Las Vegas 10:00 Greyhound: 235.58) | Sheridan WY (JL 702 from Billings), Sun 06:35 | X with the West at the end; found by the unguided sweep |
 | **Control** | **237.24** | Huntington WV, Thu 01:00 | VT line from Hanover, Sat 22:14 | WV → VT |
 | **MEX** | **237.75** | Huntington WV, Tue 01:00 | Portland ME, Thu 22:45 | WV → ME |

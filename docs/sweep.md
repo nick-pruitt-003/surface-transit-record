@@ -185,6 +185,20 @@ So HT is locally optimal on both sides of its key anchor under current data. A f
 family: HT already has the least useful riding (~173 h once the Maryville loop is counted as waiting); its ~49 h of
 waiting, half of it in the Plains before the I-90 bus, is where a better shape would have to save.
 
+## NBA tail, sweep 4 and the Huntington route (Oct 3 afternoon/evening)
+
+- **NBA tail** from Jacksonville (Wed 14:50, 27 states done; the frequent East Coast part): 76.5 h, NBA's own. NBA is
+  optimal for its shape; it is HT's back half run first, and doing the East last is what costs it 7.4 h against HT.
+- **Sweep 4** (seed 4004, early abort; 24 runs, 3 stopped as known families, one of them a false 'Hanover Station'
+  match, pattern since tightened): best **242.9** (run 15, Fulton KY Amtrak start, no Ohio Coach), focused to
+  **242.3**. Everything else 250-332. Nothing near HT.
+- **Huntington start with the Michiana run** (Nick's observation that the 00:45 Barons from Huntington reaches the same
+  Columbus -> Michigan City bus HT rides): HT's middle and tail first, then the East via the Silver Meteor, finishing
+  at the Vermont line. 236.0 by hand, **235.7** after a focused search (Thu 01:00 -> Sat 20:44), no Ohio Coach. From
+  the control's own start town that is 1.5 h better than the control (237.24), the route the project sat on for
+  weeks; the shape was invisible until measured walk links (Michiana) began to count. Still 5.6 h behind HT for the
+  same reason as NBA: the East last.
+
 ## Next
 
 - More sweeps with other random seeds: one 5-hour sweep found RX, the cheapest new-family finder we have.
