@@ -1,16 +1,16 @@
-from_uid,to_uid,minutes,note
-ibus:2793,extra:Wisconsin line at Wolff Ln (on foot from Dubuque via East Dubuque),88,Google walking 3.9 mi via US-20 bridge and Menominee Rd
-ibus:3250,extra:Wisconsin line at Wolff Ln (on foot from Dubuque via East Dubuque),88,Google walking 3.9 mi via US-20 bridge and Menominee Rd
-amtrak:MEM,extra:Arkansas line on Big River Crossing (on foot from Memphis Amtrak),,Google walking 1.3 mi 31 min to mid-bridge; bridge open 6 AM - 10 PM only, so no always-open link: timed walks in data/manual/big_river_crossing.toml
-ibus:2385,extra:Denver Int'l Airport (Groome/A Line),50,RTD A Line Union Station - airport 37 min + wait
-amtrak:DEN,extra:Denver Int'l Airport (Groome/A Line),50,RTD A Line Union Station - airport 37 min + wait
-ibus:375,extra:Denver Int'l Airport (Groome/A Line),70,local to Union Station then A Line
-zz_nictd:s17,extra:Michigan line at Michiana (on foot from Michigan City Carroll Ave),85,OSM foot routing 9.3 km (5.8 mi) from South Shore Carroll Ave station at Nick's 4.1 mph running pace = 85 min (walking is 124 min)
-zz_mct:1_28,extra:Michigan line at Michiana (on foot from Michigan City Carroll Ave),51,OSM foot routing 5.6 km (3.5 mi) from MCT Route 1 Als Karwick at Nick's 4.1 mph running pace = 51 min (walking is 75 min); Route 1 hourly 07:09-17:09 Mon-Sat
-ibus:153,extra:Vermont line on US-7 (on foot from Williamstown),37,Google walking 2.5 mi (55 min) Williams College at Hopkins Hall -> 7985 US-7 Pownal VT just over the line (Nick screenshot Oct 1 2026); at Nick's 4.1 mph running pace = 37 min
-gmx:4258626,extra:Vermont line on US-7 (on foot from Williamstown),33,Field Park circle is on the same US-7 route about 0.25 mi in from Hopkins Hall: ~2.25 mi at 4.1 mph = 33 min
-brta:794954,extra:Vermont line on West Rd (on foot from North Adams Hospital),55,Google walking 3.0 mi via Eagle St and West Rd to 18 Klondike Rd Stamford VT with 876 ft of climb (Nick screenshot Oct 1 2026); 44 min at 4.1 mph flat plus ~11 min for the climb
-ibus:339,extra:Nebraska bank at South Sioux City 1st Ave (on foot from Sioux City),30,Google walking 1.3 mi 30 min MLK Jr. Transportation Center (Sioux City Jefferson stop) via Pierce St and the Veterans Memorial Bridge trail to 311 1st Ave South Sioux City NE (Nick screenshot Oct 2 2026); OSM foot routing agrees
-ibus:1266,extra:South Carolina bank at North Augusta Landing Dr (on foot from Augusta Greyhound),21,Google walking 0.9 mi 21 min 1546 Broad St Augusta (Greyhound) via the River Levee Trail and 13th St bridge to 156 Landing Dr North Augusta SC (Nick screenshot Oct 3 2026)
-ibus:900,extra:Foley Park at the Vermont end of Ledyard Bridge (on foot to the Hanover Inn),16,Google walking 0.6 mi 16 min Foley Park (west end of the Ledyard Bridge) via W Wheelock St to the Hanover Inn (Nick screenshot Oct 3 2026); a start point for HT
-ibus:2162,extra:Moorhead MN 13th Ave N at the Red River (on foot from Fargo Jefferson station),83,Google walking 3.7 mi 1 h 23 min Jefferson Lines 1211 41st St N Fargo via 12th Ave N to 508 13th Ave N Moorhead MN (Nick screenshot Oct 5 2026)
+from_uid,to_uid,minutes,note,miles
+ibus:2793,extra:Wisconsin line at Wolff Ln (on foot from Dubuque via East Dubuque),88,Google walking 3.9 mi via US-20 bridge and Menominee Rd,3.9
+ibus:3250,extra:Wisconsin line at Wolff Ln (on foot from Dubuque via East Dubuque),88,Google walking 3.9 mi via US-20 bridge and Menominee Rd,3.9
+amtrak:MEM,extra:Arkansas line on Big River Crossing (on foot from Memphis Amtrak),,Google walking 1.3 mi 31 min to mid-bridge; bridge open 6 AM - 10 PM only,
+ibus:2385,extra:Denver Int'l Airport (Groome/A Line),50,RTD A Line Union Station - airport 37 min + wait,
+amtrak:DEN,extra:Denver Int'l Airport (Groome/A Line),50,RTD A Line Union Station - airport 37 min + wait,
+ibus:375,extra:Denver Int'l Airport (Groome/A Line),70,local to Union Station then A Line,
+zz_nictd:s17,extra:Michigan line at Michiana (on foot from Michigan City Carroll Ave),85,OSM foot routing 9.3 km (5.8 mi) from South Shore Carroll Ave station at Nick's 4.1 mph running pace = 85 min (walking is 124 min),5.8
+zz_mct:1_28,extra:Michigan line at Michiana (on foot from Michigan City Carroll Ave),51,OSM foot routing 5.6 km (3.5 mi) from MCT Route 1 Als Karwick at Nick's 4.1 mph running pace = 51 min (walking is 75 min); Route 1 hourly 07:09-17:09 Mon-Sat,3.5
+ibus:153,extra:Vermont line on US-7 (on foot from Williamstown),37,Google walking 2.5 mi (55 min) Williams College at Hopkins Hall -> 7985 US-7 Pownal VT just over the line (Nick screenshot Oct 1 2026); at Nick's 4.1 mph running pace = 37 min,2.5
+gmx:4258626,extra:Vermont line on US-7 (on foot from Williamstown),33,Field Park circle is on the same US-7 route about 0.25 mi in from Hopkins Hall: ~2.25 mi at 4.1 mph = 33 min,2.25
+brta:794954,extra:Vermont line on West Rd (on foot from North Adams Hospital),55,Google walking 3.0 mi via Eagle St and West Rd to 18 Klondike Rd Stamford VT with 876 ft of climb (Nick screenshot Oct 1 2026); 44 min at 4.1 mph flat plus ~11 min for the climb,3.75
+ibus:339,extra:Nebraska bank at South Sioux City 1st Ave (on foot from Sioux City),30,Google walking 1.3 mi 30 min MLK Jr. Transportation Center (Sioux City Jefferson stop) via Pierce St and the Veterans Memorial Bridge trail to 311 1st Ave South Sioux City NE (Nick screenshot Oct 2 2026); OSM foot routing agrees,1.3
+ibus:1266,extra:South Carolina bank at North Augusta Landing Dr (on foot from Augusta Greyhound),21,Google walking 0.9 mi 21 min 1546 Broad St Augusta (Greyhound) via the River Levee Trail and 13th St bridge to 156 Landing Dr North Augusta SC (Nick screenshot Oct 3 2026),0.9
+ibus:900,extra:Foley Park at the Vermont end of Ledyard Bridge (on foot to the Hanover Inn),16,Google walking 0.6 mi 16 min Foley Park (west end of the Ledyard Bridge) via W Wheelock St to the Hanover Inn (Nick screenshot Oct 3 2026); a start point for HT,0.6
+ibus:2162,extra:Moorhead MN 13th Ave N at the Red River (on foot from Fargo Jefferson station),83,Google walking 3.7 mi 1 h 23 min Jefferson Lines 1211 41st St N Fargo via 12th Ave N to 508 13th Ave N Moorhead MN (Nick screenshot Oct 5 2026),3.7

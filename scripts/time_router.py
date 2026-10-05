@@ -24,6 +24,10 @@ WALKIN_KM = float(os.environ.get('BUS48_WALKIN_KM', 1.4))   # border walk-ins (N
 MIN_TRANSFER = int(os.environ.get('BUS48_MIN_TRANSFER', 5)) * 60       # seconds between different vehicles at the same stop
 SCAN_SLACK = float(os.environ.get("BUS48_SCAN_SLACK_H", 24)) * 3600   # keep scanning this long past the first target arrival; 24 lets a state be collected at a later, better-placed stop
 WALK_SPEED = 4.5 / 3.6       # m/s
+# Fit-run variant (Nick, Oct 5 2026): every leg on foot at a trained half-marathon pace, 1:23:47 = 6:23/mile = 9.4 mph,
+# the 16th of 114 men 20-24 at a Maine half. Unset keeps walking speed and the measured minutes in walk_links.csv.
+RUN_MPH = float(os.environ.get('BUS48_RUN_MPH', 0))
+if RUN_MPH: WALK_SPEED = RUN_MPH * 1609.344 / 3600
 WALK_MAX_KM = 1.5
 # Beyond walking: a local transit / shuttle proxy, which is a modelled link and not a service anyone runs.
 # Set BUS48_LOCAL_MAX_KM=0 to drop them and keep only real timetables plus walks, which is what a route has
@@ -281,7 +285,10 @@ class TimeRouter:
                 a, b = ix.get(r['from_uid']), ix.get(r['to_uid'])
                 if a is None or b is None: print('walk link: unknown stop', r['from_uid'], r['to_uid']); continue
                 if not r['minutes'].strip(): continue   # blank: end point kept isolated, reached only by timed trips (opening hours)
-                w = int(float(r['minutes']) * 60); self.foot[a].append((b, w)); self.foot[b].append((a, w))
+                w = int(float(r['minutes']) * 60)
+                # fit-run: the link's foot distance at RUN_MPH; transit links have no miles and keep their minutes
+                if RUN_MPH and (r.get('miles') or '').strip(): w = int(float(r['miles']) / RUN_MPH * 3600)
+                self.foot[a].append((b, w)); self.foot[b].append((a, w))
         # connections
         conns = []; self.trip_info = {}
         for fi, f in enumerate(feeds):
@@ -800,7 +807,7 @@ def cached_router(date, days, cache_dir=None, verbose=True):
     # wrong one without a word. BUS48_LOCAL_MAX_KM=5 against a router built at 10 is not an error anyone
     # would see; it is a plausible number from a different universe, which is this project's whole problem.
     sig.append(('cfg', WALKIN_KM, MIN_TRANSFER, SCAN_SLACK, LOCAL_MAX_KM, LOCAL_PROXY_ALL, STOP_TZ_LOCAL,
-                WALK_MAX_KM, WALK_SPEED))
+                WALK_MAX_KM, WALK_SPEED, RUN_MPH))
     key = hashlib.sha1(repr(sig).encode()).hexdigest()[:16]
     path = os.path.join(cache_dir, f'router_{key}.pkl')
     if os.path.exists(path):
