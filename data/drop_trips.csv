@@ -9,3 +9,5 @@ ibus,1029,Express Arrow Denver -> Omaha: the feed has 10:00 -> 20:40; booking sh
 ibus,1459,Express Arrow Omaha -> Denver: the feed has 07:15 -> 18:10; booking shows 06:40 -> 15:50 (Nick Oct 5 2026). Replaced by t407
 ibus,1497,Burlington Trailways St. Louis -> Cedar Rapids via Hannibal, Quincy, Keokuk: route shut as of March 2026 (Nick Oct 5 2026)
 ibus,469,Burlington Trailways Cedar Rapids -> St. Louis: as ibus 1497
+ibus,1190,Burlington Trailways Chicago 06:30 -> Des Moines 15:35: not sold; Chicago -> Des Moines is Greyhound 06:10 / 08:50 / 12:25 and Jefferson 21:15 (Nick Oct 5 2026)
+ibus,3018,Burlington Trailways Chicago 11:00 -> Des Moines 18:10: as ibus 1190
