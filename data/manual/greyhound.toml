@@ -8,6 +8,8 @@ huntington_bus_stop = "=ibus:1077"   # Huntington Bus Stop
 ashland_bus_station = "=ibus:1456"   # Ashland Bus Station
 columbus_e_mound_st = "=ibus:3102"   # Columbus (E Mound St)
 toledo_bus_stop = "=ibus:2271"   # Toledo Bus Stop
+slc_intermodal = "Salt Lake City Intermodal Trans Ctr"
+provo = "Provo/Orem (Exit 263)"   # Provo Central Station / Intermodal Hub, shared with Salt Lake Express
 
 [[trip]]
 id = "t112"
@@ -36,3 +38,8 @@ route = "Max Meadows -> Knoxville I-81 southbound (Nick screenshot Sep 29 2026: 
 days = "1111111"
 tz = "America/New_York"
 stops = ["max_meadows_a81_travel_plaza 14:20", "knoxville_area_transit_bus_stop 17:45"]
+
+[[trip]]
+route = "Seattle-Boise-SLC-Denver beyond Salt Lake City: SLC Intermodal 02:30/02:40 -> Provo Intermodal Hub 03:30 (Nick screenshot Oct 5 2026 for Fri Nov 13: Boise 20:45 -> Ogden 01:40 -> SLC 02:30 (10 min) -> Provo 03:30; the feed stops the trip at SLC; daily assumed)"
+days = "1111111"
+stops = ["slc_intermodal 02:40", "provo 03:30"]
