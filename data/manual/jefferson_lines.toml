@@ -18,6 +18,14 @@ owatonna = "=ibus:1564"
 albert_lea = "=ibus:1630"
 clear_lake_ia = "=ibus:1748"   # Clear Lake Jct.
 ames = "=ibus:2536"
+fargo_jl_bus = "=ibus:2162"   # Fargo (1211 41st St N)
+sisseton_jct = "=ibus:1062"   # Sisseton Jct SD
+summit_corner = "=ibus:2137"   # Summit Corner SD
+watertown_sd = "=ibus:622"   # Watertown SD (not NY)
+brookings_sd = "=ibus:2049"   # Brookings SD (not OR)
+sioux_falls_jl = "=ibus:186"   # Sioux Falls
+vivian_sd = "=ibus:1200"   # Vivian (Coffee Cup Fuel Stop)
+pierre_sd = "=ibus:2421"   # Pierre
 osceola_ia = "=ibus:35"
 lamoni = "=ibus:1022"
 bethany_mo = "=ibus:2630"
@@ -79,4 +87,23 @@ route = "JL Des Moines 03:45 -> Omaha 06:00 (non-stop; inferred from Google 02:4
 days = "1111111"
 tz = "America/Chicago"
 stops = ["des_moines_jl 03:45", "omaha_burlington 06:00"]
+
+# Nick screenshot Oct 5 2026, jeffersonlines.com: Fargo -> Sioux Falls departs 14:30, not the feed's 15:50 (feed trip
+# ibus 2020 dropped in data/drop_trips.csv). Times to Brookings from the site; Sioux Falls arrival inferred 18:25 from
+# the feed's 50-minute Brookings -> Sioux Falls run.
+[[trip]]
+id = "t354"
+route = "JL Fargo 14:30 -> Sisseton Jct -> Summit Corner -> Watertown -> Brookings -> Sioux Falls (SF arrival inferred; daily assumed)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["fargo_jl_bus 14:30", "sisseton_jct 15:45", "summit_corner 16:15/16:20", "watertown_sd 16:50", "brookings_sd 17:35", "sioux_falls_jl 18:25"]
+
+# Nick screenshot Oct 5 2026 (Jefferson booking): off the 06:45 Minneapolis -> Billings bus at Vivian 15:35, a
+# connector to Pierre, then the feed's Pierre -> Bismarck run (Mobridge, Fort Yates 20:55, Bismarck 22:25).
+[[trip]]
+id = "t355"
+route = "JL Vivian 15:40 -> Pierre 16:25 (connector; daily assumed)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["vivian_sd 15:40", "pierre_sd 16:25"]
 

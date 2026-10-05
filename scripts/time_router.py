@@ -57,6 +57,20 @@ def hms(t):
     h, m, s = t.split(':'); return int(h) * 3600 + int(m) * 60 + int(s)
 
 
+_DROP = None
+
+
+def _drop_trips():
+    """(feed name, trip_id) pairs to leave out: feed trips the carrier's own site contradicts, replaced by a manual
+    trip. data/drop_trips.csv: feed,trip_id,note. Read once."""
+    global _DROP
+    if _DROP is None:
+        p = os.path.join(DATA_DIR, 'drop_trips.csv'); _DROP = set()
+        if os.path.exists(p):
+            with open(p, encoding='utf-8') as fh: _DROP = {(r['feed'], r['trip_id']) for r in csv.DictReader(fh)}
+    return _DROP
+
+
 class Feed:
     """One GTFS zip. tz_mode: 'agency' (times in agency tz, or stop_timezone when
     present — Amtrak), 'infer' (majority state tz per agency), or 'utc'.
@@ -84,6 +98,7 @@ class Feed:
             r = routes.get(t['route_id'], {})
             ag = self.agency.get(r.get('agency_id', ''), {}).get('agency_name', r.get('agency_id', ''))
             if ag in skip_agencies: continue
+            if (name, t['trip_id']) in _drop_trips(): continue   # a feed trip the carrier site contradicts (data/drop_trips.csv)
             # big city feeds: keep only the listed routes (matched on id, short or long name)
             if keep_routes is not None and not ({t['route_id'], r.get('route_short_name', ''), r.get('route_long_name', '')} & keep_routes): continue
             self.trips[t['trip_id']] = dict(service=t['service_id'], agency=ag, route=(r.get('route_long_name') or r.get('route_short_name') or ''), headsign=t.get('trip_headsign', ''), stops=[])
