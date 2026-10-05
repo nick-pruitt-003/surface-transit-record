@@ -11,6 +11,8 @@ sc_bank_at_north_augusta_landing_dr = { name = "South Carolina bank at North Aug
 
 foley_park_vermont_end_of_ledyard_bridge = { name = "Foley Park at the Vermont end of Ledyard Bridge (on foot to the Hanover Inn)", lon = -72.3046, lat = 43.7036 }
 
+moorhead_mn_13th_ave_n = { name = "Moorhead MN 13th Ave N at the Red River (on foot from Fargo Jefferson station)", lon = -96.7745, lat = 46.8868 }
+
 [[trip]]
 id = "t50"
 route = "stop definitions for walk links (never runs)"
@@ -52,3 +54,10 @@ route = "stop definition for the Foley Park -> Hanover Inn walk (never runs)"
 days = "0000000"
 tz = "America/New_York"
 stops = ["foley_park_vermont_end_of_ledyard_bridge 00:00"]
+
+[[trip]]
+id = "t359"
+route = "stop definition for the Fargo Jefferson station -> Moorhead walk (never runs)"
+days = "0000000"
+tz = "America/Chicago"
+stops = ["moorhead_mn_13th_ave_n 00:00"]
