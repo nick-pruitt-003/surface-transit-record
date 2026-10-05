@@ -1,0 +1,297 @@
+agency = "UCAP Community Transit (Rock County MN, booked dial-a-ride)"
+
+# United Community Action Partnership Community Transit: general-public rural dial-a-ride (fare policy 2025: $2-5 by
+# distance, book by 4:30 pm the day before; volunteer drivers $.60/mile). Nick: the Luverne site says rides can be
+# booked to Sioux Falls. Modelled as a booked ride Luverne -> Sioux Falls (Jefferson stop), 45 min, pickups every
+# 15 min 07:00-17:00 on weekdays: service hours and days are ASSUMED, confirm with UCAP. Counts as local transit under
+# Nick's rules (public, bookable by anyone; not ADA paratransit, not a taxi).
+[stops]
+luverne = "=ibus:1296"   # Luverne (Express Way)
+sioux_falls_jl = "=ibus:186"   # Sioux Falls (Jefferson)
+
+[[trip]]
+id = "t362"
+route = "UCAP booked ride Luverne -> Sioux Falls (45 min; hours assumed)"
+days = "1111100"
+tz = "America/Chicago"
+stops = ["luverne 07:00", "sioux_falls_jl 07:45"]
+
+[[trip]]
+id = "t363"
+route = "UCAP booked ride Luverne -> Sioux Falls (45 min; hours assumed)"
+days = "1111100"
+tz = "America/Chicago"
+stops = ["luverne 07:15", "sioux_falls_jl 08:00"]
+
+[[trip]]
+id = "t364"
+route = "UCAP booked ride Luverne -> Sioux Falls (45 min; hours assumed)"
+days = "1111100"
+tz = "America/Chicago"
+stops = ["luverne 07:30", "sioux_falls_jl 08:15"]
+
+[[trip]]
+id = "t365"
+route = "UCAP booked ride Luverne -> Sioux Falls (45 min; hours assumed)"
+days = "1111100"
+tz = "America/Chicago"
+stops = ["luverne 07:45", "sioux_falls_jl 08:30"]
+
+[[trip]]
+id = "t366"
+route = "UCAP booked ride Luverne -> Sioux Falls (45 min; hours assumed)"
+days = "1111100"
+tz = "America/Chicago"
+stops = ["luverne 08:00", "sioux_falls_jl 08:45"]
+
+[[trip]]
+id = "t367"
+route = "UCAP booked ride Luverne -> Sioux Falls (45 min; hours assumed)"
+days = "1111100"
+tz = "America/Chicago"
+stops = ["luverne 08:15", "sioux_falls_jl 09:00"]
+
+[[trip]]
+id = "t368"
+route = "UCAP booked ride Luverne -> Sioux Falls (45 min; hours assumed)"
+days = "1111100"
+tz = "America/Chicago"
+stops = ["luverne 08:30", "sioux_falls_jl 09:15"]
+
+[[trip]]
+id = "t369"
+route = "UCAP booked ride Luverne -> Sioux Falls (45 min; hours assumed)"
+days = "1111100"
+tz = "America/Chicago"
+stops = ["luverne 08:45", "sioux_falls_jl 09:30"]
+
+[[trip]]
+id = "t370"
+route = "UCAP booked ride Luverne -> Sioux Falls (45 min; hours assumed)"
+days = "1111100"
+tz = "America/Chicago"
+stops = ["luverne 09:00", "sioux_falls_jl 09:45"]
+
+[[trip]]
+id = "t371"
+route = "UCAP booked ride Luverne -> Sioux Falls (45 min; hours assumed)"
+days = "1111100"
+tz = "America/Chicago"
+stops = ["luverne 09:15", "sioux_falls_jl 10:00"]
+
+[[trip]]
+id = "t372"
+route = "UCAP booked ride Luverne -> Sioux Falls (45 min; hours assumed)"
+days = "1111100"
+tz = "America/Chicago"
+stops = ["luverne 09:30", "sioux_falls_jl 10:15"]
+
+[[trip]]
+id = "t373"
+route = "UCAP booked ride Luverne -> Sioux Falls (45 min; hours assumed)"
+days = "1111100"
+tz = "America/Chicago"
+stops = ["luverne 09:45", "sioux_falls_jl 10:30"]
+
+[[trip]]
+id = "t374"
+route = "UCAP booked ride Luverne -> Sioux Falls (45 min; hours assumed)"
+days = "1111100"
+tz = "America/Chicago"
+stops = ["luverne 10:00", "sioux_falls_jl 10:45"]
+
+[[trip]]
+id = "t375"
+route = "UCAP booked ride Luverne -> Sioux Falls (45 min; hours assumed)"
+days = "1111100"
+tz = "America/Chicago"
+stops = ["luverne 10:15", "sioux_falls_jl 11:00"]
+
+[[trip]]
+id = "t376"
+route = "UCAP booked ride Luverne -> Sioux Falls (45 min; hours assumed)"
+days = "1111100"
+tz = "America/Chicago"
+stops = ["luverne 10:30", "sioux_falls_jl 11:15"]
+
+[[trip]]
+id = "t377"
+route = "UCAP booked ride Luverne -> Sioux Falls (45 min; hours assumed)"
+days = "1111100"
+tz = "America/Chicago"
+stops = ["luverne 10:45", "sioux_falls_jl 11:30"]
+
+[[trip]]
+id = "t378"
+route = "UCAP booked ride Luverne -> Sioux Falls (45 min; hours assumed)"
+days = "1111100"
+tz = "America/Chicago"
+stops = ["luverne 11:00", "sioux_falls_jl 11:45"]
+
+[[trip]]
+id = "t379"
+route = "UCAP booked ride Luverne -> Sioux Falls (45 min; hours assumed)"
+days = "1111100"
+tz = "America/Chicago"
+stops = ["luverne 11:15", "sioux_falls_jl 12:00"]
+
+[[trip]]
+id = "t380"
+route = "UCAP booked ride Luverne -> Sioux Falls (45 min; hours assumed)"
+days = "1111100"
+tz = "America/Chicago"
+stops = ["luverne 11:30", "sioux_falls_jl 12:15"]
+
+[[trip]]
+id = "t381"
+route = "UCAP booked ride Luverne -> Sioux Falls (45 min; hours assumed)"
+days = "1111100"
+tz = "America/Chicago"
+stops = ["luverne 11:45", "sioux_falls_jl 12:30"]
+
+[[trip]]
+id = "t382"
+route = "UCAP booked ride Luverne -> Sioux Falls (45 min; hours assumed)"
+days = "1111100"
+tz = "America/Chicago"
+stops = ["luverne 12:00", "sioux_falls_jl 12:45"]
+
+[[trip]]
+id = "t383"
+route = "UCAP booked ride Luverne -> Sioux Falls (45 min; hours assumed)"
+days = "1111100"
+tz = "America/Chicago"
+stops = ["luverne 12:15", "sioux_falls_jl 13:00"]
+
+[[trip]]
+id = "t384"
+route = "UCAP booked ride Luverne -> Sioux Falls (45 min; hours assumed)"
+days = "1111100"
+tz = "America/Chicago"
+stops = ["luverne 12:30", "sioux_falls_jl 13:15"]
+
+[[trip]]
+id = "t385"
+route = "UCAP booked ride Luverne -> Sioux Falls (45 min; hours assumed)"
+days = "1111100"
+tz = "America/Chicago"
+stops = ["luverne 12:45", "sioux_falls_jl 13:30"]
+
+[[trip]]
+id = "t386"
+route = "UCAP booked ride Luverne -> Sioux Falls (45 min; hours assumed)"
+days = "1111100"
+tz = "America/Chicago"
+stops = ["luverne 13:00", "sioux_falls_jl 13:45"]
+
+[[trip]]
+id = "t387"
+route = "UCAP booked ride Luverne -> Sioux Falls (45 min; hours assumed)"
+days = "1111100"
+tz = "America/Chicago"
+stops = ["luverne 13:15", "sioux_falls_jl 14:00"]
+
+[[trip]]
+id = "t388"
+route = "UCAP booked ride Luverne -> Sioux Falls (45 min; hours assumed)"
+days = "1111100"
+tz = "America/Chicago"
+stops = ["luverne 13:30", "sioux_falls_jl 14:15"]
+
+[[trip]]
+id = "t389"
+route = "UCAP booked ride Luverne -> Sioux Falls (45 min; hours assumed)"
+days = "1111100"
+tz = "America/Chicago"
+stops = ["luverne 13:45", "sioux_falls_jl 14:30"]
+
+[[trip]]
+id = "t390"
+route = "UCAP booked ride Luverne -> Sioux Falls (45 min; hours assumed)"
+days = "1111100"
+tz = "America/Chicago"
+stops = ["luverne 14:00", "sioux_falls_jl 14:45"]
+
+[[trip]]
+id = "t391"
+route = "UCAP booked ride Luverne -> Sioux Falls (45 min; hours assumed)"
+days = "1111100"
+tz = "America/Chicago"
+stops = ["luverne 14:15", "sioux_falls_jl 15:00"]
+
+[[trip]]
+id = "t392"
+route = "UCAP booked ride Luverne -> Sioux Falls (45 min; hours assumed)"
+days = "1111100"
+tz = "America/Chicago"
+stops = ["luverne 14:30", "sioux_falls_jl 15:15"]
+
+[[trip]]
+id = "t393"
+route = "UCAP booked ride Luverne -> Sioux Falls (45 min; hours assumed)"
+days = "1111100"
+tz = "America/Chicago"
+stops = ["luverne 14:45", "sioux_falls_jl 15:30"]
+
+[[trip]]
+id = "t394"
+route = "UCAP booked ride Luverne -> Sioux Falls (45 min; hours assumed)"
+days = "1111100"
+tz = "America/Chicago"
+stops = ["luverne 15:00", "sioux_falls_jl 15:45"]
+
+[[trip]]
+id = "t395"
+route = "UCAP booked ride Luverne -> Sioux Falls (45 min; hours assumed)"
+days = "1111100"
+tz = "America/Chicago"
+stops = ["luverne 15:15", "sioux_falls_jl 16:00"]
+
+[[trip]]
+id = "t396"
+route = "UCAP booked ride Luverne -> Sioux Falls (45 min; hours assumed)"
+days = "1111100"
+tz = "America/Chicago"
+stops = ["luverne 15:30", "sioux_falls_jl 16:15"]
+
+[[trip]]
+id = "t397"
+route = "UCAP booked ride Luverne -> Sioux Falls (45 min; hours assumed)"
+days = "1111100"
+tz = "America/Chicago"
+stops = ["luverne 15:45", "sioux_falls_jl 16:30"]
+
+[[trip]]
+id = "t398"
+route = "UCAP booked ride Luverne -> Sioux Falls (45 min; hours assumed)"
+days = "1111100"
+tz = "America/Chicago"
+stops = ["luverne 16:00", "sioux_falls_jl 16:45"]
+
+[[trip]]
+id = "t399"
+route = "UCAP booked ride Luverne -> Sioux Falls (45 min; hours assumed)"
+days = "1111100"
+tz = "America/Chicago"
+stops = ["luverne 16:15", "sioux_falls_jl 17:00"]
+
+[[trip]]
+id = "t400"
+route = "UCAP booked ride Luverne -> Sioux Falls (45 min; hours assumed)"
+days = "1111100"
+tz = "America/Chicago"
+stops = ["luverne 16:30", "sioux_falls_jl 17:15"]
+
+[[trip]]
+id = "t401"
+route = "UCAP booked ride Luverne -> Sioux Falls (45 min; hours assumed)"
+days = "1111100"
+tz = "America/Chicago"
+stops = ["luverne 16:45", "sioux_falls_jl 17:30"]
+
+[[trip]]
+id = "t402"
+route = "UCAP booked ride Luverne -> Sioux Falls (45 min; hours assumed)"
+days = "1111100"
+tz = "America/Chicago"
+stops = ["luverne 17:00", "sioux_falls_jl 17:45"]

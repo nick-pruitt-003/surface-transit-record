@@ -31,6 +31,10 @@ davenport_hillandale = "=ibus:1710"
 iowa_city = "=ibus:599"
 vermillion = "=ibus:1187"
 sioux_city = "=ibus:339"
+luverne = "=ibus:1296"   # Luverne (Express Way)
+clarinda = "=ibus:827"
+shenandoah = "=ibus:2964"
+maryville = "=ibus:3222"
 osceola_ia = "=ibus:35"
 lamoni = "=ibus:1022"
 bethany_mo = "=ibus:2630"
@@ -136,4 +140,21 @@ route = "JL Omaha 06:15 -> Sioux City -> Vermillion -> Sioux Falls 09:45 (interm
 days = "1111111"
 tz = "America/Chicago"
 stops = ["omaha_burlington 06:15", "sioux_city 07:40", "vermillion 08:35", "sioux_falls_jl 09:45"]
+
+# Nick screenshot Oct 5 2026 (Jefferson booking, Thu Oct 29): Maryville -> Sioux Falls with the site's times (the feed
+# runs 20 min late from Omaha on and is kept for its Kansas City start), and Sioux Falls 10:25 -> Luverne MN 10:55
+# (the feed has 10:30 -> 11:05).
+[[trip]]
+id = "t360"
+route = "JL Maryville 03:25 -> Clarinda -> Shenandoah -> Omaha -> Sioux City -> Vermillion -> Sioux Falls 09:45 (daily assumed)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["maryville 03:25", "clarinda 04:05", "shenandoah 04:35", "omaha_burlington 05:40/06:15", "sioux_city 07:50/07:55", "vermillion 08:40/08:45", "sioux_falls_jl 09:45"]
+
+[[trip]]
+id = "t361"
+route = "JL Sioux Falls 10:25 -> Luverne MN 10:55 (daily assumed)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["sioux_falls_jl 10:25", "luverne 10:55"]
 
