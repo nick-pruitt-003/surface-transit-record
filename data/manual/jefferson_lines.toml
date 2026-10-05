@@ -48,6 +48,19 @@ mobridge = "=ibus:417"   # Mobridge (Gas & Goodies)
 mclaughlin = "=ibus:881"   # McLaughlin
 fort_yates = "=ibus:1958"   # Fort Yates
 bismarck = "=ibus:289"   # Bismarck (Bis-Man Transit Board)
+indy_bus = "=ibus:1673"   # Indianapolis Bus Station
+danville_il = "=ibus:1629"   # Danville (IL; booking: Lynch Travel Mart)
+champaign_itc = "=ibus:1819"   # Champaign Intermodal Trans Ctr
+bloomington_il = "=ibus:2512"   # Bloomington (IL)
+peoria_il = "=ibus:756"   # Peoria (booking: City Link Building)
+galesburg_il = "=ibus:484"   # Galesburg
+moline_metrolink = "=ibus:3337"   # Moline Center Station (Metrolink)
+davenport_gt = "=ibus:2002"   # Davenport (Ground Transportation)
+cedar_rapids_lindale = { name = "Cedar Rapids, IA (JL - Lindale)", lon = -91.6326, lat = 42.0283 }   # Lindale Mall, point approximate
+marshalltown_ia = "=ibus:1769"   # Marshalltown (booking: Git N Go)
+dubuque_bus = "=ibus:2793"   # Dubuque Bus Station
+waterloo_loves = { name = "Waterloo (Love's Travel Stop)", lon = -92.3800, lat = 42.4600 }   # point approximate
+minneapolis_bus = "=ibus:1536"   # Minneapolis Bus Station
 
 [[trip]]
 id = "t104"
@@ -127,6 +140,16 @@ days = "1111111"
 tz = "America/Chicago"
 stops = ["chicago_bus 21:15", "davenport_hillandale 24:05/24:30", "iowa_city 25:30/25:35", "des_moines_jl 27:15/27:45", "omaha_burlington 30:00"]
 
+# Nick screenshot Oct 5 2026 (Jefferson booking): JL 1202 Omaha -> Chicago overnight. The feed has the same bus as
+# ibus 290 (Omaha 21:00 -> Chicago 05:25, via Grinnell and La Salle/Peru), 30 min early at Des Moines and 20 min early
+# into Chicago; dropped in data/drop_trips.csv. Grinnell and La Salle/Peru are not on the booking and are left out.
+[[trip]]
+id = "t403"
+route = "JL 1202 Omaha 21:05 -> Des Moines -> Iowa City -> Davenport (Hillandale) -> Chicago 05:45 (daily assumed)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["omaha_burlington 21:05", "des_moines_jl 23:20/23:45", "iowa_city 25:30/25:35", "davenport_hillandale 26:30/26:55", "chicago_bus 29:45"]
+
 [[trip]]
 id = "t357"
 route = "JL Sioux Falls 10:00 -> Brookings -> Watertown -> Summit Corner -> Sisseton Jct -> Fargo 14:05 (daily assumed)"
@@ -158,3 +181,36 @@ days = "1111111"
 tz = "America/Chicago"
 stops = ["sioux_falls_jl 10:25", "luverne 10:55"]
 
+
+# Nick screenshots Oct 5 2026 (Jefferson booking, Fri Nov 13): Indianapolis <-> Des Moines via Peoria, the Quad Cities and
+# Cedar Rapids. Replaces the feed's Burlington Trailways Indianapolis <-> Denver runs (ibus 3876 / 2096, via Burlington IA
+# and Ottumwa, on to Omaha and Denver), which no longer operate: Burlington ceased in Sep 2025 and Jefferson runs this
+# line only as far as Des Moines. Times are each stop's local clock (Indianapolis Eastern, the rest Central); a stop's
+# printed dwell is taken as arrive/depart.
+[[trip]]
+id = "t404"
+route = "JL Indianapolis 06:40 -> Champaign -> Peoria -> Moline -> Davenport -> Iowa City -> Cedar Rapids -> Des Moines 17:10 (daily assumed)"
+days = "1111111"
+stops = ["indy_bus 06:40", "danville_il 07:00", "champaign_itc 07:45/07:50", "bloomington_il 08:50/09:00", "peoria_il 09:45/09:55", "galesburg_il 10:50/11:00", "moline_metrolink 12:05", "davenport_gt 12:30/12:45", "iowa_city 13:55", "cedar_rapids_lindale 14:55/15:00", "marshalltown_ia 16:10", "des_moines_jl 17:10"]
+
+[[trip]]
+id = "t405"
+route = "JL Des Moines 08:30 -> Cedar Rapids -> Iowa City -> Davenport -> Moline -> Peoria -> Champaign -> Indianapolis 19:50 (daily assumed)"
+days = "1111111"
+stops = ["des_moines_jl 08:30", "marshalltown_ia 09:25", "cedar_rapids_lindale 10:30/10:35", "iowa_city 11:25", "davenport_gt 12:30/12:45", "moline_metrolink 13:00", "galesburg_il 13:45/13:50", "peoria_il 14:40/14:45", "bloomington_il 15:35/15:40", "champaign_itc 16:40/16:45", "danville_il 17:30", "indy_bus 19:50"]
+
+# Nick screenshots Oct 5 2026 (Jefferson booking): Chicago -> Dubuque -> Waterloo, connecting at Waterloo to Minneapolis
+# via Clear Lake (Kwik Star, taken as the Clear Lake Jct. stop).
+[[trip]]
+id = "t413"
+route = "JL Chicago 12:00 -> Dubuque 15:30 -> Waterloo (Love's) 17:00 (daily assumed)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["chicago_bus 12:00", "dubuque_bus 15:30", "waterloo_loves 17:00"]
+
+[[trip]]
+id = "t414"
+route = "JL Waterloo (Love's) 17:25 -> Clear Lake 18:55 -> Minneapolis 21:00 (daily assumed)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["waterloo_loves 17:25", "clear_lake_ia 18:55", "minneapolis_bus 21:00"]

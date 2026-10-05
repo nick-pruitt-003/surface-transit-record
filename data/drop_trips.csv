@@ -3,3 +3,23 @@ ibus,2020,Jefferson Fargo -> Sioux Falls: the feed has it at 15:50; jeffersonlin
 ibus,268,Jefferson Sioux Falls -> Fargo: the feed has 10:30 -> 14:35; jeffersonlines.com shows 10:00 -> 14:05 (Nick Oct 5 2026). Replaced by t357
 ibus,699,Jefferson Billings -> Minneapolis: the feed has Fargo 15:55 -> Minneapolis 20:20; jeffersonlines.com shows Fargo 16:40 -> Minneapolis 21:10 (Nick Oct 5 2026). Replaced by t336 from Bismarck; the Billings -> Bismarck part is unconfirmed
 ibus,1229,Jefferson Kansas City -> Sioux Falls: the feed has Omaha -> Sioux Falls 20 min late (10:05); jeffersonlines.com shows 09:45 (Nick Oct 5 2026). Replaced by t360 from Kansas City 01:30
+ibus,290,Omaha -> Chicago overnight: the feed has 21:00 -> 05:25 (Des Moines 23:15); jeffersonlines.com shows JL 1202 21:05 -> 05:45 (Des Moines 23:20/23:45) (Nick Oct 5 2026). Replaced by t403
+ibus,1895,Burlington Trailways Chicago 16:00 -> Des Moines 23:20 -> Omaha 01:30: does not run; Jefferson has nothing between 12:20 and 21:15 out of Chicago (Nick Oct 5 2026)
+ibus,3876,Burlington Trailways Indianapolis -> Denver: Jefferson runs the line only to Des Moines, via Peoria and Cedar Rapids (Nick Oct 5 2026). Replaced by t404
+ibus,2096,Burlington Trailways Denver -> Indianapolis: as ibus 3876, eastbound. Replaced by t405
+ibus,1029,Express Arrow Denver -> Omaha: the feed has 10:00 -> 20:40; booking shows 09:25 -> 20:40 (Nick Oct 5 2026). Replaced by t406
+ibus,1459,Express Arrow Omaha -> Denver: the feed has 07:15 -> 18:10; booking shows 06:40 -> 15:50 (Nick Oct 5 2026). Replaced by t407
+ibus,1497,Burlington Trailways St. Louis -> Cedar Rapids via Hannibal, Quincy, Keokuk: route shut as of March 2026 (Nick Oct 5 2026)
+ibus,469,Burlington Trailways Cedar Rapids -> St. Louis: as ibus 1497
+ibus,1190,Burlington Trailways Chicago 06:30 -> Des Moines 15:35: not sold; Chicago -> Des Moines is Greyhound 06:10 / 08:50 / 12:25 and Jefferson 21:15 (Nick Oct 5 2026)
+ibus,3018,Burlington Trailways Chicago 11:00 -> Des Moines 18:10: as ibus 1190
+ibus,1888,Greyhound Chicago 11:10 -> Des Moines 19:35: booking shows the same stops at 06:10 -> 14:35 (Nick Oct 5 2026). Replaced by t410
+ibus,908,Greyhound Chicago 14:10 -> Des Moines 23:35 via Waterloo: booking shows 08:50 -> 18:45 via Cedar Rapids and Marshalltown (Nick Oct 5 2026). Replaced by t411
+ibus,1909,Greyhound Chicago 17:01 -> Des Moines -> Omaha -> Denver: nothing leaves Chicago between 12:25 and 21:15 (Nick Oct 5 2026); t412 is the 12:25 to Des Moines; Omaha -> Denver part not yet replaced
+ibus,3290,Greyhound Denver 00:55 -> Omaha -> Des Moines -> Chicago 21:30: booking shows Denver 18:55 -> Chicago 16:25 next day (Nick Oct 5 2026). Replaced by t416
+ibus,1216,Greyhound Des Moines 10:30 -> Chicago 18:35: booking shows the same stops at 05:30 -> 13:35 (Nick Oct 5 2026). Replaced by t417
+ibus,1530,Greyhound Des Moines 14:45 -> Chicago 00:35: booking shows 09:45 -> 19:45 (Nick Oct 5 2026). Replaced by t418
+ibus,569,Burlington Trailways Des Moines 08:15 -> Chicago 15:15: not sold (Nick Oct 5 2026)
+ibus,2195,Burlington Trailways Des Moines 12:00 -> Chicago 20:30: not sold (Nick Oct 5 2026)
+ibus,1189,Burlington Trailways Burlington IA -> Dubuque (Tue-Thu): no successor; Dubuque is served only by Jefferson Chicago -> Dubuque -> Waterloo -> Minneapolis (Nick Oct 5 2026)
+ibus,2353,Burlington Trailways Dubuque -> Burlington IA (Tue-Thu): as ibus 1189

@@ -8,6 +8,41 @@ huntington_bus_stop = "=ibus:1077"   # Huntington Bus Stop
 ashland_bus_station = "=ibus:1456"   # Ashland Bus Station
 columbus_e_mound_st = "=ibus:3102"   # Columbus (E Mound St)
 toledo_bus_stop = "=ibus:2271"   # Toledo Bus Stop
+slc_intermodal = "Salt Lake City Intermodal Trans Ctr"
+provo = "Provo/Orem (Exit 263)"   # Provo Central Station / Intermodal Hub, shared with Salt Lake Express
+des_moines = "=ibus:2813"   # Des Moines
+monroe_ia = "=ibus:2393"   # Monroe (booking: Casey's General Store)
+oskaloosa = "=ibus:3578"   # Oskaloosa (Precise Imaging)
+ottumwa = "=ibus:1968"   # Ottumwa Bus Stop
+burlington_ia = "=ibus:2373"   # Burlington IA (FastBrake)
+galesburg = "=ibus:484"   # Galesburg
+bloomington_il = "=ibus:2512"   # Bloomington (IL)
+champaign_itc = "=ibus:1819"   # Champaign Intermodal Trans Ctr
+indianapolis_bus = "=ibus:1673"   # Indianapolis Bus Station
+chicago_bus = "=ibus:1605"   # Chicago Bus Station
+naperville_59 = "=ibus:3149"   # Naperville (Route 59 Metra Station)
+dekalb_niu = "=ibus:652"   # Dekalb (Northern Illinois University)
+rochelle_petro = "=ibus:1063"   # Rochelle (Petro Rochelle Travel)
+dixon_reagan = "=ibus:440"   # Dixon Reagan Transit Center
+rockford_east = "=ibus:1438"   # Rockford (East Side Transfer Center)
+moline_metrolink = "=ibus:3337"   # Moline Center Station (Metrolink)
+davenport_gt = "=ibus:2002"   # Davenport (Ground Transportation)
+iowa_city_gh = "=ibus:821"   # Iowa City
+grinnell = "=ibus:2433"   # Grinnell (Grinnell College)
+cedar_rapids_lindale = { name = "Cedar Rapids, IA (JL - Lindale)", lon = -91.6326, lat = 42.0283 }   # Lindale Mall; same name and point as jefferson_lines.toml, so one stop
+waterloo_union = "=ibus:3166"   # Waterloo (Union Bus Depot)
+marshalltown = "=ibus:1769"   # Marshalltown (Git N Go)
+ames_p66 = "=ibus:2211"   # Ames (Phillips 66)
+des_moines_gh = "=ibus:2626"   # Des Moines
+omaha_gh = "=ibus:741"   # Omaha, NE
+lincoln_depot = "=ibus:2835"   # Lincoln Bus Depot
+york_ne = "=ibus:1711"   # York
+grand_island_gh = "=ibus:3524"   # Grand Island Bus Station
+kearney_pp = "Kearney (Pump and Pantry)"
+lexington_p66 = "Lexington (Phillips 66)"
+north_platte_pp = "North Platte (Pump and Pantry)"
+ogallala_pp = "Ogallala (Pump and Pantry)"
+denver_usbc = "Denver Union Station Bus Concourse"
 
 [[trip]]
 id = "t112"
@@ -36,3 +71,71 @@ route = "Max Meadows -> Knoxville I-81 southbound (Nick screenshot Sep 29 2026: 
 days = "1111111"
 tz = "America/New_York"
 stops = ["max_meadows_a81_travel_plaza 14:20", "knoxville_area_transit_bus_stop 17:45"]
+
+[[trip]]
+route = "Seattle-Boise-SLC-Denver beyond Salt Lake City: SLC Intermodal 02:30/02:40 -> Provo Intermodal Hub 03:30 (Nick screenshot Oct 5 2026 for Fri Nov 13: Boise 20:45 -> Ogden 01:40 -> SLC 02:30 (10 min) -> Provo 03:30; the feed stops the trip at SLC; daily assumed)"
+days = "1111111"
+stops = ["slc_intermodal 02:40", "provo 03:30"]
+
+# Nick screenshots Oct 5 2026 (Greyhound booking, Tue Oct 6): Greyhound took over the Des Moines <-> Indianapolis line
+# via Burlington IA from Burlington Trailways (ceased Sep 2025). Local clocks per stop (Indianapolis Eastern, the rest
+# Central); a printed dwell is taken as arrive/depart.
+[[trip]]
+id = "t408"
+route = "Greyhound Des Moines 08:05 -> Ottumwa -> Burlington IA -> Galesburg -> Bloomington -> Champaign -> Indianapolis 18:45 (daily assumed)"
+days = "1111111"
+stops = ["des_moines 08:05", "monroe_ia 08:45/08:50", "oskaloosa 09:20/09:25", "ottumwa 09:55/10:00", "burlington_ia 11:15/11:35", "galesburg 12:35/12:40", "bloomington_il 14:25/14:30", "champaign_itc 15:30/15:40", "indianapolis_bus 18:45"]
+
+[[trip]]
+id = "t409"
+route = "Greyhound Indianapolis 13:10 -> Champaign -> Bloomington -> Galesburg -> Burlington IA -> Ottumwa -> Des Moines 22:05 (daily assumed)"
+days = "1111111"
+stops = ["indianapolis_bus 13:10", "champaign_itc 14:15/14:20", "bloomington_il 15:20/15:30", "galesburg 17:05/17:10", "burlington_ia 18:10/18:55", "ottumwa 20:10/20:15", "oskaloosa 20:45/20:50", "monroe_ia 21:20/21:25", "des_moines 22:05"]
+
+# Nick screenshots Oct 5 2026 (Greyhound booking): Chicago -> Des Moines is Greyhound 06:10, 08:50, 12:25 and Jefferson
+# 21:15. They replace the feed's 11:10, 14:10 and 17:01 (ibus 1888, 908, 1909; same stop lists, retimed). The 12:25 is
+# the through bus to Denver (Omaha 21:50/23:10, Denver 09:00); local clocks per stop, Ogallala and Denver Mountain.
+[[trip]]
+id = "t410"
+route = "Greyhound Chicago 06:10 -> Dixon -> Moline -> Davenport -> Iowa City -> Grinnell -> Des Moines 14:35 (daily assumed)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["chicago_bus 06:10", "naperville_59 06:55/07:00", "dekalb_niu 07:45/07:50", "rochelle_petro 08:10/08:30", "dixon_reagan 09:05/09:10", "moline_metrolink 10:25/10:30", "davenport_gt 10:40/10:55", "iowa_city_gh 12:05/12:20", "grinnell 13:30/13:35", "des_moines_gh 14:35"]
+
+[[trip]]
+id = "t411"
+route = "Greyhound Chicago 08:50 -> Rockford -> Moline -> Iowa City -> Cedar Rapids -> Waterloo -> Ames -> Des Moines 18:45 (daily assumed)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["chicago_bus 08:50", "rockford_east 10:20/10:30", "moline_metrolink 12:25/12:30", "davenport_gt 12:40/12:45", "iowa_city_gh 13:45/13:55", "cedar_rapids_lindale 14:35/14:40", "waterloo_union 15:45/15:50", "marshalltown 17:00/17:20", "ames_p66 18:00/18:05", "des_moines_gh 18:45"]
+
+[[trip]]
+id = "t412"
+route = "Greyhound Chicago 12:25 -> Des Moines 18:55 -> Omaha 21:50 -> Lincoln -> North Platte -> Denver 09:00 (daily assumed)"
+days = "1111111"
+stops = ["chicago_bus 12:25", "davenport_gt 15:25/15:35", "iowa_city_gh 16:40/16:50", "grinnell 18:00/18:05", "des_moines_gh 18:55/19:35", "omaha_gh 21:50/23:10", "lincoln_depot 24:10/24:20", "york_ne 25:15/25:45", "grand_island_gh 26:30/26:40", "kearney_pp 27:30/27:40", "lexington_p66 28:20/28:30", "north_platte_pp 29:25/29:35", "ogallala_pp 29:25/29:35", "denver_usbc 33:00"]
+
+# Nick screenshot Oct 5 2026 (Greyhound booking): the eastbound through bus Denver 18:55 -> Omaha -> Des Moines ->
+# Chicago 16:25. Replaces the feed's Denver 00:55 -> Chicago 21:30 (ibus 3290). Local clocks per stop.
+[[trip]]
+id = "t416"
+route = "Greyhound Denver 18:55 -> North Platte -> Lincoln -> Omaha 05:55 -> Des Moines 08:55 -> Chicago 16:25 (daily assumed)"
+days = "1111111"
+stops = ["denver_usbc 18:55", "ogallala_pp 22:05/22:25", "north_platte_pp 24:15/24:20", "lexington_p66 25:15/25:20", "kearney_pp 26:00/26:05", "grand_island_gh 26:55/27:00", "york_ne 27:45/27:50", "lincoln_depot 28:45/28:55", "omaha_gh 29:55/30:40", "des_moines_gh 32:55/33:20", "grinnell 34:15/34:20", "iowa_city_gh 35:25/35:40", "davenport_gt 36:50/37:00", "chicago_bus 40:25"]
+
+# Nick screenshots Oct 5 2026 (Greyhound booking): Des Moines -> Chicago 05:30 and 09:45, replacing the feed's 10:30 and
+# 14:45 (ibus 1216, 1530; same stop lists, retimed). With the 09:20 through bus from Denver (t416) and Jefferson's
+# 23:45 (t403) that is every Des Moines -> Chicago departure; Burlington's 08:15 and 12:00 are dropped.
+[[trip]]
+id = "t417"
+route = "Greyhound Des Moines 05:30 -> Grinnell -> Iowa City -> Davenport -> Moline -> Dixon -> Naperville -> Chicago 13:35 (daily assumed)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["des_moines_gh 05:30", "grinnell 06:25/06:30", "iowa_city_gh 07:40/07:50", "davenport_gt 09:00/09:05", "moline_metrolink 09:15/09:20", "dixon_reagan 10:35/10:40", "rochelle_petro 11:15/11:35", "dekalb_niu 11:55/12:05", "naperville_59 12:45/12:50", "chicago_bus 13:35"]
+
+[[trip]]
+id = "t418"
+route = "Greyhound Des Moines 09:45 -> Ames -> Marshalltown -> Waterloo -> Cedar Rapids -> Iowa City -> Davenport -> Rockford -> Chicago 19:45 (daily assumed)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["des_moines_gh 09:45", "ames_p66 10:25/10:30", "marshalltown 11:10/11:30", "waterloo_union 12:40/12:45", "cedar_rapids_lindale 13:50/13:55", "iowa_city_gh 14:35/14:45", "davenport_gt 15:45/15:55", "moline_metrolink 16:05/16:10", "rockford_east 18:05/18:15", "chicago_bus 19:45"]

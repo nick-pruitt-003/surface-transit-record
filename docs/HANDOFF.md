@@ -1607,3 +1607,51 @@ Follow-ups the same night:
 - **A front to feed it** (33 states including SC, Atlanta by Fri 06:55 ET): no complete route found; the seed
   (WV start, West, Plains, South, SC, Atlanta) needs 214.8 h against the 196.5 h that would beat 234.24, about 260 h
   total. South Carolina before Atlanta is the cost. Dead, as Nick expected.
+
+## 30. Oct 5: route X (Sheridan -> Moorhead, 232.30 h) booked for a Thu Nov 12 start
+
+`docs/x_itinerary_nov12.xlsx` is the booked version ($1,566.09, all 31 ticketed segments priced);
+`docs/x_itinerary_route_x.xlsx` is the copy to share (no names, no "If you miss a leg" / "Start day" tabs).
+
+- **Start date.** Oct 15 lost the Silver Meteor (cancelled Tue Oct 20) and Oct 22 / 29 lost Acela 2152, which is not
+  bookable before Wed Nov 18 (Portal Bridge cutover, Oct 12 - Nov 15). Acela 2152 now leaves Washington 06:50 (was
+  06:45 until Oct 9) and is the only train that makes the 14:30 Dartmouth Coach; staying on the Meteor to
+  Philadelphia or New York is too late. Only a Thursday start works.
+- **Provo chain**, same Chief so the same total: stay on the Greyhound past SLC to Provo 03:30, Salt Lake Express
+  Provo 07:45 -> Saint George 12:20, SLE 8040 12:40 -> Las Vegas Airport 13:50, FlixBus Strip 15:30 -> Barstow
+  Station 17:55, Chief from Barstow 20:47. Replaces the 6.8 km 02:30 walk to the SLC airport. The three new trips
+  are in `data/manual` (greyhound, salt_lake_express, flixbus).
+- **Oklahoma City -> Tallahassee** on one ticket: FlixBus 08:35 to Dallas, Greyhound 13:00 to the Houston Greyhound
+  station, the 18:35 from there. The BeeLine waits for the Chief at Newton.
+- **Chicago, Sat**: Flix to 95th/Dan Ryan 05:10, Metra UP-N to Kenosha and back in the morning, Four Winds shuttle
+  11:50 out and the 17:30 (site time, Central; 18:30 ET at the casino) back, so you are not reboarding the bus you
+  came on. Jefferson 21:15.
+- **Reproduces** on the merged data (the other machine's Four Winds, Jefferson Chicago -> Fargo and Moorhead walk): 231.87 h, every leg as booked except the router's shorter Fargo finish (Amtrak station to the state line) against the measured 83 min walk to Moorhead; 232.30 stays the figure. Without Jefferson 21:15 Chicago -> Omaha and the 06:15 Omaha -> Sioux Falls it is 256.37 h: that pair is what makes the Moorhead finish, and no sweep before 5cda41e had it. "If you miss a leg" is rebuilt from the booked legs by `scripts/x_miss.py`.
+- **timezonefinder must be installed.** Without it, local-clock manual trips are read as UTC and the router is
+  silently wrong. It is now installed on this Mac.
+
+## 31. Oct 5: Burlington Trailways is gone; the Iowa / Illinois / Nebraska buses as sold
+
+Burlington Trailways ceased operations in Sep 2025; Jefferson and Greyhound took over some of its routes. The merged
+feed still carried 14 Burlington runs. Every one is now replaced from booking screenshots or dropped
+(`data/drop_trips.csv`), and the router has no Burlington trip left:
+
+| feed run | now |
+|---|---|
+| Omaha 21:00 -> Chicago 05:25 | Jefferson JL 1202 Omaha 21:05 -> Des Moines 23:20 -> Chicago 05:45 (t403) |
+| Chicago 16:00 -> Des Moines 23:20 -> Omaha 01:30 | gone: nothing leaves Chicago between 12:25 and 21:15 |
+| Indianapolis <-> Denver via Burlington IA | Jefferson Indianapolis <-> Des Moines via Peoria, Moline, Cedar Rapids (t404/t405), and Greyhound Indianapolis <-> Des Moines via Galesburg, Burlington IA, Ottumwa (t408/t409); Denver <-> Omaha is Express Arrow and Greyhound only |
+| Chicago <-> Des Moines, 2 each way | gone. Chicago -> Des Moines is Greyhound 06:10, 08:50, 12:25 (through to Denver) and Jefferson 21:15; Des Moines -> Chicago is Greyhound 05:30, 09:20 (through from Denver), 09:45 and Jefferson 23:45 |
+| St. Louis <-> Cedar Rapids via Hannibal, Quincy, Keokuk | gone: route shut March 2026. Those towns have no intercity bus now |
+| Burlington IA <-> Dubuque (Tue-Thu) | gone: Dubuque is served only by Jefferson Chicago -> Dubuque -> Waterloo -> Minneapolis (t413/t414) |
+
+Greyhound's own Chicago <-> Des Moines <-> Omaha <-> Denver runs in the feed were also wrong (11:10, 14:10, 17:01 west,
+00:55 / 10:30 / 14:45 east) and are replaced with the sold times (t410-t412, t416-t418). Express Arrow Denver <-> Omaha
+is retimed (t406/t407). Jefferson Chicago 12:00 -> Dubuque -> Waterloo -> Minneapolis is added (t413/t414).
+
+Replays on the new data: control 237.34 h (unchanged), MEX 237.75 h (unchanged), Wheeling 234.32 / 235.32 h (+5 min).
+The control and MEX lose nothing from the Burlington drop: they ride Kansas City 01:30 -> Omaha and catch the same
+06:15 to Sioux Falls. Every sweep before these commits searched a network with buses that do not run; a new sweep is due.
+
+A stale `out/res_starttest.pkl` (a 14-state, 242.24 h result) on this Mac made the control look broken; `rebuild_237.py`
+fixed it. If the control gate ever reads something other than 237.34, rebuild before bisecting.

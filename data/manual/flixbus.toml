@@ -1,0 +1,11 @@
+agency = "FlixBus"
+
+[stops]
+lv_strip = "Las Vegas Strip (Las Vegas Blvd)"
+barstow_station = "Barstow Station"
+
+[[trip]]
+route = "FlixBus Las Vegas Strip (Las Vegas Blvd) 15:30 -> Barstow Station 17:55, operated by Elite Executive Charter"
+note = "Nick screenshot Oct 5 2026 for Sat Nov 14; the feed has this run arriving 18:20; daily assumed"
+days = "1111111"
+stops = ["lv_strip 15:30", "barstow_station 17:55"]

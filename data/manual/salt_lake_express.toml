@@ -31,3 +31,9 @@ route = "SLE 8035 Saint George (Bluff St Office) 10:30 -> Las Vegas (Airport) 11
 note = "Nick screenshot Oct 1 2026 (Salt Lake Express site, local times); daily assumed"
 days = "1111111"
 stops = ["stg_bluff 10:30", "stg_sun_river 10:35", "beaver_dam 10:05", "mesquite_virgin_river 10:15", "lv_airport 11:40"]
+
+[[trip]]
+route = "SLE 8040 Saint George (Bluff St Office) 12:40 -> Las Vegas (Airport) 13:50"
+note = "Nick screenshot Oct 5 2026 (Salt Lake Express site, local times, for Sat Nov 14); Mesquite (CasaBlanca) 12:26 not modelled; daily assumed"
+days = "1111111"
+stops = ["stg_bluff 12:40", "stg_sun_river 12:45", "beaver_dam 12:15", "mesquite_virgin_river 12:25", "lv_airport 13:50"]

@@ -1,0 +1,29 @@
+agency = "Express Arrow"
+
+# Nick screenshots Oct 5 2026 (booking, operated by Black Hills Stage Lines). Replace the feed's ibus 1029 / 1459,
+# which had Denver 10:00 -> Omaha 20:40 and Omaha 07:15 -> Denver 18:10. Times are each stop's local clock (Denver,
+# Brush and Ogallala Mountain; North Platte and east Central); a printed dwell is taken as arrive/depart.
+# Denver <-> Omaha is twice a day each way: this and Greyhound (Burlington Trailways no longer runs it).
+
+[stops]
+denver = "=ibus:223"   # Denver (booking: Denver Union Station Bus Concourse)
+brush = "=ibus:3352"   # Brush (Love's Travel Stop)
+ogallala = "=ibus:2292"   # Ogallala (TA Travel Center)
+north_platte = "=ibus:1104"   # North Platte (Time Saver)
+lexington_ne = "=ibus:2444"   # Lexington (Phillips 66)
+kearney = "=ibus:2275"   # Kearney Bus Stop
+grand_island = "=ibus:602"   # Grand Island Bus Station
+lincoln = "=ibus:1276"   # Lincoln Bus Depot
+omaha = "=ibus:3399"   # Omaha, NE
+
+[[trip]]
+id = "t406"
+route = "Express Arrow Denver 09:25 -> Brush -> Ogallala -> North Platte -> Kearney -> Grand Island -> Lincoln -> Omaha 20:40 (daily assumed)"
+days = "1111111"
+stops = ["denver 09:25", "brush 11:00/11:05", "ogallala 13:00/13:05", "north_platte 14:50/14:55", "lexington_ne 16:00/16:20", "kearney 17:00/17:05", "grand_island 17:55/18:00", "lincoln 19:30/19:40", "omaha 20:40"]
+
+[[trip]]
+id = "t407"
+route = "Express Arrow Omaha 06:40 -> Lincoln -> Grand Island -> Kearney -> North Platte -> Ogallala -> Brush -> Denver 15:50 (daily assumed)"
+days = "1111111"
+stops = ["omaha 06:40", "lincoln 07:40/07:50", "grand_island 09:20/09:25", "kearney 10:15/10:20", "lexington_ne 11:00/11:20", "north_platte 12:10/12:15", "ogallala 12:15/12:25", "brush 14:15", "denver 15:50"]
