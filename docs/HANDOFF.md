@@ -1643,7 +1643,7 @@ feed still carried 14 Burlington runs. Every one is now replaced from booking sc
 | Indianapolis <-> Denver via Burlington IA | Jefferson Indianapolis <-> Des Moines via Peoria, Moline, Cedar Rapids (t404/t405), and Greyhound Indianapolis <-> Des Moines via Galesburg, Burlington IA, Ottumwa (t408/t409); Denver <-> Omaha is Express Arrow and Greyhound only |
 | Chicago <-> Des Moines, 2 each way | gone. Chicago -> Des Moines is Greyhound 06:10, 08:50, 12:25 (through to Denver) and Jefferson 21:15; Des Moines -> Chicago is Greyhound 05:30, 09:20 (through from Denver), 09:45 and Jefferson 23:45 |
 | St. Louis <-> Cedar Rapids via Hannibal, Quincy, Keokuk | gone: route shut March 2026. Those towns have no intercity bus now |
-| Burlington IA <-> Dubuque (Tue-Thu) | dropped unverified: no successor found |
+| Burlington IA <-> Dubuque (Tue-Thu) | gone: Dubuque is served only by Jefferson Chicago -> Dubuque -> Waterloo -> Minneapolis (t413/t414) |
 
 Greyhound's own Chicago <-> Des Moines <-> Omaha <-> Denver runs in the feed were also wrong (11:10, 14:10, 17:01 west,
 00:55 / 10:30 / 14:45 east) and are replaced with the sold times (t410-t412, t416-t418). Express Arrow Denver <-> Omaha
