@@ -127,6 +127,16 @@ days = "1111111"
 tz = "America/Chicago"
 stops = ["chicago_bus 21:15", "davenport_hillandale 24:05/24:30", "iowa_city 25:30/25:35", "des_moines_jl 27:15/27:45", "omaha_burlington 30:00"]
 
+# Nick screenshot Oct 5 2026 (Jefferson booking): JL 1202 Omaha -> Chicago overnight. The feed has the same bus as
+# ibus 290 (Omaha 21:00 -> Chicago 05:25, via Grinnell and La Salle/Peru), 30 min early at Des Moines and 20 min early
+# into Chicago; dropped in data/drop_trips.csv. Grinnell and La Salle/Peru are not on the booking and are left out.
+[[trip]]
+id = "t403"
+route = "JL 1202 Omaha 21:05 -> Des Moines -> Iowa City -> Davenport (Hillandale) -> Chicago 05:45 (daily assumed)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["omaha_burlington 21:05", "des_moines_jl 23:20/23:45", "iowa_city 25:30/25:35", "davenport_hillandale 26:30/26:55", "chicago_bus 29:45"]
+
 [[trip]]
 id = "t357"
 route = "JL Sioux Falls 10:00 -> Brookings -> Watertown -> Summit Corner -> Sisseton Jct -> Fargo 14:05 (daily assumed)"
