@@ -19,3 +19,5 @@ ibus,1216,Greyhound Des Moines 10:30 -> Chicago 18:35: booking shows the same st
 ibus,1530,Greyhound Des Moines 14:45 -> Chicago 00:35: booking shows 09:45 -> 19:45 (Nick Oct 5 2026). Replaced by t418
 ibus,569,Burlington Trailways Des Moines 08:15 -> Chicago 15:15: not sold (Nick Oct 5 2026)
 ibus,2195,Burlington Trailways Des Moines 12:00 -> Chicago 20:30: not sold (Nick Oct 5 2026)
+ibus,1189,Burlington Trailways Burlington IA -> Dubuque (Tue-Thu): Burlington ceased Sep 2025 and no successor run has been found; restore with real times if Jefferson or Greyhound sells it
+ibus,2353,Burlington Trailways Dubuque -> Burlington IA (Tue-Thu): as ibus 1189
