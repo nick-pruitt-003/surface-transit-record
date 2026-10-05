@@ -10,6 +10,15 @@ columbus_e_mound_st = "=ibus:3102"   # Columbus (E Mound St)
 toledo_bus_stop = "=ibus:2271"   # Toledo Bus Stop
 slc_intermodal = "Salt Lake City Intermodal Trans Ctr"
 provo = "Provo/Orem (Exit 263)"   # Provo Central Station / Intermodal Hub, shared with Salt Lake Express
+des_moines = "=ibus:2813"   # Des Moines
+monroe_ia = "=ibus:2393"   # Monroe (booking: Casey's General Store)
+oskaloosa = "=ibus:3578"   # Oskaloosa (Precise Imaging)
+ottumwa = "=ibus:1968"   # Ottumwa Bus Stop
+burlington_ia = "=ibus:2373"   # Burlington IA (FastBrake)
+galesburg = "=ibus:484"   # Galesburg
+bloomington_il = "=ibus:2512"   # Bloomington (IL)
+champaign_itc = "=ibus:1819"   # Champaign Intermodal Trans Ctr
+indianapolis_bus = "=ibus:1673"   # Indianapolis Bus Station
 
 [[trip]]
 id = "t112"
@@ -43,3 +52,18 @@ stops = ["max_meadows_a81_travel_plaza 14:20", "knoxville_area_transit_bus_stop 
 route = "Seattle-Boise-SLC-Denver beyond Salt Lake City: SLC Intermodal 02:30/02:40 -> Provo Intermodal Hub 03:30 (Nick screenshot Oct 5 2026 for Fri Nov 13: Boise 20:45 -> Ogden 01:40 -> SLC 02:30 (10 min) -> Provo 03:30; the feed stops the trip at SLC; daily assumed)"
 days = "1111111"
 stops = ["slc_intermodal 02:40", "provo 03:30"]
+
+# Nick screenshots Oct 5 2026 (Greyhound booking, Tue Oct 6): Greyhound took over the Des Moines <-> Indianapolis line
+# via Burlington IA from Burlington Trailways (ceased Sep 2025). Local clocks per stop (Indianapolis Eastern, the rest
+# Central); a printed dwell is taken as arrive/depart.
+[[trip]]
+id = "t408"
+route = "Greyhound Des Moines 08:05 -> Ottumwa -> Burlington IA -> Galesburg -> Bloomington -> Champaign -> Indianapolis 18:45 (daily assumed)"
+days = "1111111"
+stops = ["des_moines 08:05", "monroe_ia 08:45/08:50", "oskaloosa 09:20/09:25", "ottumwa 09:55/10:00", "burlington_ia 11:15/11:35", "galesburg 12:35/12:40", "bloomington_il 14:25/14:30", "champaign_itc 15:30/15:40", "indianapolis_bus 18:45"]
+
+[[trip]]
+id = "t409"
+route = "Greyhound Indianapolis 13:10 -> Champaign -> Bloomington -> Galesburg -> Burlington IA -> Ottumwa -> Des Moines 22:05 (daily assumed)"
+days = "1111111"
+stops = ["indianapolis_bus 13:10", "champaign_itc 14:15/14:20", "bloomington_il 15:20/15:30", "galesburg 17:05/17:10", "burlington_ia 18:10/18:55", "ottumwa 20:10/20:15", "oskaloosa 20:45/20:50", "monroe_ia 21:20/21:25", "des_moines 22:05"]
