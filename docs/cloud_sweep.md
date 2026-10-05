@@ -29,7 +29,7 @@ on:
 
 jobs:
   prepare:
-    runs-on: blacksmith-16vcpu-ubuntu-2404          # or ubuntu-latest
+    runs-on: ubuntu-latest   # GitHub-hosted, works on a personal account (Blacksmith needs an org)
     outputs: {seeds: ${{ steps.seeds.outputs.json }}}
     steps:
       - uses: actions/checkout@v4
@@ -50,7 +50,7 @@ jobs:
 
   run:
     needs: prepare
-    runs-on: blacksmith-16vcpu-ubuntu-2404
+    runs-on: ubuntu-latest
     timeout-minutes: 40
     strategy:
       fail-fast: false
@@ -66,7 +66,7 @@ jobs:
           path: out/router_*.pkl
           key: router-${{ hashFiles('data/**', 'scripts/time_router.py', 'scripts/common.py', 'scripts/csa.c') }}
       - name: search (stopped early if it settles into a known family)
-        env: {BUS48_WORKERS: '16', BUS48_LIVE: '../run/live.json', PYTHONUNBUFFERED: '1'}
+        env: {BUS48_WORKERS: '4', BUS48_LIVE: '../run/live.json', PYTHONUNBUFFERED: '1'}
         run: |
           mkdir -p run && cd scripts
           seed='${{ matrix.seed }}'
@@ -97,8 +97,10 @@ jobs:
 
 ## Open points before it is real
 
-- **Cost.** 24 jobs x ~16 min x 16 vCPU. Check the Blacksmith per-minute rate for the runner size; a smaller
-  runner (8 vCPU, `BUS48_WORKERS=8`) halves cost for somewhat less search per run.
+- **Runners and cost.** Nick's GitHub is a personal account, so Blacksmith (org only) and GitHub's larger runners
+  (paid org plans) are out. Standard `ubuntu-latest` runners have 4 vCPU (`BUS48_WORKERS=4`, so each run searches
+  about a quarter as much as the 16-worker local box per minute; give runs a longer budget). Free plan: 2000
+  minutes a month for private repos, unlimited for public; a 24-run sweep at ~20 min a job is ~480 minutes.
 - **Router build in CI.** Measured 63 s here; on a runner, likely 1-3.5 min once per data change (then cached).
   `cached_router` keys on `data/` and the router sources but not `csa.c` (bootstrap.sh's warning), so the cache
   key above adds `csa.c` itself.
