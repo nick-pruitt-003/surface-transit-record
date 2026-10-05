@@ -78,7 +78,7 @@ stops = ["mobridge 12:10", "mclaughlin 12:35", "fort_yates 13:00", "bismarck 14:
 # the Des Moines -> Omaha times (03:45 -> 06:00) are Google's 02:45 -> 05:00 plus the same hour, not yet confirmed.
 [[trip]]
 id = "t336"
-route = "JL 938 Bismarck 13:05 -> Fargo -> Moorhead -> St. Cloud -> Minneapolis 21:10 (daily assumed)"
+route = "JL 938 Bismarck 13:05 -> Fargo -> Moorhead -> St. Cloud -> Minneapolis 21:10 (daily assumed; Fargo 16:40 -> Minneapolis 21:10 confirmed on the site Oct 5)"
 days = "1111111"
 tz = "America/Chicago"
 stops = ["bismarck_jl 13:05", "jamestown_nd 14:40", "valley_city 15:20", "fargo_jl 16:20/16:40", "moorhead_msu 17:00", "fergus_falls 18:00", "alexandria_mn 18:40/19:00", "st_cloud_jl 20:05", "maple_grove 20:50", "minneapolis_jl 21:10"]
@@ -102,8 +102,8 @@ stops = ["des_moines_jl 03:45", "omaha_burlington 06:00"]
 # the feed's 50-minute Brookings -> Sioux Falls run.
 [[trip]]
 id = "t354"
-route = "JL Fargo 14:30 -> Sisseton Jct -> Summit Corner -> Watertown -> Brookings -> Sioux Falls (SF arrival inferred; daily assumed)"
-days = "1111111"
+route = "JL Fargo 14:30 -> Sisseton Jct -> Summit Corner -> Watertown -> Brookings -> Sioux Falls (SF arrival inferred; Thu-Mon only, Nick Oct 5)"
+days = "1001111"
 tz = "America/Chicago"
 stops = ["fargo_jl_bus 14:30", "sisseton_jct 15:45", "summit_corner 16:15/16:20", "watertown_sd 16:50", "brookings_sd 17:35", "sioux_falls_jl 18:25"]
 

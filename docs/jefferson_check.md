@@ -13,9 +13,9 @@ trips have been 20-80 min off the current site. Every leg below marked **check**
 | 3 | d2 Fri 19:45 | Kansas City | d2 Fri 22:45 | Des Moines | **check** (Tulsa -> Minneapolis) |
 | 4 | d3 Sat 06:15 | Omaha | d3 Sat 09:45 | Sioux Falls | confirmed (JL Omaha 06:15 -> Sioux City -> Vermilli) |
 | 5 | d3 Sat 10:00 | Sioux Falls | d3 Sat 14:05 | Fargo | confirmed (JL Sioux Falls 10:00 -> Brookings -> Wat) |
-| 6 | d3 Sat 15:55 | Fargo | d3 Sat 20:20 | Minneapolis | **check** (Billings -> Minneapolis) |
-| 7 | d4 Sun 06:45 | Minneapolis | d5 Mon 00:25 | Billings | **check** (Minneapolis -> Billings) |
-| 8 | d5 Mon 01:30 | Billings | d5 Mon 10:30 | Spokane | **check** (Billings -> Spokane) |
+| 6 | d3 Sat 16:40 | Fargo | d3 Sat 21:10 | Minneapolis | confirmed (JL 938 Fargo 16:40; feed trip 699 dropped as 45 min early) |
+| 7 | d4 Sun 06:45 | Minneapolis | d5 Mon 00:25 | Billings | confirmed (JL Minneapolis 06:45 -> Sioux Falls 12:10 -> Rapid City -> Billings 00:25, site Oct 5) |
+| 8 | d5 Mon 01:30 | Billings | d5 Mon 10:30 | Spokane | confirmed (JL Billings 01:30 -> Missoula -> Spokane 10:30, site Oct 5) |
 
 ## Wheeling (234.24, valid, Ohio Coach)
 
@@ -26,9 +26,9 @@ trips have been 20-80 min off the current site. Every leg below marked **check**
 | 3 | d2 Fri 19:45 | Kansas City | d2 Fri 22:45 | Des Moines | **check** (Tulsa -> Minneapolis) |
 | 4 | d3 Sat 06:15 | Omaha | d3 Sat 09:45 | Sioux Falls | confirmed (JL Omaha 06:15 -> Sioux City -> Vermilli) |
 | 5 | d3 Sat 10:00 | Sioux Falls | d3 Sat 14:05 | Fargo | confirmed (JL Sioux Falls 10:00 -> Brookings -> Wat) |
-| 6 | d3 Sat 15:55 | Fargo | d3 Sat 20:20 | Minneapolis | **check** (Billings -> Minneapolis) |
-| 7 | d4 Sun 06:45 | Minneapolis | d5 Mon 00:25 | Billings | **check** (Minneapolis -> Billings) |
-| 8 | d5 Mon 01:30 | Billings | d5 Mon 10:30 | Spokane | **check** (Billings -> Spokane) |
+| 6 | d3 Sat 16:40 | Fargo | d3 Sat 21:10 | Minneapolis | confirmed (JL 938 Fargo 16:40; feed trip 699 dropped as 45 min early) |
+| 7 | d4 Sun 06:45 | Minneapolis | d5 Mon 00:25 | Billings | confirmed (JL Minneapolis 06:45 -> Sioux Falls 12:10 -> Rapid City -> Billings 00:25, site Oct 5) |
+| 8 | d5 Mon 01:30 | Billings | d5 Mon 10:30 | Spokane | confirmed (JL Billings 01:30 -> Missoula -> Spokane 10:30, site Oct 5) |
 
 ## HT plan (Plains block pending re-search)
 
@@ -44,8 +44,8 @@ trips have been 20-80 min off the current site. Every leg below marked **check**
 | 8 | d10 Sat 11:05 | Luverne | d10 Sat 14:20 | Willmar | **check** (Sioux Falls -> Minneapolis-St Paul (Airp) |
 | 9 | d10 Sat 15:10 | Willmar | d10 Sat 19:00 | Sioux Falls | **check** (Minneapolis-St Paul (Airport - MSP) -> S) |
 | 10 | d10 Sat 19:10 | Sioux Falls | d11 Sun 00:00 | Minneapolis | **check** (Billings -> Minneapolis) |
-| 11 | d11 Sun 06:45 | Minneapolis | d12 Mon 00:25 | Billings | **check** (Minneapolis -> Billings) |
-| 12 | d12 Mon 01:30 | Billings | d12 Mon 10:30 | Spokane | **check** (Billings -> Spokane) |
+| 11 | d11 Sun 06:45 | Minneapolis | d12 Mon 00:25 | Billings | confirmed (JL Minneapolis 06:45 -> Sioux Falls 12:10 -> Rapid City -> Billings 00:25, site Oct 5) |
+| 12 | d12 Mon 01:30 | Billings | d12 Mon 10:30 | Spokane | confirmed (JL Billings 01:30 -> Missoula -> Spokane 10:30, site Oct 5) |
 
 ## Already corrected from the site (in data/manual/jefferson_lines.toml)
 
