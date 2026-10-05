@@ -300,6 +300,19 @@ def _():
 
 
 
+@check('every measured on-foot link ends across a state line from where it starts')
+def _():
+    # The Moorhead walk's end point sat 200 m west of the Red River, so Nick's measured 83 min walk to Minnesota
+    # collected nothing and X waited a day for a bus. A foot link (one with miles) exists only to cross a line.
+    import csv, os
+    bad = []
+    for r in csv.DictReader(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'data', 'walk_links.csv'), encoding='utf-8')):
+        if not (r.get('miles') or '').strip() or r['from_uid'] not in R.idx or r['to_uid'] not in R.idx: continue
+        a, b = R.idx[r['from_uid']], R.idx[r['to_uid']]
+        if R.state[a] == R.state[b]: bad.append((R.stop_name[b], R.state_names[R.state[b]]))
+    assert not bad, bad
+
+
 @check('the Big River Crossing walk keeps the bridge hours (06:00-22:00): Arkansas by 10:45 from 10:00, not by bridge at 23:00')
 def _():
     # A walk link is open at every hour, so the bridge is timetabled walks instead (big_river_crossing.toml) and

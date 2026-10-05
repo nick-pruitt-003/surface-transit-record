@@ -11,7 +11,7 @@ sc_bank_at_north_augusta_landing_dr = { name = "South Carolina bank at North Aug
 
 foley_park_vermont_end_of_ledyard_bridge = { name = "Foley Park at the Vermont end of Ledyard Bridge (on foot to the Hanover Inn)", lon = -72.3046, lat = 43.7036 }
 
-moorhead_mn_13th_ave_n = { name = "Moorhead MN 13th Ave N at the Red River (on foot from Fargo Jefferson station)", lon = -96.7745, lat = 46.8868 }
+moorhead_mn_13th_ave_n = { name = "Moorhead MN 13th Ave N at the Red River (on foot from Fargo Jefferson station)", lon = -96.7715, lat = 46.8868 }   # 508 13th Ave N; -96.7745 is on the ND bank
 
 [[trip]]
 id = "t50"
