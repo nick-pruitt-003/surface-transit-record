@@ -26,6 +26,11 @@ brookings_sd = "=ibus:2049"   # Brookings SD (not OR)
 sioux_falls_jl = "=ibus:186"   # Sioux Falls
 vivian_sd = "=ibus:1200"   # Vivian (Coffee Cup Fuel Stop)
 pierre_sd = "=ibus:2421"   # Pierre
+chicago_bus = "=ibus:1605"   # Chicago Bus Station (IL)
+davenport_hillandale = "=ibus:1710"
+iowa_city = "=ibus:599"
+vermillion = "=ibus:1187"
+sioux_city = "=ibus:339"
 osceola_ia = "=ibus:35"
 lamoni = "=ibus:1022"
 bethany_mo = "=ibus:2630"
@@ -106,4 +111,29 @@ route = "JL Vivian 15:40 -> Pierre 16:25 (connector; daily assumed)"
 days = "1111111"
 tz = "America/Chicago"
 stops = ["vivian_sd 15:40", "pierre_sd 16:25"]
+
+# Nick screenshots Oct 5 2026 (Jefferson booking): Chicago -> Omaha overnight (not in the feed), Omaha -> Sioux Falls
+# arriving 09:45 (the feed's Kansas City -> Sioux Falls trip has 10:05 and is kept for the Maryville loop; intermediate
+# times here are the feed's shifted 20 min earlier, an assumption), and Sioux Falls -> Fargo 10:00 -> 14:05 (the feed
+# has it 30 min late at every stop; feed trip ibus 268 dropped, stops shifted 30 min earlier).
+[[trip]]
+id = "t356"
+route = "JL Chicago 21:15 -> Davenport -> Iowa City -> Des Moines -> Omaha 06:00 (daily assumed)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["chicago_bus 21:15", "davenport_hillandale 24:05/24:30", "iowa_city 25:30/25:35", "des_moines_jl 27:15/27:45", "omaha_burlington 30:00"]
+
+[[trip]]
+id = "t357"
+route = "JL Sioux Falls 10:00 -> Brookings -> Watertown -> Summit Corner -> Sisseton Jct -> Fargo 14:05 (daily assumed)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["sioux_falls_jl 10:00", "brookings_sd 10:45", "watertown_sd 11:40", "summit_corner 12:20", "sisseton_jct 12:45", "fargo_jl_bus 14:05"]
+
+[[trip]]
+id = "t358"
+route = "JL Omaha 06:15 -> Sioux City -> Vermillion -> Sioux Falls 09:45 (intermediate times assumed; daily assumed)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["omaha_burlington 06:15", "sioux_city 07:40", "vermillion 08:35", "sioux_falls_jl 09:45"]
 

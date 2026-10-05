@@ -1,2 +1,3 @@
 feed,trip_id,note
 ibus,2020,Jefferson Fargo -> Sioux Falls: the feed has it at 15:50; jeffersonlines.com shows 14:30 (Nick Oct 5 2026). Replaced by t354 in data/manual/jefferson_lines.toml
+ibus,268,Jefferson Sioux Falls -> Fargo: the feed has 10:30 -> 14:35; jeffersonlines.com shows 10:00 -> 14:05 (Nick Oct 5 2026). Replaced by t357
