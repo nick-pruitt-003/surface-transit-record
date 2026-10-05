@@ -15,3 +15,7 @@ ibus,1888,Greyhound Chicago 11:10 -> Des Moines 19:35: booking shows the same st
 ibus,908,Greyhound Chicago 14:10 -> Des Moines 23:35 via Waterloo: booking shows 08:50 -> 18:45 via Cedar Rapids and Marshalltown (Nick Oct 5 2026). Replaced by t411
 ibus,1909,Greyhound Chicago 17:01 -> Des Moines -> Omaha -> Denver: nothing leaves Chicago between 12:25 and 21:15 (Nick Oct 5 2026); t412 is the 12:25 to Des Moines; Omaha -> Denver part not yet replaced
 ibus,3290,Greyhound Denver 00:55 -> Omaha -> Des Moines -> Chicago 21:30: booking shows Denver 18:55 -> Chicago 16:25 next day (Nick Oct 5 2026). Replaced by t416
+ibus,1216,Greyhound Des Moines 10:30 -> Chicago 18:35: booking shows the same stops at 05:30 -> 13:35 (Nick Oct 5 2026). Replaced by t417
+ibus,1530,Greyhound Des Moines 14:45 -> Chicago 00:35: booking shows 09:45 -> 19:45 (Nick Oct 5 2026). Replaced by t418
+ibus,569,Burlington Trailways Des Moines 08:15 -> Chicago 15:15: not sold (Nick Oct 5 2026)
+ibus,2195,Burlington Trailways Des Moines 12:00 -> Chicago 20:30: not sold (Nick Oct 5 2026)

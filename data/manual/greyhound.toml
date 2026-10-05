@@ -122,3 +122,20 @@ id = "t416"
 route = "Greyhound Denver 18:55 -> North Platte -> Lincoln -> Omaha 05:55 -> Des Moines 08:55 -> Chicago 16:25 (daily assumed)"
 days = "1111111"
 stops = ["denver_usbc 18:55", "ogallala_pp 22:05/22:25", "north_platte_pp 24:15/24:20", "lexington_p66 25:15/25:20", "kearney_pp 26:00/26:05", "grand_island_gh 26:55/27:00", "york_ne 27:45/27:50", "lincoln_depot 28:45/28:55", "omaha_gh 29:55/30:40", "des_moines_gh 32:55/33:20", "grinnell 34:15/34:20", "iowa_city_gh 35:25/35:40", "davenport_gt 36:50/37:00", "chicago_bus 40:25"]
+
+# Nick screenshots Oct 5 2026 (Greyhound booking): Des Moines -> Chicago 05:30 and 09:45, replacing the feed's 10:30 and
+# 14:45 (ibus 1216, 1530; same stop lists, retimed). With the 09:20 through bus from Denver (t416) and Jefferson's
+# 23:45 (t403) that is every Des Moines -> Chicago departure; Burlington's 08:15 and 12:00 are dropped.
+[[trip]]
+id = "t417"
+route = "Greyhound Des Moines 05:30 -> Grinnell -> Iowa City -> Davenport -> Moline -> Dixon -> Naperville -> Chicago 13:35 (daily assumed)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["des_moines_gh 05:30", "grinnell 06:25/06:30", "iowa_city_gh 07:40/07:50", "davenport_gt 09:00/09:05", "moline_metrolink 09:15/09:20", "dixon_reagan 10:35/10:40", "rochelle_petro 11:15/11:35", "dekalb_niu 11:55/12:05", "naperville_59 12:45/12:50", "chicago_bus 13:35"]
+
+[[trip]]
+id = "t418"
+route = "Greyhound Des Moines 09:45 -> Ames -> Marshalltown -> Waterloo -> Cedar Rapids -> Iowa City -> Davenport -> Rockford -> Chicago 19:45 (daily assumed)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["des_moines_gh 09:45", "ames_p66 10:25/10:30", "marshalltown 11:10/11:30", "waterloo_union 12:40/12:45", "cedar_rapids_lindale 13:50/13:55", "iowa_city_gh 14:35/14:45", "davenport_gt 15:45/15:55", "moline_metrolink 16:05/16:10", "rockford_east 18:05/18:15", "chicago_bus 19:45"]
