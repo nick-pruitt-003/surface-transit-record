@@ -142,14 +142,14 @@ tz = "America/Chicago"
 stops = ["omaha_burlington 06:15", "sioux_city 07:40", "vermillion 08:35", "sioux_falls_jl 09:45"]
 
 # Nick screenshot Oct 5 2026 (Jefferson booking, Thu Oct 29): Maryville -> Sioux Falls with the site's times (the feed
-# runs 20 min late from Omaha on and is kept for its Kansas City start), and Sioux Falls 10:25 -> Luverne MN 10:55
+# runs 20 min late from Omaha on and is dropped; Kansas City 01:30 -> Maryville 03:05 confirmed on the site, Nick Oct 5), and Sioux Falls 10:25 -> Luverne MN 10:55
 # (the feed has 10:30 -> 11:05).
 [[trip]]
 id = "t360"
-route = "JL Maryville 03:25 -> Clarinda -> Shenandoah -> Omaha -> Sioux City -> Vermillion -> Sioux Falls 09:45 (daily assumed)"
+route = "JL Kansas City 01:30 -> Maryville 03:25 -> Clarinda -> Shenandoah -> Omaha -> Sioux City -> Vermillion -> Sioux Falls 09:45 (daily assumed)"
 days = "1111111"
 tz = "America/Chicago"
-stops = ["maryville 03:25", "clarinda 04:05", "shenandoah 04:35", "omaha_burlington 05:40/06:15", "sioux_city 07:50/07:55", "vermillion 08:40/08:45", "sioux_falls_jl 09:45"]
+stops = ["kansas_city_bus_station 01:30", "maryville 03:05/03:25", "clarinda 04:05", "shenandoah 04:35", "omaha_burlington 05:40/06:15", "sioux_city 07:50/07:55", "vermillion 08:40/08:45", "sioux_falls_jl 09:45"]
 
 [[trip]]
 id = "t361"
