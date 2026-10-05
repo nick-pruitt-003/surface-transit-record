@@ -11,3 +11,6 @@ ibus,1497,Burlington Trailways St. Louis -> Cedar Rapids via Hannibal, Quincy, K
 ibus,469,Burlington Trailways Cedar Rapids -> St. Louis: as ibus 1497
 ibus,1190,Burlington Trailways Chicago 06:30 -> Des Moines 15:35: not sold; Chicago -> Des Moines is Greyhound 06:10 / 08:50 / 12:25 and Jefferson 21:15 (Nick Oct 5 2026)
 ibus,3018,Burlington Trailways Chicago 11:00 -> Des Moines 18:10: as ibus 1190
+ibus,1888,Greyhound Chicago 11:10 -> Des Moines 19:35: booking shows the same stops at 06:10 -> 14:35 (Nick Oct 5 2026). Replaced by t410
+ibus,908,Greyhound Chicago 14:10 -> Des Moines 23:35 via Waterloo: booking shows 08:50 -> 18:45 via Cedar Rapids and Marshalltown (Nick Oct 5 2026). Replaced by t411
+ibus,1909,Greyhound Chicago 17:01 -> Des Moines -> Omaha -> Denver: nothing leaves Chicago between 12:25 and 21:15 (Nick Oct 5 2026); t412 is the 12:25 to Des Moines; Omaha -> Denver part not yet replaced

@@ -58,6 +58,9 @@ moline_metrolink = "=ibus:3337"   # Moline Center Station (Metrolink)
 davenport_gt = "=ibus:2002"   # Davenport (Ground Transportation)
 cedar_rapids_lindale = { name = "Cedar Rapids, IA (JL - Lindale)", lon = -91.6326, lat = 42.0283 }   # Lindale Mall, point approximate
 marshalltown_ia = "=ibus:1769"   # Marshalltown (booking: Git N Go)
+dubuque_bus = "=ibus:2793"   # Dubuque Bus Station
+waterloo_loves = { name = "Waterloo (Love's Travel Stop)", lon = -92.3800, lat = 42.4600 }   # point approximate
+minneapolis_bus = "=ibus:1536"   # Minneapolis Bus Station
 
 [[trip]]
 id = "t104"
@@ -195,3 +198,19 @@ id = "t405"
 route = "JL Des Moines 08:30 -> Cedar Rapids -> Iowa City -> Davenport -> Moline -> Peoria -> Champaign -> Indianapolis 19:50 (daily assumed)"
 days = "1111111"
 stops = ["des_moines_jl 08:30", "marshalltown_ia 09:25", "cedar_rapids_lindale 10:30/10:35", "iowa_city 11:25", "davenport_gt 12:30/12:45", "moline_metrolink 13:00", "galesburg_il 13:45/13:50", "peoria_il 14:40/14:45", "bloomington_il 15:35/15:40", "champaign_itc 16:40/16:45", "danville_il 17:30", "indy_bus 19:50"]
+
+# Nick screenshots Oct 5 2026 (Jefferson booking): Chicago -> Dubuque -> Waterloo, connecting at Waterloo to Minneapolis
+# via Clear Lake (Kwik Star, taken as the Clear Lake Jct. stop).
+[[trip]]
+id = "t413"
+route = "JL Chicago 12:00 -> Dubuque 15:30 -> Waterloo (Love's) 17:00 (daily assumed)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["chicago_bus 12:00", "dubuque_bus 15:30", "waterloo_loves 17:00"]
+
+[[trip]]
+id = "t414"
+route = "JL Waterloo (Love's) 17:25 -> Clear Lake 18:55 -> Minneapolis 21:00 (daily assumed)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["waterloo_loves 17:25", "clear_lake_ia 18:55", "minneapolis_bus 21:00"]
