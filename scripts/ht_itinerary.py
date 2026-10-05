@@ -15,7 +15,8 @@ from route_report import R, st
 from common import ABBR
 
 ET = ZoneInfo('America/New_York')
-START = datetime(2026, 9, 28, 6, 19, tzinfo=ET)          # Monday; 06:19 is the latest start that keeps the chain
+START = datetime(2026, 9, 28, 6, 19, tzinfo=ET)          # Monday in the timetable window; 06:19 is the latest start that keeps the chain
+TRIP = datetime(2026, 10, 26).date()   # the Monday Nick is pricing; Book ahead shows these dates (same weekdays and day offsets)
 ORDER = 'ME,@Washington Union Station,GA,WV,MI,ND,NE,WY,OR,AZ,KS,LA,AR,MS,FL'
 
 # notes keyed by a substring of the leg's from/to stop names (first match wins)
@@ -189,7 +190,7 @@ def main():
 
     # ---- Book ahead: every reservable intercity leg with its date, for pricing ----
     ws5 = wb.create_sheet('Book ahead')
-    ws5.append(['day', 'date (Monday start)', 'depart', 'from', 'arrive', 'to', 'carrier', 'service', 'book'])
+    ws5.append(['day', f'date (start Mon {TRIP:%b %d})', 'depart', 'from', 'arrive', 'to', 'carrier', 'service', 'book', 'price', 'segment booked'])
     for c in ws5[1]: c.font = Font(bold=True)
     LOCAL = ('MATA', 'Michian City', 'Metropolitan Transit Authority of Harris', 'Jacksonville Transportation', 'Transpo', 'On foot',
              'Northern Indiana Commuter', 'Advance Transit', 'Regional Transportation Commission', 'Utah Transit', 'DALLAS AREA')
@@ -204,10 +205,20 @@ def main():
         if 'Dartmouth' in ag: book = 'dartmouthcoach.com (reserve)'
         if 'Salt Lake Express' in ag: book = 'saltlakeexpress.com (reserve)'
         if 'BeeLine' in ag: book = 'BeeLine (phone/site)'
-        ws5.append([f'day {(d0.date() - START.date()).days + 1}', d0.strftime('%a %b %d'), d0.strftime('%H:%M'), R.stop_name[bs],
-                    datetime.fromtimestamp(at, tz_of(al)).strftime('%a %H:%M'), R.stop_name[al], ag, rt or hs, book])
-    ws5.append([]); ws5.append(['', 'Walk-up / local (no reservation): Advance Transit, MATA, Michigan City Transit, South Shore Line (ticket at station or app), Houston METRO, JTA, RTC Las Vegas, UTA'])
-    for col, w in zip('ABCDEFGHI', (7, 16, 7, 34, 11, 34, 26, 40, 26)): ws5.column_dimensions[col].width = w
+        from datetime import timedelta
+        dn = (d0.date() - START.date()).days
+        ws5.append([f'day {dn + 1}', (TRIP + timedelta(days=dn)).strftime('%a %b %d'), d0.strftime('%H:%M'), R.stop_name[bs],
+                    datetime.fromtimestamp(at, tz_of(al)).strftime('%a %H:%M'), R.stop_name[al], ag, rt or hs, book, None, None])
+        ws5.cell(ws5.max_row, 10).number_format = '$#,##0.00'
+    last = ws5.max_row
+    ws5.append(['', '', '', '', '', '', '', '', 'TOTAL', f'=SUM(J2:J{last})', f'=COUNTA(K2:K{last})&" of {last - 1} booked"'])
+    ws5.cell(ws5.max_row, 10).number_format = '$#,##0.00'
+    for c in ws5[ws5.max_row]: c.font = Font(bold=True)
+    ws5.append([]); ws5.append(['', 'Walk-up / local (no reservation): MATA, Michigan City Transit, South Shore Line (ticket at station or app), Houston METRO, JTA, RTC Las Vegas, UTA'])
+    ws5.append(['', f'DST: clocks fall back Sun Nov 1 02:00 (day 7 of a Mon {TRIP:%b %d} start). The Pasco -> Salt Lake overnight Greyhound runs through it (due 02:30 local); schedules keep local times, so elapsed is ~231.1 h, not 230.10. Confirm that night with the carriers.'])
+    ws5.append(['', f'Dates are trips from the timetable window (Sep 28 start) relabelled to a Mon {TRIP:%b %d} start: confirm each leg runs on its date when pricing.'])
+    ws5.freeze_panes = 'A2'
+    for col, w in zip('ABCDEFGHIJK', (7, 16, 7, 34, 11, 34, 26, 40, 26, 10, 16)): ws5.column_dimensions[col].width = w
     wb.save('../docs/ht_itinerary.xlsx')
     print('wrote ../docs/ht_itinerary.xlsx:', n, 'legs,', round((f - t0) / 3600, 2), 'h')
 
