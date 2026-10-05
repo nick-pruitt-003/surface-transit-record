@@ -1626,8 +1626,6 @@ Follow-ups the same night:
 - **Chicago, Sat**: Flix to 95th/Dan Ryan 05:10, Metra UP-N to Kenosha and back in the morning, Four Winds shuttle
   11:50 out and the 17:30 (site time, Central; 18:30 ET at the casino) back, so you are not reboarding the bus you
   came on. Jefferson 21:15.
-- **Not reproducible here yet.** The Four Winds shuttle, Jefferson Chicago -> Omaha -> Sioux Falls -> Fargo and the
-  Moorhead walk were entered on the other machine and never committed; without them the router replays X to Chicago
-  exactly and then finishes 24 h late (256.37 h). Push them, then rebuild "If you miss a leg".
+- **Reproduces** on the merged data (the other machine's Four Winds, Jefferson Chicago -> Fargo and Moorhead walk): 231.87 h, every leg as booked except the router's shorter Fargo finish (Amtrak station to the state line) against the measured 83 min walk to Moorhead; 232.30 stays the figure. Without Jefferson 21:15 Chicago -> Omaha and the 06:15 Omaha -> Sioux Falls it is 256.37 h: that pair is what makes the Moorhead finish, and no sweep before 5cda41e had it. "If you miss a leg" is rebuilt from the booked legs by `scripts/x_miss.py`.
 - **timezonefinder must be installed.** Without it, local-clock manual trips are read as UTC and the router is
   silently wrong. It is now installed on this Mac.
