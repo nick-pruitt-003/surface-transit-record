@@ -32,3 +32,33 @@ Mayflower to the Michigan line, then about 6.5 miles to South Bend Airport for t
 22:00 Greyhound out of Chicago absorbs it); it trades 1.5 h on a rural corner for about 4 h in Chicago to eat and
 clean up. Miss it and the planned route is intact: 17:52 Blackthorn back, 18:55 Greyhound. A ride-hail also does
 it. Details in `routes.md` under RX.
+
+## HT, the route to ride (230.10 h)
+
+Everything leg by leg is in `docs/ht_itinerary.xlsx` (built by `scripts/ht_itinerary.py`): the itinerary, the start
+day, what to do if you miss each leg, what to verify, and what to book.
+
+**Start day: Monday** (Tuesday as backup). The chain is daily, so Monday to Wednesday all give 230.10 h; Monday puts
+Memphis on a Wednesday (MATA runs early enough to reach the bridge) and Chicago on a Wednesday (the extra Four Winds
+shuttles, from Oct 28). Thursday puts Memphis on a Saturday (taxi needed); Saturday and Sunday starts lose Missouri.
+
+**On foot, in order:**
+
+| when (Monday start) | where | what |
+|---|---|---|
+| Mon 06:19 | Foley Park (Vermont end of the Ledyard Bridge) -> Hanover Inn | 0.6 mi, 16 min; the start. Leave by 06:19 (06:24 with no margin) |
+| Wed ~13:10 | Michigan City -> Michigan line at Michiana -> Carroll Ave | 4.5 km out, 6.9 km back at 4.1 mph. Alternative: the Four Winds shuttle from Chicago (21+, photo ID) |
+| Sun 02:30 | SLC Intermodal -> SLC Airport | 6.8 km at night, ~90 min walk, or taxi; the 04:45 Salt Lake Express leaves from the airport |
+| Wed 05:45 | Memphis Central Station -> Arkansas line on the Big River Crossing and back | 33 min each way; bridge open 06:00-22:00. MATA Walker 04:30 from the Greyhound terminal gets you there |
+
+**The fragile hour:** Memphis, Wednesday morning. Missing the bridge walk, the 07:21 MATA back or the 09:00 to
+Birmingham all cost ~20 h. Budget a taxi for the 10 km between the Greyhound terminal and downtown as a backup.
+
+**Where the waits are (sleep, food, showers):** Chicago Wed 17:19-22:00; Minneapolis Thu 06:20-10:35; Sioux Falls /
+the Maryville loop Thu night to Fri 12:40; the Southwest Chief Sun 18:43 to Tue 01:47 (two nights on a train);
+Fort Worth Tue 12:27-14:23. Overnight seats: Charlotte -> Columbus (Barons), Chicago -> Minneapolis, Pasco -> Salt Lake,
+Texarkana -> Memphis.
+
+**If something slips:** see the "If you miss a leg" sheet. Five misses cost nothing (a later bus still makes the
+chain); most cost exactly a day (the same buses run tomorrow); Memphis morning costs ~20 h; the last leg ~14 h.
+

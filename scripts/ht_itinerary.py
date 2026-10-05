@@ -47,6 +47,22 @@ def note_for(a, b):
     return ''
 
 
+def same_trip_exists(leg, N):
+    """Does the same service (carrier and route) run from the same stop to the same stop N days later, same times?"""
+    import numpy as np
+    _, trip, bs, bt, al, at = leg
+    key = R.trip_info[(trip[0], trip[1])][:2]
+    dep = R._dep_np if hasattr(R, '_dep_np') else np.asarray(R.dep)
+    R._dep_np = dep
+    t = bt + N * 86400
+    for k in range(int(np.searchsorted(dep, t - 60)), int(np.searchsorted(dep, t + 61))):
+        if R.cfrom[k] != bs or R.trip_info[R.ctrip[k][:2]][:2] != key: continue
+        tr = R.ctrip[k]
+        for j in range(k, int(np.searchsorted(dep, at + N * 86400 + 1))):
+            if R.ctrip[j] == tr and R.cto[j] == al and abs(R.arr[j] - (at + N * 86400)) <= 60: return True
+    return False
+
+
 def main():
     order = [x if x.startswith('@') else st(x) for x in ORDER.split(',')]
     fp = R.stops_matching('Foley Park at the Vermont end')[0]; t0 = START.timestamp()
@@ -87,13 +103,111 @@ def main():
         row[12].alignment = Alignment(wrap_text=True, vertical='top')
     ws.freeze_panes = 'A3'
     ws2 = wb.create_sheet('Start day')
-    ws2.append(['Start day', 'Total', 'Memphis falls on', 'Memphis on real MATA'])
-    for r in (('Mon / Tue / Wed', '230.10 h', 'Wed / Thu / Fri', 'yes: Walker 04:30 reaches the bridge for the 05:45 walk'),
-              ('Thu', '230.10 h', 'Sat', 'no: first useful MATA is 07:00; needs a taxi from the terminal'),
-              ('Fri', '230.10 h', 'Sun', 'not checked'),
-              ('Sat / Sun', 'chain breaks', '', 'a non-daily service in the chain')):
+    ws2.append(['Start day', 'Total', 'Memphis falls on', 'Notes'])
+    for r in (('Monday (recommended)', '230.10 h', 'Wednesday', 'Memphis on weekday MATA (Walker 04:30 to the bridge); Chicago on a Wednesday, when the extra Four Winds shuttles run (from Oct 28)'),
+              ('Tuesday / Wednesday', '230.10 h', 'Thursday / Friday', 'same chain, weekday Memphis'),
+              ('Thursday', '230.10 h', 'Saturday', 'no MATA early enough on Saturday: taxi from the Greyhound terminal to the bridge'),
+              ('Friday', '230.10 h', 'Sunday', 'Sunday MATA not checked'),
+              ('Saturday / Sunday', 'misses Missouri', '', 'the Sioux Falls dead-time ride does not reach Missouri on those days; a detour would be needed')):
         ws2.append(list(r))
-    for col, w in zip('ABCD', (16, 12, 18, 60)): ws2.column_dimensions[col].width = w
+    for col, w in zip('ABCD', (22, 16, 18, 110)): ws2.column_dimensions[col].width = w
+
+    # ---- If you miss a leg: replay from the boarding stop one minute after the bus left, same remaining order ----
+    ws3 = wb.create_sheet('If you miss a leg')
+    ws3.append(['#', 'missed', 'from', 'to', 'next best finish', 'cost h', 'recovery starts with'])
+    for c in ws3[1]: c.font = Font(bold=True)
+    rides = [(i, l) for i, l in enumerate(legs) if l[0] == 'ride']
+    base_f = f
+    # the full visiting order (every state, in the order HT first collects it): the pruned ORDER only works on HT's
+    # exact path, and a replay from a missed connection takes a different one
+    full = []; seen_ = {int(R.state[fp])}
+    for x in legs:
+        new_ = (S.covered([x]) if x[0] == 'ride' else ({int(R.state[x[2]])} if R.walk_collects(x[2]) else set())) - seen_
+        for s_ in sorted(new_, key=lambda z: R.state_names[z]): full.append(s_)
+        seen_ |= new_
+    for k, (i, l) in enumerate(rides, 1):
+        _, trip, bs, bt, al, at = l
+        before = legs[:i]; got = S.covered([x for x in before if x[0] == 'ride']) | {int(R.state[fp])}
+        for x in before:
+            if x[0] == 'walk' and R.walk_collects(x[2]): got.add(int(R.state[x[2]]))
+        dc_done = any(x[0] == 'ride' and 'Washington Union Station' in R.stop_name[x[4]] for x in before)
+        # Recovery A, go now: HT's remaining path as targets, each leg's new states before its alighting stop, so a
+        # later bus to the same stop cannot skip a state the original collected on the way.
+        rem = []; seen2 = set(got)
+        for x in legs[i:]:
+            if x[0] == 'ride': nw = S.covered([x]) - seen2
+            else: nw = ({int(R.state[x[2]])} if R.walk_collects(x[2]) else set()) - seen2
+            seen2 |= nw
+            rem += sorted(nw, key=lambda z: R.state_names[z])
+            pin = f'@#{x[4] if x[0] == "ride" else x[2]}'
+            if not rem or rem[-1] != pin: rem.append(pin)
+        pins = []
+        for x in legs[i:]:
+            pin = f'@#{x[4] if x[0] == "ride" else x[2]}'
+            if not pins or pins[-1] != pin: pins.append(pin)
+        best_ = None
+        for tgt in (pins, rem):   # pins alone (freest), then pins with each leg's states (cannot skip one)
+            S2 = ts.Search(R, bs, bt + 60, [], 1, done=sorted(got)); ts._SELF, ts._START, ts._T0 = S2, bs, bt + 60
+            f_, l_ = S2.evaluate(tgt)
+            if f_ < 1e18 and S2.all_states(l_) and (best_ is None or f_ < best_[0]): best_ = (f_, l_, 0)
+        # Recovery B, wait: the same chain N days later, checked trip by trip (same carrier and route, same times)
+        for N in (1, 2, 3):
+            if best_ is not None and best_[0] <= base_f + N * 86400: break
+            if all(same_trip_exists(x, N) for x in legs[i:] if x[0] == 'ride'):
+                best_ = (base_f + N * 86400, [], N); break
+        ok = best_ is not None
+        f2, l2, waited = best_ if ok else (float('inf'), [], 0)
+        ag = R.trip_info[(trip[0], trip[1])][0]
+        first = next((x for x in l2 if x[0] == 'ride'), None)
+        how = (f'wait {waited} day(s): the same buses run, everything shifts {waited * 24} h' if waited else
+               f'{R.fmt_time(first[3], first[2])} {R.trip_info[(first[1][0], first[1][1])][0]}: {R.stop_name[first[2]]} -> {R.stop_name[first[4]]}' if first else '')
+        fin = R.fmt_time(f2, legs[-1][4]) if ok and waited else (R.fmt_time(f2, l2[-1][4] if l2[-1][0] == 'ride' else l2[-1][2]) if ok else 'not recoverable in the window')
+        ws3.append([k, f'{R.fmt_time(bt, bs)} {ag}', R.stop_name[bs], R.stop_name[al], fin, round((f2 - base_f) / 3600, 1) if ok else '', how])
+        c = ws3.cell(ws3.max_row, 6)
+        if ok and c.value is not None: c.fill = PatternFill('solid', fgColor='F8D7DA' if c.value >= 20 else 'FFF3CD' if c.value >= 3 else 'D4EDDA')
+        ts._SELF, ts._START, ts._T0 = S, fp, t0
+    for col, w in zip('ABCDEFG', (4, 34, 30, 30, 18, 7, 90)): ws3.column_dimensions[col].width = w
+    ws3.freeze_panes = 'A2'
+
+    # ---- Verify before going: anything not straight from a GTFS feed, and every proxy hop ----
+    ws4 = wb.create_sheet('Verify')
+    ws4.append(['#', 'leg', 'why it needs checking', 'source / assumption'])
+    for c in ws4[1]: c.font = Font(bold=True)
+    m = 0
+    for l in legs:
+        if l[0] == 'ride':
+            _, trip, bs, bt, al, at = l
+            ag, rt, _ = R.trip_info[(trip[0], trip[1])]
+            if R.feeds[trip[0]].name == 'extra':
+                m += 1; ws4.append([m, f'{R.fmt_time(bt, bs)} {R.stop_name[bs]} -> {R.stop_name[al]}', f'hand-entered ({ag}): confirm times and days on the carrier site', rt])
+        elif l[0] == 'walk' and (l[4] - l[3]) > 20 * 60 and not (R.walk_collects(l[2]) or l[2] in getattr(R, 'link_ends', ()) or l[1] in getattr(R, 'link_ends', ())):
+            m += 1; ws4.append([m, f'{R.fmt_time(l[3], l[1])} {R.stop_name[l[1]]} -> {R.stop_name[l[2]]}', 'router local-transit proxy: plan the real bus, walk or taxi', note_for(R.stop_name[l[1]], R.stop_name[l[2]]) or 'see itinerary notes'])
+    for extra in (('All GTFS legs', 'feeds are a snapshot (Sep-Oct 2026): re-check every once-daily leg on the carrier site before booking', 'Greyhound, Flix, Jefferson, Barons, Amtrak'),
+                  ('Four Winds shuttle (alternative to the Michiana run)', 'return arrival times in Chicago are not published (assumed 1 h 40 min); 21+ with photo ID', 'fourwindscasinoshuttle.com'),):
+        m += 1; ws4.append([m, *extra])
+    for col, w in zip('ABCD', (4, 60, 70, 110)): ws4.column_dimensions[col].width = w
+
+    # ---- Book ahead: every reservable intercity leg with its date, for pricing ----
+    ws5 = wb.create_sheet('Book ahead')
+    ws5.append(['day', 'date (Monday start)', 'depart', 'from', 'arrive', 'to', 'carrier', 'service', 'book'])
+    for c in ws5[1]: c.font = Font(bold=True)
+    LOCAL = ('MATA', 'Michian City', 'Metropolitan Transit Authority of Harris', 'Jacksonville Transportation', 'Transpo', 'On foot',
+             'Northern Indiana Commuter', 'Advance Transit', 'Regional Transportation Commission', 'Utah Transit', 'DALLAS AREA')
+    tz_of = lambda stop: R.stop_zone(stop)
+    for l in legs:
+        if l[0] != 'ride': continue
+        _, trip, bs, bt, al, at = l
+        ag, rt, hs = R.trip_info[(trip[0], trip[1])]
+        if any(ag.startswith(x) for x in LOCAL): continue
+        d0 = datetime.fromtimestamp(bt, tz_of(bs))
+        book = 'Amtrak (reserved)' if ag.startswith('Amtrak') else 'carrier site / app'
+        if 'Dartmouth' in ag: book = 'dartmouthcoach.com (reserve)'
+        if 'Salt Lake Express' in ag: book = 'saltlakeexpress.com (reserve)'
+        if 'BeeLine' in ag: book = 'BeeLine (phone/site)'
+        ws5.append([f'day {(d0.date() - START.date()).days + 1}', d0.strftime('%a %b %d'), d0.strftime('%H:%M'), R.stop_name[bs],
+                    datetime.fromtimestamp(at, tz_of(al)).strftime('%a %H:%M'), R.stop_name[al], ag, rt or hs, book])
+    ws5.append([]); ws5.append(['', 'Walk-up / local (no reservation): Advance Transit, MATA, Michigan City Transit, South Shore Line (ticket at station or app), Houston METRO, JTA, RTC Las Vegas, UTA'])
+    for col, w in zip('ABCDEFGHI', (7, 16, 7, 34, 11, 34, 26, 40, 26)): ws5.column_dimensions[col].width = w
     wb.save('../docs/ht_itinerary.xlsx')
     print('wrote ../docs/ht_itinerary.xlsx:', n, 'legs,', round((f - t0) / 3600, 2), 'h')
 
