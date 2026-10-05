@@ -93,9 +93,8 @@ days = "1111111"
 stops = ["indianapolis_bus 13:10", "champaign_itc 14:15/14:20", "bloomington_il 15:20/15:30", "galesburg 17:05/17:10", "burlington_ia 18:10/18:55", "ottumwa 20:10/20:15", "oskaloosa 20:45/20:50", "monroe_ia 21:20/21:25", "des_moines 22:05"]
 
 # Nick screenshots Oct 5 2026 (Greyhound booking): Chicago -> Des Moines is Greyhound 06:10, 08:50, 12:25 and Jefferson
-# 21:15. They replace the feed's 11:10, 14:10 and 17:01 (ibus 1888, 908, 1909; same stop lists, retimed). The 17:01 ran
-# on to Omaha and Denver; whether the 12:25 does is not yet checked, so Greyhound westbound Omaha -> Denver is missing
-# until it is.
+# 21:15. They replace the feed's 11:10, 14:10 and 17:01 (ibus 1888, 908, 1909; same stop lists, retimed). The 12:25 is
+# the through bus to Denver (Omaha 21:50/23:10, Denver 09:00); local clocks per stop, Ogallala and Denver Mountain.
 [[trip]]
 id = "t410"
 route = "Greyhound Chicago 06:10 -> Dixon -> Moline -> Davenport -> Iowa City -> Grinnell -> Des Moines 14:35 (daily assumed)"
@@ -112,16 +111,14 @@ stops = ["chicago_bus 08:50", "rockford_east 10:20/10:30", "moline_metrolink 12:
 
 [[trip]]
 id = "t412"
-route = "Greyhound Chicago 12:25 -> Davenport -> Iowa City -> Grinnell -> Des Moines 18:55 (daily assumed; beyond Des Moines not checked)"
+route = "Greyhound Chicago 12:25 -> Des Moines 18:55 -> Omaha 21:50 -> Lincoln -> North Platte -> Denver 09:00 (daily assumed)"
 days = "1111111"
-tz = "America/Chicago"
-stops = ["chicago_bus 12:25", "davenport_gt 15:25/15:35", "iowa_city_gh 16:40/16:50", "grinnell 18:00/18:05", "des_moines_gh 18:55"]
+stops = ["chicago_bus 12:25", "davenport_gt 15:25/15:35", "iowa_city_gh 16:40/16:50", "grinnell 18:00/18:05", "des_moines_gh 18:55/19:35", "omaha_gh 21:50/23:10", "lincoln_depot 24:10/24:20", "york_ne 25:15/25:45", "grand_island_gh 26:30/26:40", "kearney_pp 27:30/27:40", "lexington_p66 28:20/28:30", "north_platte_pp 29:25/29:35", "ogallala_pp 29:25/29:35", "denver_usbc 33:00"]
 
-# Nick screenshot Oct 5 2026 (Greyhound booking, Fri Oct 9): Omaha 23:10 -> Denver 09:00, the westbound Greyhound that
-# the feed carried on its dropped Chicago 17:01 through trip (ibus 1909). Local clocks per stop (Ogallala and Denver
-# Mountain); a printed dwell is taken as arrive/depart.
+# Nick screenshot Oct 5 2026 (Greyhound booking): the eastbound through bus Denver 18:55 -> Omaha -> Des Moines ->
+# Chicago 16:25. Replaces the feed's Denver 00:55 -> Chicago 21:30 (ibus 3290). Local clocks per stop.
 [[trip]]
-id = "t415"
-route = "Greyhound Omaha 23:10 -> Lincoln -> Grand Island -> Kearney -> North Platte -> Ogallala -> Denver 09:00 (daily assumed)"
+id = "t416"
+route = "Greyhound Denver 18:55 -> North Platte -> Lincoln -> Omaha 05:55 -> Des Moines 08:55 -> Chicago 16:25 (daily assumed)"
 days = "1111111"
-stops = ["omaha_gh 23:10", "lincoln_depot 24:10/24:20", "york_ne 25:15/25:45", "grand_island_gh 26:30/26:40", "kearney_pp 27:30/27:40", "lexington_p66 28:20/28:30", "north_platte_pp 29:25/29:35", "ogallala_pp 29:25/29:35", "denver_usbc 33:00"]
+stops = ["denver_usbc 18:55", "ogallala_pp 22:05/22:25", "north_platte_pp 24:15/24:20", "lexington_p66 25:15/25:20", "kearney_pp 26:00/26:05", "grand_island_gh 26:55/27:00", "york_ne 27:45/27:50", "lincoln_depot 28:45/28:55", "omaha_gh 29:55/30:40", "des_moines_gh 32:55/33:20", "grinnell 34:15/34:20", "iowa_city_gh 35:25/35:40", "davenport_gt 36:50/37:00", "chicago_bus 40:25"]
