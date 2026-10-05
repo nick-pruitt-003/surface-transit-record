@@ -48,6 +48,16 @@ mobridge = "=ibus:417"   # Mobridge (Gas & Goodies)
 mclaughlin = "=ibus:881"   # McLaughlin
 fort_yates = "=ibus:1958"   # Fort Yates
 bismarck = "=ibus:289"   # Bismarck (Bis-Man Transit Board)
+indy_bus = "=ibus:1673"   # Indianapolis Bus Station
+danville_il = "=ibus:1629"   # Danville (IL; booking: Lynch Travel Mart)
+champaign_itc = "=ibus:1819"   # Champaign Intermodal Trans Ctr
+bloomington_il = "=ibus:2512"   # Bloomington (IL)
+peoria_il = "=ibus:756"   # Peoria (booking: City Link Building)
+galesburg_il = "=ibus:484"   # Galesburg
+moline_metrolink = "=ibus:3337"   # Moline Center Station (Metrolink)
+davenport_gt = "=ibus:2002"   # Davenport (Ground Transportation)
+cedar_rapids_lindale = { name = "Cedar Rapids, IA (JL - Lindale)", lon = -91.6326, lat = 42.0283 }   # Lindale Mall, point approximate
+marshalltown_ia = "=ibus:1769"   # Marshalltown (booking: Git N Go)
 
 [[trip]]
 id = "t104"
@@ -168,3 +178,20 @@ days = "1111111"
 tz = "America/Chicago"
 stops = ["sioux_falls_jl 10:25", "luverne 10:55"]
 
+
+# Nick screenshots Oct 5 2026 (Jefferson booking, Fri Nov 13): Indianapolis <-> Des Moines via Peoria, the Quad Cities and
+# Cedar Rapids. Replaces the feed's Burlington Trailways Indianapolis <-> Denver runs (ibus 3876 / 2096, via Burlington IA
+# and Ottumwa, on to Omaha and Denver), which no longer operate: Burlington ceased in Sep 2025 and Jefferson runs this
+# line only as far as Des Moines. Times are each stop's local clock (Indianapolis Eastern, the rest Central); a stop's
+# printed dwell is taken as arrive/depart.
+[[trip]]
+id = "t404"
+route = "JL Indianapolis 06:40 -> Champaign -> Peoria -> Moline -> Davenport -> Iowa City -> Cedar Rapids -> Des Moines 17:10 (daily assumed)"
+days = "1111111"
+stops = ["indy_bus 06:40", "danville_il 07:00", "champaign_itc 07:45/07:50", "bloomington_il 08:50/09:00", "peoria_il 09:45/09:55", "galesburg_il 10:50/11:00", "moline_metrolink 12:05", "davenport_gt 12:30/12:45", "iowa_city 13:55", "cedar_rapids_lindale 14:55/15:00", "marshalltown_ia 16:10", "des_moines_jl 17:10"]
+
+[[trip]]
+id = "t405"
+route = "JL Des Moines 08:30 -> Cedar Rapids -> Iowa City -> Davenport -> Moline -> Peoria -> Champaign -> Indianapolis 19:50 (daily assumed)"
+days = "1111111"
+stops = ["des_moines_jl 08:30", "marshalltown_ia 09:25", "cedar_rapids_lindale 10:30/10:35", "iowa_city 11:25", "davenport_gt 12:30/12:45", "moline_metrolink 13:00", "galesburg_il 13:45/13:50", "peoria_il 14:40/14:45", "bloomington_il 15:35/15:40", "champaign_itc 16:40/16:45", "danville_il 17:30", "indy_bus 19:50"]
