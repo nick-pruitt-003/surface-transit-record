@@ -10,7 +10,7 @@ trips have been 20-80 min off the current site. Every leg below marked **check**
 |---|---|---|---|---|---|
 | 1 | d2 Fri 08:30 | Memphis (MATA Airways Transit Center) | d2 Fri 11:10 | Conway | **check** (Memphis -> Tulsa) |
 | 2 | d2 Fri 11:20 | Conway | d2 Fri 19:25 | Kansas City | **check** (Pine Bluff -> Kansas City) |
-| 3 | d2 Fri 19:45 | Kansas City | d2 Fri 22:45 | Des Moines | **check** (Tulsa -> Minneapolis) |
+| 3 | d2 Fri 20:05 | Kansas City | d2 Fri 23:30 | Des Moines | confirmed: the feed's 19:45 is not sold; JL 20:05 (t419) or Greyhound 20:35 -> 23:45 (t420) |
 | 4 | d3 Sat 06:15 | Omaha | d3 Sat 09:45 | Sioux Falls | confirmed (JL Omaha 06:15 -> Sioux City -> Vermilli) |
 | 5 | d3 Sat 10:00 | Sioux Falls | d3 Sat 14:05 | Fargo | confirmed (JL Sioux Falls 10:00 -> Brookings -> Wat) |
 | 6 | d3 Sat 16:40 | Fargo | d3 Sat 21:10 | Minneapolis | confirmed (JL 938 Fargo 16:40; feed trip 699 dropped as 45 min early) |
@@ -23,7 +23,7 @@ trips have been 20-80 min off the current site. Every leg below marked **check**
 |---|---|---|---|---|---|
 | 1 | d2 Fri 08:30 | Memphis (MATA Airways Transit Center) | d2 Fri 11:10 | Conway | **check** (Memphis -> Tulsa) |
 | 2 | d2 Fri 11:20 | Conway | d2 Fri 19:25 | Kansas City | **check** (Pine Bluff -> Kansas City) |
-| 3 | d2 Fri 19:45 | Kansas City | d2 Fri 22:45 | Des Moines | **check** (Tulsa -> Minneapolis) |
+| 3 | d2 Fri 20:05 | Kansas City | d2 Fri 23:30 | Des Moines | confirmed: the feed's 19:45 is not sold; JL 20:05 (t419) or Greyhound 20:35 -> 23:45 (t420) |
 | 4 | d3 Sat 06:15 | Omaha | d3 Sat 09:45 | Sioux Falls | confirmed (JL Omaha 06:15 -> Sioux City -> Vermilli) |
 | 5 | d3 Sat 10:00 | Sioux Falls | d3 Sat 14:05 | Fargo | confirmed (JL Sioux Falls 10:00 -> Brookings -> Wat) |
 | 6 | d3 Sat 16:40 | Fargo | d3 Sat 21:10 | Minneapolis | confirmed (JL 938 Fargo 16:40; feed trip 699 dropped as 45 min early) |

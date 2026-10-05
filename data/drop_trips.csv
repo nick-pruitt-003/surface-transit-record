@@ -23,3 +23,4 @@ ibus,569,Burlington Trailways Des Moines 08:15 -> Chicago 15:15: not sold (Nick 
 ibus,2195,Burlington Trailways Des Moines 12:00 -> Chicago 20:30: not sold (Nick Oct 5 2026)
 ibus,1189,Burlington Trailways Burlington IA -> Dubuque (Tue-Thu): no successor; Dubuque is served only by Jefferson Chicago -> Dubuque -> Waterloo -> Minneapolis (Nick Oct 5 2026)
 ibus,2353,Burlington Trailways Dubuque -> Burlington IA (Tue-Thu): as ibus 1189
+ibus,3068,Jefferson Tulsa -> Minneapolis: the feed has Kansas City 19:45 -> Des Moines 22:45; jeffersonlines.com sells 20:05 -> 23:30 and Greyhound 20:35 -> 23:45 (Nick Oct 5 2026). Replaced by t419 / t420; the Tulsa and Minneapolis ends kept as t421 / t422

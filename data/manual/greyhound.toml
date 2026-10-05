@@ -34,6 +34,8 @@ waterloo_union = "=ibus:3166"   # Waterloo (Union Bus Depot)
 marshalltown = "=ibus:1769"   # Marshalltown (Git N Go)
 ames_p66 = "=ibus:2211"   # Ames (Phillips 66)
 des_moines_gh = "=ibus:2626"   # Des Moines
+kansas_city_gh = "=ibus:593"   # Kansas City Bus Station
+bethany_gh = "=ibus:2630"
 omaha_gh = "=ibus:741"   # Omaha, NE
 lincoln_depot = "=ibus:2835"   # Lincoln Bus Depot
 york_ne = "=ibus:1711"   # York
@@ -139,3 +141,10 @@ route = "Greyhound Des Moines 09:45 -> Ames -> Marshalltown -> Waterloo -> Cedar
 days = "1111111"
 tz = "America/Chicago"
 stops = ["des_moines_gh 09:45", "ames_p66 10:25/10:30", "marshalltown 11:10/11:30", "waterloo_union 12:40/12:45", "cedar_rapids_lindale 13:50/13:55", "iowa_city_gh 14:35/14:45", "davenport_gt 15:45/15:55", "moline_metrolink 16:05/16:10", "rockford_east 18:05/18:15", "chicago_bus 19:45"]
+
+[[trip]]
+id = "t420"
+route = "Greyhound Kansas City 20:35 -> Bethany -> Des Moines 23:45 (Nick screenshot Oct 5 2026; daily assumed)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["kansas_city_gh 20:35", "bethany_gh 22:00", "des_moines_gh 23:45"]
