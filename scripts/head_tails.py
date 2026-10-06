@@ -45,7 +45,17 @@ def main():
                 cut = (list(seq), R.stop_name[dest], t)
         if not cut: print(f'# {name}: no Chicago/Indianapolis cut with the Plains still owed', file=sys.stderr); continue
         seq_, hub, t = cut
-        prefix = [R.state_names[s] for s in seq_[1:]] + ['@' + hub]     # the start state is collected at the start
+        # The head is the route's OWN pruned order up to the cut, not every state it collected: forcing each collected
+        # state in turn sends the router a different way (Oct 6: HT's head then reached Chicago on Tuesday, not Saturday).
+        have = set(seq_)
+        prefix = [R.state_names[s] for s in d['order'] if isinstance(s, int) and s in have] + ['@' + hub]
+        # the fixed head must reproduce: evaluated alone it reaches the hub no later than the old route did
+        S2 = ts.Search(R, st, t0, [], 1); ts._SELF = S2
+        fh, lh = S2.evaluate([x if x.startswith('@') else R.state_names.index(x) for x in prefix])
+        ts._SELF = S
+        if not lh or fh > t + 60:
+            print(f'# {name}: SKIP, the fixed head reaches {hub} at {R.fmt_time(fh, st) if fh < 1e18 else "never"}, '
+                  f'the old route at {R.fmt_time(t, st)}', file=sys.stderr); continue
         seed = [ABBR[R.state_names[s]] for s in d['order'] if isinstance(s, int)]
         owed = sorted(ABBR[R.state_names[s]] for s in range(len(R.state_names)) if s not in set(seq_))
         tz = str(R.stop_zone(st))
