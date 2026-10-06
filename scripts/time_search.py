@@ -454,7 +454,11 @@ class Search:
                 if len(self.covered(legs) | self.done | ({s0} if s0 >= 0 else set())) < N_STATES: continue
                 if self.end_by is not None and f > self.end_by + 60: continue   # must be at the end point by end_by
                 first = next((l[3] for l in legs if l[0] == 'ride'), t)
-                if best is None or f - first < best[0] - 60: best = (f - first, st, t_lo, f, legs)
+                # With a deadline the clock runs to the deadline (a front for a hinge waits there for its train), so
+                # the latest start wins, not the shortest front: a front a day early is a day lost (Oct 6, the Silver
+                # Meteor front that left Wednesday, reached Jacksonville on Monday and waited 25 h).
+                key = (self.end_by if self.end_by is not None else f) - first
+                if best is None or key < best[0] - 60: best = (key, st, t_lo, f, legs)
         return best
 
     def start_name(self, legs, st=None):
