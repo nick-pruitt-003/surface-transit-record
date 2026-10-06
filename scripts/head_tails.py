@@ -60,7 +60,7 @@ def main():
         owed = sorted(ABBR[R.state_names[s]] for s in range(len(R.state_names)) if s not in set(seq_))
         tz = str(R.stop_zone(st))
         print('|'.join([name, R.stop_name[st], tz, ','.join(prefix), ','.join(seed), f'{(t - first) / 3600:.1f}', ' '.join(owed)]))
-        print(f'# {name}: head {(t - first) / 3600:.1f} h to {hub} ({R.fmt_time(t, legs[0][2] if legs[0][0] == "walk" else legs[0][2])}), '
+        print(f'# {name}: head {(t - first) / 3600:.1f} h to {hub} ({R.fmt_time(t, st)}), '
               f'owes {len(owed)}: {" ".join(owed)}; old route now {("%.1f h" % ((f - first) / 3600)) if f < 1e18 and S.all_states(legs) else "BROKEN, misses " + " ".join(sorted(ABBR[R.state_names[s]] for s in S.missing(legs)))}', file=sys.stderr)
 
 
