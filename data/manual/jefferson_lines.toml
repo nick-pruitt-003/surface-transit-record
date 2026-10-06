@@ -92,7 +92,7 @@ stops = ["billings 04:30", "sheridan_wy_taco_bell_1655_coffeen_ave_j 06:35"]
 [[trip]]
 route = "JL Mobridge 12:10 -> McLaughlin -> Fort Yates 13:00 -> Bismarck 14:30"
 note = "Nick screenshot of jeffersonlines.com Oct 2 2026; not in the feed (its 06:20 and 19:30 Mobridge runs are); daily assumed"
-days = "1111111"
+days = "1001000"   # Mon and Thu only: nothing enters ND from SD on Tue/Wed except Standing Rock transit (Nick Oct 5)
 tz = "America/Chicago"
 stops = ["mobridge 12:10", "mclaughlin 12:35", "fort_yates 13:00", "bismarck 14:30"]
 
