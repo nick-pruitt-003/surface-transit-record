@@ -252,6 +252,28 @@ a 0.2 km walk-in across the Red River; set aside.
   Spokane all checked on the carrier sites). Searched from it, free end and Huntington end: 238.8 both, locally optimal.
   Lesson: a search from a start returning worse than a known route from that start means seed it with that route.
 
+## Hinge fronts, the Butte lollipop and the day-earlier X (Oct 6 afternoon)
+
+Hinge table (scripts/hinge_fronts.py): X's once-daily hinges, each with X's own tail kept and a front searched to the
+hinge (--end/--end-by/--done). Totals are first bus to the hinge's departure plus the tail.
+- Southwest Chief (San Bernardino Sat 18:43): from WY, NV, WA all 231.7 (every free start drifted to Sheridan).
+- Silver Meteor (Jacksonville Amtrak Tue 16:11): WY, NV, WA 232.2. Chicago 21:15: WY 231.7.
+- Pinned starts into X's Chicago finish (deadline the second Saturday): Metra/Kenosha from Hanover 273.4, Huntington
+  270.4, Portland ME 260.6; the 21:15 from Hanover ~274 (Friday's bus), Huntington 279.0, Portland ~276.
+Fixes on the way: --end-by now picks the latest start (the front's own length had sent a Meteor front a day early);
+--start/--start-alt/--end take '#idx' and exact names (Jacksonville FL vs NC); free:XX starts drift, so pin stops.
+- Day-earlier X: the Wednesday-start front reaches Jacksonville Monday; X's tail runs a day earlier except Flix
+  Nashville -> Memphis (Thu) and Metra (Fri schedule). Same total (it is X a day earlier). docs/x_day_earlier.xlsx:
+  Vonlane Nashville 10:00 -> Memphis Hilton 13:15, MATA 50 -> Poplar & Cleveland -> 42 Crosstown -> Holmes, MS on
+  foot, back to Airways 17:16 for the 17:45 (real MATA only); Friday Wisconsin by Hiawatha 06:10 / 08:05 (plan B
+  Wisconsin Coach O'Hare 07:30 -> Kenosha). Nick's plan.
+- Butte lollipop (Nick: Las Vegas -> Saint George -> SLC -> Idaho Falls -> Butte -> Spokane -> Pasco -> Greyhound via
+  Boise and SLC across I-80 to Denver): inside the record shape 249.9 (record 238.8); from Primm/Barstow/Las Vegas
+  first 260.8.
+
+Conclusion: X's 231.7 front is the best way into each of its hinges from the West, and its Chicago finish only pays
+with the West done first; East and Appalachian starts pay 30-40 h to reach it.
+
 ## Next
 
 - More sweeps with other random seeds: one 5-hour sweep found RX, the cheapest new-family finder we have.
