@@ -668,7 +668,7 @@ def main():
     end = None
     if a.end:   # a state abbreviation (finish anywhere in it) or a stop name
         end = R.state_names.index(inv[a.end]) if a.end in inv else f'@{a.end}'
-        if isinstance(end, str) and not end.startswith('@~') and not R.stops_matching(a.end): sys.exit(f'no stop matching --end {a.end!r}')
+        if isinstance(end, str) and not end.startswith(('@~', '@#')) and not R.stops_matching(a.end): sys.exit(f'no stop matching --end {a.end!r}')
     S = Search(R, start, t0.timestamp(), [x.strip() for x in a.prefix.split(',') if x.strip()], a.workers, done, alts,
                fixed_start=a.fixed_start, end=end, end_by=end_by)
     S.patience = a.patience; S.idle_kicks = a.idle_kicks; S.exhaustive = a.exhaustive
