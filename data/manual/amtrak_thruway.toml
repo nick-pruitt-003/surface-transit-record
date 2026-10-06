@@ -1,0 +1,18 @@
+agency = "Amtrak Thruway"
+
+# Amtrak Thruway connections sold on amtrak.com but missing from Amtrak's GTFS (Nick screenshots, Oct 6 2026).
+[stops]
+bakersfield_amtrak = "=amtrak:BFD"
+tehachapi_thruway = "=amtrak:TEH"
+mojave_thruway = "=amtrak:MOJ"
+barstow_amtrak = "=amtrak:BAR"
+barstow_thruway = "=amtrak:BBS"
+las_vegas_thruway = "=amtrak:LVT"
+las_vegas_amtrak = "=amtrak:LVS"
+
+[[trip]]
+id = "t426"
+route = "Amtrak Thruway 5619 (Alvand) Bakersfield 16:50 -> Mojave -> Barstow 19:10 -> Las Vegas 22:30 (amtrak.com, Nov 18; the feed has this corridor westbound only; daily assumed)"
+days = "1111111"
+tz = "America/Los_Angeles"
+stops = ["bakersfield_amtrak 16:50", "tehachapi_thruway 17:35", "mojave_thruway 18:00", "barstow_amtrak 19:10", "barstow_thruway 19:20/19:50", "las_vegas_thruway 22:10", "las_vegas_amtrak 22:30"]
