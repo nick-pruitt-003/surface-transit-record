@@ -28,6 +28,9 @@ WALK_SPEED = 4.5 / 3.6       # m/s
 # the 16th of 114 men 20-24 at a Maine half. Unset keeps walking speed and the measured minutes in walk_links.csv.
 RUN_MPH = float(os.environ.get('BUS48_RUN_MPH', 0))
 if RUN_MPH: WALK_SPEED = RUN_MPH * 1609.344 / 3600
+# Measured walk links to leave out (comma list of substrings of the to_uid), for a finish that must be by vehicle
+# (Nick, Oct 6: BUS48_NO_WALK_LINKS=Moorhead makes Minnesota at Fargo come by MATBUS or Jefferson, not on foot).
+NO_WALK_LINKS = tuple(x.strip() for x in os.environ.get('BUS48_NO_WALK_LINKS', '').split(',') if x.strip())
 WALK_MAX_KM = 1.5
 # Beyond walking: a local transit / shuttle proxy, which is a modelled link and not a service anyone runs.
 # Set BUS48_LOCAL_MAX_KM=0 to drop them and keep only real timetables plus walks, which is what a route has
@@ -281,6 +284,8 @@ class TimeRouter:
             self.link_ends = only   # measured, so walking into one may collect its state (see _crosses)
             for k in list(self.foot):
                 self.foot[k] = [] if k in only else [(j, w) for j, w in self.foot[k] if j not in only]
+            # left-out links keep their end point isolated (computed above), so it becomes unreachable, not ordinary
+            rows = [r for r in rows if not any(x in r['to_uid'] for x in NO_WALK_LINKS)]
             for r in rows:
                 a, b = ix.get(r['from_uid']), ix.get(r['to_uid'])
                 if a is None or b is None: print('walk link: unknown stop', r['from_uid'], r['to_uid']); continue
@@ -807,7 +812,7 @@ def cached_router(date, days, cache_dir=None, verbose=True):
     # wrong one without a word. BUS48_LOCAL_MAX_KM=5 against a router built at 10 is not an error anyone
     # would see; it is a plausible number from a different universe, which is this project's whole problem.
     sig.append(('cfg', WALKIN_KM, MIN_TRANSFER, SCAN_SLACK, LOCAL_MAX_KM, LOCAL_PROXY_ALL, STOP_TZ_LOCAL,
-                WALK_MAX_KM, WALK_SPEED, RUN_MPH))
+                WALK_MAX_KM, WALK_SPEED, RUN_MPH, NO_WALK_LINKS))
     key = hashlib.sha1(repr(sig).encode()).hexdigest()[:16]
     path = os.path.join(cache_dir, f'router_{key}.pkl')
     if os.path.exists(path):
