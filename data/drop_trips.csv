@@ -27,3 +27,5 @@ ibus,3068,Jefferson Tulsa -> Minneapolis: the feed has Kansas City 19:45 -> Des 
 ibus,3069,Barons Columbus (E Mound St) 06:15 -> Chicago: the site shows every stop 10 min earlier (06:10, Michigan City 12:10 CT, Chicago 13:25 CT; Nick Oct 5 2026). Replaced by t423
 ibus,829,Jefferson Vivian 16:00 -> Pierre 16:45 (daily in the feed): the site sells Vivian 15:40 -> Pierre 16:25 on Mon and Thu only (Nick Oct 5 2026). Replaced by t355
 ibus,176,Jefferson Pierre 14:45 -> Vivian 15:30 (daily in the feed): the Vivian - Pierre - Bismarck chain only works northbound (Nick Oct 5 2026)
+ibus,2897,Barons Charlotte -> Columbus: the feed has Charlotte 17:45 and every stop to Huntington 15-45 min late; the site shows 17:20 (Nick Oct 5 2026). Replaced by t424
+ibus,3152,Greyhound Charlotte -> Detroit: the feed has 06:50 -> 21:45; the site shows 02:50 -> 18:00 (Nick Oct 5 2026). Replaced by t425

@@ -36,6 +36,17 @@ ames_p66 = "=ibus:2211"   # Ames (Phillips 66)
 des_moines_gh = "=ibus:2626"   # Des Moines
 kansas_city_gh = "=ibus:593"   # Kansas City Bus Station
 bethany_gh = "=ibus:2630"
+charlotte_gh = "=ibus:2883"
+max_meadows_gh = "=ibus:837"
+bluefield_gh = "=ibus:1644"
+beckley_gh = "=ibus:2999"
+charleston_gh = "=ibus:3370"
+huntington_gh = "=ibus:1077"
+ashland_gh = "=ibus:1456"
+columbus_e_mound_gh = "=ibus:70"
+columbus_gh = "=ibus:3599"
+toledo_gh = "=ibus:2271"
+detroit_gh = "=ibus:2134"
 omaha_gh = "=ibus:741"   # Omaha, NE
 lincoln_depot = "=ibus:2835"   # Lincoln Bus Depot
 york_ne = "=ibus:1711"   # York
@@ -148,3 +159,10 @@ route = "Greyhound Kansas City 20:35 -> Bethany -> Des Moines 23:45 (Nick screen
 days = "1111111"
 tz = "America/Chicago"
 stops = ["kansas_city_gh 20:35", "bethany_gh 22:00", "des_moines_gh 23:45"]
+
+[[trip]]
+id = "t425"
+route = "Greyhound Charlotte 02:50 -> Max Meadows -> Bluefield -> Charleston -> Huntington 10:10 -> Columbus -> Toledo -> Detroit 18:00 (Nick screenshot Oct 5 2026; the feed's ibus 3152 has 06:50 -> 21:45; Findlay stop omitted; daily assumed)"
+days = "1111111"
+tz = "America/New_York"
+stops = ["charlotte_gh 02:50", "max_meadows_gh 04:50/05:15", "bluefield_gh 06:15/06:20", "beckley_gh 07:15/07:20", "charleston_gh 08:25/09:15", "huntington_gh 10:10/10:15", "ashland_gh 10:40/10:45", "columbus_e_mound_gh 12:55/13:00", "columbus_gh 13:15/13:40", "toledo_gh 16:30/16:55", "detroit_gh 18:00"]

@@ -29,6 +29,12 @@ fort_wayne = "=ibus:1740"
 la_paz_plymouth = "=ibus:3423"
 la_porte = "=ibus:2545"
 michigan_city_barons = "=ibus:3496"
+charlotte_barons = "=ibus:3293"
+winston_salem_barons = "=ibus:495"
+wytheville_barons = "=ibus:2404"
+beckley_barons = "=ibus:1#3470"
+charleston_barons = "=ibus:96"
+hurricane_barons = "=ibus:2340"
 
 [[trip]]
 id = "t48"
@@ -57,3 +63,10 @@ route = "Barons Columbus (E Mound St) 06:10 -> Dayton -> Fort Wayne -> Michigan 
 days = "1111111"
 tz = "America/New_York"
 stops = ["columbus_e_mound_st 06:10", "columbus 06:20/06:30", "dayton_trotwood 07:40/07:45", "richmond_in 08:15", "portland_in 09:10", "berne 09:30", "decatur_in 09:45", "fort_wayne 10:15/10:25", "la_paz_plymouth 11:55", "la_porte 12:30/12:50", "michigan_city_barons 13:10", "gary 13:45/13:50", "chicago 14:25"]
+
+[[trip]]
+id = "t424"
+route = "Barons Charlotte 17:20 -> Winston-Salem -> Wytheville -> Beckley -> Charleston -> Huntington 00:45 -> Columbus (E Mound St) 04:15 (Nick screenshot Oct 5 2026; replaces feed ibus 2897, 25 min late from Charlotte; daily assumed)"
+days = "1111111"
+tz = "America/New_York"
+stops = ["charlotte_barons 17:20", "winston_salem_barons 18:35/18:45", "wytheville_barons 20:05/20:25", "beckley_barons 21:45/21:55", "charleston_barons 23:05/23:35", "hurricane_barons 24:00/24:15", "huntington 24:45", "ashland 25:10/25:15", "portsmouth 25:50/26:05", "chillicothe 27:05", "columbus_e_mound_st 28:15"]
