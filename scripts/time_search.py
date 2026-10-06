@@ -648,7 +648,9 @@ def main():
     global _ROUTER_ARGS
     _ROUTER_ARGS = (t0.date(), a.days)   # spawned workers load the same cached router
     R = cached_router(*_ROUTER_ARGS)
-    start = FREE if a.start.lower().startswith('free') else R.stops_matching(a.start)[0]
+    # '#idx' is one exact stop; a name prefers an exact match ("Jacksonville" is also Jacksonville NC by substring)
+    exact = lambda q: int(q[1:]) if q.startswith('#') else next((s for s in R.stops_matching(q) if R.stop_name[s] == q), R.stops_matching(q)[0])
+    start = FREE if a.start.lower().startswith('free') else exact(a.start)
     from common import ABBR
     inv = {v: k for k, v in ABBR.items()}
     done = [R.state_names.index(inv[x.strip()]) for x in a.done.split(',') if x.strip()]
@@ -661,7 +663,7 @@ def main():
     seed = [x for x in seed if x not in done]
     if start == FREE and ':' in a.start:   # --start free:WV puts that state first (the search may still change it)
         s0 = R.state_names.index(inv[a.start.split(':')[1].strip()]); seed = [s0] + [x for x in seed if x != s0]
-    alts = [R.stops_matching(q.strip())[0] for q in a.start_alt.split(';') if q.strip()]
+    alts = [exact(q.strip()) for q in a.start_alt.split(';') if q.strip()]
     end_by = datetime.fromisoformat(a.end_by).replace(tzinfo=ZoneInfo(a.tz)).timestamp() if a.end_by else None
     end = None
     if a.end:   # a state abbreviation (finish anywhere in it) or a stop name
