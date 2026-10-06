@@ -224,6 +224,16 @@ loop. X's finish works because X clears WI and MI on its Chicago Saturday and ta
 start that reaches Chicago by ~20:45 with only the Plains and MN left has not been found; HT's head arrives with the
 West and South still owed.
 
+## Wisconsin before Chicago, and fit-run (Oct 6 morning)
+
+- **HT's head with Wisconsin forced before Chicago**, tail free: Michiana then Kenosha (Chicago Sat 23:50) **255.8**;
+  Milwaukee then Benton Harbor for Michigan (Chicago Sun 05:25) **255.3**; Milwaukee only, Michigan left to the tail
+  (Chicago Sat 19:21) **255.3**. All worse than HT's plain tail (246.9): with HT's head, Wisconsin is cheaper later.
+- **Fit-run** (`BUS48_RUN_MPH=9.4`, every on-foot leg at half-marathon pace; a separate variant, never the default):
+  X **231.1** (same route; the Moorhead finish takes 24 min instead of 83), HT head + tail **244.1** (246.9 walking),
+  Hanover -> Minnesota 248.4 (249.4 walking). Training is worth about an hour on X and does not change which shape
+  wins: the Plains decide it, not the runs.
+
 ## Next
 
 - More sweeps with other random seeds: one 5-hour sweep found RX, the cheapest new-family finder we have.
