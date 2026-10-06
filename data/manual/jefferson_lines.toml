@@ -135,8 +135,8 @@ stops = ["fargo_jl_bus 14:30", "sisseton_jct 15:45", "summit_corner 16:15/16:20"
 # connector to Pierre, then the feed's Pierre -> Bismarck run (Mobridge, Fort Yates 20:55, Bismarck 22:25).
 [[trip]]
 id = "t355"
-route = "JL Vivian 15:40 -> Pierre 16:25 (connector; daily assumed)"
-days = "1111111"
+route = "JL Vivian 15:40 -> Pierre 16:25 (connector; Mon and Thu only, Nick Oct 5)"
+days = "1001000"
 tz = "America/Chicago"
 stops = ["vivian_sd 15:40", "pierre_sd 16:25"]
 
