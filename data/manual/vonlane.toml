@@ -1,0 +1,22 @@
+agency = "Vonlane"
+
+# Nick screenshot Oct 6 2026 (vonlane.com, Thu Nov 19): Nashville Omni Downtown -> Memphis Hilton, 10:00 and 14:00,
+# 3 h 15 min, $132. Only Thursday confirmed. Stop points approximate: the Omni Nashville Hotel (Rep. John Lewis Way,
+# next to the Greyhound station) and the Hilton Memphis (939 Ridge Lake Blvd, East Memphis).
+[stops]
+nashville_omni = { name = "Nashville Omni Downtown (Vonlane)", lon = -86.7760, lat = 36.1580 }
+memphis_hilton = { name = "Memphis Hilton, Ridge Lake Blvd (Vonlane)", lon = -89.8724, lat = 35.1069 }
+
+[[trip]]
+id = "t428"
+route = "Vonlane Nashville Omni 10:00 -> Memphis Hilton 13:15 (Thursday confirmed)"
+days = "0001000"
+tz = "America/Chicago"
+stops = ["nashville_omni 10:00", "memphis_hilton 13:15"]
+
+[[trip]]
+id = "t429"
+route = "Vonlane Nashville Omni 14:00 -> Memphis Hilton 17:15 (Thursday confirmed)"
+days = "0001000"
+tz = "America/Chicago"
+stops = ["nashville_omni 14:00", "memphis_hilton 17:15"]
