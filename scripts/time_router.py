@@ -294,7 +294,11 @@ class TimeRouter:
                 if not r['minutes'].strip(): continue   # blank: end point kept isolated, reached only by timed trips (opening hours)
                 w = int(float(r['minutes']) * 60)
                 # fit-run: the link's foot distance at RUN_MPH; transit links have no miles and keep their minutes
-                if RUN_MPH and (r.get('miles') or '').strip(): w = int(float(r['miles']) / RUN_MPH * 3600)
+                if RUN_MPH and (r.get('miles') or '').strip():
+                    try: mi = float(r['miles'])
+                    except ValueError: mi = 0
+                    if mi > 0: w = int(mi / RUN_MPH * 3600)
+                    else: print('walk link: bad miles, keeping minutes', repr(r['miles']), r['to_uid'])
                 self.foot[a].append((b, w)); self.foot[b].append((a, w))
         # connections
         conns = []; self.trip_info = {}
