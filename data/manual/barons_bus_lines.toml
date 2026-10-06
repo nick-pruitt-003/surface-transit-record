@@ -20,6 +20,15 @@ south_bend = "=ibus:3443"   # South Bend
 merrillville = "=ibus:141"   # Merrillville
 gary = "=ibus:3304"   # Gary
 chicago = "=ibus:2009"   # Chicago
+dayton_trotwood = "=ibus:591"
+richmond_in = "=ibus:3466"
+portland_in = "=ibus:1603"
+berne = "=ibus:893"
+decatur_in = "=ibus:1139"
+fort_wayne = "=ibus:1740"
+la_paz_plymouth = "=ibus:3423"
+la_porte = "=ibus:2545"
+michigan_city_barons = "=ibus:3496"
 
 [[trip]]
 id = "t48"
@@ -41,3 +50,10 @@ route = "BSB 25 Toledo -> Chicago (Nick screenshot Oct 1 2026; local times; Merr
 days = "1111111"
 tz = "America/New_York"
 stops = ["toledo_amtrak 18:20", "angola 19:50", "lagrange 20:15", "shipshewana 20:30", "elkhart_barons_bus 20:45/21:00", "south_bend 21:30/21:35", "merrillville 22:55", "gary 23:10/23:15", "chicago 23:55"]
+
+[[trip]]
+id = "t423"
+route = "Barons Columbus (E Mound St) 06:10 -> Dayton -> Fort Wayne -> Michigan City -> Chicago 13:25 CT (Nick screenshot Oct 5 2026, Thu Oct 22; local times, La Porte Michigan City Gary Chicago are Central so +1 h in this Eastern row; replaces feed ibus 3069, 10 min later; daily assumed)"
+days = "1111111"
+tz = "America/New_York"
+stops = ["columbus_e_mound_st 06:10", "columbus 06:20/06:30", "dayton_trotwood 07:40/07:45", "richmond_in 08:15", "portland_in 09:10", "berne 09:30", "decatur_in 09:45", "fort_wayne 10:15/10:25", "la_paz_plymouth 11:55", "la_porte 12:30/12:50", "michigan_city_barons 13:10", "gary 13:45/13:50", "chicago 14:25"]
