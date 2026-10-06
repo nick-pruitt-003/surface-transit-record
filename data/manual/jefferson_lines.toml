@@ -163,8 +163,8 @@ stops = ["omaha_burlington 21:05", "des_moines_jl 23:20/23:45", "iowa_city 25:30
 
 [[trip]]
 id = "t357"
-route = "JL Sioux Falls 10:00 -> Brookings -> Watertown -> Summit Corner -> Sisseton Jct -> Fargo 14:05 (daily assumed)"
-days = "1111111"
+route = "JL Sioux Falls 10:00 -> Brookings -> Watertown -> Summit Corner -> Sisseton Jct -> Fargo 14:05 (Thu-Mon only, Nick Oct 5)"
+days = "1001111"
 tz = "America/Chicago"
 stops = ["sioux_falls_jl 10:00", "brookings_sd 10:45", "watertown_sd 11:40", "summit_corner 12:20", "sisseton_jct 12:45", "fargo_jl_bus 14:05"]
 
