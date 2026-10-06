@@ -234,6 +234,24 @@ West and South still owed.
   Hanover -> Minnesota 248.4 (249.4 walking). Training is worth about an hour on X and does not change which shape
   wins: the Plains decide it, not the runs.
 
+## Vehicle finishes, Hanover/Huntington starts and the record shape (Oct 6 midday)
+
+New router settings: `BUS48_NO_WALK_LINKS=Moorhead` (the measured Moorhead walk left out, its end point stays
+unreachable) and `BUS48_NO_WALKIN_STATES=MN` (no border walk-ins into Minnesota), so Minnesota at Fargo must come by
+MATBUS or Jefferson. The first attempt with only the walk link removed finished by a modelled hop to downtown Fargo and
+a 0.2 km walk-in across the Red River; set aside.
+
+- **X with a vehicle finish: 231.9 h**, every leg one day later (Friday start, Monday finish): Fargo 14:05, walk 1.5 km
+  to MATBUS Shelter 264, Route 17 14:28 -> downtown 14:45, Route 4 15:15 -> Moorhead 15:17 (MN). The Provo chain runs
+  the same on Sunday and the Four Winds shuttle runs Sundays (Nick); Metra UP-N Sunday to Kenosha unchecked. On X's
+  own Sunday the bus finish is Jefferson Fargo 16:40 -> Moorhead 17:00, about 233.6 h.
+- Hanover/WRJ and Huntington, Minnesota by vehicle: Hanover free 243.8, Huntington free 237.5 (the control), Hanover to
+  MN 251.3, Huntington to MN 263.4. The Hanover runs were seeded with HT's order and stayed in its family.
+- **The record shape** (Nick's csv, router 239.1 on old data; WRJ -> Huntington): **238.8 h** on the corrected data
+  (Billings 04:30 -> Buffalo 07:05, Express Arrow 07:20 -> Denver 15:15, Detroit 19:55 -> Huntington 03:25 and Pasco ->
+  Spokane all checked on the carrier sites). Searched from it, free end and Huntington end: 238.8 both, locally optimal.
+  Lesson: a search from a start returning worse than a known route from that start means seed it with that route.
+
 ## Next
 
 - More sweeps with other random seeds: one 5-hour sweep found RX, the cheapest new-family finder we have.
