@@ -15,6 +15,12 @@ kearney = "=ibus:2275"   # Kearney Bus Stop
 grand_island = "=ibus:602"   # Grand Island Bus Station
 lincoln = "=ibus:1276"   # Lincoln Bus Depot
 omaha = "=ibus:3399"   # Omaha, NE
+buffalo_wy = "=ibus:3299"   # Buffalo (booking: Buffalo Inn)
+casper = "=ibus:3311"
+douglas_wy = "=ibus:158"
+wheatland = "=ibus:2695"
+cheyenne_sinclair = "=ibus:3483"   # Cheyenne (Sinclair)
+greeley = "=ibus:1881"
 
 [[trip]]
 id = "t406"
@@ -27,3 +33,12 @@ id = "t407"
 route = "Express Arrow Omaha 06:40 -> Lincoln -> Grand Island -> Kearney -> North Platte -> Ogallala -> Brush -> Denver 15:50 (daily assumed)"
 days = "1111111"
 stops = ["omaha 06:40", "lincoln 07:40/07:50", "grand_island 09:20/09:25", "kearney 10:15/10:20", "lexington_ne 11:00/11:20", "north_platte 12:10/12:15", "ogallala 12:15/12:25", "brush 14:15", "denver 15:50"]
+
+# Nick screenshot Oct 6 2026 (booking, Thu Oct 29; Black Hills Stage Lines): Buffalo -> Denver 30 min earlier than the
+# feed's ibus 1156 at every stop. Tue-Fri as in the feed.
+[[trip]]
+id = "t427"
+route = "Express Arrow Buffalo WY 07:20 -> Casper -> Douglas -> Wheatland -> Cheyenne -> Greeley -> Denver 15:15 (Tue-Fri)"
+days = "0111100"
+tz = "America/Denver"
+stops = ["buffalo_wy 07:20", "casper 09:00/09:10", "douglas_wy 09:55", "wheatland 11:05/11:35", "cheyenne_sinclair 12:45/12:55", "greeley 14:00/14:05", "denver 15:15"]

@@ -82,10 +82,10 @@ stops = ["gillette 20:10", "buffalo 21:40", "sheridan_wy_taco_bell_1655_coffeen_
 
 [[trip]]
 id = "t105"
-route = "JL 702 Billings -> Sheridan (Nick screenshot Sep 22 2026: jeffersonlines.com 09/29 4:30 AM -> 6:35 AM; feed trip 1632 skips Sheridan; daily assumed; Sheridan Taco Bell point approximate)"
+route = "JL 702 Billings -> Sheridan -> Buffalo 07:05 (Nick screenshots Sep 22 and Oct 6 2026: jeffersonlines.com 4:30 AM -> 6:35 AM -> Buffalo Inn 7:05 AM; feed trip 1632 skips Sheridan; daily assumed; Sheridan Taco Bell point approximate)"
 days = "1111111"
 tz = "America/Denver"
-stops = ["billings 04:30", "sheridan_wy_taco_bell_1655_coffeen_ave_j 06:35"]
+stops = ["billings 04:30", "sheridan_wy_taco_bell_1655_coffeen_ave_j 06:35", "buffalo 07:05"]
 
 # Written in Central with a tz line: McLaughlin is in Mountain-time Corson County and the site shows it at 11:35 (MT),
 # which is 12:35 Central, after the 12:10 Mobridge departure.

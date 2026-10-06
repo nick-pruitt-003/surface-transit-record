@@ -29,3 +29,4 @@ ibus,829,Jefferson Vivian 16:00 -> Pierre 16:45 (daily in the feed): the site se
 ibus,176,Jefferson Pierre 14:45 -> Vivian 15:30 (daily in the feed): the Vivian - Pierre - Bismarck chain only works northbound (Nick Oct 5 2026)
 ibus,2897,Barons Charlotte -> Columbus: the feed has Charlotte 17:45 and every stop to Huntington 15-45 min late; the site shows 17:20 (Nick Oct 5 2026). Replaced by t424
 ibus,3152,Greyhound Charlotte -> Detroit: the feed has 06:50 -> 21:45; the site shows 02:50 -> 18:00 (Nick Oct 5 2026). Replaced by t425
+ibus,1156,Express Arrow Buffalo WY -> Denver: the feed has every stop 30 min late (Buffalo 07:50 MT); the booking shows 07:20 -> Denver 15:15 (Nick Oct 6 2026). Replaced by t427
