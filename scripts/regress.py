@@ -76,9 +76,12 @@ def _():
     assert f < float('inf') and S.all_states(legs), [R.state_names[s] for s in S.missing(legs)]
 
 
-@check('backward report on the 237 result: every layer feasible, slack >= 0, latest start = 12:54 AM Thu')
+@check('backward report on the 237 result: every layer feasible, slack >= 0, latest start = 12:39 AM Thu, and forward agrees')
 def _():
-    d = pickle.load(open(OUT + 'res_starttest.pkl', 'rb')); order = d['order']; t0 = d['t0']
+    # The clock is 00:30, not the pickle's 00:54: that was set for the Barons bus at Huntington 01:00, and the bus as
+    # sold (Nick, Oct 5 2026) leaves 00:45, so 00:54 misses it, the forward pass finishes a day later and the backward
+    # report then answers for that later finish (10:10). A stale clock, not a backward bug: assert they agree instead.
+    d = pickle.load(open(OUT + 'res_starttest.pkl', 'rb')); order = d['order']; t0 = datetime(2026, 9, 24, 0, 30, tzinfo=ET).timestamp()
     start = R.stop_name.index(d['start'])
     fw, bad = B.forward(R, start, t0, order); assert bad is None, bad
     rev = [[] for _ in range(R.N)]
@@ -93,7 +96,10 @@ def _():
         lat = {s: v for s, v in lat.items() if v > float('-inf')}; stays = stay
         assert lat, f'layer {k} ({order[k]}) empty'
         assert max(v - fw[k][s] for s, v in lat.items()) >= -60, f'layer {k} negative slack'
-    assert datetime.fromtimestamp(ls, ET).strftime('%a %H:%M') == 'Thu 00:54', datetime.fromtimestamp(ls, ET)
+    assert datetime.fromtimestamp(ls, ET).strftime('%a %H:%M') == 'Thu 00:39', datetime.fromtimestamp(ls, ET)
+    # the latest start is exact: forward from it makes the same finish, and one minute later does not
+    g, _ = B.forward(R, start, ls, order); assert min(g[-1].values()) == D, 'forward from the latest start misses the finish'
+    g, _ = B.forward(R, start, ls + 60, order); assert min(g[-1].values()) > D, 'a later start still makes it: the bound is loose'
 
 
 @check('the load-bearing sparse stops survive every filter on the default path')
