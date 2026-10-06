@@ -53,6 +53,19 @@ owatonna_f = "=ibus:3279"
 st_paul_jl = "=ibus:356"
 gillette = "=ibus:2375"   # Gillette
 buffalo = "=ibus:3226"   # Buffalo
+gillette_e = "=ibus:2375"
+spearfish_e = "=ibus:1931"
+rapid_city_e = "=ibus:1662"
+wall_e = "=ibus:981"
+kadoka_e = "=ibus:1105"
+vivian_e = "=ibus:1200"
+mitchell_e = "=ibus:1004"
+sioux_falls_e = "=ibus:186"
+worthington_e = "=ibus:1370"
+jackson_mn_e = "=ibus:2324"
+fairmont_e = "=ibus:251"
+albert_lea_e = "=ibus:1630"
+minneapolis_e = "=ibus:15"
 sheridan_wy_taco_bell_1655_coffeen_ave_j = { name = "Sheridan WY Taco Bell 1655 Coffeen Ave (Jefferson)", lon = -106.9446, lat = 44.7743 }
 billings = "=ibus:22"   # Billings
 mobridge = "=ibus:417"   # Mobridge (Gas & Goodies)
@@ -82,10 +95,10 @@ stops = ["gillette 20:10", "buffalo 21:40", "sheridan_wy_taco_bell_1655_coffeen_
 
 [[trip]]
 id = "t105"
-route = "JL 702 Billings -> Sheridan -> Buffalo 07:05 (Nick screenshots Sep 22 and Oct 6 2026: jeffersonlines.com 4:30 AM -> 6:35 AM -> Buffalo Inn 7:05 AM; feed trip 1632 skips Sheridan; daily assumed; Sheridan Taco Bell point approximate)"
+route = "JL 702 Billings 04:30 MT -> Sheridan -> Buffalo -> Gillette -> Rapid City -> Vivian -> Sioux Falls -> Minneapolis 23:40 (Nick screenshots Sep 22 and Oct 6 2026, jeffersonlines.com; replaces feed ibus 1632, 30 min late from Billings; written in Central, Billings to Kadoka are Mountain +1 h; daily assumed; Sheridan Taco Bell point approximate)"
 days = "1111111"
-tz = "America/Denver"
-stops = ["billings 04:30", "sheridan_wy_taco_bell_1655_coffeen_ave_j 06:35", "buffalo 07:05"]
+tz = "America/Chicago"
+stops = ["billings 05:30", "sheridan_wy_taco_bell_1655_coffeen_ave_j 07:35", "buffalo 08:05/08:20", "gillette_e 09:30/09:45", "spearfish_e 11:15", "rapid_city_e 12:00/12:20", "wall_e 13:15", "kadoka_e 13:55", "vivian_e 15:00/15:25", "mitchell_e 17:10/17:15", "sioux_falls_e 18:20/18:45", "worthington_e 19:45", "jackson_mn_e 20:15/20:30", "fairmont_e 21:00", "albert_lea_e 22:05/22:10", "minneapolis_e 23:40"]
 
 # Written in Central with a tz line: McLaughlin is in Mountain-time Corson County and the site shows it at 11:35 (MT),
 # which is 12:35 Central, after the 12:10 Mobridge departure.
