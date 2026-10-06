@@ -23,7 +23,7 @@ ibus,569,Burlington Trailways Des Moines 08:15 -> Chicago 15:15: not sold (Nick 
 ibus,2195,Burlington Trailways Des Moines 12:00 -> Chicago 20:30: not sold (Nick Oct 5 2026)
 ibus,1189,Burlington Trailways Burlington IA -> Dubuque (Tue-Thu): no successor; Dubuque is served only by Jefferson Chicago -> Dubuque -> Waterloo -> Minneapolis (Nick Oct 5 2026)
 ibus,2353,Burlington Trailways Dubuque -> Burlington IA (Tue-Thu): as ibus 1189
-ibus,3068,Jefferson Tulsa -> Minneapolis: the feed has Kansas City 19:45 -> Des Moines 22:45; jeffersonlines.com sells 20:05 -> 23:30 and Greyhound 20:35 -> 23:45 (Nick Oct 5 2026). Replaced by t419 / t420; the Tulsa and Minneapolis ends kept as t421 / t422
+ibus,3068,Jefferson Tulsa -> Minneapolis: the feed has Kansas City 19:45 -> Des Moines 22:45; jeffersonlines.com sells 20:05 -> 23:30 and Greyhound 20:35 -> 23:45 (Nick Oct 5 2026). Replaced by the through trip t419 (site, Tulsa 14:20 -> Minneapolis 04:30) and Greyhound t420
 ibus,3069,Barons Columbus (E Mound St) 06:15 -> Chicago: the site shows every stop 10 min earlier (06:10, Michigan City 12:10 CT, Chicago 13:25 CT; Nick Oct 5 2026). Replaced by t423
 ibus,829,Jefferson Vivian 16:00 -> Pierre 16:45 (daily in the feed): the site sells Vivian 15:40 -> Pierre 16:25 on Mon and Thu only (Nick Oct 5 2026). Replaced by t355
 ibus,176,Jefferson Pierre 14:45 -> Vivian 15:30 (daily in the feed): the Vivian - Pierre - Bismarck chain only works northbound (Nick Oct 5 2026)

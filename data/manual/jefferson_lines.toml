@@ -226,27 +226,12 @@ days = "1111111"
 tz = "America/Chicago"
 stops = ["waterloo_loves 17:25", "clear_lake_ia 18:55", "minneapolis_bus 21:00"]
 
-# Nick screenshots Oct 5 2026 (Jefferson and Greyhound booking): Kansas City -> Des Moines. The feed's Tulsa -> Minneapolis
-# (ibus 3068) has Kansas City 19:45 -> Des Moines 22:45, which the site does not sell; it is dropped and split: the site's
-# Kansas City -> Des Moines below, and the feed's Tulsa -> Kansas City and Des Moines -> Minneapolis kept as separate,
-# unconfirmed trips (no through-bus credit, so a connection at Des Moines needs the 5 min rule).
+# Nick screenshots Oct 5 2026 (Jefferson booking): the through bus Tulsa 14:20 -> Kansas City 19:20/20:05 -> Des Moines
+# 23:30/00:01 -> Minneapolis 04:30. The feed's Tulsa -> Minneapolis (ibus 3068) has Kansas City 19:45 -> Des Moines 22:45
+# and Minneapolis 04:40 via St. Paul, which the site does not sell; it is dropped.
 [[trip]]
 id = "t419"
-route = "JL Kansas City 20:05 -> Cameron -> Bethany -> Lamoni -> Osceola -> Des Moines 23:30 (site, Nick Oct 5; daily assumed)"
+route = "JL Tulsa 14:20 -> Kansas City 19:20/20:05 -> Bethany -> Des Moines 23:30/00:01 -> Ames -> Albert Lea -> Minneapolis 04:30 (site, Nick Oct 5; daily assumed)"
 days = "1111111"
 tz = "America/Chicago"
-stops = ["kansas_city_bus_station 20:05", "cameron_mo 20:55", "bethany_mo 21:35/21:45", "lamoni 22:15", "osceola_ia 22:45", "des_moines_jl 23:30"]
-
-[[trip]]
-id = "t421"
-route = "Jefferson Tulsa -> Kansas City (feed ibus 3068 times, unconfirmed; daily assumed)"
-days = "1111111"
-tz = "America/Chicago"
-stops = ["tulsa_jl 14:20", "dewey_ok 15:10", "coffeyville 15:50", "chanute 16:45/17:05", "iola_ks 17:25/17:30", "kc_jl_feed 19:20"]
-
-[[trip]]
-id = "t422"
-route = "Jefferson Des Moines 23:30 -> Ames -> Albert Lea -> St. Paul -> Minneapolis 04:40 (feed ibus 3068 times, unconfirmed; daily assumed)"
-days = "1111111"
-tz = "America/Chicago"
-stops = ["des_moines_jl 23:30", "ames_jl 24:10/24:15", "clear_lake_jct 25:40/26:00", "albert_lea_f 26:30", "owatonna_f 27:00", "st_paul_jl 28:10", "minneapolis_jl 28:40"]
+stops = ["tulsa_jl 14:20", "dewey_ok 15:10", "coffeyville 15:50", "chanute 16:45/17:05", "iola_ks 17:25/17:30", "kansas_city_bus_station 19:20/20:05", "cameron_mo 20:55", "bethany_mo 21:35/21:45", "lamoni 22:15", "osceola_ia 22:45", "des_moines_jl 23:30/24:01", "ames_jl 24:35/24:40", "clear_lake_jct 26:00/26:15", "albert_lea_f 26:45", "owatonna_f 27:15", "minneapolis_jl 28:30"]
