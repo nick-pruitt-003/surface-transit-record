@@ -199,6 +199,31 @@ waiting, half of it in the Plains before the I-90 bus, is where a better shape w
   weeks; the shape was invisible until measured walk links (Michiana) began to count. Still 5.6 h behind HT for the
   same reason as NBA: the East last.
 
+## Corrected Plains data, sweep 5, tails and Hanover -> Minnesota (Oct 5-6 overnight)
+
+Data by then: Jefferson as sold (Chicago 21:15 -> Omaha, Omaha -> Sioux Falls 09:45, Sioux Falls <-> Fargo Thu-Mon,
+Fargo 14:30, Kansas City 01:30 -> Sioux Falls, Tulsa -> Minneapolis through bus, Vivian chain Mon/Thu northbound),
+Burlington Trailways gone, Barons Columbus 06:10 and Charlotte 17:20, Greyhound Charlotte 02:50 -> Detroit, MATBUS,
+the Moorhead walk on the Minnesota bank. Valid record-beaters on it: **X 232.1** (booked, Nov 12), Wheeling 234.24
+(Ohio Coach), control 237.49. Every other old family breaks (misses some of MN MO WI) when re-timed.
+
+- **Re-searches** from the real start stops: HT 244.2, RX 245.2.
+- **Sweep 5** (24 runs, early abort): best **244.7** (run 5, Gainesville TX start, KC 01:30 -> Fargo chain;
+  focused, unchanged); run 22 Hanover start 245.8; four stopped as known families; the rest 251-296.
+- **Tails** (scripts/head_tails.py: each old route's own pruned order fixed up to its Chicago pass, tail free):
+  Huntington 237.5 (= the control), Hanover **240.1**, Hanover-MS 243.8, RX 244.5, RJC 244.6, Portland ME 246.2,
+  HT 246.9, Saint George 248.9, New Orleans 252.5, Brooke 254.8, Fulton 266.3. A first pass that fixed every
+  collected state in order instead of the pruned order re-routed the heads (HT reached Chicago on a Tuesday) and was
+  discarded.
+- **Hanover -> Minnesota** (Ledyard / Hanover Inn / Foley Park start): south-first seed with an MN finish **249.4**
+  (HT's head, WI and MN via Milwaukee -> Minneapolis, the West, then the KC 01:30 -> Fargo -> Moorhead finish);
+  eastbound-Chief seed 272.1; free end 244.2 (HT's re-search shape again).
+
+What it says: a shape that leaves Chicago still owing Wisconsin and Minnesota pays about a day for the Minneapolis
+loop. X's finish works because X clears WI and MI on its Chicago Saturday and takes MN last at Moorhead. A Hanover
+start that reaches Chicago by ~20:45 with only the Plains and MN left has not been found; HT's head arrives with the
+West and South still owed.
+
 ## Next
 
 - More sweeps with other random seeds: one 5-hour sweep found RX, the cheapest new-family finder we have.
