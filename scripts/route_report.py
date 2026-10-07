@@ -43,7 +43,7 @@ def miss_penalty(bs, bt, al, at):
 
 def report(name, start, t0, order, end=None, fixed=True, note=''):
     S = ts.Search(R, start, t0, [], 1, end=end)
-    ts._R, ts._START, ts._T0, ts._SELF, ts._BASE, ts._END = R, start, t0, S, None, end
+    ts.bind(R, start, t0, S, end=end)
     if not fixed:   # best start day over the week, at that day's latest clock
         b = S.settle(order); start = b[1]; t0 = S.latest_start(start, b[2], order)
         S = ts.Search(R, start, t0, [], 1, end=end); ts._START, ts._T0, ts._SELF = start, t0, S

@@ -182,7 +182,7 @@ def main():
         from time_search import Search
         st0_ = R.stop_name.index(d_['start'])
         S_ = Search(R, st0_, d_['t0'], [], 1)
-        ts._R, ts._START, ts._T0, ts._SELF, ts._BASE, ts._END = R, st0_, d_['t0'], S_, None, None
+        ts.bind(R, st0_, d_['t0'], S_)
         _f, legs_ = S_.evaluate(d_['order'])
         from collections import defaultdict as _dd
         tc_ = _dd(list)

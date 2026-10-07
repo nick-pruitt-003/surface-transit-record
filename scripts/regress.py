@@ -30,7 +30,7 @@ def check(name):
 
 def search_for(R, start, t0):
     S = Search(R, start, t0, [], 1)
-    ts._R, ts._START, ts._T0, ts._SELF, ts._BASE, ts._END = R, start, t0, S, None, None
+    ts.bind(R, start, t0, S)
     return S
 
 
@@ -283,7 +283,7 @@ def _():
     t0 = datetime(2026, 9, 24, tzinfo=ZoneInfo('America/Denver')).timestamp()
     four = [R.state_names.index(n) for n in ('Arizona', 'Utah', 'Colorado', 'New Mexico')]
     S = Search(R, ts.FREE, t0, [], 1, [s for s in range(N_STATES) if s not in four])
-    ts._R, ts._START, ts._T0, ts._SELF, ts._END, ts._BASE = R, ts.FREE, t0, S, None, None
+    ts.bind(R, ts.FREE, t0, S)
     perms = [list(p) for p in itertools.permutations(four)]
     a, b = ts._finish_block(perms), [ts._finish(o) for o in perms]
     assert a == b and any(x != float('inf') for x in a), [(i, x, y) for i, (x, y) in enumerate(zip(a, b)) if x != y][:3]
@@ -300,7 +300,7 @@ def _():
     assert R.walk_collects(bank) and not R._crosses(sc, bank), 'the measured link no longer counts as a walk-in'
     t = datetime(2026, 10, 4, 21, 50, tzinfo=CT).timestamp()
     S = Search(R, sc, t, [], 1, [s for s in range(N_STATES) if s != ne], end=ne)
-    ts._R, ts._START, ts._T0, ts._SELF, ts._BASE, ts._END = R, sc, t, S, None, ne
+    ts.bind(R, sc, t, S, end=ne)
     f, legs = S.evaluate([ne])
     assert S.all_states(legs) and f - t <= 3600, (f - t, legs[-1:])
 
@@ -329,7 +329,7 @@ def _():
     def reach(h):
         t = datetime(2026, 9, 30, h, 0, tzinfo=CT).timestamp()
         S = Search(R, mem, t, [], 1, [s for s in range(N_STATES) if s != ar], end=ar)
-        ts._R, ts._START, ts._T0, ts._SELF, ts._BASE, ts._END = R, mem, t, S, None, ar
+        ts.bind(R, mem, t, S, end=ar)
         f, legs = S.evaluate([ar]); return f - t, legs
     d, legs = reach(10)
     assert d <= 45 * 60 and any(l[0] == 'ride' and l[4] == mid for l in legs), (d / 60, legs[-1:])

@@ -26,7 +26,7 @@ def main():
     tz = ZoneInfo(tzname)
     st = R.stops_matching(start_name)[0]; t0 = datetime.fromisoformat(at).replace(tzinfo=tz).timestamp()
     order = [x if x.startswith('@') else R.state_names.index(next(n for n in R.state_names if ABBR[n] == x)) for x in order_s.split(',')]
-    S = ts.Search(R, st, t0, [], 1); ts._R, ts._START, ts._T0, ts._SELF, ts._BASE, ts._END = R, st, t0, S, None, None
+    S = ts.Search(R, st, t0, [], 1); ts.bind(R, st, t0, S)
     f, legs = S.evaluate(order)
     assert f < 1e18 and S.all_states(legs), 'route does not evaluate on today\'s data'
     rides = [(i, l) for i, l in enumerate(legs) if l[0] == 'ride']

@@ -419,7 +419,7 @@ def main():
             opts[:k] = [d[2] for d in dec]
         return opts
 
-    goal_scans = [0]
+    goal_scans = [0, 0.0, 0]            # scans, seconds spent in goal_first, full rescans
 
     def goal_first(stop, t, collected):
         """The first ride of the fastest chain to each state still owed.
@@ -453,17 +453,29 @@ def main():
         the idea earns it.
         """
         if not a.goal or END_ST is None: return None
-        goal_scans[0] += 1
-        _h, _t, _l, pred = R._scan_fast(np.array([int(stop)]), np.array([float(t)]),
-                                        np.array([-1], dtype=np.int32), a.end, want_pred=True)
-        best_ = pred['best']; conn_ = pred['conn']; walk_ = pred['walk']; bstop_ = pred['bstop']
-        ct = R._fa['ctrip']
+        goal_scans[0] += 1; t_goal = time.perf_counter()
+        try: return _goal_first(stop, t, collected)
+        finally: goal_scans[1] += time.perf_counter() - t_goal
+
+    def _goal_first(stop, t, collected):
         capg = ceiling(collected)       # one numpy min over the owed rows, the same call sort_opts makes
+        owed = [(y, st_arr[y]) for y in range(N_STATES) if y not in collected and y in st_arr]
+        # The scan is the whole cost, and aimed at the end state it runs most of the window. But a stop
+        # reached after its own ceiling scores below zero, so scan only to the latest ceiling among the owed
+        # stops: every label up to there is exact. That answer stands for each state whose best score is
+        # still >= 0, since nothing past the horizon can beat it. Otherwise rescan in full: same result as
+        # always scanning in full, at a fraction of the cost.
+        hz = max((float(capg[sa].max()) for _, sa in owed), default=-np.inf)
+        for horizon in ((hz, None) if np.isfinite(hz) and hz >= t else (None,)):
+            _h, _t, _l, pred = R._scan_fast(np.array([int(stop)]), np.array([float(t)]),
+                                            np.array([-1], dtype=np.int32), a.end, want_pred=True, horizon=horizon)
+            best_ = pred['best']
+            if horizon is None or all(float((capg[sa] - best_[sa]).max()) >= 0 for _, sa in owed): break
+            goal_scans[2] += 1
+        conn_ = pred['conn']; walk_ = pred['walk']; bstop_ = pred['bstop']
+        ct = R._fa['ctrip']
         out = set()
-        for y in range(N_STATES):
-            if y in collected: continue
-            sa = st_arr.get(y)
-            if sa is None: continue
+        for y, sa in owed:
             v = best_[sa]
             fin = np.isfinite(v)
             if not fin.any(): continue
@@ -861,7 +873,7 @@ def main():
         d = _pk.load(open(a.track, 'rb'))
         st0 = R.stop_name.index(d['start'])
         S = Search(R, st0, d['t0'], [], 1)
-        ts._R, ts._START, ts._T0, ts._SELF, ts._BASE, ts._END = R, st0, d['t0'], S, None, None
+        ts.bind(R, st0, d['t0'], S)
         _, legs = S.evaluate(d['order'])
         rides = [l for l in legs if l[0] == 'ride']
         print(f'\nreplaying {len(rides)} rides of {a.track} through this search '
@@ -1267,7 +1279,7 @@ def main():
             import time_search as ts_
             from time_search import Search as S_
             SS = S_(R, st0_, t0_, [], 1)
-            ts_._R, ts_._START, ts_._T0, ts_._SELF, ts_._BASE, ts_._END = R, st0_, t0_, SS, None, None
+            ts_.bind(R, st0_, t0_, SS)
             f_, legs_ = SS.evaluate(order_)
             if f_ == float('inf'): return ('the router cannot follow this order at all', None)
             miss_ = [ab(x) for x in SS.missing(legs_)]
@@ -1333,7 +1345,8 @@ def main():
     print(f'\n{seen_nodes[0]} nodes in {el:.0f} s ({seen_nodes[0] / max(el, 1):.0f}/s), {sum(len(v) for v in dom_stop.values())} kept '
           f'(stop, states); deepest {deepest[0]}/{NEED} states')
     if a.goal:
-        print(f'goal scans: {goal_scans[0]}, one forward scan per node expanded')
+        print(f'goal scans: {goal_scans[0]}, one forward scan per node expanded, '
+              f'{1000 * goal_scans[1] / max(1, goal_scans[0]):.1f} ms each, {goal_scans[2]} rescanned in full')
     if PT is not None:
         print('pair table built, prune switched off (--pairs report); the census below is the measurement'
               if a.pairs == 'report' else

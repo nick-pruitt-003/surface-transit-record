@@ -106,6 +106,79 @@ def leg_states_adds_the_walked_in_state_and_seg_is_exact():
     assert leg_states(R, ('T', 1, 2, 100.0, 190.0, None, (1, 1)), tc) == {8, 9}
 
 
+# ---- common.within_km, the one radius helper five scripts share ---------------------------------------------
+
+@test
+def within_km_agrees_with_haversine_away_from_the_edge():
+    from common import within_km, hav
+    rng = np.random.default_rng(7)
+    for lat in (25.8, 35.1, 48.9):                     # Miami, Memphis, the 49th parallel
+        c = (-90.0, lat)
+        xy = np.column_stack([c[0] + rng.uniform(-0.1, 0.1, 400), lat + rng.uniform(-0.1, 0.1, 400)])
+        got = set(within_km(xy, *c, 5.0).tolist())
+        d = np.array([hav(c, p) for p in xy])
+        assert {i for i in range(len(xy)) if d[i] < 4.98} <= got, lat     # flat projection: metres, not km
+        assert not got & {i for i in range(len(xy)) if d[i] > 5.02}, lat
+        assert within_km(xy, *c, 5.0).dtype == np.int64
+
+
+# ---- time_router._scan_fast: a horizon cuts the scan without changing anything it keeps ------------------
+
+def _random_router(rng, n=30, n_trips=40):
+    """A TimeRouter shell over random trips and footpaths, with only what the compiled scan reads."""
+    from time_router import TimeRouter
+    conns = []
+    for tr in range(n_trips):
+        stops = rng.choice(n, size=int(rng.integers(2, 6)), replace=False); t = float(rng.integers(0, 4000))
+        for a, b in zip(stops, stops[1:]):
+            d = t + float(rng.integers(0, 300)); t = d + float(rng.integers(60, 900))
+            conns.append((d, t, int(a), int(b), tr))
+    conns.sort()
+    foot = defaultdict(list)
+    for _ in range(n):
+        i, j = (int(x) for x in rng.choice(n, size=2, replace=False)); foot[i].append((j, float(rng.integers(30, 600))))
+    ptr = np.zeros(n + 1, dtype=np.int32); to, w = [], []
+    for i in range(n):
+        for j, x in foot[i]: to.append(j); w.append(x)
+        ptr[i + 1] = len(to)
+    R = TimeRouter.__new__(TimeRouter)
+    R.N, R.first_virtual, R.trip_ids = n, n, {k: k for k in range(n_trips)}
+    R.target_set = lambda target: {n - 1}
+    col = lambda k, dt: np.ascontiguousarray([c[k] for c in conns], dtype=dt)
+    R._fa = dict(dep=col(0, np.float64), arr=col(1, np.float64), cfrom=col(2, np.int32), cto=col(3, np.int32),
+                 ctrip=col(4, np.int32), ptr=ptr, to=np.array(to, dtype=np.int32), w=np.array(w, dtype=np.float64),
+                 fx=np.zeros(len(to), dtype=np.uint8))
+    R._bind_fast()
+    assert R._fast is not None, 'csa.so did not load'
+    return R
+
+
+@test
+def scan_horizon_keeps_every_label_it_reaches():
+    # ride_search --goal scans only to the latest ceiling and calls the answer exact for every stop reached by
+    # then. This is that claim: best, and the predecessors replayed from it, equal the full scan's there.
+    rng = np.random.default_rng(48)
+    for _ in range(200):
+        R = _random_router(rng)
+        start = int(rng.integers(0, R.N)); t0 = float(rng.integers(0, 2000))
+        one = lambda h: R._scan_fast(np.array([start]), np.array([t0]), np.array([-1], dtype=np.int32),
+                                     'X', want_pred=True, horizon=h)[3]
+        full = one(None)
+        for h in rng.integers(0, 8000, size=4).astype(float):
+            cut = one(h)
+            kept = cut['best'] <= h
+            assert np.array_equal(cut['best'][kept], full['best'][kept]), (h, start)
+            for k in ('conn', 'walk', 'walk_ride'):
+                assert np.array_equal(cut[k][kept], full[k][kept]), (k, h, start)
+            # rconn is the ride into a stop, read only through a walk off that ride, which left by the horizon.
+            # A later ride can overwrite it in the full scan only for stops whose ride arrived after it.
+            arr = R._fa['arr']; rc = full['rconn']
+            by_h = (rc >= 0) & (arr[np.maximum(rc, 0)] <= h)
+            assert np.array_equal(cut['rconn'][by_h], rc[by_h]), ('rconn', h, start)
+            # what it does not keep can only be later in the full scan too, never earlier than the horizon
+            assert (full['best'][~kept] > h).all(), (h, start)
+
+
 # ---- shape_followup's log parser against the exact format forward_shapes prints ------------------------------
 
 @test

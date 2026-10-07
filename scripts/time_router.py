@@ -448,15 +448,7 @@ class TimeRouter:
 
     def _init_fast(self):
         """Flat arrays + compiled scan (csa.c) for finish(); falls back to Python when no compiler."""
-        import ctypes, subprocess
         self._fast = None
-        here = os.path.dirname(os.path.abspath(__file__)); so = os.path.join(here, 'csa.so'); src = os.path.join(here, 'csa.c')
-        try:
-            if not os.path.exists(so) or os.path.getmtime(so) < os.path.getmtime(src):
-                subprocess.run(['cc', '-O3', '-shared', '-fPIC', src, '-o', so], check=True)
-            ctypes.CDLL(so)
-        except Exception as e:
-            print('fast scan unavailable:', e); return
         self.trip_ids = {}
         ct = np.empty(len(self.ctrip), dtype=np.int32)
         for k, key in enumerate(self.ctrip): ct[k] = self.trip_ids.setdefault(key, len(self.trip_ids))
@@ -469,8 +461,11 @@ class TimeRouter:
                         ptr=ptr, to=np.array(to, dtype=np.int32), w=np.array(w, dtype=np.float64), fx=np.array(fx, dtype=np.uint8))
         self._bind_fast()
 
-    def _scan_fast(self, stops, times, trips, target, want_pred=False):
-        """One layer in C. Labels come in and go out as parallel arrays (stop, time, trip index or -1)."""
+    def _scan_fast(self, stops, times, trips, target, want_pred=False, horizon=None):
+        """One layer in C. Labels come in and go out as parallel arrays (stop, time, trip index or -1).
+
+        horizon: ignore connections departing after it. Every label at or before the horizon is then exactly
+        what the full scan gives, since anything later departs, so arrives, after it."""
         D, I, B = self._ct
         mask = self._masks.get(target)
         if mask is None:
@@ -491,7 +486,8 @@ class TimeRouter:
             pa = (pred['conn'].ctypes.data_as(I), pred['walk'].ctypes.data_as(I), pred['walk_t'].ctypes.data_as(D),
                   pred['bstop'].ctypes.data_as(I), pred['bdep'].ctypes.data_as(D),
                   pred['rconn'].ctypes.data_as(I), pred['walk_ride'].ctypes.data_as(B))
-        rc = self._fast.csa_scan(len(self._fa['dep']), p['dep'], p['arr'], p['cfrom'], p['cto'], p['ctrip'], k0, self.N, len(self.trip_ids),
+        n_conn = len(self._fa['dep']) if horizon is None else int(np.searchsorted(self._fa['dep'], horizon, side='right'))
+        rc = self._fast.csa_scan(n_conn, p['dep'], p['arr'], p['cfrom'], p['cto'], p['ctrip'], k0, self.N, len(self.trip_ids),
                             p['ptr'], p['to'], p['w'], p['fx'], best.ctypes.data_as(D), lt.ctypes.data_as(I), mask.ctypes.data_as(B),
                             float(MIN_TRANSFER), float(SCAN_SLACK), *pa)
         if rc != 0: raise MemoryError(f'csa_scan failed (rc={rc})')

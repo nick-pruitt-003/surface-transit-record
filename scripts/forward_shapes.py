@@ -103,7 +103,7 @@ def main():
     d_ = pickle.load(open(a.route, 'rb'))
     st0_ = R.stop_name.index(d_['start'])
     S_ = Search(R, st0_, d_['t0'], [], 1)
-    ts._R, ts._START, ts._T0, ts._SELF, ts._BASE, ts._END = R, st0_, d_['t0'], S_, None, None
+    ts.bind(R, st0_, d_['t0'], S_)
     _f, legs_ = S_.evaluate(d_['order'])
     from collections import defaultdict
     tc_ = defaultdict(list)
@@ -177,7 +177,7 @@ def main():
         RR = RR or R; best = None
         for w in [i for i, n in enumerate(RR.stop_name) if n == start_name]:
             Sr = Search(RR, w, t_start, [], 1)
-            ts._R, ts._START, ts._T0, ts._SELF, ts._BASE, ts._END = RR, w, t_start, Sr, None, None
+            ts.bind(RR, w, t_start, Sr)
             f_, lg_ = Sr.evaluate(order)
             if np.isfinite(f_) and Sr.all_states(lg_):
                 el_ = (f_ - t_start) / 3600

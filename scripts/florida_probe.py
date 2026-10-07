@@ -41,7 +41,7 @@ def main():
     best_ = None
     for h in [i for i, n in enumerate(R.stop_name) if n == 'Huntington Bus Stop']:
         S = Search(R, h, tc, [], 1)
-        ts_._R, ts_._START, ts_._T0, ts_._SELF, ts_._BASE, ts_._END = R, h, tc, S, None, None
+        ts_.bind(R, h, tc, S)
         f, legs = S.evaluate(pickle.load(open('../out/hun_ms_meteor.pkl', 'rb'))['order'])
         if best_ is None or f < best_[0]: best_ = (f, legs, h)
     _, legs, hun = best_

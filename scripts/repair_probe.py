@@ -62,7 +62,7 @@ def main():
     ab = lambda x: ABBR[R.state_names[x]] if x >= 0 else '--'
     st0 = R.stop_name.index(d['start'])
     S = Search(R, st0, d['t0'], [], 1)
-    ts._R, ts._START, ts._T0, ts._SELF, ts._BASE, ts._END = R, st0, d['t0'], S, None, None
+    ts.bind(R, st0, d['t0'], S)
     _, legs = S.evaluate(d['order'])
     rides = [l for l in legs if l[0] == 'ride']
     if a.drop:

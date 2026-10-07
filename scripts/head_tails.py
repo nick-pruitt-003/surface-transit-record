@@ -30,7 +30,7 @@ def main():
         m = [s for s in R.stops_matching(d['start']) if R.stop_name[s] == d['start']] or R.stops_matching(d['start'])
         if not m: print(f'# {name}: no stop {d["start"]}', file=sys.stderr); continue
         st, t0 = m[0], d['t0']
-        S = ts.Search(R, st, t0, [], 1); ts._R, ts._START, ts._T0, ts._SELF, ts._BASE, ts._END = R, st, t0, S, None, None
+        S = ts.Search(R, st, t0, [], 1); ts.bind(R, st, t0, S)
         f, legs = S.evaluate(d['order'])
         if not legs: print(f'# {name}: does not evaluate', file=sys.stderr); continue
         got, seq, cut = {int(R.state[st])}, [int(R.state[st])], None

@@ -11,6 +11,11 @@ from time_router import TimeRouter, load_feeds, cached_router, N_STATES
 from common import ABBR
 
 _R = None; _START = None; _T0 = None; _BASE = None; _SELF = None; _END = None   # _END: required last target
+def bind(R, start, t0, S, base=None, end=None):
+    """Make S the search the module-level helpers and workers evaluate with: router, start, clock, base, end."""
+    global _R, _START, _T0, _SELF, _BASE, _END
+    _R, _START, _T0, _SELF, _BASE, _END = R, start, t0, S, base, end
+
 FREE = -1   # start value: begin anywhere in the order's first state (the search picks that state)
 
 def _src(start, order):

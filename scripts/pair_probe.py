@@ -141,7 +141,7 @@ def main():
         tried = []
         for hun_ in resolve_stop(R, a.control_start):   # every exact match, not the first; keep the fastest
             S = Search(R, hun_, tc, [], 1)
-            ts_._R, ts_._START, ts_._T0, ts_._SELF, ts_._BASE, ts_._END = R, hun_, tc, S, None, None
+            ts_.bind(R, hun_, tc, S)
             fin_, legs_ = S.evaluate(d['order'])
             tried.append((fin_, hun_, legs_))
         fin, hun, legs = min(tried, key=lambda x: x[0])

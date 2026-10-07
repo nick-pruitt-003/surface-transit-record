@@ -42,7 +42,7 @@ def main():
     R = TimeRouter(load_feeds(), datetime.fromtimestamp(t0, ET).date(), a.days)
     start = R.stop_name.index(start_name)
     S = Search(R, start, t0, [], 1)
-    ts._R, ts._START, ts._T0, ts._SELF, ts._BASE, ts._END = R, start, t0, S, None, None
+    ts.bind(R, start, t0, S)
     ab = lambda x: ABBR[R.state_names[x]]
 
     def elapsed(o):

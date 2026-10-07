@@ -47,7 +47,7 @@ def main():
         order = [x for x in full if x != R.state[start]] if pruned else full
         t0 = when.timestamp()
         S = Search(R, start, t0, [], 1)
-        ts._R, ts._START, ts._T0, ts._SELF, ts._BASE, ts._END = R, start, t0, S, None, None
+        ts.bind(R, start, t0, S)
         f, legs = S.evaluate(order)
         if f == float('inf'):
             print(f'{name}: no finish from {when:%a %H:%M}'); failed.append(name); continue

@@ -63,7 +63,7 @@ def same_trip_exists(leg, N):
 def main():
     order = [x if x.startswith('@') else st(x) for x in ORDER.split(',')]
     fp = R.stops_matching('Sheridan WY Taco Bell')[0]; t0 = START.timestamp()
-    S = ts.Search(R, fp, t0, [], 1); ts._R, ts._START, ts._T0, ts._SELF, ts._BASE, ts._END = R, fp, t0, S, None, None
+    S = ts.Search(R, fp, t0, [], 1); ts.bind(R, fp, t0, S)
     f, legs = S.evaluate(order)
     assert S.all_states(legs), [ABBR[R.state_names[s]] for s in S.missing(legs)]
     wb = Workbook(); ws = wb.active; ws.title = 'X itinerary'

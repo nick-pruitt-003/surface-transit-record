@@ -156,6 +156,13 @@ class GraphBuilder:
                     stops=self.stops, names=states.names, state=state)
 
 
+
+def within_km(xy, lon, lat, km):
+    """Indices (int64) of the rows of xy, an (n, 2) lon/lat array, within km of (lon, lat) on a flat local
+    projection: good to a few metres at the radii used here, and one numpy pass over every stop."""
+    d = np.hypot((xy[:, 0] - lon) * 111.3 * np.cos(np.radians(lat)), (xy[:, 1] - lat) * 111.3)
+    return np.nonzero(d <= km)[0].astype(np.int64)
+
 def contract(graph):
     """Collapse degree-2 chains. Keeps junctions, hubs and state-change nodes.
     Returns {(a, b): (weight, [original node path a..b])}."""
