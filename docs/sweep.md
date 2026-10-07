@@ -274,6 +274,28 @@ Fixes on the way: --end-by now picks the latest start (the front's own length ha
 Conclusion: X's 231.7 front is the best way into each of its hinges from the West, and its Chicago finish only pays
 with the West done first; East and Appalachian starts pay 30-40 h to reach it.
 
+## Start-point sweeper and the Moorhead family (Oct 6 evening)
+
+Free starts all drift back to Sheridan, so 11 starts were pinned and searched from three seeds each (X's order, X
+reversed, the record's order), 15 min each, out/starts. Best per start: Moorhead 239.0 (new Plains-first shape),
+Idaho Falls 239.0 (X plus a start via Jackson WY and Butte -> Bozeman -> back west), Pine Bluffs 241.2, Portland ME
+242.5, Laramie 244.3, Fargo 246.9, Butte 248.5, Brattleboro 251.5, Kingman 255.2, El Paso 258.2, Rock Springs 263.5.
+Cheyenne with Nick's reverse-lollipop seed: 238.2, which is X plus Cheyenne -> Buffalo.
+
+**Moorhead, Michigan moved earlier (mh_mi_east): 235.8 h, under the record, no Ohio Coach** (full legs in
+docs/route_moorhead_235.8.txt): Moorhead Mon -> Fargo 14:30 -> Sioux Falls -> Maryville loop -> Sioux Falls -> I-90 bus
+12:40 -> Billings -> X's West (Spokane, Pasco, SLC, Saint George, Las Vegas, Chief) -> OKC, Dallas, Houston,
+Tallahassee, Jacksonville -> Silver Meteor -> Acela -> Portland midday, Hanover overnight on Dartmouth Coach (19:30 up,
+03:00 back) -> Acela, Pennsylvanian, Harrisburg -> Indianapolis -> Chicago Wed 08:00 -> Four Winds 09:50 (MI) ->
+Empire Builder to Milwaukee (WI), Borealis back -> City of New Orleans 20:05 -> Memphis Thu 06:42 -> Big River
+Crossing (AR) -> MATA -> MS line at IRS ~10:16. To check: the Moorhead -> Fargo start hop (modelled; MATBUS on a
+Monday), the Wednesday Four Winds 09:50, Borealis. Nick (Oct 6): out-and-backs on timetabled services are allowed (the
+old no-U-turn rule was a router workaround), so the Maryville loop and the Hanover overnight stand. The second
+variant (mh_mi_fl) was stopped unrun when the machine was shut down.
+
+Standing on the corrected data: X 232.1 (231.9 with the Friday-start MATBUS finish), Moorhead 235.8, Wheeling 234.24
+(Ohio Coach), control 237.5, record shape 238.8.
+
 ## Next
 
 - More sweeps with other random seeds: one 5-hour sweep found RX, the cheapest new-family finder we have.
