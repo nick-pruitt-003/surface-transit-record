@@ -1,8 +1,9 @@
 # bus48
 
 Find a scheduled surface route through all 48 contiguous states faster than the timetabled record of
-238.83 h. Best verified: **237.3 h** (Huntington WV to the Vermont line at Hanover). `docs/HANDOFF.md` has
-the route, the rules, and everything tested and ruled out. Read it before proposing anything.
+238.83 h. Fastest route: **X, 232.30 h** (Sheridan WY to Moorhead MN), booked for a Thu Nov 12 2026 start
+(HANDOFF 30). The 237 h Huntington to Vermont-line route is the search **control** below, not the best result.
+`docs/HANDOFF.md` has the routes, the rules, and everything tested and ruled out. Read it before proposing anything.
 
 ## Working rules
 

@@ -59,8 +59,8 @@ agency's times are in its home zone, inferred from its stops; calendars are stal
 the weekday pattern is used). `data/extra_trips.csv` holds manual trips missing from the
 feeds (e.g. Northwestern NWL 710 Spokane -> Pasco).
 
-Rules: 15 min minimum between different vehicles, 0 to re-board the same one; walking up
-to 1.5 km; local-transit proxy (30 min + 4 min/km) up to 10 km. A state counts when a
+Rules (defaults; `BUS48_MIN_TRANSFER`, `BUS48_WALKIN_KM`): 5 min minimum between different
+vehicles, 0 to re-board the same one; border walk-ins up to 1.4 km; local-transit proxy (30 min + 4 min/km) up to 10 km. A state counts when a
 ridden trip stops there. Times print in the stop's local zone with a day counter.
 
 ```
