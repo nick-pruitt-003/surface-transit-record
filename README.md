@@ -21,17 +21,17 @@ itinerary (txt / csv / xlsx / geojson) that you then check against real timetabl
 ## Pipeline
 ```
 pip install shapely scipy numpy openpyxl
-cd scripts
-python3 prep_amtrak_speeds.py                       # -> data/route_speeds.json (from the GTFS timetable)
-python3 build_graph.py --out graph2 --layers intercity
-python3 build_graph.py --out graph4 --layers intercity,amtrak
-python3 prep_local.py && python3 build_graph.py --out graph3 --layers intercity,local   # optional
-python3 solve.py --graph graph2 --budget 1200 --out result2.pkl
-python3 solve.py --graph graph4 --budget 2400 --seed result2.pkl --out result4.pkl
-python3 solve.py --graph graph4 --budget 1500 --seed result2.pkl --out result7.pkl \
+cd scripts            # the distance pipeline is retired to scripts/attic/; run with PYTHONPATH=.
+PYTHONPATH=. python3 attic/prep_amtrak_speeds.py                       # -> data/route_speeds.json (from the GTFS timetable)
+PYTHONPATH=. python3 attic/build_graph.py --out graph2 --layers intercity
+PYTHONPATH=. python3 attic/build_graph.py --out graph4 --layers intercity,amtrak
+PYTHONPATH=. python3 attic/prep_local.py && PYTHONPATH=. python3 attic/build_graph.py --out graph3 --layers intercity,local   # optional
+PYTHONPATH=. python3 attic/solve.py --graph graph2 --budget 1200 --out result2.pkl
+PYTHONPATH=. python3 attic/solve.py --graph graph4 --budget 2400 --seed result2.pkl --out result4.pkl
+PYTHONPATH=. python3 attic/solve.py --graph graph4 --budget 1500 --seed result2.pkl --out result7.pkl \
     --prefix "Montana,Washington,Oregon,Utah,Nevada,California,@Tucson,New Mexico,@El Paso,Texas"
-python3 report.py result4.pkl out.txt graph4       # itinerary txt/csv/geojson (graph defaults to the one in the result)
-python3 xlsx.py out.csv out.xlsx "title"           # spreadsheet template
+PYTHONPATH=. python3 attic/report.py result4.pkl out.txt graph4       # itinerary txt/csv/geojson (graph defaults to the one in the result)
+PYTHONPATH=. python3 attic/xlsx.py out.csv out.xlsx "title"           # spreadsheet template
 ```
 `--prefix` locks the first entries of the state order; `@Name` is a named stop target.
 Data files are found by glob in `data/` (override with `BUS48_DATA=/path`).

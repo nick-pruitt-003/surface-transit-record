@@ -38,7 +38,7 @@ it. Details in `routes.md` under RX.
 The route to ride is X, 232.30 h, booked for Thu Nov 12 (`docs/x_itinerary_nov12.xlsx`, HANDOFF 30). HT
 re-searches to 244.2 h on the corrected Plains data. Kept for its on-foot notes.
 
-Everything leg by leg is in `docs/ht_itinerary.xlsx` (built by `scripts/ht_itinerary.py`): the itinerary, the start
+Everything leg by leg is in `docs/ht_itinerary.xlsx` (built by `scripts/attic/ht_itinerary.py`): the itinerary, the start
 day, what to do if you miss each leg, what to verify, and what to book.
 
 **Start day: Monday** (Tuesday as backup). The chain is daily, so Monday to Wednesday all give 230.10 h; Monday puts

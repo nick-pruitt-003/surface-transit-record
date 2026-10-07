@@ -88,7 +88,7 @@ is too strict prunes the answer.
 
 ## Search designs, and why the earlier ones failed
 
-Searching **orderings of the 48 states** (`build_backward.py`, `dfs_backward.py`) is the wrong space. Its
+Searching **orderings of the 48 states** (`attic/build_backward.py`, `attic/dfs_backward.py`) is the wrong space. Its
 branching is the topk of 6 and its leftover estimate has to price a set of states with no idea where or when
 you are. Every form of that estimate failed, measured: plain, doubled, cheapest-entry, and two
 frequency-aware matrices which got *closer to the true remainder* while ranking *worse*. A spanning tree is
@@ -271,8 +271,8 @@ proven otherwise, and unexplained improvements in a gate usually mean the gate g
 
 Instrumenting against the known answer worked every time; running searches blind and reading the result did
 not. `ride_search.py --track` replays the control leg by leg and says which are missing and why.
-`branching.py` measures the real menu size. `bound_probe.py` scores a bound against the true remainder.
-`tail_diag.py`, `dump_diag.py` and `reach_probe.py` do the same for the ordering searches.
+`branching.py` measures the real menu size. The ordering-search diagnostics (`bound_probe.py`, `tail_diag.py`,
+`dump_diag.py`, `reach_probe.py`) are in `scripts/attic/` with that design; its README says how to run them.
 
 State a falsification condition before building, and validate on at least two cases that disagree. A
 reach-based estimate once looked decisive on one dump and was arithmetically broken: it summed n copies of

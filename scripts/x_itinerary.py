@@ -1,5 +1,5 @@
 """X as an itinerary to ride (docs/x_itinerary.xlsx): Sheridan WY Thursday 22:20 to Moorhead MN on foot the second
-Sunday, 232.1 h. Same sheets as ht_itinerary.py; the ending is pinned to Nick's measured 83 min walk from the Fargo
+Sunday, 232.1 h. Same sheets as attic/ht_itinerary.py; the ending is pinned to Nick's measured 83 min walk from the Fargo
 Jefferson station to Moorhead, not the router's Fargo local-transit proxy (MATBUS has no Sunday service).
 
 Leaf script: nothing imports it.   python3 x_itinerary.py   (from scripts/)
