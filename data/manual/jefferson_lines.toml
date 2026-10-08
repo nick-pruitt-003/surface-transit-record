@@ -1,6 +1,20 @@
 agency = "Jefferson Lines"
 
 [stops]
+st_cloud_scsu = "=ibus:2525"   # St. Cloud (SCSU)
+little_falls_mn = "=ibus:342"
+brainerd_jl = "=ibus:3251"   # Brainerd (Westgate Mall)
+nisswa = "=ibus:2326"
+pequot_lakes = "=ibus:683"
+pine_river = "=ibus:347"
+walker_mn = "=ibus:3064"
+bemidji_holiday = "=ibus:1215"
+bemidji_state = "=ibus:1713"
+bagley = "=ibus:2854"
+fosston = "=ibus:1179"
+erskine = "=ibus:504"
+crookston = "=ibus:3487"   # Crookston (Tri Valley Heartland Express)
+grand_forks_jl = "=ibus:2668"   # Grand Forks (JL Cities Area Transit)
 bismarck_jl = "=ibus:289"   # Bismarck
 minneapolis_jl = "=ibus:15"   # Minneapolis
 des_moines_jl = "=ibus:2813"   # Des Moines
@@ -248,3 +262,13 @@ route = "JL Tulsa 14:20 -> Kansas City 19:20/20:05 -> Bethany -> Des Moines 23:3
 days = "1111111"
 tz = "America/Chicago"
 stops = ["tulsa_jl 14:20", "dewey_ok 15:10", "coffeyville 15:50", "chanute 16:45/17:05", "iola_ks 17:25/17:30", "kansas_city_bus_station 19:20/20:05", "cameron_mo 20:55", "bethany_mo 21:35/21:45", "lamoni 22:15", "osceola_ia 22:45", "des_moines_jl 23:30/24:01", "ames_jl 24:35/24:40", "clear_lake_jct 26:00/26:15", "albert_lea_f 26:45", "owatonna_f 27:15", "minneapolis_jl 28:30"]
+
+# Nick screenshots Oct 8 2026 (jeffersonlines.com): Minneapolis 11:20 -> Brainerd 14:15, on to Bemidji, Crookston and
+# Grand Forks 19:30. The feed (ibus 2366) had Minneapolis 11:35 -> Brainerd 14:30, which missed the Brainerd 14:30 -> Fargo
+# bus by zero minutes; the site's 14:15 makes it (Moorhead 17:35, Fargo 17:50). Feed's Grand Forks -> Fargo tail not shown.
+[[trip]]
+id = "t444"
+route = "JL Minneapolis 11:20 -> St Cloud -> Brainerd -> Bemidji -> Crookston -> Grand Forks 19:30 (daily assumed)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["minneapolis_jl 11:20", "maple_grove 11:50", "st_cloud_scsu 12:55", "st_cloud_jl 13:00", "little_falls_mn 13:35", "brainerd_jl 14:15/14:30", "nisswa 14:55", "pequot_lakes 15:05", "pine_river 15:25", "walker_mn 16:05", "bemidji_holiday 16:50/16:55", "bemidji_state 17:00", "bagley 17:30", "fosston 17:50/18:05", "erskine 18:20", "crookston 18:50", "grand_forks_jl 19:30"]
