@@ -300,3 +300,19 @@ Standing on the corrected data: X 232.1 (231.9 with the Friday-start MATBUS fini
 
 - More sweeps with other random seeds: one 5-hour sweep found RX, the cheapest new-family finder we have.
 - Block tests on RX, as for Wheeling (HANDOFF 29): start, front to Jacksonville, Northeast, Midwest, West.
+
+## HT tail as a finish (Oct 7)
+
+HT's tail, Sioux Falls I-90 bus 12:40 -> Billings -> Spokane -> Pasco -> SLC -> Saint George -> Las Vegas -> Southwest
+Chief -> Newton -> OKC -> Fort Worth -> Longview -> Shreveport -> Memphis (AR walk-in) -> Birmingham -> Tallahassee, still
+evaluates on today's data: 126.75 h, every start day (`out/hinges/ht_tail_eval.py`). Fronts to Sioux Falls holding the
+other 29 states (`out/hinges/jobs_ht.txt`, hinge method, start pinned):
+
+| front | reaches Sioux Falls | front h | total with tail |
+|---|---|---|---|
+| Ledyard, Mon deadline | Wed 06:40 -> Thu 09:45 (next week) | ~147 | ~277 |
+| Huntington, Mon / Fri deadline | Sat 03:30 -> Fri 09:45 | ~151 | ~281 |
+| Ledyard, Fri deadline | Wed 06:40 -> Mon 09:45 | ~124 | ~254 |
+
+A front needs under ~105 h to beat X and ~112 h for the record. HT's old front was 102.4 h on the phantom Fargo 15:50 ->
+Sioux Falls bus; without it the Plains before Sioux Falls (ND, MN, MO, IA, NE) cost a Midwest loop of a day or more.
