@@ -1,6 +1,13 @@
 agency = "Jefferson Lines"
 
 [stops]
+minneapolis_umn = "=ibus:1923"   # Minneapolis (U of MN - Huron Blvd)
+st_paul_union_depot_jl = "=ibus:356"
+rochester_mn = "=ibus:441"
+winona_state = "=ibus:786"
+la_crosse_jl = "=ibus:1017"
+madison_uw_jl = "=ibus:1616"
+milwaukee_intermodal_jl = "=ibus:1792"
 st_cloud_scsu = "=ibus:2525"   # St. Cloud (SCSU)
 little_falls_mn = "=ibus:342"
 brainerd_jl = "=ibus:3251"   # Brainerd (Westgate Mall)
@@ -272,3 +279,13 @@ route = "JL Minneapolis 11:20 -> St Cloud -> Brainerd -> Bemidji -> Crookston ->
 days = "1111111"
 tz = "America/Chicago"
 stops = ["minneapolis_jl 11:20", "maple_grove 11:50", "st_cloud_scsu 12:55", "st_cloud_jl 13:00", "little_falls_mn 13:35", "brainerd_jl 14:15/14:30", "nisswa 14:55", "pequot_lakes 15:05", "pine_river 15:25", "walker_mn 16:05", "bemidji_holiday 16:50/16:55", "bemidji_state 17:00", "bagley 17:30", "fosston 17:50/18:05", "erskine 18:20", "crookston 18:50", "grand_forks_jl 19:30"]
+
+# Nick screenshot Oct 8 2026 (jeffersonlines.com): Minneapolis 10:45 -> St Paul -> Rochester -> Winona -> La Crosse ->
+# Wisconsin Dells -> Madison -> Milwaukee Intermodal 19:30. The feed (ibus 1310) had it 30 min early (10:15 -> 18:20).
+# Site stops not in the feed (UW La Crosse, Sparta, Wisconsin Dells, Johnson Creek) are left out; all Wisconsin.
+[[trip]]
+id = "t445"
+route = "JL Minneapolis 10:45 -> Rochester -> La Crosse -> Madison -> Milwaukee 19:30 (daily assumed)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["minneapolis_jl 10:45", "minneapolis_umn 11:00", "st_paul_union_depot_jl 11:25/11:35", "rochester_mn 13:00/13:05", "winona_state 14:00", "la_crosse_jl 14:35/14:40", "madison_uw_jl 17:45/17:50", "milwaukee_intermodal_jl 19:30"]

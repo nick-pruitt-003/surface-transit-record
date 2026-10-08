@@ -32,3 +32,4 @@ ibus,3152,Greyhound Charlotte -> Detroit: the feed has 06:50 -> 21:45; the site 
 ibus,1156,Express Arrow Buffalo WY -> Denver: the feed has every stop 30 min late (Buffalo 07:50 MT); the booking shows 07:20 -> Denver 15:15 (Nick Oct 6 2026). Replaced by t427
 ibus,1632,Jefferson Billings -> Minneapolis (I-90 eastbound): the feed has Billings 05:00 MT, Buffalo 07:35 and later stops off; jeffersonlines.com sells JL 702 Billings 04:30 -> Buffalo 07:05 -> Minneapolis 23:40 (Nick Oct 6 2026). Replaced by t105
 ibus,2366,Jefferson Minneapolis -> Brainerd -> Grand Forks -> Fargo: the feed has Minneapolis 11:35 -> Brainerd 14:30; jeffersonlines.com shows 11:20 -> 14:15 -> Grand Forks 19:30 (Nick Oct 8 2026). Replaced by t444
+ibus,1310,Jefferson Minneapolis -> Milwaukee: the feed has 10:15 -> 18:20; jeffersonlines.com shows 10:45 -> 19:30 (Nick Oct 8 2026). Replaced by t445
