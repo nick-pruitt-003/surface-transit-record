@@ -1,6 +1,11 @@
 agency = "Jefferson Lines"
 
 [stops]
+msp_airport_jl = "=ibus:661"
+faribault = "=ibus:2917"
+latimer_ia = "=ibus:288"
+williams_ta_ia = "=ibus:3278"
+mason_city_airport = "=ibus:1061"   # Mason City (Airport)
 minneapolis_umn = "=ibus:1923"   # Minneapolis (U of MN - Huron Blvd)
 st_paul_union_depot_jl = "=ibus:356"
 rochester_mn = "=ibus:441"
@@ -289,3 +294,22 @@ route = "JL Minneapolis 10:45 -> Rochester -> La Crosse -> Madison -> Milwaukee 
 days = "1111111"
 tz = "America/Chicago"
 stops = ["minneapolis_jl 10:45", "minneapolis_umn 11:00", "st_paul_union_depot_jl 11:25/11:35", "rochester_mn 13:00/13:05", "winona_state 14:00", "la_crosse_jl 14:35/14:40", "madison_uw_jl 17:45/17:50", "milwaukee_intermodal_jl 19:30"]
+
+# Nick screenshot Oct 8 2026 (jeffersonlines.com, Fri Oct 9): Minneapolis 13:15 -> Mason City Airport 15:35 -> Cedar
+# Falls/Waterloo 17:00/17:25 -> Dubuque 19:00 -> Chicago 22:15, direct. The southbound twin of t413/t414; not in the feed.
+[[trip]]
+id = "t446"
+route = "JL Minneapolis 13:15 -> Mason City -> Waterloo -> Dubuque -> Chicago 22:15 (daily assumed)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["minneapolis_jl 13:15", "mason_city_airport 15:35", "waterloo_loves 17:00/17:25", "dubuque_bus 19:00", "chicago_bus 22:15"]
+
+# Nick screenshot Oct 8 2026 (jeffersonlines.com): Minneapolis 12:50 -> MSP Airport -> Faribault -> Owatonna -> Albert Lea ->
+# Mason City -> Latimer -> TA Travel Center (Williams) -> Ames -> Des Moines 18:35/19:10 -> Lamoni -> Kansas City 22:10.
+# The feed (ibus 2450) had it 35 min early (Minneapolis 12:15). Burnsville left out (no feed stop; MN).
+[[trip]]
+id = "t447"
+route = "JL Minneapolis 12:50 -> Mason City -> Ames -> Des Moines -> Kansas City 22:10 (daily assumed)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["minneapolis_jl 12:50", "msp_airport_jl 13:20", "faribault 14:10", "owatonna_f 14:30/14:35", "albert_lea 15:05/15:25", "mason_city_airport 16:05/16:10", "latimer_ia 16:40", "williams_ta_ia 17:00/17:05", "ames_jl 17:45/17:50", "des_moines_jl 18:35/19:10", "lamoni 20:25", "kansas_city_bus_station 22:10"]

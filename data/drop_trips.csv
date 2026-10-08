@@ -33,3 +33,4 @@ ibus,1156,Express Arrow Buffalo WY -> Denver: the feed has every stop 30 min lat
 ibus,1632,Jefferson Billings -> Minneapolis (I-90 eastbound): the feed has Billings 05:00 MT, Buffalo 07:35 and later stops off; jeffersonlines.com sells JL 702 Billings 04:30 -> Buffalo 07:05 -> Minneapolis 23:40 (Nick Oct 6 2026). Replaced by t105
 ibus,2366,Jefferson Minneapolis -> Brainerd -> Grand Forks -> Fargo: the feed has Minneapolis 11:35 -> Brainerd 14:30; jeffersonlines.com shows 11:20 -> 14:15 -> Grand Forks 19:30 (Nick Oct 8 2026). Replaced by t444
 ibus,1310,Jefferson Minneapolis -> Milwaukee: the feed has 10:15 -> 18:20; jeffersonlines.com shows 10:45 -> 19:30 (Nick Oct 8 2026). Replaced by t445
+ibus,2450,Jefferson Minneapolis -> Des Moines -> Kansas City: the feed has Minneapolis 12:15 -> Kansas City 22:00; jeffersonlines.com shows 12:50 -> 22:10 (Nick Oct 8 2026). Replaced by t447
