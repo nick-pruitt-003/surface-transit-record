@@ -182,3 +182,12 @@ route = "Greyhound Minneapolis 23:55 -> St Paul -> Albert Lea -> Ames -> Des Moi
 days = "1111111"
 tz = "America/Chicago"
 stops = ["gh_minneapolis 23:55", "gh_st_paul 24:25/24:35", "gh_albert_lea 26:15/26:25", "gh_ames 28:25/28:35", "gh_des_moines 29:05/29:25", "gh_bethany 31:05/31:15", "gh_kansas_city 32:40"]
+
+# Nick screenshot Oct 11 2026 (greyhound.com, bus US0156): Kansas City 20:35 -> Bethany -> Des Moines 23:45/23:55 -> Ames ->
+# Albert Lea -> Minneapolis 04:20. The Flix feed (US0156-4764, dated copies) had Minneapolis 06:15 via St Paul; dropped.
+[[trip]]
+id = "t451"
+route = "Greyhound Kansas City 20:35 -> Des Moines -> Ames -> Albert Lea -> Minneapolis 04:20 (daily assumed)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["gh_kansas_city 20:35", "gh_bethany 22:00/22:05", "gh_des_moines 23:45/23:55", "gh_ames 24:25/24:35", "gh_albert_lea 26:35/26:45", "gh_minneapolis 28:20"]

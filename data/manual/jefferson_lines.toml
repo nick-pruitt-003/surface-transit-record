@@ -324,3 +324,23 @@ route = "JL Minneapolis 18:30 -> Ames -> Des Moines -> Kansas City 03:30/05:20 -
 days = "1111111"
 tz = "America/Chicago"
 stops = ["minneapolis_jl 18:30", "owatonna_f 19:50", "albert_lea 20:25/20:45", "clear_lake_ia 21:10", "ames 22:40/22:45", "des_moines_jl 23:30/24:01", "osceola_ia 24:45", "lamoni 25:20", "bethany_mo 25:45", "kansas_city_bus_station 27:30/29:20", "iola_ks 31:05", "chanute 31:30/31:45", "coffeyville 32:35", "dewey_ok 33:10", "tulsa_jl 34:15"]
+
+# Nick screenshot Oct 11 2026 (jeffersonlines.com): Kansas City 08:35 -> Bethany -> Lamoni -> Des Moines 12:00/12:15 ->
+# Ames -> TA Travel Center -> Latimer -> Mason City -> Albert Lea -> Owatonna -> Faribault -> Minneapolis 17:50. The
+# northbound twin of t447. The feed (ibus 3366) had 08:20 -> 17:45 via Cameron and Osceola; dropped. Burnsville left out.
+[[trip]]
+id = "t450"
+route = "JL Kansas City 08:35 -> Des Moines -> Ames -> Mason City -> Albert Lea -> Minneapolis 17:50 (daily assumed)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["kansas_city_bus_station 08:35", "bethany_mo 09:55/10:15", "lamoni 10:45", "des_moines_jl 12:00/12:15", "ames_jl 12:50/12:55", "williams_ta_ia 13:30/13:40", "latimer_ia 14:00", "mason_city_airport 14:40", "albert_lea 15:15/15:35", "owatonna_f 16:10/16:15", "faribault 16:35", "minneapolis_jl 17:50"]
+
+# Nick screenshot Oct 11 2026 (jeffersonlines.com, Mon Oct 12): Kansas City 23:25 -> Cameron -> Bethany -> Lamoni -> Osceola ->
+# Des Moines 03:20/04:05 -> Ames -> Clear Lake -> Albert Lea -> Owatonna -> Faribault -> St Paul -> Minneapolis 09:50.
+# The feed (ibus 2011) had 23:55 -> 09:25; dropped. Burnsville left out.
+[[trip]]
+id = "t452"
+route = "JL Kansas City 23:25 -> Des Moines 03:20/04:05 -> Ames -> Albert Lea -> St Paul -> Minneapolis 09:50 (daily assumed)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["kansas_city_bus_station 23:25", "cameron_mo 24:25", "bethany_mo 25:10", "lamoni 25:40", "osceola_ia 26:10/26:25", "des_moines_jl 27:20/28:05", "ames_jl 28:45/28:50", "clear_lake_ia 29:50/29:55", "albert_lea 30:35/31:00", "owatonna_f 31:35/31:40", "faribault 32:05", "st_paul_union_depot_jl 33:15/33:25", "minneapolis_jl 33:50"]
