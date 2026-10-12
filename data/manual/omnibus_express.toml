@@ -23,6 +23,26 @@ stratford_omnibus = "=ibus:2235"
 dalhart_omnibus = "=ibus:261"
 tucumcari_omnibus = "=ibus:453"
 el_paso_omnibus = "=ibus:3247"
+houston_telephone_rd_omnibus = "=ibus:3244"
+beaumont_omnibus = "=ibus:3586"
+port_arthur_omnibus = "=ibus:609"
+orange_tx_omnibus = { name = "Orange TX (Omnibus Express)", lon = -93.7366, lat = 30.0930 }   # point approximate
+lake_charles_omnibus = "=ibus:165"
+lafayette_omnibus = "=ibus:3600"
+baton_rouge_omnibus = "=ibus:357"
+hammond_omnibus = "=ibus:2788"
+slidell_omnibus = "=ibus:2496"
+gulfport_omnibus = "=ibus:2339"
+biloxi_omnibus = "=ibus:3392"
+pascagoula_omnibus = "=ibus:2295"
+grand_bay_al_omnibus = { name = "Grand Bay AL (Omnibus Express)", lon = -88.3420, lat = 30.4766 }   # point approximate
+mobile_omnibus = "=ibus:3018"
+loxley_omnibus = "=ibus:2077"
+pensacola_omnibus = "=ibus:2880"
+crestview_omnibus = { name = "Crestview FL (Omnibus Express)", lon = -86.5705, lat = 30.7621 }   # point approximate
+marianna_omnibus = { name = "Marianna FL (Omnibus Express)", lon = -85.2263, lat = 30.7744 }   # point approximate
+tallahassee_omnibus = "=ibus:3356"
+lake_city_omnibus = "=ibus:2294"
 okc_omnibus = "=ibus:1524"
 el_reno_omnibus = "=ibus:3134"
 weatherford_ok_omnibus = "=ibus:2078"
@@ -89,3 +109,15 @@ id = "t458"
 route = "Omnibus Express El Paso 19:02 -> Roswell -> Clovis -> Amarillo -> Oklahoma City 09:00 (Fri-Mon assumed like Caldwell, Nick Oct 11)"
 days = "1000111"
 stops = ["el_paso_omnibus 19:02", "roswell_omnibus 22:30", "portales_omnibus 23:50", "clovis_omnibus 24:10", "texico_omnibus 24:20", "farwell_omnibus 26:30", "bovina_omnibus 26:45", "friona_omnibus 27:00", "hereford_omnibus 27:20", "amarillo_omnibus 28:05", "shamrock_omnibus 29:35", "erick_omnibus 30:00", "sayre_omnibus 30:15", "elk_city_omnibus 30:35", "clinton_ok_omnibus 31:05", "weatherford_ok_omnibus 31:20", "el_reno_omnibus 32:15", "okc_omnibus 33:00"]
+
+# Nick screenshot Oct 11 2026 (Omnibus Express site, Fri Oct 30 2026): Houston (Telephone Rd) 19:30 -> Beaumont -> Lake
+# Charles -> Lafayette 23:50 -> Baton Rouge -> Slidell 02:15 -> Mississippi coast (flag stops, drop-off when booked) ->
+# Mobile 03:30 -> Pensacola 06:25 -> Crestview -> Marianna 08:14 -> Tallahassee 09:00 -> Lake City 11:00. Replaces the
+# disabled AE bus t72. The site lists Biloxi 02:20 before Gulfport 02:25; entered in road order (Gulfport first). Three
+# segments are faster than a bus can go (Slidell -> Mobile, Pensacola -> Crestview, Marianna -> Tallahassee); the
+# router's sanity check drops a stop that implies over 130 km/h. Per-stop local clocks. Fri-Mon assumed (Nick).
+[[trip]]
+id = "t459"
+route = "Omnibus Express Houston 19:30 -> Lafayette -> Baton Rouge -> Slidell -> Mobile -> Pensacola -> Tallahassee -> Lake City 11:00 (Fri-Mon assumed)"
+days = "1000111"
+stops = ["houston_telephone_rd_omnibus 19:30", "beaumont_omnibus 21:00", "port_arthur_omnibus 21:30", "orange_tx_omnibus 22:05", "lake_charles_omnibus 22:35", "lafayette_omnibus 23:50", "baton_rouge_omnibus 24:55", "hammond_omnibus 25:45", "slidell_omnibus 26:15", "gulfport_omnibus 26:20", "biloxi_omnibus 26:25", "pascagoula_omnibus 26:40", "grand_bay_al_omnibus 27:00", "mobile_omnibus 27:30", "loxley_omnibus 28:20", "pensacola_omnibus 30:25", "crestview_omnibus 30:45", "marianna_omnibus 32:14", "tallahassee_omnibus 33:00", "lake_city_omnibus 35:00"]
