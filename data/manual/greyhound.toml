@@ -1,6 +1,13 @@
 agency = "Greyhound"
 
 [stops]
+gh_minneapolis = "=flix:912aa3f4-c241-46e3-9978-0f07fc6d1290"   # Minneapolis Bus Station
+gh_st_paul = "=flix:3bf10258-fb9b-4199-a778-89e03bdbb65b"   # Saint Paul Union Depot
+gh_albert_lea = "=flix:3d9eca30-6cc0-4c46-b14a-4a3c7f9bc7f3"   # Albert Lea (Howard Johnson)
+gh_ames = "=flix:1260955a-e0b1-407f-beb4-eee3fe2b3b90"   # Ames (Phillips 66)
+gh_des_moines = "=flix:aa36a342-44a4-47df-8929-6515ec608efc"   # Des Moines
+gh_bethany = "=flix:1fc8f9ce-88ac-4d49-bcbe-73a626f04bc2"   # Bethany (Kwik Zone)
+gh_kansas_city = "=flix:6c04e813-1e6e-4ea4-8b11-b3187dfc7889"   # Kansas City Bus Station
 knoxville_area_transit_bus_stop = "=ibus:1473"   # Knoxville Area Transit Bus Stop
 max_meadows_a81_travel_plaza = "=ibus:837"   # Max Meadows (A81 Travel Plaza)
 charleston_bus_station = "=ibus:3370"   # Charleston Bus Station
@@ -166,3 +173,12 @@ route = "Greyhound Charlotte 02:50 -> Max Meadows -> Bluefield -> Charleston -> 
 days = "1111111"
 tz = "America/New_York"
 stops = ["charlotte_gh 02:50", "max_meadows_gh 04:50/05:15", "bluefield_gh 06:15/06:20", "beckley_gh 07:15/07:20", "charleston_gh 08:25/09:15", "huntington_gh 10:10/10:15", "ashland_gh 10:40/10:45", "columbus_e_mound_gh 12:55/13:00", "columbus_gh 13:15/13:40", "toledo_gh 16:30/16:55", "detroit_gh 18:00"]
+
+# Nick screenshots Oct 11 2026 (greyhound.com, bus US0156, Mon Oct 12 and Fri Oct 23): Minneapolis 23:55 -> Kansas City
+# 08:40. The Flix feed (US0156-4765, seven dated copies) had 23:30 -> 09:15; all dropped.
+[[trip]]
+id = "t449"
+route = "Greyhound Minneapolis 23:55 -> St Paul -> Albert Lea -> Ames -> Des Moines -> Bethany -> Kansas City 08:40 (daily assumed)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["gh_minneapolis 23:55", "gh_st_paul 24:25/24:35", "gh_albert_lea 26:15/26:25", "gh_ames 28:25/28:35", "gh_des_moines 29:05/29:25", "gh_bethany 31:05/31:15", "gh_kansas_city 32:40"]

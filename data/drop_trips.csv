@@ -34,3 +34,12 @@ ibus,1632,Jefferson Billings -> Minneapolis (I-90 eastbound): the feed has Billi
 ibus,2366,Jefferson Minneapolis -> Brainerd -> Grand Forks -> Fargo: the feed has Minneapolis 11:35 -> Brainerd 14:30; jeffersonlines.com shows 11:20 -> 14:15 -> Grand Forks 19:30 (Nick Oct 8 2026). Replaced by t444
 ibus,1310,Jefferson Minneapolis -> Milwaukee: the feed has 10:15 -> 18:20; jeffersonlines.com shows 10:45 -> 19:30 (Nick Oct 8 2026). Replaced by t445
 ibus,2450,Jefferson Minneapolis -> Des Moines -> Kansas City: the feed has Minneapolis 12:15 -> Kansas City 22:00; jeffersonlines.com shows 12:50 -> 22:10 (Nick Oct 8 2026). Replaced by t447
+ibus,3851,Jefferson Minneapolis -> Kansas City -> Tulsa: the feed has 18:05 -> Kansas City 05:20; jeffersonlines.com shows 18:30 -> 03:30 (Nick Oct 11 2026). Replaced by t448 to Kansas City
+ibus,1305,Jefferson Minneapolis 22:30 -> Kansas City: not sold; the site's overnight is JL 805 at 21:45 (Nick Oct 11 2026)
+flix,US0156-4765-0430092026-MSD6#KCD6-00,Greyhound Minneapolis -> Kansas City: feed 23:30 -> 09:15; greyhound.com shows 23:55 -> 08:40 (Nick Oct 11 2026). Replaced by t449
+flix,US0156-4765-0430102026-MSD6#KCD6-00,Greyhound Minneapolis -> Kansas City: feed 23:30 -> 09:15; greyhound.com shows 23:55 -> 08:40 (Nick Oct 11 2026). Replaced by t449
+flix,US0156-4765-0430112026-MSD6#KCD6-00,Greyhound Minneapolis -> Kansas City: feed 23:30 -> 09:15; greyhound.com shows 23:55 -> 08:40 (Nick Oct 11 2026). Replaced by t449
+flix,US0156-4765-0530012026-MSD6#KCD6-00,Greyhound Minneapolis -> Kansas City: feed 23:30 -> 09:15; greyhound.com shows 23:55 -> 08:40 (Nick Oct 11 2026). Replaced by t449
+flix,US0156-4765-0530012027-MSD6#KCD6-00,Greyhound Minneapolis -> Kansas City: feed 23:30 -> 09:15; greyhound.com shows 23:55 -> 08:40 (Nick Oct 11 2026). Replaced by t449
+flix,US0156-4765-0530112026-MSD6#KCD6-00,Greyhound Minneapolis -> Kansas City: feed 23:30 -> 09:15; greyhound.com shows 23:55 -> 08:40 (Nick Oct 11 2026). Replaced by t449
+flix,US0156-4765-0530122026-MSD6#KCD6-00,Greyhound Minneapolis -> Kansas City: feed 23:30 -> 09:15; greyhound.com shows 23:55 -> 08:40 (Nick Oct 11 2026). Replaced by t449
