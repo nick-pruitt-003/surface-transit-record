@@ -694,6 +694,12 @@ def main():
     order, f, legs = S.run(seed, a.budget)
     # distinct nonzero exits, so a caller checking status cannot file these as results: 2 unreachable, 3 missed --end-by
     if f == float('inf'): print('FINAL unreachable'); sys.exit(2)
+    if S.best_elapsed == float('inf') and not end_by:
+        # no deadline, so this is not a miss: no route the search tried collected all 48 states inside the window
+        # (sweep 6 run 14 printed "misses --end-by ... nan h late" here, Oct 12)
+        print('FINAL incomplete: no route collected all 48 states inside the timetable window; best partial ends',
+              R.fmt_time(f, [l for l in legs if l[0] == 'ride'][-1][4]))
+        print(R.describe(legs)); sys.exit(3)
     if S.best_elapsed == float('inf'):   # nothing made the deadline: say how close the best route got
         late = (f - end_by) / 3600 if end_by else float('nan')
         # the sign is the verdict: a negative "late" is a route that got there first, and must not read as a miss

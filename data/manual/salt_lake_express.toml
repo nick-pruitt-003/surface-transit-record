@@ -10,6 +10,13 @@ stg_sun_river = "Saint George (Sun River)"
 beaver_dam = "Beaver Dam"
 mesquite_virgin_river = "Mesquite (Virgin River)"
 lv_airport = "Las Vegas (Airport)"
+butte_sle = "=ibus:1563"   # Butte
+basin_mt = "=ibus:2086"   # Basin MT
+boulder_mt = "=ibus:2259"   # Boulder MT
+helena = "=ibus:2947"   # Helena
+wolf_creek_mt = "=ibus:2153"   # Wolf Creek MT
+cascade_mt = "=ibus:3282"   # Cascade MT
+great_falls = "=ibus:813"   # Great Falls Transit Center
 
 [[trip]]
 id = "t129"
@@ -42,3 +49,20 @@ note = "Nick screenshot Oct 5 2026 (Salt Lake Express site, local times, for Sat
 days = "1111111"
 tz = "America/Phoenix"
 stops = ["stg_bluff 12:40", "stg_sun_river 12:45", "beaver_dam 13:15", "mesquite_virgin_river 13:25", "lv_airport 14:50"]
+
+# Nick screenshots Oct 11 2026 (Salt Lake Express site, for Sat Oct 24): Butte <-> Helena <-> Great Falls. Mountain
+# time throughout. Daily assumed. Links the Butte <-> Idaho Falls SLE runs to Great Falls, where NTI (Mon/Thu) reaches
+# the Empire Builder at Shelby. Cascade (Conoco) and Craig Junction left out (no feed stop; Cascade covers it).
+[[trip]]
+route = "SLE Butte 05:30 -> Helena 06:55 -> Great Falls Transit Center 08:30"
+note = "Nick screenshot Oct 11 2026; daily assumed"
+days = "1111111"
+tz = "America/Denver"
+stops = ["butte_sle 05:30", "basin_mt 06:05", "boulder_mt 06:15", "helena 06:55", "wolf_creek_mt 07:25", "cascade_mt 07:55", "great_falls 08:30"]
+
+[[trip]]
+route = "SLE Great Falls Transit Center 21:15 -> Helena 23:00 -> Butte 00:15"
+note = "Nick screenshot Oct 11 2026; daily assumed"
+days = "1111111"
+tz = "America/Denver"
+stops = ["great_falls 21:15", "cascade_mt 21:50", "wolf_creek_mt 22:25", "helena 23:00", "boulder_mt 23:30", "basin_mt 23:40", "butte_sle 24:15"]
