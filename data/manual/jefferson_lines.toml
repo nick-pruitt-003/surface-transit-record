@@ -165,10 +165,10 @@ stops = ["des_moines_jl 03:45", "omaha_burlington 06:00"]
 # the feed's 50-minute Brookings -> Sioux Falls run.
 [[trip]]
 id = "t354"
-route = "JL Fargo 14:30 -> Sisseton Jct -> Summit Corner -> Watertown -> Brookings -> Sioux Falls (SF arrival inferred; Thu-Mon only, Nick Oct 5)"
+route = "JL Fargo 14:30 -> Sisseton Jct -> Summit Corner -> Watertown -> Brookings -> Sioux Falls 18:30 (site, Nick Oct 11; Thu-Mon only)"
 days = "1001111"
 tz = "America/Chicago"
-stops = ["fargo_jl_bus 14:30", "sisseton_jct 15:45", "summit_corner 16:15/16:20", "watertown_sd 16:50", "brookings_sd 17:35", "sioux_falls_jl 18:25"]
+stops = ["fargo_jl_bus 14:30", "sisseton_jct 15:45", "summit_corner 16:15/16:20", "watertown_sd 16:50", "brookings_sd 17:35", "sioux_falls_jl 18:30"]
 
 # Nick screenshot Oct 5 2026 (Jefferson booking): off the 06:45 Minneapolis -> Billings bus at Vivian 15:35, a
 # connector to Pierre, then the feed's Pierre -> Bismarck run (Mobridge, Fort Yates 20:55, Bismarck 22:25).
@@ -205,7 +205,7 @@ id = "t357"
 route = "JL Sioux Falls 10:00 -> Brookings -> Watertown -> Summit Corner -> Sisseton Jct -> Fargo 14:05 (Thu-Mon only, Nick Oct 5)"
 days = "1001111"
 tz = "America/Chicago"
-stops = ["sioux_falls_jl 10:00", "brookings_sd 10:45", "watertown_sd 11:40", "summit_corner 12:20", "sisseton_jct 12:45", "fargo_jl_bus 14:05"]
+stops = ["sioux_falls_jl 10:00", "brookings_sd 10:45", "watertown_sd 11:40", "summit_corner 12:10/12:15", "sisseton_jct 12:40", "fargo_jl_bus 14:05"]
 
 [[trip]]
 id = "t358"
@@ -344,3 +344,13 @@ route = "JL Kansas City 23:25 -> Des Moines 03:20/04:05 -> Ames -> Albert Lea ->
 days = "1111111"
 tz = "America/Chicago"
 stops = ["kansas_city_bus_station 23:25", "cameron_mo 24:25", "bethany_mo 25:10", "lamoni 25:40", "osceola_ia 26:10/26:25", "des_moines_jl 27:20/28:05", "ames_jl 28:45/28:50", "clear_lake_ia 29:50/29:55", "albert_lea 30:35/31:00", "owatonna_f 31:35/31:40", "faribault 32:05", "st_paul_union_depot_jl 33:15/33:25", "minneapolis_jl 33:50"]
+
+# Nick screenshot Oct 11 2026 (jeffersonlines.com): Sioux Falls 19:00 -> Vermillion -> Sioux City -> Omaha 22:35/23:00 ->
+# Shenandoah -> Clarinda -> Maryville 01:15/01:35 -> Kansas City 03:15. The feed (ibus 2101) had every stop an hour later
+# (Sioux Falls 20:05 -> Maryville 02:35 -> Kansas City 04:15); dropped.
+[[trip]]
+id = "t453"
+route = "JL Sioux Falls 19:00 -> Sioux City -> Omaha -> Maryville 01:15/01:35 -> Kansas City 03:15 (daily assumed)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["sioux_falls_jl 19:00", "vermillion 19:55/20:10", "sioux_city 20:55/21:00", "omaha_burlington 22:35/23:00", "shenandoah 24:05", "clarinda 24:35", "maryville 25:15/25:35", "kansas_city_bus_station 27:15"]

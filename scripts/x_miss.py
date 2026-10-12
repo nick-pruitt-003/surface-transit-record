@@ -25,8 +25,13 @@ D0 = datetime(2026, 9, 24)
 
 def stop(name):
     name = ALIAS.get(name, name)
-    hit = [i for i, s in enumerate(R.stop_name) if s == name] or [i for i, s in enumerate(R.stop_name) if s.startswith(name)]
-    return hit
+    hit = [i for i, s in enumerate(R.stop_name) if s == name]
+    if hit: return hit
+    # a prefix is only trusted when it names one place: 'Kansas City' prefixes several stations, and routing from all
+    # of them at once (and timing the clock in the first one's zone) understates the cost of a miss
+    pre = [i for i, s in enumerate(R.stop_name) if s.startswith(name)]
+    if len({R.stop_name[i] for i in pre}) > 1: print('ambiguous stop name, add an ALIAS:', name, sorted({R.stop_name[i] for i in pre})[:5]); return []
+    return pre
 
 
 def clock(cell, s):

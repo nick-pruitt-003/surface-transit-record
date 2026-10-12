@@ -313,7 +313,10 @@ def _():
     import csv, os
     bad = []
     for r in csv.DictReader(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'data', 'walk_links.csv'), encoding='utf-8')):
-        if not (r.get('miles') or '').strip() or r['from_uid'] not in R.idx or r['to_uid'] not in R.idx: continue
+        if not (r.get('miles') or '').strip(): continue
+        # an end point the router cannot resolve drops the link without a word ('walk link: unknown stop'), which is
+        # the same failure as an end point on the wrong bank, so it fails here too
+        if r['from_uid'] not in R.idx or r['to_uid'] not in R.idx: bad.append(('unresolved', r['from_uid'], r['to_uid'])); continue
         a, b = R.idx[r['from_uid']], R.idx[r['to_uid']]
         if R.state[a] == R.state[b]: bad.append((R.stop_name[b], R.state_names[R.state[b]]))
     assert not bad, bad

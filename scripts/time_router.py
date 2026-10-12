@@ -80,6 +80,14 @@ def _drop_trips():
     return _DROP
 
 
+def _dropped(feed, trip_id):
+    """A trip_id ending in '*' in drop_trips.csv drops every trip with that prefix: Flix/Greyhound ids carry a validity
+    date (US0156-4765-0430092026-...), so a stale bus has one copy per date and a refresh adds copies under new ids."""
+    d = _drop_trips()
+    if (feed, trip_id) in d: return True
+    return any(f == feed and t.endswith('*') and trip_id.startswith(t[:-1]) for f, t in d)
+
+
 class Feed:
     """One GTFS zip. tz_mode: 'agency' (times in agency tz, or stop_timezone when
     present — Amtrak), 'infer' (majority state tz per agency), or 'utc'.
@@ -107,7 +115,7 @@ class Feed:
             r = routes.get(t['route_id'], {})
             ag = self.agency.get(r.get('agency_id', ''), {}).get('agency_name', r.get('agency_id', ''))
             if ag in skip_agencies: continue
-            if (name, t['trip_id']) in _drop_trips(): continue   # a feed trip the carrier site contradicts (data/drop_trips.csv)
+            if _dropped(name, t['trip_id']): continue   # a feed trip the carrier site contradicts (data/drop_trips.csv)
             # big city feeds: keep only the listed routes (matched on id, short or long name)
             if keep_routes is not None and not ({t['route_id'], r.get('route_short_name', ''), r.get('route_long_name', '')} & keep_routes): continue
             self.trips[t['trip_id']] = dict(service=t['service_id'], agency=ag, route=(r.get('route_long_name') or r.get('route_short_name') or ''), headsign=t.get('trip_headsign', ''), stops=[])
@@ -327,7 +335,11 @@ class TimeRouter:
             d = np.hypot((xy[:, 0] - lon) * 111.3 * np.cos(np.radians(lat)), (xy[:, 1] - lat) * 111.3)
             return set(np.where(d <= km)[0].tolist())
         if isinstance(t, str) and t.startswith('@#'): return {int(t[2:])}   # one exact stop index
-        if isinstance(t, str) and t.startswith('@'): return set(self.stops_matching(t[1:]))
+        if isinstance(t, str) and t.startswith('@'):
+            # an exact name wins over substring matches ('Jacksonville' is also Jacksonville NC by substring, Oct 6);
+            # a name that matches no stop exactly keeps the old substring behaviour
+            m = self.stops_matching(t[1:]); ex = [i for i in m if self.stop_name[i].lower() == t[1:].lower()]
+            return set(ex or m)
         return set(np.where(self.state == t)[0].tolist())
 
     def walk_collects(self, j):
