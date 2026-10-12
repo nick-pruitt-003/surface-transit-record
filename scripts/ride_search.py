@@ -118,6 +118,16 @@ def main():
                     help="'best' expands the most promising node anywhere in the frontier; 'dfs' dives and "
                          "backtracks, which cannot recover from a bad first guess inside ten minutes")
     ap.add_argument('--queue', type=int, default=200000, help='frontier cap for --mode best')
+    ap.add_argument('--frontier', choices=('credit', 'slack', 'depth'), default='credit',
+                    help="how best_first orders its frontier. 'credit': hours spent minus --credit per state collected "
+                         "(the measured default). 'slack': the same, minus --slack-weight times the node's room before "
+                         "the most urgent owed state closes (min over owed y of L[y][stop], and L_end, minus the clock). "
+                         "Credit rewards collecting cheap states early, which buries routes that carry the Plains to "
+                         "the end the way X does (Oct 12: every deep chain sat in the Midwest owing the whole West). "
+                         "Judge it with --xprobe, not by eye.")
+    ap.add_argument('--slack-weight', type=float, default=1.0)
+    ap.add_argument('--xprobe', help="route pickle (e.g. ../out/res_x.pkl): at exit, rank that route's own prefix "
+                                     "nodes against the final frontier under this run's ordering")
     ap.add_argument('--credit', type=float, default=5.0, help='hours a collected state is worth when ordering '
                     'the frontier. Ranking by state count alone plateaus: every node at 23 states has to be '
                     'expanded before any at 22, and there are combinatorially many. The reference route '
@@ -355,6 +365,16 @@ def main():
             return True
         return False
 
+    pri_fn = [None]
+
+    def node_slack(stop, t, collected):
+        """Room before the most urgent owed state closes at this node: min over owed y of L[y][stop], clamped by
+        L_end[stop], minus the clock. 48 lookups, not a full ceiling() over every stop."""
+        owed = [y for y in range(N_STATES) if y not in collected]
+        m = float(L_end[stop])
+        if owed: m = min(m, float(L[owed, stop].min()))
+        return m - t
+
     def ceiling(collected):
         """Per stop, the latest you could get off there and still owe nothing you cannot collect.
 
@@ -527,6 +547,7 @@ def main():
         return opts
 
     goal_scans = [0]
+    dead_end = defaultdict(lambda: [0, 0, 0])   # stop -> [dead ends, of them at >= 25 states, deepest state count]
     goal_cap_end = os.environ.get('BUS48_GOAL_FULLSCAN') != '1'   # 1 = the old unbounded goal scan
     menu_checked = [0]
 
@@ -1200,8 +1221,40 @@ def main():
         always grows the one that looks closest to done, so a bad opening costs one expansion instead of the
         whole budget. Pruning and dominance are unchanged and still exact."""
         import heapq
-        q = []; seq = [0]
-        pri = lambda spent, n: spent - a.credit * 3600 * n
+
+        class LQ:
+            """--frontier depth: one heap per number of states collected, expanded round-robin across the
+            non-empty layers. A single score has to trade fewer states against more time left, and X's middle
+            (12-17 states on the Chief and the Gulf) loses that trade at every --slack-weight measured (Oct 12:
+            86-99% back at 0.25, 58-88% at 0.5). Within one layer the state count is equal, so the key only
+            has to say which chain is earliest and roomiest."""
+            def __init__(s, items=()):
+                s.h = {}; s.n = 0; s.cur = -1
+                for it in items: s.push(it)
+            def push(s, it):
+                heapq.heappush(s.h.setdefault(len(it[5]), []), it); s.n += 1
+            def pop(s):
+                ks = sorted(k for k, v in s.h.items() if v)
+                nxt = [k for k in ks if k > s.cur]
+                s.cur = nxt[0] if nxt else ks[0]; s.n -= 1
+                return heapq.heappop(s.h[s.cur])
+            def __len__(s): return s.n
+            def __iter__(s): return (it for v in s.h.values() for it in v)
+
+        layered = a.frontier == 'depth'
+        q = LQ() if layered else []; seq = [0]
+        def qpush(it):
+            if layered: q.push(it)
+            else: heapq.heappush(q, it)
+        def qpop():
+            return q.pop() if layered else heapq.heappop(q)
+        def pri(spent, n, stop_=None, t_=None, col_=None):
+            # In depth mode n is the layer, so the credit term is a constant inside it and is left out.
+            p_ = spent - (0 if layered else a.credit * 3600 * n)
+            if a.frontier in ('slack', 'depth') and L is not None and stop_ is not None:
+                p_ -= a.slack_weight * node_slack(stop_, t_, col_)
+            return p_
+        pri_fn[0] = pri
         # The root goes through the same test as every other push. It will not be dead, but "every node in
         # the frontier was tested" is the invariant the sweep's zero is supposed to prove, and an exception
         # carved out for one node makes that zero mean something slightly weaker than it reads.
@@ -1209,12 +1262,12 @@ def main():
             print('  the start is already jointly dead, which is a statement about the deadline, not the '
                   'search', flush=True)
             return
-        heapq.heappush(q, (pri(t_start - T0, len(start_collected)), t_start - T0, 0, start_stop, t_start,
-                           start_collected, None, ()))
+        qpush((pri(t_start - T0, len(start_collected), start_stop, t_start, start_collected), t_start - T0, 0, start_stop, t_start,
+               start_collected, None, ()))
         while q:
             last_q[0] = q
             if time.time() - t_run > a.budget or seen_nodes[0] > a.nodes: break
-            _f, spent, _, stop, t, collected, aboard, path = heapq.heappop(q)
+            _f, spent, _, stop, t, collected, aboard, path = qpop()
             seen_nodes[0] += 1
             heartbeat(len(q))
             if spent > limit[0]: continue
@@ -1257,6 +1310,10 @@ def main():
                 opts = rides_from(stop, t, aboard, collected)
                 n_new = lambda o: len(o[3] - collected)
                 sort_opts(opts, collected, n_new, t, goal=goal)
+            if not opts:
+                # Nothing out of here survives the deadline tables: a kill spot. Where chains run out of moves is
+                # the question the exit census cannot answer, since it only lists what is still alive.
+                de = dead_end[stop]; de[0] += 1; de[1] += len(collected) >= 25; de[2] = max(de[2], len(collected))
             for o in opts[:a.width]:
                 to, at, trip, got, walk, seg = o
                 new = collected | got
@@ -1274,8 +1331,8 @@ def main():
                 if a.pairs == 'push' and pair_dead(to, at, new): continue
                 queued[k2] = sp_new
                 seq[0] += 1
-                heapq.heappush(q, (pri(at - T0, len(new)), at - T0, seq[0], to, at, new, trip,
-                                   path + ((trip, stop, to, t, at, walk, seg),)))
+                qpush((pri(at - T0, len(new), to, at, new), at - T0, seq[0], to, at, new, trip,
+                       path + ((trip, stop, to, t, at, walk, seg),)))
             if len(q) > a.queue:
                 # Drop only what is provably dead: a node whose clock has passed the limit, or passed the
                 # latest it could still collect something it owes. Both are facts. The old rule kept the best
@@ -1308,7 +1365,8 @@ def main():
                 # happened. 448d830 fixed exactly this shape for the end-of-run line and missed this one.
                 if PT is not None and a.pairs != 'report':
                     print(f'  sweep: {swept_pairs} of {before} were jointly dead pairs', flush=True)
-                q = alive; heapq.heapify(q)
+                if layered: cur_ = q.cur; q = LQ(alive); q.cur = cur_
+                else: q = alive; heapq.heapify(q)
                 print(f'  [{time.time() - t_run:5.0f}s] frontier swept {before} -> {len(q)} '
                       f'(only provably dead nodes dropped)', flush=True)
                 if len(q) > a.queue:
@@ -1469,6 +1527,46 @@ def main():
           f'(stop, states); deepest {deepest[0]}/{NEED} states')
     if a.goal:
         print(f'goal scans: {goal_scans[0]}, one forward scan per node expanded')
+    if a.xprobe and pri_fn[0] is not None and last_q[0] is not None:
+        import pickle as _pk2
+        import time_search as ts2
+        from time_search import Search as _S2
+        dx = _pk2.load(open(a.xprobe, 'rb'))
+        stx = R.stop_name.index(dx['start'])
+        Sx = _S2(R, stx, dx['t0'], [], 1)
+        ts2._R, ts2._START, ts2._T0, ts2._SELF, ts2._BASE, ts2._END = R, stx, dx['t0'], Sx, None, None
+        _, legsx = Sx.evaluate(dx['order'])
+        qp = sorted(it[0] for it in last_q[0])
+        colx = set(); 
+        if R.state[stx] >= 0: colx.add(int(R.state[stx]))
+        print(f'xprobe: {dx["start"][:30]} order, ranked against the final frontier of {len(qp)} nodes ({a.frontier})')
+        nleg = 0
+        for l in legsx:
+            if l[0] == 'ride':
+                _, trip, bs, bt, al, at = l
+                for kk in trip_conns.get(trip, ()):
+                    if R.dep[kk] >= bt - 1 and R.arr[kk] <= at + 1 and R.state[R.cto[kk]] >= 0: colx.add(int(R.state[R.cto[kk]]))
+                stop_, t_ = al, at
+            else:
+                if R.walk_collects(l[2]): colx.add(int(R.state[l[2]]))
+                stop_, t_ = l[2], l[4]
+            nleg += 1
+            if T0 <= t_ and (nleg % 4 == 0):
+                px = pri_fn[0](t_ - T0, len(colx), stop_, t_, frozenset(colx))
+                if a.frontier == 'depth':
+                    # Ranked inside its own layer, which is the only competition it has under round-robin.
+                    qp = sorted(it[0] for it in last_q[0] if len(it[5]) == len(colx))
+                rk = bisect.bisect_left(qp, px)
+                print(f'    leg {nleg:2d} {R.stop_name[stop_][:26]:26s} {len(colx):2d} states, {(t_ - T0) / 3600:6.1f} h: '
+                      f'would pop after {rk} of {len(qp)}' + ('' if node_slack(stop_, t_, frozenset(colx)) >= 0 else '  (past the deadline tables)'))
+    if dead_end:
+        tot = sum(v[0] for v in dead_end.values())
+        print(f'kill spots: {tot} expanded nodes had no surviving ride; top stops (dead ends, at 25+ states, deepest):')
+        for st_, v in sorted(dead_end.items(), key=lambda kv: -kv[1][0])[:15]:
+            print(f'    {R.stop_name[st_][:40]:40s} {v[0]:7d} {v[1]:7d}  {v[2]:2d}/48')
+        deep_ = sorted(((v[1], st_) for st_, v in dead_end.items() if v[1]), reverse=True)[:8]
+        if deep_:
+            print('  where chains at 25+ states died: ' + ', '.join(f'{R.stop_name[st_][:24]} {n_}' for n_, st_ in deep_))
     if CM is not None:
         print(f'menu: {"C" if a.menu != "py" else "py"}, {CM["total"][0]} candidates scored'
               + (f', {menu_checked[0]} nodes checked against the Python menu, all identical' if a.menu == 'check' else ''))
