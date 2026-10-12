@@ -491,8 +491,10 @@ class TimeRouter:
                         ptr=ptr, to=np.array(to, dtype=np.int32), w=np.array(w, dtype=np.float64), fx=np.array(fx, dtype=np.uint8))
         self._bind_fast()
 
-    def _scan_fast(self, stops, times, trips, target, want_pred=False):
-        """One layer in C. Labels come in and go out as parallel arrays (stop, time, trip index or -1)."""
+    def _scan_fast(self, stops, times, trips, target, want_pred=False, t_end=None):
+        """One layer in C. Labels come in and go out as parallel arrays (stop, time, trip index or -1).
+        t_end: scan no connection departing after this (ride_search's goal scan, which only ranks arrivals that
+        can still leave room before the deadline tables close them)."""
         D, I, B = self._ct
         mask = self._masks.get(target)
         if mask is None:
@@ -513,7 +515,8 @@ class TimeRouter:
             pa = (pred['conn'].ctypes.data_as(I), pred['walk'].ctypes.data_as(I), pred['walk_t'].ctypes.data_as(D),
                   pred['bstop'].ctypes.data_as(I), pred['bdep'].ctypes.data_as(D),
                   pred['rconn'].ctypes.data_as(I), pred['walk_ride'].ctypes.data_as(B))
-        rc = self._fast.csa_scan(len(self._fa['dep']), p['dep'], p['arr'], p['cfrom'], p['cto'], p['ctrip'], k0, self.N, len(self.trip_ids),
+        n_end = len(self._fa['dep']) if t_end is None else int(np.searchsorted(self._fa['dep'], t_end, side='right'))
+        rc = self._fast.csa_scan(n_end, p['dep'], p['arr'], p['cfrom'], p['cto'], p['ctrip'], k0, self.N, len(self.trip_ids),
                             p['ptr'], p['to'], p['w'], p['fx'], best.ctypes.data_as(D), lt.ctypes.data_as(I), mask.ctypes.data_as(B),
                             float(MIN_TRANSFER), float(SCAN_SLACK), *pa)
         if rc != 0: raise MemoryError(f'csa_scan failed (rc={rc})')

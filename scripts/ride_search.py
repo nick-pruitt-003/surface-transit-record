@@ -16,7 +16,7 @@ correct, plus dominance, which is exact.
 
   --states N   only require the first N states the search happens to collect, for validating on a small case
 """
-import argparse, bisect, pickle, sys, time
+import argparse, bisect, os, pickle, sys, time
 from collections import defaultdict
 from datetime import datetime
 from zoneinfo import ZoneInfo
@@ -107,6 +107,13 @@ def main():
                     'default until a replay says otherwise: a ranking change that reproduces fewer of the '
                     'control\'s legs is a worse ranking however good its reasoning sounds.')
     ap.add_argument('--width', type=int, default=12, help='rides tried per node')
+    ap.add_argument('--menu', choices=('c', 'py', 'check'), default='c',
+                    help="how best_first builds a node's menu. 'c' (menu.c) generates the candidates and keeps only "
+                         "the top --width, which is all best_first uses: profiled Oct 12, a node offered ~59000 "
+                         "candidates for 12 used and building/sorting them was ~85%% of the run. 'py' is the "
+                         "original rides_from + sort_opts. 'check' runs both on every node and stops on the first "
+                         "difference. Applies only where the C path is exact: --order slack with --end/--by, no "
+                         "--dedupe, no --pairs re-rank; anything else uses 'py'.")
     ap.add_argument('--mode', default='best', choices=('best', 'dfs'),
                     help="'best' expands the most promising node anywhere in the frontier; 'dfs' dives and "
                          "backtracks, which cannot recover from a bad first guess inside ten minutes")
@@ -235,6 +242,106 @@ def main():
         from pair_tables import PairTables
         PT = PairTables(R, D, a.span, L_end=L_end, L=L)
     pair_kills = [0]
+
+    # menu.c: the same menu as rides_from + sort_opts, top --width only. Flat arrays built once, here, from the
+    # same board_at / trip_conns / conn_pos / walkin the Python path reads, so both see one index.
+    CM = None
+    if (a.menu != 'py' and L is not None and a.order == 'slack' and not a.dedupe
+            and not (PT is not None and a.rerank) and N_STATES <= 64):
+        import ctypes, subprocess
+        here = os.path.dirname(os.path.abspath(__file__)); so = os.path.join(here, 'menu.so')
+        src = os.path.join(here, 'menu.c')
+        try:
+            if not os.path.exists(so) or os.path.getmtime(so) < os.path.getmtime(src):
+                cmd = (['clang', '-O3', '-shared', src, '-o', so, '-fuse-ld=lld', '-Wl,/EXPORT:menu_top']
+                       if os.name == 'nt' else ['cc', '-O3', '-shared', '-fPIC', src, '-o', so])
+                subprocess.run(cmd, check=True)
+            lib = ctypes.CDLL(so)
+        except Exception as e:
+            lib = None; print(f'  menu.c unavailable ({e}); using the Python menu', flush=True)
+        if lib is not None:
+            tid = R.trip_ids                      # trip key -> index, the same numbering csa.c uses
+            tkey = [None] * len(tid)
+            for kk_, ii_ in tid.items(): tkey[ii_] = kk_
+            ct_ = np.ascontiguousarray(R._fa['ctrip'], dtype=np.int32)
+            bptr = np.zeros(R.N + 1, dtype=np.int32); bl = []
+            for s_ in range(R.N):
+                bl.extend(board_at.get(s_, ())); bptr[s_ + 1] = len(bl)
+            bconn = np.array(bl, dtype=np.int32); bdep = np.ascontiguousarray(np.asarray(R.dep, dtype=np.float64)[bconn])
+            tptr = np.zeros(len(tid) + 1, dtype=np.int32); tl = []
+            for ii_ in range(len(tid)):
+                tl.extend(trip_conns.get(tkey[ii_], ())); tptr[ii_ + 1] = len(tl)
+            tconn = np.array(tl, dtype=np.int32)
+            wptr = np.zeros(R.N + 1, dtype=np.int32); wyl = []; wwl = []
+            for s_ in range(R.N):
+                for y_, w_ in walkin.get(s_, ()): wyl.append(y_); wwl.append(w_)
+                wptr[s_ + 1] = len(wyl)
+            CMa = dict(bptr=bptr, bconn=bconn, bdep=bdep, tptr=tptr, tconn=tconn,
+                       conn_pos=np.ascontiguousarray(conn_pos, dtype=np.int32), ctrip=ct_,
+                       cto=np.ascontiguousarray(R._fa['cto'], dtype=np.int32), arr=R._fa['arr'], dep=R._fa['dep'],
+                       state=np.ascontiguousarray(R.state, dtype=np.int32),
+                       fptr=R._fa['ptr'], fto=R._fa['to'], fw=R._fa['w'],
+                       wptr=wptr, wy=np.array(wyl, dtype=np.int32), ww=np.array(wwl, dtype=np.float64),
+                       L=np.ascontiguousarray(L, dtype=np.float64), L_end=np.ascontiguousarray(L_end, dtype=np.float64))
+            Dp = ctypes.POINTER(ctypes.c_double); Ip = ctypes.POINTER(ctypes.c_int)
+            Up = ctypes.POINTER(ctypes.c_uint64); LLp = ctypes.POINTER(ctypes.c_longlong)
+            lib.menu_top.restype = ctypes.c_int
+            lib.menu_top.argtypes = ([ctypes.c_int, ctypes.c_double, ctypes.c_int, ctypes.c_uint64,
+                                      ctypes.c_int, ctypes.c_int, ctypes.c_int]
+                                     + [Ip, Ip, Dp, Ip, Ip, Ip, Ip, Ip, Dp, Dp, Ip, Ip, Ip, Dp, Ip, Ip, Dp, Dp, Dp, Dp]
+                                     + [ctypes.c_double, ctypes.c_double, ctypes.c_int, ctypes.c_int, Ip, Ip,
+                                        ctypes.c_int, Ip, ctypes.c_int]
+                                     + [Ip, Dp, Ip, Up, Ip, Ip, Ip, LLp])
+            ptr_ = lambda v: v.ctypes.data_as(Dp if v.dtype == np.float64 else Ip)
+            CMp = {k_: ptr_(v) for k_, v in CMa.items()}
+            W_ = max(1, a.width)
+            CMo = dict(to=np.zeros(W_, np.int32), at=np.zeros(W_), trip=np.zeros(W_, np.int32),
+                       got=np.zeros(W_, np.uint64), walk=np.zeros(W_, np.int32), k=np.zeros(W_, np.int32),
+                       kk=np.zeros(W_, np.int32), total=np.zeros(1, np.int64))
+            seen_stamp = np.zeros(len(tid), np.int32); stamp_ = [0]
+            CM = dict(lib=lib, a=CMa, p=CMp, o=CMo, tid=tid, tkey=tkey, seen=seen_stamp, stamp=stamp_, W=W_,
+                      Up=Up, LLp=LLp, Ip=Ip, Dp=Dp, total=[0])
+            print(f'  menu.c: {len(bconn)} departures, {len(tid)} trips, {len(wyl)} walk-ins indexed', flush=True)
+
+    if a.menu == 'check' and CM is None:
+        sys.exit('--menu check: the C menu is not active (unavailable, or this mode is not one it covers: it needs '
+                 '--end/--by, --order slack, no --dedupe, no --pairs re-rank), so there is nothing to check')
+
+    def menu_c(stop, t, aboard, collected, goal):
+        """rides_from + sort_opts for best_first, in C: the top --width options, as Opt, in the same order."""
+        c_ = CM; p = c_['p']; o = c_['o']
+        cm = 0
+        for y_ in collected: cm |= 1 << y_
+        cap = np.ascontiguousarray(ceiling(collected), dtype=np.float64)
+        gl = list(goal or ())
+        gt = np.array([c_['tid'][g[0]] for g in gl], dtype=np.int32) if gl else np.zeros(1, np.int32)
+        gs_ = np.array([int(g[1]) for g in gl], dtype=np.int32) if gl else np.zeros(1, np.int32)
+        ab = c_['tid'].get(aboard, -2) if aboard is not None else -2
+        # stamps grow by one per footpath neighbour; reset well before int32 wraps
+        if c_['stamp'][0] > 2_000_000_000: c_['seen'][:] = 0; c_['stamp'][0] = 0
+        n = c_['lib'].menu_top(int(stop), float(t), int(ab), cm, R.N, N_STATES, len(c_['tid']),
+                               p['bptr'], p['bconn'], p['bdep'], p['tptr'], p['tconn'], p['conn_pos'], p['ctrip'],
+                               p['cto'], p['arr'], p['dep'], p['state'], p['fptr'], p['fto'], p['fw'],
+                               p['wptr'], p['wy'], p['ww'], p['L'], p['L_end'],
+                               cap.ctypes.data_as(c_['Dp']), float(a.horizon * 3600), float(MIN_TRANSFER),
+                               1 if a.split == 'on' else 0, len(gl), gt.ctypes.data_as(c_['Ip']),
+                               gs_.ctypes.data_as(c_['Ip']), c_['W'],
+                               c_['seen'].ctypes.data_as(c_['Ip']), int(c_['stamp'][0]),
+                               o['to'].ctypes.data_as(c_['Ip']), o['at'].ctypes.data_as(c_['Dp']),
+                               o['trip'].ctypes.data_as(c_['Ip']), o['got'].ctypes.data_as(c_['Up']),
+                               o['walk'].ctypes.data_as(c_['Ip']), o['k'].ctypes.data_as(c_['Ip']),
+                               o['kk'].ctypes.data_as(c_['Ip']), o['total'].ctypes.data_as(c_['LLp']))
+        if n < 0: raise MemoryError('menu_top failed')
+        # the C side advanced the stamp once per neighbour it visited; move ours past anything it used
+        c_['stamp'][0] += 1 + len(R.foot.get(stop, ()))
+        c_['total'][0] += int(o['total'][0])
+        out = []
+        for i in range(n):
+            g_ = int(o['got'][i]); w_ = int(o['walk'][i])
+            out.append(Opt(int(o['to'][i]), float(o['at'][i]), c_['tkey'][int(o['trip'][i])],
+                           frozenset(y for y in range(N_STATES) if g_ >> y & 1),
+                           None if w_ < 0 else w_, (int(o['k'][i]), int(o['kk'][i]))))
+        return out
 
     def pair_dead(stop, t, collected):
         """Is this node owing a pair it can no longer collect in either order? Counted, so a check that
@@ -420,6 +527,8 @@ def main():
         return opts
 
     goal_scans = [0]
+    goal_cap_end = os.environ.get('BUS48_GOAL_FULLSCAN') != '1'   # 1 = the old unbounded goal scan
+    menu_checked = [0]
 
     def goal_first(stop, t, collected):
         """The first ride of the fastest chain to each state still owed.
@@ -454,11 +563,24 @@ def main():
         """
         if not a.goal or END_ST is None: return None
         goal_scans[0] += 1
+        capg = ceiling(collected)       # one numpy min over the owed rows, the same call sort_opts makes
+        # Stop the scan at the latest time any stop of an owed state is still worth reaching. Exact whenever the
+        # chosen stop leaves room (sc >= 0): its arrival and whole predecessor chain are unchanged. NOT exact when
+        # every way into y arrives after capg (all sc < 0): capg is the min over ALL owed states, so that only
+        # means y cannot be collected first, not that the node is dead, and the old scan then promoted the
+        # least-bad direct chain to y where this one promotes nothing for y. A ranking change in a near-dead
+        # regime; the X replay with --goal was byte-identical both ways (review, Oct 12). Most of the goal scan's
+        # 40 ms a node was spent scanning days past this point. BUS48_GOAL_FULLSCAN=1 restores the old scan.
+        t_end = None
+        if goal_cap_end:
+            owed_st = [st_arr[y] for y in range(N_STATES) if y not in collected and y in st_arr]
+            if owed_st:
+                cmax = max(float(capg[sa].max()) for sa in owed_st)
+                if np.isfinite(cmax): t_end = cmax
         _h, _t, _l, pred = R._scan_fast(np.array([int(stop)]), np.array([float(t)]),
-                                        np.array([-1], dtype=np.int32), a.end, want_pred=True)
+                                        np.array([-1], dtype=np.int32), a.end, want_pred=True, t_end=t_end)
         best_ = pred['best']; conn_ = pred['conn']; walk_ = pred['walk']; bstop_ = pred['bstop']
         ct = R._fa['ctrip']
-        capg = ceiling(collected)       # one numpy min over the owed rows, the same call sort_opts makes
         out = set()
         for y in range(N_STATES):
             if y in collected: continue
@@ -1119,9 +1241,22 @@ def main():
             mk = bits(collected)
             if dominated(stop, mk, spent): continue
             remember(stop, mk, spent)
-            opts = rides_from(stop, t, aboard, collected)
-            n_new = lambda o: len(o[3] - collected)
-            sort_opts(opts, collected, n_new, t, goal=goal_first(stop, t, collected))
+            goal = goal_first(stop, t, collected)
+            if CM is not None:
+                opts = menu_c(stop, t, aboard, collected, goal)
+                if a.menu == 'check':
+                    ref = rides_from(stop, t, aboard, collected)
+                    sort_opts(ref, collected, lambda o: len(o[3] - collected), t, goal=goal)
+                    ref = ref[:a.width]
+                    if [tuple(x) for x in ref] != [tuple(x) for x in opts]:
+                        print(f'  MENU MISMATCH at node {seen_nodes[0]} ({R.stop_name[stop]}, {len(collected)} states):')
+                        for x_, y_ in zip(ref, opts + [None] * len(ref)): print('    py', tuple(x_), '\n    c ', y_)
+                        sys.exit(4)
+                    menu_checked[0] += 1
+            else:
+                opts = rides_from(stop, t, aboard, collected)
+                n_new = lambda o: len(o[3] - collected)
+                sort_opts(opts, collected, n_new, t, goal=goal)
             for o in opts[:a.width]:
                 to, at, trip, got, walk, seg = o
                 new = collected | got
@@ -1334,6 +1469,9 @@ def main():
           f'(stop, states); deepest {deepest[0]}/{NEED} states')
     if a.goal:
         print(f'goal scans: {goal_scans[0]}, one forward scan per node expanded')
+    if CM is not None:
+        print(f'menu: {"C" if a.menu != "py" else "py"}, {CM["total"][0]} candidates scored'
+              + (f', {menu_checked[0]} nodes checked against the Python menu, all identical' if a.menu == 'check' else ''))
     if PT is not None:
         print('pair table built, prune switched off (--pairs report); the census below is the measurement'
               if a.pairs == 'report' else

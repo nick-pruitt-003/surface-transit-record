@@ -10,6 +10,10 @@
   (Washington 06:50) off the timetable until Nov 18.
 - **Replay gate:** `python3 ride_search.py --start "Sheridan WY Taco Bell 1655 Coffeen Ave (Jefferson)" --at
   2026-11-12T22:10 --end MN --by 2026-11-22T20:10 --tz America/Denver --track ../out/res_x.pkl` (baseline 21/40, exit 0).
+- **ride_search's menu runs in C** (`scripts/menu.c`, `--menu c`, the default; ~18x with the bounded goal scan). The
+  `--track` replay calls the Python `rides_from` directly and does **not** exercise it: after any change to
+  `menu.c` or `rides_from`/`sort_opts`, run a search with `--menu check`, which compares both every node and exits 4
+  on a mismatch (and exits if the C path is not active).
 - **Expired local feeds replay their last covered week** (`Feed.replay`, local `more_gtfs` only; the router prints
   which). JTA, TANK and Open Plains have no newer release yet.
 
