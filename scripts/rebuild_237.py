@@ -32,7 +32,9 @@ SEQ = ('WV KY OH MI IN IL TN MS AR MO NE IA SD ND MN WI WY MT ID WA OR UT NV CA 
 # boarding, which costs one MIN_TRANSFER. That is the whole difference between 00:59:20 and the 00:54 that
 # regress.py records.
 CLOCKS = (('hun_ms_meteor.pkl', datetime(2026, 9, 24, 0, 30, tzinfo=ET), False),
-          ('res_starttest.pkl', datetime(2026, 9, 24, 0, 54, tzinfo=ET), True))
+          # 00:39, not 00:54: the Barons bus at Huntington leaves 00:45 as sold (Nick, Oct 5 2026), so a 00:54 clock missed it,
+          # the control slipped a day and the --track replay read 14/41 (Oct 11). regress.py proves 00:39 is the exact latest start.
+          ('res_starttest.pkl', datetime(2026, 9, 24, 0, 39, tzinfo=ET), True))
 
 
 def main():
