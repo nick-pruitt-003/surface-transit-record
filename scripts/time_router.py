@@ -33,6 +33,9 @@ if RUN_MPH: WALK_SPEED = RUN_MPH * 1609.344 / 3600
 NO_WALK_LINKS = tuple(x.strip() for x in os.environ.get('BUS48_NO_WALK_LINKS', '').split(',') if x.strip())
 # States that may not be entered by a border walk-in (BUS48_NO_WALKIN_STATES=MN: Minnesota only by a ride).
 NO_WALKIN_STATES = tuple(x.strip() for x in os.environ.get('BUS48_NO_WALKIN_STATES', '').split(',') if x.strip())
+# Hand-entered carriers to leave out, by file stem (BUS48_SKIP_MANUAL=ohio_coach: Nick does not ride the cash-only Ohio
+# Coach, and a search that may use it keeps routing through it rather than testing the shape it was given).
+SKIP_MANUAL = tuple(x.strip() for x in os.environ.get('BUS48_SKIP_MANUAL', '').split(',') if x.strip())
 WALK_MAX_KM = 1.5
 # Beyond walking: a local transit / shuttle proxy, which is a modelled link and not a service anyone runs.
 # Set BUS48_LOCAL_MAX_KM=0 to drop them and keep only real timetables plus walks, which is what a route has
@@ -709,7 +712,9 @@ class ExtraFeed:
                     or next((s for s in allstops if s[1].lower() == q.lower()), None) or next((s for s in allstops if q.lower() in s[1].lower()), None))
         found = []
         for fp in sorted(glob.glob(os.path.join(path, '*.toml'))):
-            doc = tomllib.load(open(fp, 'rb')); stem = os.path.splitext(os.path.basename(fp))[0]
+            stem = os.path.splitext(os.path.basename(fp))[0]
+            if stem in SKIP_MANUAL: print(f'manual {stem}: skipped (BUS48_SKIP_MANUAL)'); continue
+            doc = tomllib.load(open(fp, 'rb'))
             hits = {key: resolve(ref) for key, ref in doc.get('stops', {}).items()}
             for key, h in hits.items():
                 if h is None: print(f'manual {stem}: no stop for {key} = {doc["stops"][key]!r}')
@@ -850,7 +855,7 @@ def cached_router(date, days, cache_dir=None, verbose=True):
     # wrong one without a word. BUS48_LOCAL_MAX_KM=5 against a router built at 10 is not an error anyone
     # would see; it is a plausible number from a different universe, which is this project's whole problem.
     sig.append(('cfg', WALKIN_KM, MIN_TRANSFER, SCAN_SLACK, LOCAL_MAX_KM, LOCAL_PROXY_ALL, STOP_TZ_LOCAL,
-                WALK_MAX_KM, WALK_SPEED, RUN_MPH, NO_WALK_LINKS, NO_WALKIN_STATES))
+                WALK_MAX_KM, WALK_SPEED, RUN_MPH, NO_WALK_LINKS, NO_WALKIN_STATES, SKIP_MANUAL))
     key = hashlib.sha1(repr(sig).encode()).hexdigest()[:16]
     path = os.path.join(cache_dir, f'router_{key}.pkl')
     if os.path.exists(path):
