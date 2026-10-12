@@ -2,7 +2,7 @@
 from datetime import date
 from time_router import cached_router
 from pick import gate
-R = cached_router(date(2026, 9, 24), 20)
+R = cached_router(date(2026, 11, 5), 20)
 names = ['Wyoming', 'Montana', 'Arizona', '@Albuquerque Bus Station', 'Louisiana', 'Florida', 'Maine', 'Vermont',
          'West Virginia', 'Kentucky', 'Michigan', 'North Dakota', 'Nebraska', 'Arkansas', 'Mississippi']
 order = [n if n.startswith('@') else R.state_names.index(n) for n in names]

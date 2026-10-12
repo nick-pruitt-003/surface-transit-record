@@ -1,7 +1,7 @@
 """Search the rides themselves: stand at a stop at a time, look at what leaves, take one, backtrack when it cannot win.
 
-  forward:   python3 ride_search.py --start "Huntington Bus Stop" --at 2026-09-24T00:54 --tz America/New_York
-  backward:  python3 ride_search.py --end VT --by 2026-10-03T22:14 --tz America/New_York --dir backward
+  forward:   python3 ride_search.py --start "Huntington Bus Stop" --at 2026-11-05T00:54 --tz America/New_York
+  backward:  python3 ride_search.py --end VT --by 2026-11-14T22:14 --tz America/New_York --dir backward
 
 This is a different space from build_backward and dfs_backward, which both search orderings of the 48 states
 and pick stops afterwards. That abstraction is where their trouble came from: branching is the topk of 6, the

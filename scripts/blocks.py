@@ -64,7 +64,7 @@ def main():
     assert len(allst) == 48 and len(set(allst)) == 48, f'blocks must partition the 48 states, got {len(set(allst))}'
     for b, vs in BLOCKS.items():
         for v in vs: assert set(v[2].split()) == set(vs[0][2].split()), f'{b} variants cover different states'
-    R = cached_router(date(2026, 9, 24), 20)
+    R = cached_router(date(2026, 11, 5), 20)
     inv = {v: k for k, v in ABBR.items()}
     xy = np.asarray(R.stop_xy[:R.first_virtual], dtype=float)
     orig, tgt = {}, {}
@@ -73,7 +73,7 @@ def main():
         orig[n] = np.nonzero(d <= 0.3)[0].astype(np.int64); tgt[n] = f'@~{lon},{lat},0.3'   # same stops out as in
         if len(orig[n]) == 0: raise SystemExit(f'portal {n} has no stop within 0.3 km')
         print(f'{n:16s} {len(orig[n])} stops: {sorted({R.stop_name[i] for i in orig[n]})[:3]}', flush=True)
-    t0 = datetime(2026, 9, 24, 0, 0, tzinfo=ZoneInfo('America/Chicago')).timestamp()
+    t0 = datetime(2026, 11, 5, 0, 0, tzinfo=ZoneInfo('America/Chicago')).timestamp()
     deps = t0 + SLOT * np.arange(a.slots)
     V = variants(); block, joint = {}, {}; T = time.time()
     save = lambda: pickle.dump(dict(slot=SLOT, t0=t0, n=a.slots, week=WEEK // SLOT, portals=PORTALS, variants=V, block=block, joint=joint), open(a.out + '.pkl', 'wb'))

@@ -72,7 +72,7 @@ def main():
     print(f'{len(rows)} rotations in the log; following up {len(picks)}: '
           + ', '.join(f'rot {k} {el:.2f} h' for el, k, _, _ in picks), flush=True)
 
-    R = cached_router(date(2026, 9, 24), 20)
+    R = cached_router(date(2026, 11, 5), 20)
     inv = {v: k for k, v in ABBR.items()}
     full = [R.state_names.index(inv[x]) for x in full_ab]
     # The control through THIS router before any rotation counts. A cloud container builds its own router
@@ -80,7 +80,7 @@ def main():
     # plausible number in the results.
     control = full[::-1] if reversed_ else full
     hun = [i for i, n in enumerate(R.stop_name) if n == 'Huntington Bus Stop']
-    t_ctl = datetime(2026, 9, 24, 0, 54, tzinfo=ZoneInfo('America/New_York')).timestamp()
+    t_ctl = datetime(2026, 11, 5, 0, 54, tzinfo=ZoneInfo('America/New_York')).timestamp()
     gate('control from Huntington 00:54 on this router',
          lambda: min((R.finish(h, t_ctl, control) - t_ctl) / 3600 for h in hun), 237.34, 0.01)
     t_start = time.time()

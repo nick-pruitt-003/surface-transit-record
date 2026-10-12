@@ -1,7 +1,7 @@
 """Blocker finder: which targets and which missed departures hold a finished route back.
 
   python3 blocker_finder.py --route ../out/res_fixFargoDenver.pkl --start "White River Junction" \
-      --at 2026-09-24T04:20 --tz America/New_York [--days 16] [--gain 3]
+      --at 2026-11-05T04:20 --tz America/New_York [--days 16] [--gain 3]
 
 Part 1, drop tests. Every target in the route's order (state or @pin) is dropped singly, in pairs, and in
 triples of nearby targets, and the route is re-timed. A drop that finishes >= --gain hours earlier means

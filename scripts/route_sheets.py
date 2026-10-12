@@ -87,7 +87,7 @@ if __name__ == '__main__':
     lv = R.stops_matching('Primm Bus Stop (702 Shuttles)')[0]   # 702 Shuttles 10:50 (Oct 2 screenshot): 50 min better than the Las Vegas 10:00 Greyhound
     # pin Baton Rouge: Delta Bus Lines from Memphis (MS on the way), then the 23:55 Orlando bus straight to Tallahassee and Jacksonville (Nick, Oct 2). Ties the Lafayette backtrack, and is bookable
     rx = [st(a) if len(a) == 2 else a for a in 'NV,CA,AR,TN,@Baton Rouge Bus Station,LA,FL,VT,ME,KY,MI,ND,SD,OR,WY'.split(',')]
-    sheet(wb, 'RX 234.75', *legs_for(lv, datetime(2026, 9, 23, 23, 0, tzinfo=ZoneInfo('America/Los_Angeles')).timestamp(), rx, end=st('WY'), fixed=False))
+    sheet(wb, 'RX 234.75', *legs_for(lv, datetime(2026, 11, 4, 23, 0, tzinfo=ZoneInfo('America/Los_Angeles')).timestamp(), rx, end=st('WY'), fixed=False))
     mex = [x for x in c['order'] if x not in (st('VT'), st('ME'))] + ['@Hanover (Hanover Inn)', '@White River Junction Bus Station', '@Boston South Station', st('ME')]
     sheet(wb, 'MEX 237.75', *legs_for(R.stop_name.index(c['start']), c['t0'], mex, end=st('ME'), fixed=False))
     import re
@@ -96,16 +96,16 @@ if __name__ == '__main__':
         m = re.search(r'->  d\d+ \w+ \d\d:\d\d  (.*), (?:[A-Z]{2}|None)   \[', line)
         if m and re.match(r'^d\d+ ', line) and (not xtol or xtol[-1] != '@' + m.group(1)): xtol.append('@' + m.group(1))
     xtol.append(st('VT'))
-    sheet(wb, 'X_TOL 237.91', *legs_for(R.stops_matching('Sheridan WY Taco Bell')[0], datetime(2026, 9, 24, tzinfo=ZoneInfo('America/Denver')).timestamp(), xtol, end=st('VT'), fixed=False))
+    sheet(wb, 'X_TOL 237.91', *legs_for(R.stops_matching('Sheridan WY Taco Bell')[0], datetime(2026, 11, 5, tzinfo=ZoneInfo('America/Denver')).timestamp(), xtol, end=st('VT'), fixed=False))
     j = pickle.load(open('../out/shapes/join.pkl', 'rb'))
     sheet(wb, 'X 238.11', *legs_for(R.stop_name.index(j['start']), j['t0'], j['order'], end=st('MS')))
-    led = R.stops_matching('Ledyard Lot')[0]; t_led = datetime(2026, 9, 24, 6, 0, tzinfo=ZoneInfo('America/New_York')).timestamp()
+    led = R.stops_matching('Ledyard Lot')[0]; t_led = datetime(2026, 11, 5, 6, 0, tzinfo=ZoneInfo('America/New_York')).timestamp()
     hx = lambda o: [a if a.startswith('@') else st(a) for a in o.split(',')]   # '@stop' items are pins
     sheet(wb, 'HAR 237.69', *legs_for(led, t_led, hx('NH,VT,ME,GA,WV,MI,ND,NE,MT,OR,CA,OK,FL,AR')))
     sheet(wb, 'HMS 238.19', *legs_for(led, t_led, hx('NH,VT,ME,GA,WV,MI,ND,NE,WY,OR,AZ,KS,LA,AR,FL,MS')))
-    fp = R.stops_matching('Foley Park at the Vermont end')[0]; t_fp = datetime(2026, 9, 24, 6, 19, tzinfo=ZoneInfo('America/New_York')).timestamp()
+    fp = R.stops_matching('Foley Park at the Vermont end')[0]; t_fp = datetime(2026, 11, 5, 6, 19, tzinfo=ZoneInfo('America/New_York')).timestamp()
     sheet(wb, 'HT 230.10', *legs_for(fp, t_fp, hx('ME,@Washington Union Station,GA,WV,MI,ND,NE,WY,OR,AZ,KS,LA,AR,MS,FL')))
-    nba = R.stops_matching('New Buffalo Amtrak')[0]; t_nba = datetime(2026, 9, 30, 21, 37, tzinfo=ZoneInfo('America/New_York')).timestamp()
+    nba = R.stops_matching('New Buffalo Amtrak')[0]; t_nba = datetime(2026, 11, 11, 21, 37, tzinfo=ZoneInfo('America/New_York')).timestamp()
     sheet(wb, 'NBA 237.52', *legs_for(nba, t_nba, hx('ND,MO,WA,AZ,OK,LA,FL,ME,VT,WV,MS,AR')))
     wb.save('../docs/route_legs.xlsx')
     print('wrote ../docs/route_legs.xlsx:', ', '.join(ws.title for ws in wb.worksheets))

@@ -1,5 +1,20 @@
 # bus48
 
+## Current state (Oct 11 2026): read this before the history below
+
+- **Timetable window is Nov 4-24 2026** (moved +42 days from Sep 23; same weekdays, so d1 is still a Thursday). The
+  Flix/Greyhound feed of Oct 11 starts Oct 11 and the attempt is in November. Window ends before Thanksgiving.
+- **Control is route X**, not the 237 route: `python3 rebuild_x.py` writes `out/res_x.pkl` (Sheridan WY Thu Nov 12
+  22:10 MT, 231.68 h, latest start 22:15). Amtrak moved the City of New Orleans two hours later from Oct 7 2026 and
+  the 237 route is 252 h at best in November. X starts Nov 12 because the Portal Bridge cutover keeps Acela 2152
+  (Washington 06:50) off the timetable until Nov 18.
+- **Replay gate:** `python3 ride_search.py --start "Sheridan WY Taco Bell 1655 Coffeen Ave (Jefferson)" --at
+  2026-11-12T22:10 --end MN --by 2026-11-22T20:10 --tz America/Denver --track ../out/res_x.pkl` (baseline 21/40, exit 0).
+- **Expired local feeds replay their last covered week** (`Feed.replay`, local `more_gtfs` only; the router prints
+  which). JTA, TANK and Open Plains have no newer release yet.
+
+Where the history below says 237, res_starttest.pkl or September dates, read the bullets above.
+
 Find a scheduled surface route through all 48 contiguous states faster than the timetabled record of
 238.83 h. Best verified: **237.3 h** (Huntington WV to the Vermont line at Hanover). `docs/HANDOFF.md` has
 the route, the rules, and everything tested and ruled out. Read it before proposing anything.

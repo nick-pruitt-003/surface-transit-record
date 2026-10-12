@@ -1,7 +1,7 @@
 """Export a timetabled result (from time_router/time_search) to the spreadsheet
 format: one row per ride with day, local depart/arrive, board/alight, carrier.
 
-usage: python3 time_sheet.py --result ../out/time_best.pkl --at 2026-09-21T07:00 --tz America/Denver --days 20 --out ../out/timed.xlsx
+usage: python3 time_sheet.py --result ../out/time_best.pkl --at 2026-11-02T07:00 --tz America/Denver --days 20 --out ../out/timed.xlsx
 """
 import argparse, pickle
 from datetime import datetime

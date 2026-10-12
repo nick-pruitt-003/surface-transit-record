@@ -5,7 +5,7 @@ Given a start stop and datetime and an ordered list of targets (states or
 alights at a stop in every target, using a layered Connection Scan.
 
 usage:
-  python3 time_router.py --start "Missoula" --at 2026-09-21T07:00 --tz America/Denver \
+  python3 time_router.py --start "Missoula" --at 2026-11-02T07:00 --tz America/Denver \
       --order result.pkl [--prefix "Montana,Idaho,Washington,..."] [--days 14]
 """
 import argparse, csv, io, math, os, pickle, sys, time, zipfile
@@ -146,6 +146,10 @@ class Feed:
         self.cal = {c['service_id']: c for c in rd('calendar.txt')}
         self.cal_dates = defaultdict(dict)
         for c in rd('calendar_dates.txt'): self.cal_dates[c['service_id']][c['date']] = c['exception_type']
+        # last day the feed has any service, for replaying an expired local feed (see runs_on)
+        ends = [c['end_date'] for c in self.cal.values()] + [d for v in self.cal_dates.values() for d, e in v.items() if e == '1']
+        self.last_day = datetime.strptime(max(ends), '%Y%m%d').date() if ends else None
+        self.replay = False; self.replayed = False
         tz_note = f', {len(self.stop_tz)} stop_tz' if self.stop_tz else ''
         print(f'{name}: {len(self.stops)} stops, {len(self.trips)} trips, tz {self.tz}{tz_note}, calendar {calendar_mode}')
 
@@ -186,7 +190,7 @@ class Feed:
     def _bad_segment(self, st, t):
         """Index i of the first segment st[i] -> st[i + 1] that is negative or faster than max_speed, else None."""
         # Fixed service day so DST-correct elapsed time across stop_timezone boundaries
-        d = date(2026, 9, 24); bases = {}
+        d = date(2026, 11, 5); bases = {}
         def base_for(tz):
             if tz not in bases:
                 bases[tz] = datetime(d.year, d.month, d.day, tzinfo=timezone.utc).timestamp() if tz is None else (datetime(d.year, d.month, d.day, 12, tzinfo=tz) - timedelta(hours=12)).timestamp()
@@ -198,6 +202,10 @@ class Feed:
         return None
 
     def runs_on(self, service, d):
+        # An expired local feed (Nick, Oct 11: the window moved to November and MATA, JTA, DART and others ended in
+        # October) replays its last covered week: a day past the feed's end is read as the same weekday 7k days earlier.
+        if getattr(self, 'replay', False) and self.last_day is not None and d > self.last_day:
+            d = d - timedelta(days=7 * -(-(d - self.last_day).days // 7)); self.replayed = True
         ds = d.strftime('%Y%m%d'); dow = ['monday','tuesday','wednesday','thursday','friday','saturday','sunday'][d.weekday()]
         exc = self.cal_dates.get(service, {}).get(ds)
         if exc == '1': return True
@@ -324,6 +332,8 @@ class TimeRouter:
         fixed = [t['dropped'] for f in feeds for t in f.trips.values() if t.get('sane') and t.get('dropped')]
         print(f'{self.N} stops, {sum(len(v) for v in self.foot.values())} footpaths, {len(conns)} connections over {days} days, '
               f'{bad} trips rejected as implausible, {len(fixed)} repaired by dropping {sum(fixed)} stops')
+        rp = [f'{f.name} (ends {f.last_day})' for f in feeds if getattr(f, 'replayed', False)]
+        if rp: print('replaying the last covered week of expired local feeds:', ', '.join(rp))
 
     def stops_matching(self, q):
         q = q.lower(); return [i for i, nm in enumerate(self.stop_name) if q in nm.lower()]
@@ -703,7 +713,7 @@ class ExtraFeed:
             for n, tr in enumerate(doc.get('trip', [])):
                 tid = tr.get('id') or f'{stem}:{n}'
                 found.append((int(tid[1:]) if tid[0] == 't' and tid[1:].isdigit() else 10 ** 9, stem, n, tid, doc.get('agency', stem), tr, hits))
-        ref = date(2026, 9, 24)   # rollover offsets taken on one date: right while the window has no DST change (US: Nov 1)
+        ref = date(2026, 11, 5)   # rollover offsets taken on one date: right while the window has no DST change (US: Nov 1)
         for _, stem, n, tid, agency, tr, hits in sorted(found, key=lambda x: x[:3]):
             if tr.get('disabled'): continue
             fixed = ZoneInfo(tr['tz']) if tr.get('tz') else None
@@ -764,6 +774,7 @@ def load_feeds():
     for z in sorted(glob.glob(os.path.join(DATA_DIR, 'more_gtfs', '*.zip'))):
         nm = os.path.splitext(os.path.basename(z))[0]
         more.append(Feed(z, nm, 'agency', 'dates', max_speed=200, keep_routes=set(keep[nm]) if nm in keep else None))
+        more[-1].replay = True   # local transit only: an intercity feed that ends has really ended
         more[-1].city = nm not in INTERCITY_MORE
     feeds.append(ExtraFeed(os.path.join(DATA_DIR, 'manual'), feeds + more))
     return feeds + more
@@ -772,7 +783,7 @@ def load_feeds():
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--start', required=True, help='substring of the start stop name')
-    ap.add_argument('--at', required=True, help='local start datetime, e.g. 2026-09-21T07:00')
+    ap.add_argument('--at', required=True, help='local start datetime, e.g. 2026-11-02T07:00')
     ap.add_argument('--tz', default='America/Denver')
     ap.add_argument('--order', help='result pickle with a state order, or comma list of states/@stops')
     ap.add_argument('--days', type=int, default=14)

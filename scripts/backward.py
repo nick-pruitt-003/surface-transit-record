@@ -5,7 +5,7 @@ the search) and a reverse Connection Scan from the deadline give, per target, th
 the latest you can be there and still finish in time. Slack 0 = a binding link (a faster or more frequent service
 there moves the finish); big slack = waiting the route absorbs later on. The top line is the latest start.
 
-  python3 backward.py --route ../out/res_starttest.pkl [--end-by 2026-10-03T22:14 --tz America/New_York]
+  python3 backward.py --route ../out/res_starttest.pkl [--end-by 2026-11-14T22:14 --tz America/New_York]
       [--end "Beaver Dam"]    # append a finish stop to the order
 """
 import argparse, pickle

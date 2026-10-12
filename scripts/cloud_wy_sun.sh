@@ -16,7 +16,7 @@ fail () { echo "FAILED $1 rc=$2" | tee -a $R; tail -20 "$3" >> $R; push "$1-fail
 mkdir -p ../out
 if [ -n "$RUN_WY" ]; then   # off: with the Meteor fixed, Sheridan 22:20 and the Meteor 16:11 pin X_TOL at 237.9 h
 BUS48_MIN_TRANSFER=5 BUS48_WALKIN_KM=1.4 python3 -u time_search.py --start "Sheridan WY Taco Bell 1655 Coffeen Ave (Jefferson)" \
-  --end "~-81.724,30.366,0.3" --end-by 2026-10-03T16:05 --at 2026-09-24T12:00 --tz America/New_York \
+  --end "~-81.724,30.366,0.3" --end-by 2026-11-14T16:05 --at 2026-11-05T12:00 --tz America/New_York \
   --done "GA,SC,NC,VA,MD,DE,PA,NJ,NY,CT,RI,MA,ME,NH,VT" \
   --seed-states "WY,MT,ID,WA,OR,UT,NV,CA,@Albuquerque Bus Station,AZ,NM,CO,KS,OK,TX,LA,AR,TN,KY,IN,@Toledo Bus Stop,OH,MI,WV,IL,WI,MN,ND,SD,IA,NE,MO,MS,AL,FL" \
   --budget 3600 --workers ${W:-2} --days 20 --out ../out/wy_long.pkl > ../out/wy_long.log 2>&1
@@ -25,7 +25,7 @@ echo "WY_LONG rc=0 $(grep -E '^FINAL|^START|^END' ../out/wy_long.log | tr '\n' '
 sed -n '/^FINAL/,$p' ../out/wy_long.log | grep -E '^d|^FINAL|^START|^  (walk|local)' | head -50 >> $R; push WY_LONG || exit 4
 fi
 BUS48_MIN_TRANSFER=5 BUS48_WALKIN_KM=1.4 python3 -u time_search.py --start "Sunland Park Casino" \
-  --start-alt "Sunland Park & Doniphan" --end CA --at 2026-09-24T00:00 --tz America/Denver \
+  --start-alt "Sunland Park & Doniphan" --end CA --at 2026-11-05T00:00 --tz America/Denver \
   --seed-states "NM,TX,LA,MS,AL,FL,GA,SC,NC,VA,MD,DE,PA,NJ,NY,CT,RI,MA,ME,NH,VT,WV,OH,MI,IN,KY,TN,AR,OK,KS,MO,IL,IA,NE,CO,SD,ND,WI,MN,WY,MT,ID,WA,OR,UT,NV,CA,AZ" \
   --budget 5400 --workers ${W:-2} --days 20 --out ../out/sun.pkl > ../out/sun.log 2>&1
 rc=$?; [ $rc -eq 0 ] || fail SUN $rc ../out/sun.log

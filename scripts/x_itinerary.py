@@ -13,7 +13,7 @@ from route_report import R, st
 from common import ABBR
 
 ET = ZoneInfo('America/New_York'); MT = ZoneInfo('America/Denver')
-START = datetime(2026, 9, 24, 22, 10, tzinfo=MT)         # Thursday in the timetable window; 10 min before the 22:20 Jefferson (5 min rule)
+START = datetime(2026, 11, 5, 22, 10, tzinfo=MT)         # Thursday in the timetable window; 10 min before the 22:20 Jefferson (5 min rule)
 TRIP = datetime(2026, 10, 15).date()   # a Thursday that finishes Sun Oct 25, before the Nov 1 clock change; Book ahead shows these dates
 ORDER = 'OR,AZ,OK,FL,@Hanover (Hanover Inn),ME,WV,MS,MO,WI,MI,ND,@Moorhead MN 13th Ave N,MN'
 

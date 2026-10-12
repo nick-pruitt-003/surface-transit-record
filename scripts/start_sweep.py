@@ -1,7 +1,7 @@
 """Compare start days (and the reverse direction) for one route shape using real timetables.
 
 usage: python3 start_sweep.py --start "White River Junction Bus Station" --tz America/New_York \
-         --order "Maine,Florida,..." --week 2026-09-21 [--hours 0,6,12,18]
+         --order "Maine,Florida,..." --week 2026-11-02 [--hours 0,6,12,18]
 For each weekday the clock starts at each given hour; the reported time runs from the first
 departure actually boarded to the final arrival, so waiting before the first bus is not counted.
 """

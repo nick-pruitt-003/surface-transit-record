@@ -43,7 +43,7 @@ def main():
     ap.add_argument('--out', default='../out/joints')
     ap.add_argument('--only', default='', help='comma list of hub names to restrict to (testing)')
     a = ap.parse_args()
-    R = cached_router(date(2026, 9, 24), 20)
+    R = cached_router(date(2026, 11, 5), 20)
     xy = np.asarray(R.stop_xy[:R.first_virtual], dtype=float)
     km = lambda lon, lat: np.hypot((xy[:, 0] - lon) * 111.3 * math.cos(math.radians(lat)), (xy[:, 1] - lat) * 111.3)
     hubs = [h for h in HUBS if not a.only or h[0] in a.only.split(',')]
@@ -60,15 +60,15 @@ def main():
 
     ct = ZoneInfo('America/Chicago')
     if 'Billings' in origin and 'Spokane' in origin:
-        t = datetime(2026, 9, 27, 0, 25, tzinfo=ZoneInfo('America/Denver')).timestamp()
-        want = datetime(2026, 9, 27, 10, 30, tzinfo=ZoneInfo('America/Los_Angeles')).timestamp()
+        t = datetime(2026, 11, 8, 0, 25, tzinfo=ZoneInfo('America/Denver')).timestamp()
+        want = datetime(2026, 11, 8, 10, 30, tzinfo=ZoneInfo('America/Los_Angeles')).timestamp()
         gate('Billings Sun 00:25 -> Spokane, minutes after the known Sun 10:30', lambda: (arrive('Billings', 'Spokane', t) - want) / 60, 0, 0.5)
     if 'Houston' in origin and 'Tallahassee' in origin:
-        t = datetime(2026, 9, 30, 18, 0, tzinfo=ct).timestamp()
-        want = datetime(2026, 10, 1, 11, 0, tzinfo=ZoneInfo('America/New_York')).timestamp()
+        t = datetime(2026, 11, 11, 18, 0, tzinfo=ct).timestamp()
+        want = datetime(2026, 11, 12, 11, 0, tzinfo=ZoneInfo('America/New_York')).timestamp()
         gate('Houston Wed 18:00 -> Tallahassee, minutes after the known Thu 11:00', lambda: max(0.0, (arrive('Houston', 'Tallahassee', t) - want) / 60), 0, 0.5)
 
-    t0 = datetime(2026, 9, 24, 0, 0, tzinfo=ct).timestamp(); n = int(a.hours / a.step)
+    t0 = datetime(2026, 11, 5, 0, 0, tzinfo=ct).timestamp(); n = int(a.hours / a.step)
     deps = [t0 + k * a.step * 3600 for k in range(n)]
     arr = {}; names = [h[0] for h in hubs]; T = time.time()
     for i, A in enumerate(names):

@@ -1,6 +1,6 @@
 """Score candidate lower bounds along the reference route, where the true remaining time is known.
 
-  python3 bound_probe.py --track ../out/res_starttest.pkl --end VT --from 2026-10-03T22:14
+  python3 bound_probe.py --track ../out/res_starttest.pkl --end VT --from 2026-11-14T22:14
 
 Depth-first search with backtracking (dfs_backward.py) prunes a branch only when what it has spent plus a
 floor on what is left would pass the time limit. So unlike the beam, it never needs a heuristic that ranks
@@ -43,7 +43,7 @@ def mst(M):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--track', default='../out/res_starttest.pkl')
-    ap.add_argument('--end', default='VT'); ap.add_argument('--frm', default='2026-10-03T22:14')
+    ap.add_argument('--end', default='VT'); ap.add_argument('--frm', default='2026-11-14T22:14')
     ap.add_argument('--tz', default='America/New_York'); ap.add_argument('--window', type=float, default=110)
     ap.add_argument('--times', default='../out/state_times_real.npy')
     a = ap.parse_args()

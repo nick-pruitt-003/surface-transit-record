@@ -13,8 +13,8 @@ push () { git add $R; git commit -qm "cloud result: $1" || true; for i in 1 2 3;
 fail () { echo "FAILED $1 rc=$2" | tee -a $R; tail -20 "$3" >> $R; push "$1-failed"; exit 3; }
 mkdir -p ../out
 run () { # name start seed
-  BUS48_MIN_TRANSFER=5 BUS48_WALKIN_KM=1.4 python3 -u time_search.py --start "$2" --at 2026-09-24T12:00 --tz America/Denver \
-    --end "Cleveland Bus Station (Brook Park)" --end-by 2026-10-05T02:25 \
+  BUS48_MIN_TRANSFER=5 BUS48_WALKIN_KM=1.4 python3 -u time_search.py --start "$2" --at 2026-11-05T12:00 --tz America/Denver \
+    --end "Cleveland Bus Station (Brook Park)" --end-by 2026-11-16T02:25 \
     --done "NY,VT,MA,NH,ME,RI,CT" --seed-states "$3" \
     --budget 3600 --workers ${W:-2} --days 20 --out ../out/cle_$1.pkl > ../out/cle_$1.log 2>&1
   local rc=$?; [ $rc -eq 0 ] || fail $1 $rc ../out/cle_$1.log

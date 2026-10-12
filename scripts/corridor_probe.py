@@ -34,12 +34,12 @@ def near(R, lat, lon, km):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument('--day', default='2026-09-28', help='the day to start on (d5 of the run-1 settings)')
+    ap.add_argument('--day', default='2026-11-09', help='the day to start on (d5 of the run-1 settings)')
     ap.add_argument('--tz', default='America/Los_Angeles')
     ap.add_argument('--step', type=float, default=2, help='hours between start times')
     ap.add_argument('--days', type=int, default=20)
     a = ap.parse_args()
-    R = cached_router(datetime(2026, 9, 24).date(), a.days, verbose=False)
+    R = cached_router(datetime(2026, 11, 5).date(), a.days, verbose=False)
     inv = {v: k for k, v in ABBR.items()}
     st = {x: R.state_names.index(inv[x]) for x in ('WA', 'OR', 'ID')}
     corridor = set().union(*(near(R, la, lo, 15) for la, lo in CORRIDOR.values()))

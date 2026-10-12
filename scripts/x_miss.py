@@ -14,13 +14,13 @@ from time_router import cached_router
 from common import ABBR
 
 SHEET = '../docs/x_itinerary_nov12.xlsx'
-R = cached_router(datetime.fromisoformat('2026-09-24T00:54').date(), 20)
+R = cached_router(datetime.fromisoformat('2026-11-05T00:54').date(), 20)
 inv = {v: k for k, v in ABBR.items()}
 X = ('MT ID WA OR UT AZ NV CA NM CO KS OK TX LA AL FL GA SC NC VA MD DE PA NJ NY CT RI MA NH VT ME WV OH IN KY TN MS '
      'AR MO IL WI MI IA NE SD ND MN').split()
 ALIAS = {'Provo Central Station/Intermodal Hub': 'Provo/Orem (Exit 263)', 'Barstow (Amtrak)': 'Barstow',
          'Chicago (95th - Dan Ryan)': 'Chicago (95th - Dan Ryan)'}
-D0 = datetime(2026, 9, 24)
+D0 = datetime(2026, 11, 5)
 
 
 def stop(name):

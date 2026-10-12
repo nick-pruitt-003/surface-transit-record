@@ -26,7 +26,7 @@ REGIONS = {
     'SOUTH': 'TN,MS,AR,LA,AL,TX,OK', 'PLAINS': 'MN,WI,ND,SD,NE,IA,KS,MO', 'LAKES': 'IL,IN,MI,OH,KY,WV',
 }
 
-R = cached_router(date(2026, 9, 24), 20, verbose=False)
+R = cached_router(date(2026, 11, 5), 20, verbose=False)
 d = pickle.load(open('../out/res_starttest.pkl', 'rb'))
 start = R.stop_name.index(d['start'])
 S = Search(R, start, d['t0'], [], 1)

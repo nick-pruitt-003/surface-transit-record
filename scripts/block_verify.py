@@ -22,12 +22,12 @@ def main():
     ap.add_argument('--top', type=int, default=30)
     a = ap.parse_args()
     A = pickle.load(open('../out/assemble.pkl', 'rb'))
-    R = cached_router(date(2026, 9, 24), 20)
+    R = cached_router(date(2026, 11, 5), 20)
     inv = {v: k for k, v in ABBR.items()}
     idx = lambda s: R.state_names.index(inv[s])
     ctl = [idx(x) for x in 'WV KY OH MI IN IL TN MS AR MO IA NE SD ND MN WI WY MT ID WA OR UT AZ NV CA NM CO KS OK TX LA AL FL GA SC NC VA MD DE PA NJ NY CT RI MA ME NH VT'.split()]
     hun = [i for i, nm in enumerate(R.stop_name) if nm == 'Huntington Bus Stop']
-    t_ctl = datetime(2026, 9, 24, 0, 54, tzinfo=ZoneInfo('America/New_York')).timestamp()
+    t_ctl = datetime(2026, 11, 5, 0, 54, tzinfo=ZoneInfo('America/New_York')).timestamp()
     gate('control total from Huntington 00:54', lambda: (R.finish(hun, t_ctl, ctl) - t_ctl) / 3600, 237.34, 0.02)
 
     xy = np.asarray(R.stop_xy[:R.first_virtual], dtype=float)

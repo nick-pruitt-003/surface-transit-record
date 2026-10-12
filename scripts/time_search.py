@@ -1,6 +1,6 @@
 """Local search over the state order using real timetables as the objective.
 
-usage: python3 time_search.py --start Missoula --at 2026-09-21T07:00 --tz America/Denver \
+usage: python3 time_search.py --start Missoula --at 2026-11-02T07:00 --tz America/Denver \
          --seed ../out/start_newton.pkl [--prefix "Idaho,Washington"] --budget 900 --workers 8 --out ../out/time_best.pkl
 """
 import re, argparse, itertools, json, os, pickle, random, time, sys

@@ -20,7 +20,7 @@ from time_router import cached_router, N_STATES
 import time_search as ts
 from common import ABBR
 
-R = cached_router(date(2026, 9, 24), 20, verbose=False)
+R = cached_router(date(2026, 11, 5), 20, verbose=False)
 inv = {v: k for k, v in ABBR.items()}
 st = lambda a: R.state_names.index(inv[a])
 DEP, CFROM, CTO = np.asarray(R.dep), np.asarray(R.cfrom), np.asarray(R.cto)
@@ -107,7 +107,7 @@ if __name__ == '__main__':
         m = re.search(r'->  d\d+ \w+ \d\d:\d\d  (.*), (?:[A-Z]{2}|None)   \[', line)
         if m and re.match(r'^d\d+ ', line) and (not xtol or xtol[-1] != '@' + m.group(1)): xtol.append('@' + m.group(1))
     xtol.append(st('VT'))
-    out['X_TOL'] = report('X_TOL (Sheridan -> Vermont line via Toledo)', sher, datetime(2026, 9, 24, tzinfo=ZoneInfo('America/Denver')).timestamp(),
+    out['X_TOL'] = report('X_TOL (Sheridan -> Vermont line via Toledo)', sher, datetime(2026, 11, 5, tzinfo=ZoneInfo('America/Denver')).timestamp(),
                           xtol, end=st('VT'), fixed=False, note='HANDOFF 22 / docs/cloud_tol.txt order, start day re-chosen on today\'s data.')
     j = pickle.load(open('../out/shapes/join.pkl', 'rb'))
     out['X'] = report('X (Sheridan -> Mississippi line at Southaven)', R.stop_name.index(j['start']), j['t0'], j['order'], end=st('MS'),
@@ -116,11 +116,11 @@ if __name__ == '__main__':
     lv = R.stops_matching('Primm Bus Stop (702 Shuttles)')[0]   # 702 Shuttles 10:50 (Oct 2 screenshot): 50 min better than the Las Vegas 10:00 Greyhound
     # pin Baton Rouge: Delta Bus Lines from Memphis (MS on the way), then the 23:55 Orlando bus straight to Tallahassee and Jacksonville (Nick, Oct 2). Ties the Lafayette backtrack, and is bookable
     rx = [st(a) if len(a) == 2 else a for a in 'NV,CA,AR,TN,@Baton Rouge Bus Station,LA,FL,VT,ME,KY,MI,ND,SD,OR,WY'.split(',')]
-    out['RX'] = report('RX (Primm NV -> Sheridan WY)', lv, datetime(2026, 9, 23, 23, 0, tzinfo=ZoneInfo('America/Los_Angeles')).timestamp(),
+    out['RX'] = report('RX (Primm NV -> Sheridan WY)', lv, datetime(2026, 11, 4, 23, 0, tzinfo=ZoneInfo('America/Los_Angeles')).timestamp(),
                        rx, end=st('WY'), fixed=False, note='docs/sweep.md: the unguided sweep found its family (240.0); a focused search moved the start to Las Vegas; the 702 Shuttles 10:50 from Primm (Oct 2) starts it 50 min later for the same finish.')
     # The Hanover spine (sweep 2 runs 13 and 07, focused Oct 2): Ledyard Lot start (Vermont on foot at 06:10), New
     # England, Southeast, Michiana, Fargo, the I-90 bus, the West, Southwest Chief, BeeLine, Houston; two finishes.
-    led = R.stops_matching('Ledyard Lot')[0]; t_led = datetime(2026, 9, 24, 6, 0, tzinfo=ZoneInfo('America/New_York')).timestamp()
+    led = R.stops_matching('Ledyard Lot')[0]; t_led = datetime(2026, 11, 5, 6, 0, tzinfo=ZoneInfo('America/New_York')).timestamp()
     hx = lambda o: [a if a.startswith('@') else st(a) for a in o.split(',')]   # '@stop' items are pins
     out['HAR'] = report('HAR (Hanover -> Forrest City AR)', led, t_led, hx('NH,VT,ME,GA,WV,MI,ND,NE,MT,OR,CA,OK,FL,AR'),
                         note='docs/sweep.md: sweep 2 run 13 (239.8, from Portland ME), focused: start moved to Ledyard Lot. Hours count from the first bus (06:23); from the 06:10 walk add 0.2 h.')
@@ -130,11 +130,11 @@ if __name__ == '__main__':
     # the route ends at Tallahassee (Oct 2: HMS's focused search had been given --end MS from its sweep run).
     # HT starts at Foley Park (Vermont end of the Ledyard Bridge) and walks 16 min to the Hanover Inn for the 06:40
     # Dartmouth Coach (Nick, Oct 3); 06:19 is the latest start under the 5-minute rule. New Hampshire comes on the coach.
-    fp = R.stops_matching('Foley Park at the Vermont end')[0]; t_fp = datetime(2026, 9, 24, 6, 19, tzinfo=ZoneInfo('America/New_York')).timestamp()
+    fp = R.stops_matching('Foley Park at the Vermont end')[0]; t_fp = datetime(2026, 11, 5, 6, 19, tzinfo=ZoneInfo('America/New_York')).timestamp()
     out['HT'] = report('HT (Foley Park VT -> Tallahassee FL)', fp, t_fp, hx('ME,@Washington Union Station,GA,WV,MI,ND,NE,WY,OR,AZ,KS,LA,AR,MS,FL'),
                        note='Mississippi at Tupelo on the 09:00 Memphis -> Birmingham Greyhound; starts on foot at Foley Park 06:19 (latest that keeps the chain), so 230.10 h from the first step. Hours below count from the first bus, the 06:40 Dartmouth Coach.')
     # NBA: sweep 3 run 22 (240.5), focused with the fixed search (d90d8f0): New Buffalo MI -> Big River Crossing AR line.
-    nba = R.stops_matching('New Buffalo Amtrak')[0]; t_nba = datetime(2026, 9, 30, 21, 37, tzinfo=ZoneInfo('America/New_York')).timestamp()
+    nba = R.stops_matching('New Buffalo Amtrak')[0]; t_nba = datetime(2026, 11, 11, 21, 37, tzinfo=ZoneInfo('America/New_York')).timestamp()
     out['NBA'] = report('NBA (New Buffalo MI -> Arkansas line, Big River Crossing)', nba, t_nba, hx('ND,MO,WA,AZ,OK,LA,FL,ME,VT,WV,MS,AR'),
                         note='Sweep 3 run 22 (240.5 h), focused from its real start stop with the fixed search. Ends on foot at the Arkansas line mid-bridge, inside the bridge hours.')
     print('\n## Summary\n')

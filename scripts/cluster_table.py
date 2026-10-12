@@ -5,7 +5,7 @@ states and keep the fastest time from arriving at the entry to arriving at the e
 
 usage: python3 cluster_table.py --states "North Dakota,South Dakota" \
          --gateways "Minneapolis,Omaha,Kansas City Bus,Denver,Billings,Spokane,Des Moines,Chicago Bus" \
-         --week 2026-09-21 --step 2 --workers 4 --out ../out/cluster_dakotas.csv
+         --week 2026-11-02 --step 2 --workers 4 --out ../out/cluster_dakotas.csv
 """
 import argparse, csv, itertools, statistics
 from datetime import datetime, timedelta

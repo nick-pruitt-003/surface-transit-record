@@ -1,6 +1,6 @@
 """Latest start in a state that keeps a route's finish: sweep every stop in the state and start clock.
 
-  python3 latest_start.py --route ../out/hun_ms_meteor.pkl --state WV --day 2026-09-24 [--from 0 --to 9]
+  python3 latest_start.py --route ../out/hun_ms_meteor.pkl --state WV --day 2026-11-05 [--from 0 --to 9]
 
 For each stop in the state, the latest start time (10-min steps) whose finish is no later than the
 route's own finish, then the actual first boarding of that run. Answers "how late can we leave and still

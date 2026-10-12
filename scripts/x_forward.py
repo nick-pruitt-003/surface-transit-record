@@ -64,7 +64,7 @@ def main():
     ap.add_argument('--days', type=int, default=20)
     a = ap.parse_args()
 
-    R = cached_router(datetime.fromisoformat('2026-09-24T00:54').date(), a.days)
+    R = cached_router(datetime.fromisoformat('2026-11-05T00:54').date(), a.days)
     inv = {v: k for k, v in ABBR.items()}
     ct = ZoneInfo('America/Chicago')
 
@@ -79,10 +79,10 @@ def main():
         # 22:00, not JL 701's own 22:20. A start clock equal to the departure can never board it: the scan
         # needs best[a] + MIN_TRANSFER <= dep, so at 22:20 the 22:20 bus is 5 min out of reach, the next one
         # is 24 h later, and the run reports 285.98 h for a route that costs 238.32.
-        names, at, tz = ['Sheridan WY'], a.at or '2026-09-26T22:00', a.tz or 'America/Denver'
+        names, at, tz = ['Sheridan WY'], a.at or '2026-11-07T22:00', a.tz or 'America/Denver'
         order = [R.state_names.index(inv[x]) for x in ORDER]
     else:
-        names, at, tz = ['HOLMES at ELVIS PRESLEY'], a.at or '2026-09-24T06:00', a.tz or 'America/Chicago'
+        names, at, tz = ['HOLMES at ELVIS PRESLEY'], a.at or '2026-11-05T06:00', a.tz or 'America/Chicago'
         order = [R.state_names.index(inv[x]) for x in reversed(ORDER)]
     lab = [ABBR[R.state_names[y]] for y in order]
     print(f'--dir {a.dir}: {len(order)} states, {" ".join(lab)}\n', flush=True)

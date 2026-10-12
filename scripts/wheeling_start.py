@@ -75,7 +75,7 @@ def main():
                     'cached answer. Pair it with a matching --at or the replay measures a different clock.')
     a = ap.parse_args()
 
-    R = cached_router(datetime.fromisoformat('2026-09-24T00:54').date(), a.days)
+    R = cached_router(datetime.fromisoformat('2026-11-05T00:54').date(), a.days)
     et = ZoneInfo('America/New_York')
     inv = {v: k for k, v in ABBR.items()}
     d = pickle.load(open('../out/res_starttest.pkl', 'rb'))
@@ -99,7 +99,7 @@ def main():
     best = None
     for hhmm, expect, note in VARIANTS:
         h, m = (int(x) for x in hhmm.split(':'))
-        t0 = datetime(2026, 9, 24, h, m, tzinfo=et).timestamp()
+        t0 = datetime(2026, 11, 5, h, m, tzinfo=et).timestamp()
         S, (f, legs) = ev(R, whl, t0, order)
         el = (f - t0) / 3600
         # Independent of the elapsed figure: attribute every state to the leg that supplies it, and require
