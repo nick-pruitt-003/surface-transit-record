@@ -18,7 +18,10 @@ days = "1111111"
 tz = "America/Denver"
 stops = ["salt_lake_city_airport 06:00", "saint_george_bluff_st_office 11:30/12:00", "las_vegas_airport 14:10"]
 
-# Local clocks per stop (no tz line): Utah Mountain daylight, Beaver Dam Arizona, Mesquite and Las Vegas Pacific.
+# 8035/8040 are written on one UTC-7 clock (America/Phoenix), which in the Nov window is Utah's MST and Arizona's
+# time; Las Vegas 11:40/13:50 PST reads 12:40/14:50 here. The site's per-stop clocks were from daylight time
+# (Utah UTC-6), and under winter time the Beaver Dam rows ran backwards and rolled a day (review Oct 11).
+# Offsets kept from the screenshot: Sun River +5, Beaver Dam +35, Mesquite +45, Las Vegas +2:10.
 # 7021's stops between the airport and St George are all in Utah and left out.
 [[trip]]
 route = "SLE 7021 Salt Lake City (Airport) 04:45 -> Saint George (Bluff St Office) 10:20"
@@ -30,10 +33,12 @@ stops = ["slc_airport 04:45", "stg_bluff 10:20"]
 route = "SLE 8035 Saint George (Bluff St Office) 10:30 -> Las Vegas (Airport) 11:40"
 note = "Nick screenshot Oct 1 2026 (Salt Lake Express site, local times); daily assumed"
 days = "1111111"
-stops = ["stg_bluff 10:30", "stg_sun_river 10:35", "beaver_dam 10:05", "mesquite_virgin_river 10:15", "lv_airport 11:40"]
+tz = "America/Phoenix"
+stops = ["stg_bluff 10:30", "stg_sun_river 10:35", "beaver_dam 11:05", "mesquite_virgin_river 11:15", "lv_airport 12:40"]
 
 [[trip]]
 route = "SLE 8040 Saint George (Bluff St Office) 12:40 -> Las Vegas (Airport) 13:50"
 note = "Nick screenshot Oct 5 2026 (Salt Lake Express site, local times, for Sat Nov 14); Mesquite (CasaBlanca) 12:26 not modelled; daily assumed"
 days = "1111111"
-stops = ["stg_bluff 12:40", "stg_sun_river 12:45", "beaver_dam 12:15", "mesquite_virgin_river 12:25", "lv_airport 13:50"]
+tz = "America/Phoenix"
+stops = ["stg_bluff 12:40", "stg_sun_river 12:45", "beaver_dam 13:15", "mesquite_virgin_river 13:25", "lv_airport 14:50"]

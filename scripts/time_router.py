@@ -727,7 +727,13 @@ class ExtraFeed:
                 if fixed is None:   # local clocks: roll a time that goes backwards past midnight
                     zones[sid] = ZoneInfo(_tz_at(h[2], h[3]) or 'UTC')
                     off = -datetime(ref.year, ref.month, ref.day, 12, tzinfo=zones[sid]).utcoffset().total_seconds()
-                    if prev is not None and a + roll + off < prev - 60: roll += 86400
+                    if prev is not None and a + roll + off < prev - 60:
+                        # A few minutes or hours backwards is a transcription or time-zone error, not midnight: rolling
+                        # it adds a whole day (t459 Marianna, SLE Beaver Dam under winter time, review Oct 11).
+                        if prev - (a + roll + off) < 6 * 3600:
+                            print(f'manual {stem} {tid}: {key} {tm} runs {(prev - (a + roll + off)) / 60:.0f} min backwards, stop dropped')
+                            continue
+                        roll += 86400
                     a += roll
                     if d + roll + off < a + off - 60: roll += 86400
                     d += roll; prev = d + off

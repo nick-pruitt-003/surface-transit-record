@@ -115,9 +115,10 @@ stops = ["el_paso_omnibus 19:02", "roswell_omnibus 22:30", "portales_omnibus 23:
 # Mobile 03:30 -> Pensacola 06:25 -> Crestview -> Marianna 08:14 -> Tallahassee 09:00 -> Lake City 11:00. Replaces the
 # disabled AE bus t72. The site lists Biloxi 02:20 before Gulfport 02:25; entered in road order (Gulfport first). Three
 # segments are faster than a bus can go (Slidell -> Mobile, Pensacola -> Crestview, Marianna -> Tallahassee); the
-# router's sanity check drops a stop that implies over 130 km/h. Per-stop local clocks. Fri-Mon assumed (Nick).
+# router's sanity check drops a stop that implies over 130 km/h. Marianna left out: 32:14 CT is 09:14 ET, after
+# Tallahassee's 09:00, and the local-clock rollover read that as a day (review Oct 11). Per-stop local clocks. Fri-Mon assumed (Nick).
 [[trip]]
 id = "t459"
 route = "Omnibus Express Houston 19:30 -> Lafayette -> Baton Rouge -> Slidell -> Mobile -> Pensacola -> Tallahassee -> Lake City 11:00 (daily per the booking engine, Nov 9-22)"
 days = "1111111"
-stops = ["houston_telephone_rd_omnibus 19:30", "beaumont_omnibus 21:00", "port_arthur_omnibus 21:30", "orange_tx_omnibus 22:05", "lake_charles_omnibus 22:35", "lafayette_omnibus 23:50", "baton_rouge_omnibus 24:55", "hammond_omnibus 25:45", "slidell_omnibus 26:15", "gulfport_omnibus 26:20", "biloxi_omnibus 26:25", "pascagoula_omnibus 26:40", "grand_bay_al_omnibus 27:00", "mobile_omnibus 27:30", "loxley_omnibus 28:20", "pensacola_omnibus 30:25", "crestview_omnibus 30:45", "marianna_omnibus 32:14", "tallahassee_omnibus 33:00", "lake_city_omnibus 35:00"]
+stops = ["houston_telephone_rd_omnibus 19:30", "beaumont_omnibus 21:00", "port_arthur_omnibus 21:30", "orange_tx_omnibus 22:05", "lake_charles_omnibus 22:35", "lafayette_omnibus 23:50", "baton_rouge_omnibus 24:55", "hammond_omnibus 25:45", "slidell_omnibus 26:15", "gulfport_omnibus 26:20", "biloxi_omnibus 26:25", "pascagoula_omnibus 26:40", "grand_bay_al_omnibus 27:00", "mobile_omnibus 27:30", "loxley_omnibus 28:20", "pensacola_omnibus 30:25", "crestview_omnibus 30:45", "tallahassee_omnibus 33:00", "lake_city_omnibus 35:00"]
