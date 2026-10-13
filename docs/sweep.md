@@ -375,3 +375,12 @@ on the bus, MATA 42 to Holmes and back):
 
 **Control** (Huntington Thu Nov 12 00:45 -> VT line Sat Nov 21 22:14): original order and Nick's St Louis/Airways
 order both evaluate 237.5 h; a 25 min search seeded with the St Louis order found nothing lower.
+
+**Wheeling** (Oct 13, November data): its own order 260.2 h (the City of New Orleans now runs 2 h later, so the
+Chicago -> Jackson -> St Louis -> Chicago loop costs a day); run in the control's shape (Columbus -> Detroit -> St Louis
+-> Memphis) a 25 min search reaches 245.9 h, because nothing west of Wheeling passes Kentucky cheaply (the evaluation
+detoured Cleveland -> Cincinnati -> TANK to Covington). Off the list.
+
+**Record shape** (WRJ -> Huntington): cannot run in the Nov 4-24 window. On a Nov 5 or Nov 12 start the Thursday 13:00
+Acela Boston -> Washington is absent (Portal Bridge, back Nov 16), so it misses the 21:45 Flix to Jacksonville and
+comes out 251.8 h; a Nov 19 start finishes after Nov 24. The 238.75 of Oct 11 predates the Oct 11 Amtrak release.
