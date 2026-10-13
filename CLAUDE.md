@@ -7,7 +7,10 @@
 - **Control is route X**, not the 237 route: `python3 rebuild_x.py` writes `out/res_x.pkl` (Sheridan WY Thu Nov 12
   22:10 MT, 231.68 h, latest start 22:15). Amtrak moved the City of New Orleans two hours later from Oct 7 2026 and
   the 237 route is 252 h at best in November. X starts Nov 12 because the Portal Bridge cutover keeps Acela 2152
-  (Washington 06:50) off the timetable until Nov 18.
+  (Washington 06:50) off the timetable until Nov 18. **Update Oct 13:** the 237 route is back at **237.5 h** in
+  November (Huntington Thu Nov 12 00:45 -> VT line Sat Nov 21 22:14), via Nick's St Louis Greyhound 01:00 -> Memphis
+  Airways 06:30 (MO, AR on the bus) and MATA 42 to Holmes; X stays the control. The Southwest Chief is X's single point
+  of failure: missing it costs ~15 h (247 h). See docs/sweep.md, Oct 13.
 - **Replay gate:** `python3 ride_search.py --start "Sheridan WY Taco Bell 1655 Coffeen Ave (Jefferson)" --at
   2026-11-12T22:10 --end MN --by 2026-11-22T20:10 --tz America/Denver --track ../out/res_x.pkl` (baseline 21/40, exit 0).
 - **ride_search's menu runs in C** (`scripts/menu.c`, `--menu c`, the default; ~18x with the bounded goal scan). The
