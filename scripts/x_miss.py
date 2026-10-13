@@ -51,9 +51,10 @@ def when(t, s):
 NOTES = [
     'Pasco, missed Greyhound 13:25: Northwestern 15:00 -> Hermiston -> Pendleton -> La Grande -> Boise 21:10, Salt Lake Express '
     '21:15 -> Pocatello 01:05, 03:40 -> SLC Airport 06:40, 06:45 -> Saint George 12:20. Same Saint George arrival as X: no loss.',
-    'Las Vegas, missed Flix 15:30 (LAST DITCH, not a plan): RTC Red line + 217 from the airport to Blue Diamond, 702 Shuttles '
-    '18:15 -> Barstow (1611 E Main) 20:27, then RUN 2.5 mi to Barstow Amtrak for the Chief at 20:47. Needs ~8 mph and an on-time '
-    'shuttle; the router misses it by one minute even at 9.4 mph with a 5 min boarding allowance.',
+    'Las Vegas, missed Flix 15:30 (FIT-RUN BACKUP): RTC Red line + 217 from the airport to Blue Diamond, 702 Shuttles 18:15 -> '
+    'Barstow (1611 E Main) 20:27, then RUN 2.5 mi to the Barstow Amtrak platform: at 9.4 mph on the platform 20:43, 4 min before '
+    'the Chief leaves at 20:47 (and it often runs late). The router shows it missed by a minute only because it adds a 5 min '
+    'boarding allowance to every connection, which double-counts a run that ends on the platform.',
     'Southwest Chief, missed at Barstow: Greyhound Los Angeles 23:30 -> Phoenix -> Tucson -> Lordsburg NM -> El Paso -> Dallas 06:35 '
     'two days on gets AZ NM TX back to Dallas before the 13:00 to Houston in X, but skips CO KS OK. Cost: see docs/sweep.md (Chief miss).',
 ]
