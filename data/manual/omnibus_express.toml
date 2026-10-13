@@ -86,14 +86,14 @@ stops = ["el_paso_omnibus 19:03", "tucumcari_omnibus 23:55", "dalhart_omnibus 26
 
 # Nick screenshot Oct 11 2026 (Omnibus Express site, Fri Oct 30 2026): Caldwell ID 08:00 -> Jerome -> Burley -> Salt Lake
 # City 15:30 -> Provo 16:30 -> Albuquerque 01:30 -> Los Lunas -> Hatch NM 04:15. The site also lists El Paso 04:16, one
-# minute after Hatch (about 75 min apart), so the El Paso time is a site error; 05:46 is Nick's working assumption. Runs Friday to
+# minute after Hatch (about 75 min apart), so the El Paso time is a site error; 05:33 from the reverse trip's Hatch -> El Paso running time (78 min). Runs Friday to
 # Monday, no service Tuesday to Thursday (Nick). All stops on Mountain time.
 [[trip]]
 id = "t456"
-route = "Omnibus Express Caldwell ID 08:00 -> Burley -> Salt Lake City -> Provo -> Albuquerque -> Hatch NM 04:15 -> El Paso 05:46 assumed (Tue Fri Sat Sun per the booking engine, Nov 9-22)"
+route = "Omnibus Express Caldwell ID 08:00 -> Burley -> Salt Lake City -> Provo -> Albuquerque -> Hatch NM 04:15 -> El Paso 05:33 (Hatch + 78 min) (Tue Fri Sat Sun per the booking engine, Nov 9-22)"
 days = "0100111"
 tz = "America/Denver"
-stops = ["caldwell_omnibus 08:00", "jerome_id_omnibus 11:00", "burley_omnibus 12:00", "salt_lake_city_omnibus 15:30", "provo_omnibus 16:30", "albuquerque_omnibus 25:30", "los_lunas_omnibus 26:00", "hatch_nm_omnibus 28:15", "el_paso_omnibus 29:46"]
+stops = ["caldwell_omnibus 08:00", "jerome_id_omnibus 11:00", "burley_omnibus 12:00", "salt_lake_city_omnibus 15:30", "provo_omnibus 16:30", "albuquerque_omnibus 25:30", "los_lunas_omnibus 26:00", "hatch_nm_omnibus 28:15", "el_paso_omnibus 29:33"]
 
 # Nick screenshots Oct 11 2026 (Omnibus Express site, Fri Oct 30 2026), Oklahoma City <-> El Paso via Amarillo, Clovis and
 # Roswell. Times are each stop's local clock (Central to Farwell TX, Mountain from Texico NM); the Farwell/Texico pair only
@@ -122,3 +122,14 @@ id = "t459"
 route = "Omnibus Express Houston 19:30 -> Lafayette -> Baton Rouge -> Slidell -> Mobile -> Pensacola -> Tallahassee -> Lake City 11:00 (daily per the booking engine, Nov 9-22)"
 days = "1111111"
 stops = ["houston_telephone_rd_omnibus 19:30", "beaumont_omnibus 21:00", "port_arthur_omnibus 21:30", "orange_tx_omnibus 22:05", "lake_charles_omnibus 22:35", "lafayette_omnibus 23:50", "baton_rouge_omnibus 24:55", "hammond_omnibus 25:45", "slidell_omnibus 26:15", "gulfport_omnibus 26:20", "biloxi_omnibus 26:25", "pascagoula_omnibus 26:40", "grand_bay_al_omnibus 27:00", "mobile_omnibus 27:30", "loxley_omnibus 28:20", "pensacola_omnibus 30:25", "crestview_omnibus 30:45", "tallahassee_omnibus 33:00", "lake_city_omnibus 35:00"]
+
+# Read from the Omnibus booking engine (scripts/omnibus_fetch.py ELP CAL 2026-11-20, consultaItinerario), Oct 12 2026:
+# El Paso 19:02 -> Hatch 20:20 -> Los Lunas 22:35 -> Albuquerque 23:05 -> Provo 08:35 -> Salt Lake City 09:20 ->
+# Burley 12:15 -> Jerome 13:15 -> Caldwell 16:00. Runs Wed Thu Fri Sun per the engine's departure lists, Nov 9-22.
+# All stops on Mountain time.
+[[trip]]
+id = "t460"
+route = "Omnibus Express El Paso 19:02 -> Hatch -> Albuquerque -> Provo -> Salt Lake City -> Burley -> Caldwell ID 16:00 (Wed Thu Fri Sun per the booking engine, Nov 9-22)"
+days = "0011101"
+tz = "America/Denver"
+stops = ["el_paso_omnibus 19:02", "hatch_nm_omnibus 20:20", "los_lunas_omnibus 22:35", "albuquerque_omnibus 23:05", "provo_omnibus 32:35", "salt_lake_city_omnibus 33:20", "burley_omnibus 36:15", "jerome_id_omnibus 37:15", "caldwell_omnibus 40:00"]

@@ -316,3 +316,21 @@ other 29 states (`out/hinges/jobs_ht.txt`, hinge method, start pinned):
 
 A front needs under ~105 h to beat X and ~112 h for the record. HT's old front was 102.4 h on the phantom Fargo 15:50 ->
 Sioux Falls bus; without it the Plains before Sioux Falls (ND, MN, MO, IA, NE) cost a Midwest loop of a day or more.
+
+## Beat-X searches, Oct 12 2026 (November window, X = 231.68 h)
+
+`ride_search --goal --by start+231.5 h`, 40 min each. First pass with the default credit frontier (6 -> ~250 nodes/s after
+the menu.c port), second with `--frontier depth --slack-weight 3 --queue 1500000`. Nothing reached 48 states under 231.5 h.
+
+| start -> end | credit: nodes / deepest | depth: nodes / deepest | depth: queue at exit |
+|---|---|---|---|
+| Sheridan Thu 22:10 -> MN | 642,766 / 33 | 291,084 / 38 | nothing past 35 states: every deeper chain died on the deadline |
+| Sheridan -> TN | 611,628 / 34 | 272,530 / 39 | up to 38 still queued |
+| Moorhead Mon 14:20 -> TN | 319,603 / 34 | 294,953 / 33 | up to 31 |
+| Foley Park Thu 04:30 -> WV | 150,908 / 33 | 307,738 / 38 | nothing past 35 |
+| Weirton Thu 06:00 -> ME | (not rerun) | 300,888 / 33 | up to 30 |
+
+Why depth: `--xprobe` ranked X's own prefix against the final frontier. Under credit X's middle (Newton -> Houston ->
+Jacksonville, 12-17 states) sat 96-99% back; slack blends at 0.25/0.5/1.0 never fixed the middle without burying the
+Northeast; per-depth layers with `--slack-weight 3` put it 8-58% back and the Northeast at the front. Not proof that
+nothing beats X (shallower layers were still queued), but much stronger evidence than the sweeps.
