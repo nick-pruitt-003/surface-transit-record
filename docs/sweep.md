@@ -384,3 +384,8 @@ detoured Cleveland -> Cincinnati -> TANK to Covington). Off the list.
 **Record shape** (WRJ -> Huntington): cannot run in the Nov 4-24 window. On a Nov 5 or Nov 12 start the Thursday 13:00
 Acela Boston -> Washington is absent (Portal Bridge, back Nov 16), so it misses the 21:45 Flix to Jacksonville and
 comes out 251.8 h; a Nov 19 start finishes after Nov 24. The 238.75 of Oct 11 predates the Oct 11 Amtrak release.
+
+**Record shape on an extended window** (Oct 13, `--days` 20 from Nov 19, i.e. to Dec 8): best 242.8 h, Foley Park Tue
+Nov 24 09:40 -> Fri Dec 4, through Thanksgiving. A Thu Nov 19 start loses Maine (it rides Dartmouth Coach 03:00 and
+C&J to Portsmouth instead of WRJ 04:35 -> Boston -> Portland; Concord Coach runs that week, so the WRJ Greyhound is
+the likely gap). The control on Nov 5 - Dec 1 stays 237.5 h (Nov 12 start). Default window unchanged (Nov 4-24).
