@@ -389,3 +389,8 @@ comes out 251.8 h; a Nov 19 start finishes after Nov 24. The 238.75 of Oct 11 pr
 Nov 24 09:40 -> Fri Dec 4, through Thanksgiving. A Thu Nov 19 start loses Maine (it rides Dartmouth Coach 03:00 and
 C&J to Portsmouth instead of WRJ 04:35 -> Boston -> Portland; Concord Coach runs that week, so the WRJ Greyhound is
 the likely gap). The control on Nov 5 - Dec 1 stays 237.5 h (Nov 12 start). Default window unchanged (Nov 4-24).
+
+**Correction (Oct 13):** the record shape is intact on Thu Nov 19. Pinned to WRJ 04:25 (`--fixed-start`) it runs
+WRJ 04:35 -> Boston -> Portland -> Boston -> Acela 13:00 -> ... -> Huntington Sun Nov 29 03:25, **238.833 h**, exactly
+the record. The "loses Maine" result above came from the free start-day settle drifting to Hanover/Portsmouth, not
+from the data: the WRJ 04:35 (Flix trip US0260-3534-0430112026) runs daily Nov 2-30 (Nick confirmed it sold Nov 19).
