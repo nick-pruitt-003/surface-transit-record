@@ -13,6 +13,17 @@ lv_airport = "Las Vegas (Airport)"
 butte_sle = "=ibus:1563"   # Butte
 basin_mt = "=ibus:2086"   # Basin MT
 boulder_mt = "=ibus:2259"   # Boulder MT
+boise_airport_sle = "=ibus:1465"   # Boise (Airport)
+pocatello_td = "Pocatello (Transit Depot)"
+mountain_home_id = { name = "Mountain Home ID (Chevron)", lon = -115.6912, lat = 43.1329 }   # point approximate
+glenns_ferry = "Glenns Ferry (Veltex)"
+bliss_id = "Bliss"
+jerome_exit165 = "Jerome (Exit 165)"
+twin_falls_oasis = "Twin Falls (Chevron Oasis)"
+kimberly_id = "Kimberly"
+burley_id = "Burley"
+rupert_id = "Rupert"
+american_falls = "American Falls"
 helena = "=ibus:2947"   # Helena
 wolf_creek_mt = "=ibus:2153"   # Wolf Creek MT
 cascade_mt = "=ibus:3282"   # Cascade MT
@@ -66,3 +77,13 @@ note = "Nick screenshot Oct 11 2026; daily assumed"
 days = "1111111"
 tz = "America/Denver"
 stops = ["great_falls 21:15", "cascade_mt 21:50", "wolf_creek_mt 22:25", "helena 23:00", "boulder_mt 23:30", "basin_mt 23:40", "butte_sle 24:15"]
+
+# Nick screenshot Oct 13 2026 (saltlakeexpress.com, Wed Oct 14): Boise Airport 21:15 -> Pocatello (SLE Office) 01:05 via Mountain
+# Home, Twin Falls, Burley and American Falls (Wendell not entered: name is ambiguous), connecting from NWL Pasco 15:00 (t461); then the feed's Pocatello 03:40 -> SLC Airport 06:40 and 06:45 ->
+# Saint George 12:20. All Mountain. Daily assumed (only a Wednesday seen).
+[[trip]]
+id = "t462"
+route = "Salt Lake Express Boise Airport 21:15 -> Pocatello 01:05 (daily assumed)"
+days = "1111111"
+tz = "America/Denver"
+stops = ["boise_airport_sle 21:15", "mountain_home_id 21:55", "glenns_ferry 22:20", "bliss_id 22:35", "jerome_exit165 22:55", "twin_falls_oasis 23:15", "kimberly_id 23:30", "burley_id 23:55", "rupert_id 24:05", "american_falls 24:40", "pocatello_td 25:05"]
