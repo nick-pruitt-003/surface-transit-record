@@ -79,12 +79,12 @@ def run(name, path, win, t_over, wb, out):
         got = S.covered([x for x in legs[:i] if x[0] == 'ride']) | {int(R.state[st])}
         for x in legs[:i]:
             if x[0] == 'walk' and R.walk_collects(x[2]): got.add(int(R.state[x[2]]))
-        pins, rem, free, seen = [], [], [], set(got)
+        pins, rem, full, seen = [], [], [], set(got)
         for x in legs[i:]:
             nw = (S.covered([x]) if x[0] == 'ride' else ({int(R.state[x[2]])} if R.walk_collects(x[2]) else set())) - seen
             seen |= nw
             rem += sorted(nw, key=lambda z: R.state_names[z])
-            free += sorted(nw, key=lambda z: R.state_names[z])
+            full += sorted(nw, key=lambda z: R.state_names[z])
             pin = f'@#{x[4] if x[0] == "ride" else x[2]}'
             if not pins or pins[-1] != pin: pins.append(pin)
             if not rem or rem[-1] != pin: rem.append(pin)
@@ -95,7 +95,9 @@ def run(name, path, win, t_over, wb, out):
         visited = {R.stop_name[y] for x in legs[:i] for y in ((x[2], x[4]) if x[0] == 'ride' else (x[1], x[2]))}
         # drop owed-done states and @pins the route already passed (X's @Hanover sent the replay back to Hanover)
         own = [x for x in d['order'] if (isinstance(x, str) and x[1:] not in visited) or (not isinstance(x, str) and x not in got)]
-        for tgt in (own, pins, rem):
+        # full = every owed state in the order the route collects it, no stop pins: reroutes freely (a Sunday without the
+        # Las Vegas Thruway takes the 14:00 Greyhound) while still aiming at states the pruned order leaves implicit
+        for tgt in (own, pins, rem, full):
             S2 = ts.Search(R, bs, bt + 60, [], 1, done=sorted(got)); ts._SELF, ts._START, ts._T0 = S2, bs, bt + 60
             f2, l2 = S2.evaluate(tgt)
             if f2 < 1e18 and S2.all_states(l2) and (best is None or f2 < best[0]): best = (f2, l2)
@@ -105,7 +107,7 @@ def run(name, path, win, t_over, wb, out):
             if best is not None and best[0] <= f + N * 86400: break
             tN = bt + N * 86400 - 600
             hit = False
-            for tgt in (own, pins, rem):   # next-day replay may follow the original path (pins) or re-route (own)
+            for tgt in (own, pins, rem, full):   # next-day replay may follow the original path (pins) or re-route (own)
                 S3 = ts.Search(R, bs, tN, [], 1, done=sorted(got)); ts._SELF, ts._START, ts._T0 = S3, bs, tN
                 f3, l3 = S3.evaluate(tgt)
                 if f3 < 1e18 and S3.all_states(l3) and (best is None or f3 < best[0]): best, waited, hit = (f3, l3), N, True
