@@ -22,8 +22,11 @@ SHIFT = 42 * 86400   # pickles saved before the Nov migration are on September d
 # after day 2 read "not recoverable"). Optional explicit start clock (UTC epoch) where the pickle's is stale.
 ROUTES = [  # name, pickle, router (first date, days), start override
     ('X', '../out/res_x.pkl', (date(2026, 11, 4), 27), None),
-    ('Moorhead', '../out/starts/mh_mi_east.pkl', (date(2026, 11, 4), 27),
-     datetime(2026, 11, 9, 20, 20, tzinfo=timezone.utc).timestamp()),   # Mon Nov 9 14:20 CST
+    # Moorhead on the Portal Bridge bound (start Nov 9+): Mon Nov 9 13:00 CST, in time for the Fargo 14:30 Jefferson
+    # settled on start days Nov 9-15; its first bus (Fargo 14:30) is not at the start stop, so finish - elapsed is too late a
+    # clock: start at the evaluation's own clock, Mon Nov 9 00:00 CST
+    ('Moorhead', '../out/mh_nov/eval9.pkl', (date(2026, 11, 9), 22),
+     datetime(2026, 11, 9, 6, 0, tzinfo=timezone.utc).timestamp()),
     ('Control', '../out/control_nov/eval_stl.pkl', (date(2026, 11, 4), 27), None),
     ('Record', '../out/wide/rec19f.pkl', (date(2026, 11, 19), 20), None),
 ]
@@ -135,7 +138,7 @@ def main():
         for name, path, win, t_over in ROUTES:
             if len(sys.argv) > 1 and name not in sys.argv[1:]: continue
             run(name, path, win, t_over, wb, out)
-    wb.save(f'../docs/redundancy{sfx}.xlsx')
+    if wb.sheetnames: wb.save(f'../docs/redundancy{sfx}.xlsx')
 
 
 if __name__ == '__main__':

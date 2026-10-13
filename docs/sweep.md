@@ -408,3 +408,6 @@ can overstate (the ride kit finds Houston -> Tallahassee covered via the 22:00 t
   the East end forgiving (+2 to +16 h).
 - Record: nearly every miss +24 h (same chain next day); SLE, Pasco/Spokane, St Louis -> KC, Toledo -> Detroit 0 h.
 - Moorhead: its order now evaluates at 248.3 h (best start Thu); off the list pending a repair search.
+- Moorhead (Oct 13, Portal Bridge bound: start Mon Nov 9, 235.8 h): covered 0 h from Spokane to Houston except the
+  Chief, the whole New England loop, the Chicago Wednesday and the Memphis walk-ins; +24 h for the Plains block, the
+  Gulf-to-Washington legs and the Capitol Limited; **the Chief +144 h**, the one single point of failure it shares with X.
