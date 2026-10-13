@@ -22,11 +22,13 @@ tz = "America/Los_Angeles"
 stops = ["spokane 10:45", "ritzville 11:45/11:55", "pasco_bus_stop 13:10"]
 
 [[trip]]
+# Nick screenshot Oct 13 2026: Boise Airport 08:15 MT -> Nampa 08:45 -> Ontario 09:30 MT (10 min) -> Baker City 09:45 PT ->
+# La Grande 10:35 -> Pendleton 11:30 (15 min) -> Hermiston 12:25 -> Pasco 13:10. Written in Pacific.
 id = "t1"
-route = "NWL Boise -> Pasco (OR stop is really Hermiston; La Grande used as stand-in)"
+route = "NWL Boise Airport 08:15 MT -> Nampa -> Ontario -> Baker City -> La Grande -> Pendleton -> Hermiston -> Pasco 13:10 (daily)"
 days = "1111111"
 tz = "America/Los_Angeles"
-stops = ["boise_airport 07:15", "la_grande_bus_station 10:35/10:40", "pasco_bus_stop_2 13:10"]
+stops = ["boise_airport 07:15", "nampa_id 07:45", "ontario_or 08:30/08:40", "baker_city_or 09:45", "la_grande_bus_station 10:35", "pendleton_or 11:30/11:45", "hermiston_or 12:25", "pasco_bus_stop_2 13:10"]
 
 [[trip]]
 id = "t2"
