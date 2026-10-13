@@ -92,7 +92,9 @@ def run(name, path, win, t_over, wb, out):
         # own = the route's own pruned order minus what is done, the router choosing the path (validated: X missing
         # the Pasco Greyhound -> Northwestern -> Boise -> SLE -> Saint George, 0.0 h). Pinning every remaining stop
         # (pins/rem) forces local hops the backup bypasses and cascades; kept only as fallbacks.
-        own = [x for x in d['order'] if isinstance(x, str) or x not in got]
+        visited = {R.stop_name[y] for x in legs[:i] for y in ((x[2], x[4]) if x[0] == 'ride' else (x[1], x[2]))}
+        # drop owed-done states and @pins the route already passed (X's @Hanover sent the replay back to Hanover)
+        own = [x for x in d['order'] if (isinstance(x, str) and x[1:] not in visited) or (not isinstance(x, str) and x not in got)]
         for tgt in (own, pins, rem):
             S2 = ts.Search(R, bs, bt + 60, [], 1, done=sorted(got)); ts._SELF, ts._START, ts._T0 = S2, bs, bt + 60
             f2, l2 = S2.evaluate(tgt)
@@ -102,10 +104,12 @@ def run(name, path, win, t_over, wb, out):
         for N in (1, 2, 3):   # wait: catch the same bus N days later, the router free to substitute after that
             if best is not None and best[0] <= f + N * 86400: break
             tN = bt + N * 86400 - 600
-            S3 = ts.Search(R, bs, tN, [], 1, done=sorted(got)); ts._SELF, ts._START, ts._T0 = S3, bs, tN
-            f3, l3 = S3.evaluate(own)
-            if f3 < 1e18 and S3.all_states(l3) and (best is None or f3 < best[0]): best, waited = (f3, l3), N
-            elif all(same_trip_exists(R, x, N) for x in legs[i:] if x[0] == 'ride'):
+            hit = False
+            for tgt in (own, pins, rem):   # next-day replay may follow the original path (pins) or re-route (own)
+                S3 = ts.Search(R, bs, tN, [], 1, done=sorted(got)); ts._SELF, ts._START, ts._T0 = S3, bs, tN
+                f3, l3 = S3.evaluate(tgt)
+                if f3 < 1e18 and S3.all_states(l3) and (best is None or f3 < best[0]): best, waited, hit = (f3, l3), N, True
+            if not hit and all(same_trip_exists(R, x, N) for x in legs[i:] if x[0] == 'ride'):
                 if best is None or f + N * 86400 < best[0]: best, waited = (f + N * 86400, []), N
         ts._SELF, ts._START, ts._T0 = S, st, t0
         ag = R.trip_info[(trip[0], trip[1])][0]
