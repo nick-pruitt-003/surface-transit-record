@@ -23,10 +23,11 @@ SHIFT = 42 * 86400   # pickles saved before the Nov migration are on September d
 ROUTES = [  # name, pickle, router (first date, days), start override
     ('X', '../out/res_x.pkl', (date(2026, 11, 4), 27), None),
     # Moorhead on the Portal Bridge bound (start Nov 9+): Mon Nov 9 13:00 CST, in time for the Fargo 14:30 Jefferson
-    # settled on start days Nov 9-15; its first bus (Fargo 14:30) is not at the start stop, so finish - elapsed is too late a
-    # clock: start at the evaluation's own clock, Mon Nov 9 00:00 CST
+    # settled on start days Nov 9-15. Its first bus (Fargo 14:30) is not at the start stop, so finish - elapsed is too late a
+    # clock and Mon 00:00 charged 14.5 h of waiting (250.26 h). Start Mon Nov 9 13:00 CST: early enough for the walk to Fargo
+    # (14:20 missed the 14:30), so the total matches the 235.8 h route.
     ('Moorhead', '../out/mh_nov/eval9.pkl', (date(2026, 11, 9), 22),
-     datetime(2026, 11, 9, 6, 0, tzinfo=timezone.utc).timestamp()),
+     datetime(2026, 11, 9, 19, 0, tzinfo=timezone.utc).timestamp()),
     ('Control', '../out/control_nov/eval_stl.pkl', (date(2026, 11, 4), 27), None),
     ('Record', '../out/wide/rec19f.pkl', (date(2026, 11, 19), 20), None),
 ]
@@ -64,10 +65,12 @@ def run(name, path, win, t_over, wb, out):
     f, legs = S.evaluate(d['order'])
     if f >= 1e18 or not S.all_states(legs):
         print(f'{name}: does not evaluate on this window', file=out); return
-    base_h = (f - t0) / 3600
-    print(f'\n== {name}: {base_h:.2f} h from {R.fmt_time(t0, st)} at {R.stop_name[st]}', file=out)
+    fb = next(x for x in legs if x[0] == 'ride')   # the record clock runs from the first bus, not the search clock
+    base_h = (f - fb[3]) / 3600
+    print(f'\n== {name}: {base_h:.2f} h from first bus {R.fmt_time(fb[3], fb[2])} at {R.stop_name[fb[2]]} '
+          f'(clock {R.fmt_time(t0, st)} at {R.stop_name[st]})', file=out)
     ws = wb.create_sheet(name)
-    ws.append([f'{name}: {base_h:.2f} h. Miss each ride by one minute and replay the rest.'])
+    ws.append([f'{name}: {base_h:.2f} h from the first bus. Miss each ride by one minute and replay the rest.'])
     ws['A1'].font = Font(bold=True)
     ws.append(['#', 'missed', 'from', 'to', 'cost h', 'recovery starts with'])
     for c in ws[2]: c.font = Font(bold=True)
