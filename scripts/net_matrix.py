@@ -20,24 +20,30 @@ R = cached_router(date(2026, 11, 12), 20, verbose=False)
 N = len(R.stop_ids)
 INTER = {'flix', 'amtrak', 'ibus', 'extra', 'walkin'} | set(INTERCITY_MORE)
 
-# ride edges: shortest arr - dep per (from, to)
+# ride edges: shortest arr - dep per (from, to), remembering which connection gave it (for the leg details)
 src = np.asarray(R.cfrom, dtype=np.int64); dst = np.asarray(R.cto, dtype=np.int64)
 w = (np.asarray(R.arr) - np.asarray(R.dep)).astype(np.float64)
-ok = (w > 0) & (src != dst)
+ok = np.where((w > 0) & (src != dst))[0]
 key = src[ok] * N + dst[ok]; w = w[ok]
-order = np.lexsort((w, key)); key = key[order]; w = w[order]
+order = np.lexsort((w, key)); key = key[order]; w = w[order]; conn = ok[order]
 first = np.ones(len(key), bool); first[1:] = key[1:] != key[:-1]
-key = key[first]; w = w[first]
+key = key[first]; w = w[first]; conn = conn[first]
 rs, rd = key // N, key % N
-# footpaths
-fs, fd, fw = [], [], []
+# every edge once, at its fastest: a ride and a footpath joining the same two stops used to be ADDED by csr_matrix
+# (it sums duplicate entries); now the faster one wins and its label is kept
+best = {}
+for u, v, ww, k in zip(rs.tolist(), rd.tolist(), w.tolist(), conn.tolist()):
+    best[(u, v)] = (ww, ('ride', k))
+nfoot = 0
 for i, lst in R.foot.items():
-    for j, s in lst:
-        if i != j: fs.append(i); fd.append(j); fw.append(float(max(s, 1)))
-S = np.concatenate([rs, np.array(fs, np.int64)]); D = np.concatenate([rd, np.array(fd, np.int64)])
-W = np.concatenate([w, np.array(fw)])
-G = csr_matrix((W, (S, D)), shape=(N, N))
-print(f'graph: {N} stops, {len(rs)} ride edges, {len(fs)} footpaths', file=sys.stderr)
+    for j, sec in lst:
+        if i == j: continue
+        nfoot += 1; ww = float(max(sec, 1))
+        if (i, j) not in best or ww < best[(i, j)][0]: best[(i, j)] = (ww, ('foot', None))
+EU = np.fromiter((k[0] for k in best), np.int64, len(best)); EV = np.fromiter((k[1] for k in best), np.int64, len(best))
+EW = np.fromiter((x[0] for x in best.values()), np.float64, len(best))
+G = csr_matrix((EW, (EU, EV)), shape=(N, N))
+print(f'graph: {N} stops, {len(rs)} ride edges, {nfoot} footpaths, {len(best)} merged edges', file=sys.stderr)
 
 # candidates: per state, the 3 busiest intercity stops, then farthest-point picks so every corner of the state has one
 # (Oct 13: busiest-plus-near-a-border missed Sheridan WY), then up to 3 walk-in border points spread the same way
@@ -94,4 +100,48 @@ out = {'points': pts, 'minutes_b64': base64.b64encode(mins.tobytes()).decode(), 
        'pass_lo_b64': base64.b64encode(lo_w.tobytes()).decode(), 'pass_hi_b64': base64.b64encode(hi_w.tobytes()).decode(),
        'note': 'shortest scheduled ride + walk time over the Nov 12-Dec 1 2026 network; no waiting or boarding time'}
 json.dump(out, open(sys.argv[1], 'w'), separators=(',', ':'))
+
+import gzip, struct
+def label(e):
+    if e[0] == 'foot': return 'On foot / local hop'
+    t = R.ctrip[e[1]]; info = R.trip_info.get((t[0], t[1]), ('', '', ''))
+    return (f"{info[0]}: {info[1] or info[2]}")[:60]
+labels, lab_ix, names, name_ix = [], {}, [], {}
+def li(x):
+    if x not in lab_ix: lab_ix[x] = len(labels); labels.append(x)
+    return lab_ix[x]
+def ni(i):
+    if i not in name_ix: name_ix[i] = len(names); names.append(R.stop_name[i][:48])
+    return name_ix[i]
+n = len(cands); offs = np.zeros(n * n + 1, '<u4'); segs = []
+poffs = np.zeros(n * n + 1, '<u4'); picks = []   # per pair: (state, stop) for the first stop in each state on the path
+for a in range(n):
+    pr = pred[a]; ca = cands[a]
+    for b in range(n):
+        offs[a * n + b] = len(segs) // 3; poffs[a * n + b] = len(picks) // 2
+        if a == b or not np.isfinite(dist[a, b]): continue
+        path = [cands[b]]; j = pr[cands[b]]
+        while j >= 0 and j != ca: path.append(j); j = pr[j]
+        path.append(ca); path.reverse()
+        seen = set()
+        for v in path[1:]:
+            sv = int(st[v])
+            if sv >= 0 and sv not in seen and (not R.stop_ids[v].startswith('walkin:') or R.walk_collects(v)):
+                seen.add(sv); picks += [sv, ni(v)]
+        t = 0.0; cur = None
+        for u, v in zip(path, path[1:]):
+            ww, e = best[(u, v)]; t += ww; lb = li(label(e))
+            if cur is not None and cur[0] == lb: cur[1] = v; cur[2] = t
+            else:
+                if cur is not None: segs += [cur[0], ni(cur[1]), min(65534, int(round(cur[2] / 60)))]
+                cur = [lb, v, t]
+        if cur is not None: segs += [cur[0], ni(cur[1]), min(65534, int(round(cur[2] / 60)))]
+offs[n * n] = len(segs) // 3; poffs[n * n] = len(picks) // 2
+meta = json.dumps({'n': n, 'labels': labels, 'names': names, 'nseg': len(segs) // 3, 'npick': len(picks) // 2}).encode()
+pad = b' ' * ((4 - (4 + len(meta)) % 4) % 4)
+blob = (struct.pack('<I', len(meta) + len(pad)) + meta + pad + offs.tobytes() + poffs.tobytes()
+        + np.array(segs, '<u2').tobytes() + np.array(picks, '<u2').tobytes())
+dpath = sys.argv[1].replace('.json', '_details.bin.gz')
+open(dpath, 'wb').write(gzip.compress(blob, 9))
+print(f'wrote {dpath}: {len(segs)//3} segments, {len(labels)} services, {len(names)} stops, {len(blob)} bytes raw', file=sys.stderr)
 print(f'wrote {sys.argv[1]}: {len(cands)}^2 matrix, unreachable pairs {int((mins == 65535).sum())}', file=sys.stderr)
