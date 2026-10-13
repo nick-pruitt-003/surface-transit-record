@@ -14,13 +14,13 @@ from time_router import cached_router
 from common import ABBR
 
 SHEET = '../docs/x_itinerary_nov12.xlsx'
-R = cached_router(datetime.fromisoformat('2026-11-05T00:54').date(), 20)
+R = cached_router(datetime.fromisoformat('2026-11-12T00:00').date(), 20)   # X's booked start, Thu Nov 12
 inv = {v: k for k, v in ABBR.items()}
 X = ('MT ID WA OR UT AZ NV CA NM CO KS OK TX LA AL FL GA SC NC VA MD DE PA NJ NY CT RI MA NH VT ME WV OH IN KY TN MS '
      'AR MO IL WI MI IA NE SD ND MN').split()
 ALIAS = {'Provo Central Station/Intermodal Hub': 'Provo/Orem (Exit 263)', 'Barstow (Amtrak)': 'Barstow',
          'Chicago (95th - Dan Ryan)': 'Chicago (95th - Dan Ryan)'}
-D0 = datetime(2026, 11, 5)
+D0 = datetime(2026, 11, 12)
 
 
 def stop(name):
@@ -78,6 +78,6 @@ ms.append(['#', 'missed', 'from', 'to', 'next best', 'cost h', 'recovery starts 
 for x in rows: ms.append(list(x))
 ms.append([])
 ms.append([None, 'Recovery keeps the remaining states in route X\'s order, from the missed ride\'s boarding stop one minute after '
-           'it leaves; cost is against catching it. Built on the repo data as of Oct 5 2026 (timetable window from Sep 24).'])
+           'it leaves; cost is against catching it. Built on the repo data as of Oct 13 2026 (November timetables, X from Thu Nov 12).'])
 wb.save(SHEET)
 print('written', len(rows))
