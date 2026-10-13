@@ -394,3 +394,17 @@ the likely gap). The control on Nov 5 - Dec 1 stays 237.5 h (Nov 12 start). Defa
 WRJ 04:35 -> Boston -> Portland -> Boston -> Acela 13:00 -> ... -> Huntington Sun Nov 29 03:25, **238.833 h**, exactly
 the record. The "loses Maine" result above came from the free start-day settle drifting to Hanover/Portsmouth, not
 from the data: the WRJ 04:35 (Flix trip US0260-3534-0430112026) runs daily Nov 2-30 (Nick confirmed it sold Nov 19).
+
+## Redundancy, Oct 13 2026 (`scripts/redundancy.py`, docs/redundancy.xlsx)
+
+Each ride missed by one minute; recovery = the route's own pruned order from there (validated: X missing the Pasco
+Greyhound recovers via Northwestern -> Boise -> SLE at 0.0 h), or the whole remaining chain N days later. No backup is
+faster than any plan (no hidden savings). Costs above 24 h are "at least a day": the replay is not a full search and
+can overstate (the ride kit finds Houston -> Tallahassee covered via the 22:00 to Mobile; this shows +96).
+- X: covered 0 h from Spokane to Houston except the Chief, plus the Memphis MATA and the whole Chicago Saturday; +24 h
+  for the Meteor and the Friday chain to Chicago and the Plains finish; > 1 day at Sheridan, Billings, the Chief,
+  Houston/Tallahassee, the Acela and the New England block.
+- Control: front Huntington -> St Louis is the weak point (+117 h), Eau Claire/MSP -> Billings/Chief +92 h, Plains +24 h,
+  the East end forgiving (+2 to +16 h).
+- Record: nearly every miss +24 h (same chain next day); SLE, Pasco/Spokane, St Louis -> KC, Toledo -> Detroit 0 h.
+- Moorhead: its order now evaluates at 248.3 h (best start Thu); off the list pending a repair search.
