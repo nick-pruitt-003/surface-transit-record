@@ -334,3 +334,19 @@ Why depth: `--xprobe` ranked X's own prefix against the final frontier. Under cr
 Jacksonville, 12-17 states) sat 96-99% back; slack blends at 0.25/0.5/1.0 never fixed the middle without burying the
 Northeast; per-depth layers with `--slack-weight 3` put it 8-58% back and the Northeast at the front. Not proof that
 nothing beats X (shallower layers were still queued), but much stronger evidence than the sweeps.
+
+## Using X's Chicago slack, Oct 13 2026
+
+X's tail only needs Chicago by Sat 11:15 (Four Winds 12:00 -> back 15:30 -> Metra 16:32 Kenosha -> 19:08 back -> bus
+station 21:06 for the 21:15 to Omaha); X arrives 05:35, so 5.5 h of slack. Front search to Chicago Bus Station by Sat
+Nov 21 11:10 holding all but WI MI IA NE SD ND MN, latest start, free start in WY / MT / WA:
+
+| start state | front (first bus -> Chicago) | start |
+|---|---|---|
+| WY | 198.2 h | Sheridan Thu 22:20 (X's own front) |
+| MT | 211.6 h | 13 h earlier: WY then costs a detour |
+| WA | 198.2 h | drifted back to Sheridan |
+
+The slack cannot buy a later start: the Sheridan bus is daily, so the next start is 24 h later. Also checked: leaving
+New York any time Thu 07:20-10:30 reaches Indiana Fri 03:00 either way, so the Portland 23:59 Flix (in the feed every
+night of the window except Nov 18-19, X's nights) would not shorten X either.
