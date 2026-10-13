@@ -350,3 +350,28 @@ Nov 21 11:10 holding all but WI MI IA NE SD ND MN, latest start, free start in W
 The slack cannot buy a later start: the Sheridan bus is daily, so the next start is 24 h later. Also checked: leaving
 New York any time Thu 07:20-10:30 reaches Indiana Fri 03:00 either way, so the Portland 23:59 Flix (in the feed every
 night of the window except Nov 18-19, X's nights) would not shorten X either.
+
+## Robustness, Memphis, Southwest starts and the control, Oct 13 2026
+
+**X's backups** (`x_itinerary.py` "If you miss a leg", now on Nov 12 timetables):
+- Pasco 13:25 Greyhound missed: Northwestern 15:00 -> Hermiston/Pendleton/La Grande (OR) -> Boise 21:10, Salt Lake Express
+  21:15 -> Pocatello 01:05, 03:40 -> SLC airport 06:40 -> Saint George 12:20, the same southbound bus. **No loss**
+  (was +32 h before the Oregon stops were entered). Reverse chain Saint George 16:30 -> Pasco 13:10 also in the data.
+- Las Vegas Flix missed: 702 Shuttles Blue Diamond 18:15 -> Barstow 20:27 + 2.5 mi run to the depot for the Chief 20:47.
+  Fit-run only (on the platform ~20:43); the router shows a 1 min miss because it adds the 5 min boarding allowance.
+- **Southwest Chief missed** (search from the Barstow 702 stop Sat 20:20, free order and finish): best recovery is
+  Barstow -> LA -> Greyhound 23:30 -> Phoenix -> El Paso -> Omnibus to Kansas City ..., about **247 h** total. The
+  Chief is X's single point of failure.
+
+**Memphis** (from Nick's sheet: Huntington front -> St Louis -> Greyhound 01:00 -> Memphis Airways 06:30 with MO AR
+on the bus, MATA 42 to Holmes and back):
+- Memphis -> Billings, Plains states only: the sheet's own chain (Conway -> KC 01:30 -> Omaha -> SF -> Fargo -> MSP ->
+  Eau Claire -> Billings Sat 00:25). Nothing faster.
+- Memphis, free order, Plains first: 204.7 h to the Vermont line -> **old control back at 237.5 h** on November data.
+- Memphis, south first: 237.8 h from Memphis alone. Plains first is right.
+
+**Southwest-first starts** (none under the record): RX order 251.2 (drifted to Rowland Heights), CA 268.1
+(Montclair), NV 243.8 (Saint George, 1 Ohio Coach leg), RX + Fargo->KC->Denver chain 244.3 (drifted to Maryville).
+
+**Control** (Huntington Thu Nov 12 00:45 -> VT line Sat Nov 21 22:14): original order and Nick's St Louis/Airways
+order both evaluate 237.5 h; a 25 min search seeded with the St Louis order found nothing lower.
