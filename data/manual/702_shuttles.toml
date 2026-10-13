@@ -30,3 +30,15 @@ route = "Las Vegas -> Ontario (Nick screenshot Oct 2 2026, Primm 10:50 to Ontari
 days = "1111111"
 tz = "America/Los_Angeles"
 stops = ["las_vegas_dean_martin_blue_diamond_702_s 10:15", "jean_nv_161_702_shuttles 10:35", "primm_bus_stop_702_shuttles 10:50", "baker_blvd_702_shuttles 11:35", "newberry_springs_702_shuttles 12:10", "barstow_east_main_st_1611_702_shuttles 12:27", "victorville_15445_palmdale_rd_702_shuttl 13:04", "hesperia_main_st_702_shuttles 13:11", "fontana_3892_sierra_ave_ampm_702_shuttle 13:27", "ontario_fwy_15_702_shuttles 13:37"]
+
+# Nick screenshot Oct 13 2026 (702 Shuttles, Thu Oct 22): Las Vegas 18:00 -> Blue Diamond 18:15 -> Jean 18:35 -> Primm
+# 18:50 -> Baker 19:35 -> Newberry Springs 20:10 -> Barstow 20:27 (ends). The "Las Vegas, NV" 18:00 stop is not entered;
+# Nick boards at Blue Diamond (RTC Red line to the 217 from the airport). Daily assumed. The backup for X's Flix 15:30
+# Las Vegas -> Barstow: Barstow 20:27, then 2.5 mi on foot to the Chief at Barstow Amtrak 20:47 (walk_links.csv), which
+# only makes it under the fit-run variant (BUS48_RUN_MPH).
+[[trip]]
+id = "t463"
+route = "702 Shuttles Las Vegas Blue Diamond 18:15 -> Primm -> Barstow 20:27 (daily assumed)"
+days = "1111111"
+tz = "America/Los_Angeles"
+stops = ["las_vegas_dean_martin_blue_diamond_702_s 18:15", "jean_nv_161_702_shuttles 18:35", "primm_bus_stop_702_shuttles 18:50", "baker_blvd_702_shuttles 19:35", "newberry_springs_702_shuttles 20:10", "barstow_east_main_st_1611_702_shuttles 20:27"]
