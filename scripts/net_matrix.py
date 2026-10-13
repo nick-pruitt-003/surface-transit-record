@@ -67,14 +67,31 @@ for s in range(len(R.state_names)):
 cands = list(dict.fromkeys(cands))
 print(f'{len(cands)} candidate points before the reachability filter', file=sys.stderr)
 
-dist = dijkstra(G, directed=True, indices=cands)[:, cands]   # seconds
+dist, pred = dijkstra(G, directed=True, indices=cands, return_predecessors=True)
+dist = dist[:, cands]   # seconds
 # drop dead ends: a candidate that cannot reach, or be reached from, most of the others breaks whole routes
 fin = np.isfinite(dist)
 keep = [k for k in range(len(cands)) if fin[k].mean() > 0.8 and fin[:, k].mean() > 0.8]
 cands = [cands[k] for k in keep]; dist = dist[np.ix_(keep, keep)]
+pred = pred[keep]
+# states each fastest path passes through at a real stop (Nick, Oct 13: Milwaukee -> Fargo goes through Minneapolis, so
+# Minnesota should not need a stop of its own). 48 bits per pair, as two 32-bit words.
+real_stop = np.array([not R.stop_ids[i].startswith('walkin:') for i in range(N)])
+lo_w = np.zeros((len(cands), len(cands)), '<u4'); hi_w = np.zeros((len(cands), len(cands)), '<u4')
+for a in range(len(cands)):
+    pr = pred[a]
+    for b in range(len(cands)):
+        if a == b or not np.isfinite(dist[a, b]): continue
+        m = 0; j = pr[cands[b]]
+        while j >= 0 and j != cands[a]:
+            if real_stop[j] and st[j] >= 0: m |= 1 << int(st[j])
+            j = pr[j]
+        lo_w[a, b] = m & 0xFFFFFFFF; hi_w[a, b] = m >> 32
 mins = np.where(np.isfinite(dist), np.minimum(np.round(dist / 60), 65534), 65535).astype('<u2')
 pts = [[ABBR[R.state_names[st[i]]], R.stop_name[i][:48], round(float(xy[i][1]), 4), round(float(xy[i][0]), 4)] for i in cands]
 out = {'points': pts, 'minutes_b64': base64.b64encode(mins.tobytes()).decode(), 'n': len(cands),
+       'state_order': [ABBR[x] for x in R.state_names],
+       'pass_lo_b64': base64.b64encode(lo_w.tobytes()).decode(), 'pass_hi_b64': base64.b64encode(hi_w.tobytes()).decode(),
        'note': 'shortest scheduled ride + walk time over the Nov 12-Dec 1 2026 network; no waiting or boarding time'}
 json.dump(out, open(sys.argv[1], 'w'), separators=(',', ':'))
 print(f'wrote {sys.argv[1]}: {len(cands)}^2 matrix, unreachable pairs {int((mins == 65535).sum())}', file=sys.stderr)
