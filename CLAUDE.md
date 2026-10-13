@@ -11,6 +11,11 @@
   November (Huntington Thu Nov 12 00:45 -> VT line Sat Nov 21 22:14), via Nick's St Louis Greyhound 01:00 -> Memphis
   Airways 06:30 (MO, AR on the bus) and MATA 42 to Holmes; X stays the control. The Southwest Chief is X's single point
   of failure: missing it costs ~15 h (247 h). See docs/sweep.md, Oct 13.
+- **Portal Bridge bound (Oct 13):** the early Washington -> Boston Acelas (06:40-06:50) are absent until Mon Nov 16, so a
+  route reaching the Northeast Corridor before Nov 16 is judged on a broken week. Searches and evaluations use
+  `--at 2026-11-09 --days 22` (start days Nov 9-15, window to Dec 1). Moorhead's 235.8 h fell to 248.3 h purely because
+  the settle picked Thu Nov 5 and met the gap; check any "route broke" against the start day first. When verifying a
+  known route, pin its start (`--fixed-start`): a free start drifts (the record "lost Maine" that way).
 - **Replay gate:** `python3 ride_search.py --start "Sheridan WY Taco Bell 1655 Coffeen Ave (Jefferson)" --at
   2026-11-12T22:10 --end MN --by 2026-11-22T20:10 --tz America/Denver --track ../out/res_x.pkl` (baseline 21/40, exit 0).
 - **ride_search's menu runs in C** (`scripts/menu.c`, `--menu c`, the default; ~18x with the bounded goal scan). The
