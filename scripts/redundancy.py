@@ -96,10 +96,15 @@ def run(name, path, win, t_over, wb, out):
             if f2 < 1e18 and S2.all_states(l2) and (best is None or f2 < best[0]): best = (f2, l2)
         ts._SELF, ts._START, ts._T0 = S, st, t0
         waited = 0
-        for N in (1, 2, 3):   # wait: the whole remaining chain N days later, trip by trip
+        for N in (1, 2, 3):   # wait: catch the same bus N days later, the router free to substitute after that
             if best is not None and best[0] <= f + N * 86400: break
-            if all(same_trip_exists(R, x, N) for x in legs[i:] if x[0] == 'ride'):
-                best, waited = (f + N * 86400, []), N; break
+            tN = bt + N * 86400 - 600
+            S3 = ts.Search(R, bs, tN, [], 1, done=sorted(got)); ts._SELF, ts._START, ts._T0 = S3, bs, tN
+            f3, l3 = S3.evaluate(own)
+            if f3 < 1e18 and S3.all_states(l3) and (best is None or f3 < best[0]): best, waited = (f3, l3), N
+            elif all(same_trip_exists(R, x, N) for x in legs[i:] if x[0] == 'ride'):
+                if best is None or f + N * 86400 < best[0]: best, waited = (f + N * 86400, []), N
+        ts._SELF, ts._START, ts._T0 = S, st, t0
         ag = R.trip_info[(trip[0], trip[1])][0]
         if best is None:
             cost, how = None, 'not recoverable in the window'
@@ -107,7 +112,7 @@ def run(name, path, win, t_over, wb, out):
             cost = round((best[0] - f) / 3600, 1)
             first = next((x for x in best[1] if x[0] == 'ride'), None)
             if waited:
-                how = f'wait {waited} day(s): the same buses run, everything shifts'
+                how = f'wait {waited} day(s) and catch the same bus, then continue'
             elif first:
                 how = (f'{R.fmt_time(first[3], first[2])} {R.trip_info[(first[1][0], first[1][1])][0]}: '
                        f'{R.stop_name[first[2]]} -> {R.stop_name[first[4]]}')
