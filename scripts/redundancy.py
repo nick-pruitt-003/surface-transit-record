@@ -29,7 +29,10 @@ ROUTES = [  # name, pickle, router (first date, days), start override
     ('Moorhead', '../out/mh_nov/eval9.pkl', (date(2026, 11, 9), 22),
      datetime(2026, 11, 9, 19, 0, tzinfo=timezone.utc).timestamp()),
     ('Control', '../out/control_nov/eval_stl.pkl', (date(2026, 11, 4), 27), None),
-    ('Record', '../out/wide/rec19f.pkl', (date(2026, 11, 19), 20), None),
+    # the record itself (Nick's Oct 6 csv): KC -> Tulsa -> Dallas -> El Paso -> LA -> Las Vegas, pinned (out/wide/rec_true.log)
+    ('Record', '../out/wide/rec_true.pkl', (date(2026, 11, 19), 20), None),
+    # the search's variant of it: Omnibus KC 13:01 -> Tucumcari -> Flagstaff -> Barstow -> Las Vegas, same finish
+    ('Record-Omnibus', '../out/wide/rec19f.pkl', (date(2026, 11, 19), 20), None),
 ]
 
 

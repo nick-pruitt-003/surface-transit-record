@@ -411,3 +411,9 @@ can overstate (the ride kit finds Houston -> Tallahassee covered via the 22:00 t
 - Moorhead (Oct 13, Portal Bridge bound: start Mon Nov 9, 235.8 h): covered 0 h from Spokane to Houston except the
   Chief, the whole New England loop, the Chicago Wednesday and the Memphis walk-ins; +24 h for the Plains block, the
   Gulf-to-Washington legs and the Capitol Limited; **the Chief +144 h**, the one single point of failure it shares with X.
+
+**Record vs Omnibus (Oct 13 evening).** The redundancy "Record" tab was rec19f, a search seeded with the record order:
+it swapped KC -> Tulsa -> Dallas -> El Paso -> LA -> Las Vegas for Omnibus KC 13:01 -> Tucumcari -> Flagstaff -> Barstow
+-> Las Vegas and finished the same minute. The record itself, pinned (out/wide/rec_true.log), also runs **238.8 h**
+(WRJ Thu Nov 19 04:35 -> Huntington Sun Nov 29 03:25). Both are now tabs (Record, Record-Omnibus). The hand-written
+Omnibus orders (omni_south 281.2, omni_west 284.2, settled inf) were dropped for record-family seeds (out/omni/run4.sh).
