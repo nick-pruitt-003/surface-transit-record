@@ -443,4 +443,4 @@ the record.** Best: run 08 237.92 h, Fargo Sun 14:30 -> South Haven MI, stopped 
 (ends Chicago -> South Haven for MI, uses Vonlane Nashville -> Memphis). New shapes: **run 21 243.8** Portland ME Fri
 04:15 (New England first, South, Plains, ends Southwest) and **run 22 244.6** Maryville MO Mon 03:25 (Plains, Northwest,
 Southwest, South, Florida, East Coast, ends Vermont/Maine). Runs 14/28 (Hanover, St Albans, 246.6/247.7) share a finish.
-Five final routes ride the Omnibus (runs 10, 17, 20, 28, 29; best run 28 at 247.7). Focused searches on 21 and 22: out/sweep7/focus.
+Five final routes ride the Omnibus (runs 10, 17, 20, 28, 29; best run 28 at 247.7). Focused searches on 21 and 22 (out/sweep7/focus, 1500 s, seeded, pins kept) did not move them: 243.8 and 244.6.
