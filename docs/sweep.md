@@ -435,3 +435,12 @@ before Chicago.
 **Sweep 7 queued** (out/sweep7, 32 seeds `random_seeds.py 32 7`, 13 min, family abort): first unguided sweep with the
 Omnibus, the Oct 7 City of New Orleans, no phantom BeeLine 04:00, LA Metro, and start days Nov 9-15 (sweep.sh now takes
 AT/DAYS from the environment; default unchanged).
+
+## Sweep 7 (Oct 13-14 overnight, out/sweep7/summary.md)
+
+32 random seeds (`random_seeds.py 32 7`), 13 min each, start days Nov 9-15, first sweep with the Omnibus. **Nothing under
+the record.** Best: run 08 237.92 h, Fargo Sun 14:30 -> South Haven MI, stopped early as the Fargo/Moorhead family
+(ends Chicago -> South Haven for MI, uses Vonlane Nashville -> Memphis). New shapes: **run 21 243.8** Portland ME Fri
+04:15 (New England first, South, Plains, ends Southwest) and **run 22 244.6** Maryville MO Mon 03:25 (Plains, Northwest,
+Southwest, South, Florida, East Coast, ends Vermont/Maine). Runs 14/28 (Hanover, St Albans, 246.6/247.7) share a finish.
+No run used the Omnibus in its best route. Focused searches on 21 and 22: out/sweep7/focus.
