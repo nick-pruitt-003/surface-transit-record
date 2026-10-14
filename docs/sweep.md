@@ -417,3 +417,21 @@ it swapped KC -> Tulsa -> Dallas -> El Paso -> LA -> Las Vegas for Omnibus KC 13
 -> Las Vegas and finished the same minute. The record itself, pinned (out/wide/rec_true.log), also runs **238.8 h**
 (WRJ Thu Nov 19 04:35 -> Huntington Sun Nov 29 03:25). Both are now tabs (Record, Record-Omnibus). The hand-written
 Omnibus orders (omni_south 281.2, omni_west 284.2, settled inf) were dropped for record-family seeds (out/omni/run4.sh).
+
+**Record-family Omnibus queue (out/omni/run4.sh, Oct 13 evening; pin @Guymon, Omnibus-only).** WRJ pinned Thu Nov 19
+04:25 ET: **238.8 h**, ties the record (finish Huntington Sun 03:25 on the same Detroit bus, so savings west of there do
+not count). Free VT start (Nov 16+): 249.5 (settle picked a Tuesday and never left it). Reversed (Omnibus eastbound):
+255.9 from Bluefield. Rotations of the record order: MO 256.5, KS 253.8, MT 257.6, FL 277.6; UT WA NE MN IL VA do not
+evaluate: the record is an open path (WRJ ... Huntington), and a rotation crosses that seam and reruns the whole
+sequence. Two queue bugs on the way, both fixed: the fixed-start clock was read in Central (04:25 CT missed the WRJ
+04:35, 262 h), and @Kansas City also matched the Amtrak station.
+
+**Parkersburg finish (Nick):** Barons Cleveland 17:40 -> Parkersburg 21:40 (daily, intercity feed), fed by Barons Chicago
+09:05 CT -> Cleveland 17:00 ET, would end 5.75 h before Huntington 03:25 if only OH and WV were owed at Chicago. In the
+record family it fails on Michigan, not Kentucky: three orders with KY earlier and the end pinned @Parkersburg all
+evaluate 246.4 h, because MI is only reachable via Toledo -> Detroit 16:50. Useful for any shape that has MI and KY
+before Chicago.
+
+**Sweep 7 queued** (out/sweep7, 32 seeds `random_seeds.py 32 7`, 13 min, family abort): first unguided sweep with the
+Omnibus, the Oct 7 City of New Orleans, no phantom BeeLine 04:00, LA Metro, and start days Nov 9-15 (sweep.sh now takes
+AT/DAYS from the environment; default unchanged).

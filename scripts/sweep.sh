@@ -13,7 +13,7 @@ while IFS= read -r seed; do
   i=$((i + 1)); n=$(printf '%02d' $i); log=$O/run_$n.log; live=$O/run_$n.live.json
   grep -qE '^(FINAL|ABORTED)' $log 2>/dev/null && continue
   rm -f $live
-  BUS48_LIVE=$live $PY -X utf8 time_search.py --start free:${seed%%,*} --at 2026-11-05T00:00 \
+  BUS48_LIVE=$live $PY -X utf8 time_search.py --start free:${seed%%,*} --at ${AT:-2026-11-05T00:00} ${DAYS:+--days $DAYS} \
     --seed-states $seed --budget $BUDGET --patience $PATIENCE --out $O/run_$n.pkl > $log 2>&1 &
   pid=$!
   # poll until the search ends or its best settles into a known family after the grace period
