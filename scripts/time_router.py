@@ -95,8 +95,9 @@ class Feed:
     """One GTFS zip. tz_mode: 'agency' (times in agency tz, or stop_timezone when
     present — Amtrak), 'infer' (majority state tz per agency), or 'utc'.
     calendar_mode: 'dates' (honour calendar dates) or 'weekday' (stale feeds)."""
-    def __init__(self, path, name, tz_mode, calendar_mode, skip_agencies=(), max_speed=130, keep_routes=None):
+    def __init__(self, path, name, tz_mode, calendar_mode, skip_agencies=(), max_speed=130, keep_routes=None, az_summer_offset=False):
         self.name = name; self.tz_mode = tz_mode; self.calendar_mode = calendar_mode; self.max_speed = max_speed
+        self.az_summer_offset = az_summer_offset
         z = zipfile.ZipFile(path)
         names = set(z.namelist())
         rd = lambda n: csv.DictReader(io.TextIOWrapper(z.open(n), encoding='utf-8-sig')) if n in names else []
@@ -222,9 +223,17 @@ class Feed:
     def connections(self, d0, days, stop_index, trip_base):
         """Yield (dep_time, arr_time, dep_stop, arr_stop, trip_key) in epoch seconds."""
         out = []
+        # Amtrak's Arizona stops carry stop_timezone America/Denver, and the feed moves their (Eastern) times an hour later
+        # for the standard-time calendars, as if Arizona kept DST: the Chief's Kingman is 27:37 Oct 11-30 and 28:37 from
+        # Oct 31, while Needles and Gallup either side stay put. The train runs to Pacific and Mountain time, so the true
+        # Eastern time does not change; read as written, every Arizona stop ran an hour late in November (Kingman 2:37 MST
+        # for 1:37, Stagecoach Express Maricopa 23:15 for Amtrak.com's 22:15 on Nov 1; Nick, Oct 15 2026).
+        az = {sid for sid, z in self.stop_tz.items() if getattr(z, 'key', '') == 'America/Denver'
+              and -114.9 < self.stops[sid][2] < -109.04 and self.stops[sid][3] < 37.0} if getattr(self, 'az_summer_offset', False) else set()
         for di in range(days):
             d = d0 + timedelta(days=di)
             bases = {}
+            azs = -3600 if az and not datetime(d.year, d.month, d.day, 12, tzinfo=ZoneInfo('America/New_York')).dst() else 0
             def base_for(tz):
                 if tz not in bases:
                     bases[tz] = datetime(d.year, d.month, d.day, tzinfo=timezone.utc).timestamp() if tz is None else (datetime(d.year, d.month, d.day, 12, tzinfo=tz) - timedelta(hours=12)).timestamp()
@@ -236,8 +245,8 @@ class Feed:
                 st = t['stops']   # after sane(), which may drop a stop with an impossible time
                 for i in range(len(st) - 1):
                     a = stop_index[self.stops[st[i][1]][0]]; b = stop_index[self.stops[st[i + 1][1]][0]]
-                    dep = base_for(self._tz_for(st[i][1], t)) + st[i][3]
-                    arr = base_for(self._tz_for(st[i + 1][1], t)) + st[i + 1][2]
+                    dep = base_for(self._tz_for(st[i][1], t)) + st[i][3] + (azs if st[i][1] in az else 0)
+                    arr = base_for(self._tz_for(st[i + 1][1], t)) + st[i + 1][2] + (azs if st[i + 1][1] in az else 0)
                     out.append((dep, arr, a, b, key))
         return out
 
@@ -767,7 +776,7 @@ class ExtraFeed:
 def load_feeds():
     feeds = [
         Feed(os.path.join(DATA_DIR, 'flix_gtfs.zip'), 'flix', 'utc', 'dates'),
-        Feed(os.path.join(DATA_DIR, 'amtrak_gtfs.zip'), 'amtrak', 'agency', 'dates', max_speed=220),
+        Feed(os.path.join(DATA_DIR, 'amtrak_gtfs.zip'), 'amtrak', 'agency', 'dates', max_speed=220, az_summer_offset=True),
         Feed(os.path.join(DATA_DIR, 'intercity_merged_gtfs.zip'), 'ibus', 'infer', 'weekday', skip_agencies=('Greyhound-us', 'FlixBus-us', 'Concord Coach Lines', 'Omnibus Express',
                                                                                                   # stale: RedCoach's site (Oct 1 2026) runs Dallas -> Houston 12:35, 16:25, 18:55, the feed
                                                                                                   # 09:30, 10:00, 16:00, 18:00; verified departures are in data/manual/redcoach.toml

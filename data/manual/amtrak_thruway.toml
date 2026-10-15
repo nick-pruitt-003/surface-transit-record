@@ -9,6 +9,10 @@ barstow_amtrak = "=amtrak:BAR"
 barstow_thruway = "=amtrak:BBS"
 las_vegas_thruway = "=amtrak:LVT"
 las_vegas_amtrak = "=amtrak:LVS"
+maricopa_amtrak = "=amtrak:MRC"
+tempe_amtrak = "=amtrak:TEM"
+phoenix_sky_harbor_amtrak = "=amtrak:PHA"
+phoenix_north_amtrak = "=amtrak:PXN"
 
 [[trip]]
 id = "t426"
@@ -16,3 +20,10 @@ route = "Amtrak Thruway 5619 (Alvand) Bakersfield 16:50 -> Mojave -> Barstow 19:
 days = "1111111"
 tz = "America/Los_Angeles"
 stops = ["bakersfield_amtrak 16:50", "tehachapi_thruway 17:35", "mojave_thruway 18:00", "barstow_amtrak 19:10", "barstow_thruway 19:20/19:50", "las_vegas_thruway 22:10", "las_vegas_amtrak 22:30"]
+
+[[trip]]
+id = "t465"
+route = "Amtrak Thruway 8901 (Stagecoach Express) Maricopa 22:15 -> Tempe -> Sky Harbor -> Phoenix North 23:45, meets Sunset Limited #1 (amtrak.com, Nick screenshot Oct 15: Sun Nov 1 22:15 -> 23:45). The feed writes it as 1:15 on the service day, a day early (a wrapped 25:15); its trips are in drop_trips.csv"
+days = "0101001"
+tz = "America/Phoenix"
+stops = ["maricopa_amtrak 22:15", "tempe_amtrak 23:00", "phoenix_sky_harbor_amtrak 23:15", "phoenix_north_amtrak 23:45"]
