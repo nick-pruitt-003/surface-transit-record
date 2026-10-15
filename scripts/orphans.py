@@ -38,6 +38,14 @@ def near_city(i):
     d = np.hypot((xy[city_idx, 0] - xy[i, 0]) * 85, (xy[city_idx, 1] - xy[i, 1]) * 111)
     return bool((d <= 1.0).any())
 foot = {i: {j for j, _ in R.foot.get(i, ())} for i in inter}
+# carrier pairs that already meet somewhere (same stop, or linked by a walk or local hop): a gap between two of their
+# stops is not an orphan. Indian Trails and Jefferson share the Duluth Transportation Center, so the 10.5 km between
+# Kirby Plaza and the Indian Trails Superior stop is no gap (the first version listed it; Oct 15).
+meet = set()
+for i in inter:
+    for j in foot[i] | {i}:
+        for a in ag_at[i]:
+            for b in ag_at.get(j, ()): meet.add((a, b)); meet.add((b, a))
 buckets = defaultdict(list)
 for i in inter: buckets[(int(xy[i, 0] / 0.4), int(xy[i, 1] / 0.4))].append(i)
 seen = {}
@@ -49,6 +57,7 @@ for i in inter:
                 if j <= i or j in foot[i]: continue
                 new = ag_at[j] - ag_at[i]; new_i = ag_at[i] - ag_at[j]
                 if not new or not new_i: continue
+                if all((a, b) in meet for a in new_i for b in new): continue
                 d = hav(R.stop_xy[i], R.stop_xy[j])
                 if not 10 < d <= 40: continue
                 key = (frozenset(ag_at[i]), frozenset(ag_at[j]))
@@ -63,3 +72,8 @@ for d, i, j in rows:
     st = R.abbr[i] or '?'
     print(f'{d:5.1f} km {st}  {R.stop_name[i][:34]:34} [{", ".join(sorted(a[:18] for a in ag_at[i]))[:60]}]\n'
           f'          <-> {R.stop_name[j][:34]:34} [{", ".join(sorted(a[:18] for a in ag_at[j]))[:60]}]  {tag}')
+
+# carriers that meet no other intercity carrier at any stop: wholly orphaned, reachable only through city transit
+alone = [ag for ag in trips if not any(b != ag for a, b in meet if a == ag)]
+print(f'\n== carriers meeting no other intercity carrier ({len(alone)}): reachable only through a city transit feed, if at all')
+for ag in sorted(alone): print('  ', ag, f'({len(trips[ag])} trips)')

@@ -40,12 +40,7 @@ stops = ["salt_lake_city_airport 06:00", "saint_george_bluff_st_office 11:30/12:
 # time; Las Vegas 11:40/13:50 PST reads 12:40/14:50 here. The site's per-stop clocks were from daylight time
 # (Utah UTC-6), and under winter time the Beaver Dam rows ran backwards and rolled a day (review Oct 11).
 # Offsets kept from the screenshot: Sun River +5, Beaver Dam +35, Mesquite +45, Las Vegas +2:10.
-# 7021's stops between the airport and St George are all in Utah and left out.
-[[trip]]
-route = "SLE 7021 Salt Lake City (Airport) 04:45 -> Saint George (Bluff St Office) 10:20"
-note = "Nick screenshot Oct 1 2026 (Google, Salt Lake Express); daily assumed"
-days = "1111111"
-stops = ["slc_airport 04:45", "stg_bluff 10:20"]
+# SLE 7021 SLC Airport 04:45 -> St George 10:20 (from a Google listing) removed Oct 15 2026: Nick, it does not exist.
 
 [[trip]]
 route = "SLE 8035 Saint George (Bluff St Office) 10:30 -> Las Vegas (Airport) 11:40"
