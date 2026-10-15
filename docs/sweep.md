@@ -444,3 +444,17 @@ the record.** Best: run 08 237.92 h, Fargo Sun 14:30 -> South Haven MI, stopped 
 04:15 (New England first, South, Plains, ends Southwest) and **run 22 244.6** Maryville MO Mon 03:25 (Plains, Northwest,
 Southwest, South, Florida, East Coast, ends Vermont/Maine). Runs 14/28 (Hanover, St Albans, 246.6/247.7) share a finish.
 Five final routes ride the Omnibus (runs 10, 17, 20, 28, 29; best run 28 at 247.7). Focused searches on 21 and 22 (out/sweep7/focus, 1500 s, seeded, pins kept) did not move them: 243.8 and 244.6.
+
+## New Mexico starts (Oct 15 2026, out/nm)
+
+Nick's theory: from NM, the Omnibus north (Albuquerque -> Provo) and the Utah shuttles south to Las Vegas / Primm /
+Barstow beat waiting for the westbound Chief. 8 runs, 13 min each, start days Nov 9-15, after the SLE first-run fix
+(06:45, not 06:00) and the new St George Shuttle (LV <-> Beaver Dam <-> St George <-> Orem <-> SLC). Best: **Raton 251.5 h**
+(1 Ohio Coach), X with a NM front: Raton 02:30 -> Denver -> Buffalo WY -> Billings -> Spokane -> Pasco -> Provo 03:30 ->
+FrontRunner Orem -> St George Shuttle 07:05 -> Las Vegas 13:10. Others: Tucumcari 254.8, hand seed 2 (ND MN last)
+257.4 / 265.1, random NM-first seeds 257.7-280.2. A NM start costs about 20 h against Sheridan: the route recrosses
+NM on the Chief.
+
+Hop option (BUS48_HOP_FEED_KM=1, no modelled local hop where both ends have a city-feed stop within 1 km): X, Moorhead
+and the record unchanged; the control 261.49 h (misses IA NE): its Holmes & Hornsby -> Memphis Bus Station hop was
+hiding a miss, MATA 42 at 09:08 reaches Airways 09:29 for the 09:30 Flix. Kept opt-in pending Nick's call.

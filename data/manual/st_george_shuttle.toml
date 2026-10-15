@@ -1,0 +1,70 @@
+agency = "St George Shuttle"
+
+# St George Shuttle is its own carrier, not Salt Lake Express (Nick, Oct 15 2026). Northbound runs from Nick's
+# screenshots of its booking site for Wed Oct 28 2026, each stop's local clock (Las Vegas Pacific, Utah Mountain); the
+# site sells Las Vegas -> SLC as two legs with a layover at St George. Southbound: the 06:00 from SLC Airport, read Oct 1
+# for Oct 16 (Midvale 06:30 not modelled). Orem Central Station is timetabled 1 h 05 from SLC Airport each way (Nick
+# Oct 15 2026). Daily assumed throughout.
+# Every Las Vegas <-> St George run stops at Beaver Dam AZ (Nick Oct 15 2026: NV, AZ and UT on one bus); its time is
+# not on the site, so it is St George -/+ 35 min, the offset of SLE's runs on the same road (approximate).
+# The St George stop is taken as SLE's Bluff St office: the shuttle's own St George address is not yet known.
+[stops]
+las_vegas_airport = "=ibus:735"   # Las Vegas (Airport), Harry Reid
+st_george = "=ibus:2067"   # Saint George (Bluff St Office), approximate for the shuttle's stop
+slc_airport = "=ibus:2060"   # Salt Lake City (Airport)
+beaver_dam = "Beaver Dam"   # Beaver Dam AZ, shared with SLE
+orem = { name = "Orem Central Station (St George Shuttle)", lon = -111.7267, lat = 40.2808 }   # 1350 W 900 S (Nick Oct 15 2026; OSM geocode), FrontRunner
+
+[[trip]]
+id = "t466"
+route = "St George Shuttle Las Vegas Airport 06:00 -> St George 09:10"
+days = "1111111"
+stops = ["las_vegas_airport 06:00", "beaver_dam 08:35", "st_george 09:10"]
+
+[[trip]]
+id = "t467"
+route = "St George Shuttle Las Vegas Airport 08:00 -> St George 11:10"
+days = "1111111"
+stops = ["las_vegas_airport 08:00", "beaver_dam 10:35", "st_george 11:10"]
+
+[[trip]]
+id = "t468"
+route = "St George Shuttle Las Vegas Airport 11:50 -> St George 15:00"
+days = "1111111"
+stops = ["las_vegas_airport 11:50", "beaver_dam 14:25", "st_george 15:00"]
+
+[[trip]]
+id = "t469"
+route = "St George Shuttle Las Vegas Airport 13:50 -> St George 17:00"
+days = "1111111"
+stops = ["las_vegas_airport 13:50", "beaver_dam 16:25", "st_george 17:00"]
+
+[[trip]]
+id = "t470"
+route = "St George Shuttle St George 09:30 -> SLC Airport 14:40"
+days = "1111111"
+stops = ["st_george 09:30", "orem 13:35", "slc_airport 14:40"]
+
+[[trip]]
+id = "t471"
+route = "St George Shuttle St George 12:15 -> SLC Airport 17:25"
+days = "1111111"
+stops = ["st_george 12:15", "orem 16:20", "slc_airport 17:25"]
+
+[[trip]]
+id = "t472"
+route = "St George Shuttle St George 15:40 -> SLC Airport 20:50"
+days = "1111111"
+stops = ["st_george 15:40", "orem 19:45", "slc_airport 20:50"]
+
+[[trip]]
+id = "t473"
+route = "St George Shuttle St George 18:15 -> SLC Airport 23:25"
+days = "1111111"
+stops = ["st_george 18:15", "orem 22:20", "slc_airport 23:25"]
+
+[[trip]]
+id = "t474"
+route = "St George Shuttle SLC Airport 06:00 -> St George 11:30/12:00 -> Las Vegas Airport 13:10 (Oct 1 reading; Nick Oct 15: a 6 am St George Shuttle from the airport)"
+days = "1111111"
+stops = ["slc_airport 06:00", "orem 07:05", "st_george 11:30/12:00", "beaver_dam 12:35", "las_vegas_airport 13:10"]

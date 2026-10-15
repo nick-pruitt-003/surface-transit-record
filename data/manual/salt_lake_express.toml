@@ -4,6 +4,16 @@ agency = "Salt Lake Express"
 salt_lake_city_airport = "=ibus:2060"   # Salt Lake City (Airport)
 saint_george_bluff_st_office = "=ibus:2067"   # Saint George (Bluff St Office)
 las_vegas_airport = "=ibus:735"   # Las Vegas (Airport)
+draper_exit291 = "=ibus:1229"   # Draper (Exit 291)
+provo_intermodal = "=ibus:2154"   # Provo/Orem (Exit 263), the Provo Intermodal Hub shared with Greyhound
+spanish_fork = "=ibus:334"   # Spanish Fork
+nephi_exit222 = "=ibus:2378"   # Nephi (Exit 222)
+fillmore_exit163 = "=ibus:3617"   # Fillmore (Exit 163)
+beaver_exit112 = "=ibus:1190"   # Beaver (Exit 112)
+parowan_ta = "=ibus:49"   # Parowan (Travel Centers Of America)
+cedar_city_exit59 = "=ibus:537"   # Cedar City (Exit 59 - SLE)
+cedar_city_suu = "=ibus:3209"   # Cedar City (SUU)
+washington_exit13 = "=ibus:318"   # Washington (Exit 13)
 slc_airport = "Salt Lake City (Airport)"
 stg_bluff = "Saint George (Bluff St Office)"
 stg_sun_river = "Saint George (Sun River)"
@@ -31,10 +41,10 @@ great_falls = "=ibus:813"   # Great Falls Transit Center
 
 [[trip]]
 id = "t129"
-route = "SLC Airport -> St George -> Las Vegas Airport (Nick screenshots Oct 1 2026 for Oct 16: 06:00 airport; 06:30 Midvale not modelled; St George 11:30/12:00; Las Vegas 13:10 Pacific = 14:10 in this row Mountain tz; feed has the older 06:30 shop -> 13:50 run; daily assumed)"
+route = "SLE SLC Airport 06:45 -> Draper -> Provo Intermodal Hub 07:50 -> Spanish Fork -> Nephi -> Fillmore -> Beaver -> Parowan -> Cedar City -> Washington -> St George (Bluff St) 12:20 (Nick screenshot Oct 15 2026 for Tue Oct 20: the first run of the day; replaces an Oct 1 reading of 06:00 -> 11:30 that ran on to Las Vegas; daily assumed)"
 days = "1111111"
 tz = "America/Denver"
-stops = ["salt_lake_city_airport 06:00", "saint_george_bluff_st_office 11:30/12:00", "las_vegas_airport 14:10"]
+stops = ["salt_lake_city_airport 06:45", "draper_exit291 07:20", "provo_intermodal 07:50", "spanish_fork 07:55/08:05", "nephi_exit222 08:40", "fillmore_exit163 09:10/09:25", "beaver_exit112 10:25", "parowan_ta 10:55", "cedar_city_exit59 11:15", "cedar_city_suu 11:20", "washington_exit13 12:05", "saint_george_bluff_st_office 12:20"]
 
 # 8035/8040 are written on one UTC-7 clock (America/Phoenix), which in the Nov window is Utah's MST and Arizona's
 # time; Las Vegas 11:40/13:50 PST reads 12:40/14:50 here. The site's per-stop clocks were from daylight time

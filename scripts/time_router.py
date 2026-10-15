@@ -48,6 +48,10 @@ LOCAL_SPEED = 15 / 3.6     # m/s effective
 # city routes, and building them for every pair of city stops multiplied the footpaths ~9x (Sep 21 2026).
 INTERCITY_MORE = {'concord_coach', 'bustang', 'gobus', 'kimball', 'vttranslines', 'outrider'}
 LOCAL_PROXY_ALL = os.environ.get('BUS48_LOCAL_PROXY', 'intercity') == 'all'
+# Nick, Oct 15 2026: where a city feed exists, a transfer should ride its timetable, not the modelled hop. With
+# BUS48_HOP_FEED_KM=1 the hop is not built between two stops that each have a city-feed stop within 1 km; the city
+# routes (keep_routes.json) carry the transfer instead, and the hop stays only where no feed reaches.
+HOP_FEED_KM = float(os.environ.get('BUS48_HOP_FEED_KM', 0))
 STOP_TZ_LOCAL = os.environ.get('BUS48_STOP_TZ') == '1'
 N_STATES = 48
 STATE_TZ = {'AL':'America/Chicago','AZ':'America/Phoenix','AR':'America/Chicago','CA':'America/Los_Angeles','CO':'America/Denver','CT':'America/New_York','DE':'America/New_York','FL':'America/New_York','GA':'America/New_York','ID':'America/Boise','IL':'America/Chicago','IN':'America/Indiana/Indianapolis','IA':'America/Chicago','KS':'America/Chicago','KY':'America/New_York','LA':'America/Chicago','ME':'America/New_York','MD':'America/New_York','MA':'America/New_York','MI':'America/Detroit','MN':'America/Chicago','MS':'America/Chicago','MO':'America/Chicago','MT':'America/Denver','NE':'America/Chicago','NV':'America/Los_Angeles','NH':'America/New_York','NJ':'America/New_York','NM':'America/Denver','NY':'America/New_York','NC':'America/New_York','ND':'America/Chicago','OH':'America/New_York','OK':'America/Chicago','OR':'America/Los_Angeles','PA':'America/New_York','RI':'America/New_York','SC':'America/New_York','SD':'America/Chicago','TN':'America/Chicago','TX':'America/Chicago','UT':'America/Denver','VT':'America/New_York','VA':'America/New_York','WA':'America/Los_Angeles','WV':'America/New_York','WI':'America/Chicago','WY':'America/Denver'}
@@ -272,6 +276,12 @@ class TimeRouter:
         buckets = defaultdict(list)
         for i, (lon, lat) in enumerate(self.stop_xy): buckets[(int(lon / 0.1), int(lat / 0.1))].append(i)
         self.foot = defaultdict(list)
+        fed = [False] * len(self.stop_xy)   # a city-feed stop within HOP_FEED_KM (the hop is left to the city routes)
+        if HOP_FEED_KM > 0:
+            for (bx, by), members in buckets.items():
+                near_city = [j for dx in (-1, 0, 1) for dy in (-1, 0, 1) for j in buckets.get((bx + dx, by + dy), []) if city[j]]
+                for i in members:
+                    fed[i] = city[i] or any(hav(self.stop_xy[i], self.stop_xy[j]) <= HOP_FEED_KM for j in near_city)
         for (bx, by), members in buckets.items():
             cand = [j for dx in (-1, 0, 1) for dy in (-1, 0, 1) for j in buckets.get((bx + dx, by + dy), [])]
             for i in members:
@@ -279,7 +289,7 @@ class TimeRouter:
                     if j == i: continue
                     d = hav(self.stop_xy[i], self.stop_xy[j])
                     if d <= WALK_MAX_KM: self.foot[i].append((j, int(d * 1000 / WALK_SPEED) + (0 if d < 0.15 else 300)))
-                    elif d <= LOCAL_MAX_KM and (LOCAL_PROXY_ALL or not (city[i] and city[j])):
+                    elif d <= LOCAL_MAX_KM and (LOCAL_PROXY_ALL or not (city[i] and city[j])) and not (fed[i] and fed[j]):
                         self.foot[i].append((j, LOCAL_FIXED + int(d * 1000 / LOCAL_SPEED)))
         # walk-ins: a stop within WALKIN_KM of another state's border lets you step across and back
         self.first_virtual = self.N
@@ -864,7 +874,7 @@ def cached_router(date, days, cache_dir=None, verbose=True):
     # wrong one without a word. BUS48_LOCAL_MAX_KM=5 against a router built at 10 is not an error anyone
     # would see; it is a plausible number from a different universe, which is this project's whole problem.
     sig.append(('cfg', WALKIN_KM, MIN_TRANSFER, SCAN_SLACK, LOCAL_MAX_KM, LOCAL_PROXY_ALL, STOP_TZ_LOCAL,
-                WALK_MAX_KM, WALK_SPEED, RUN_MPH, NO_WALK_LINKS, NO_WALKIN_STATES, SKIP_MANUAL))
+                WALK_MAX_KM, WALK_SPEED, RUN_MPH, NO_WALK_LINKS, NO_WALKIN_STATES, SKIP_MANUAL, HOP_FEED_KM))
     key = hashlib.sha1(repr(sig).encode()).hexdigest()[:16]
     path = os.path.join(cache_dir, f'router_{key}.pkl')
     if os.path.exists(path):

@@ -4,7 +4,7 @@
 
 Prints each route's hours from the first bus and every ride or modelled hop over 10 km, so a gain names the link.
 """
-import pickle
+import os, pickle
 from datetime import date, datetime, timezone
 from time_router import cached_router, hav
 import time_search as ts
@@ -31,5 +31,5 @@ for name, path, win, t_over in ROUTES:
     print(f'== {name}: {(f - fb[3]) / 3600:.2f} h, missing {[R.state_names[s] for s in S.missing(legs)] or "none"}', flush=True)
     for l in legs:
         a, b = (l[2], l[4]) if l[0] == 'ride' else (l[1], l[2])
-        if l[0] != 'ride' and a < R.first_virtual and b < R.first_virtual and hav(R.stop_xy[a], R.stop_xy[b]) > 10:
+        if l[0] != 'ride' and a < R.first_virtual and b < R.first_virtual and hav(R.stop_xy[a], R.stop_xy[b]) > float(os.environ.get("HOP_SHOW_KM", 10)):
             print(f'   long hop {hav(R.stop_xy[a], R.stop_xy[b]):.1f} km  {R.stop_name[a]} -> {R.stop_name[b]}  at {R.fmt_time(l[3], a)}', flush=True)
