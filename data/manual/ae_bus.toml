@@ -8,7 +8,7 @@ pueblo = "=ibus:2325"   # Pueblo
 fountain_co_ae_bus = { name = "Fountain CO (AE bus)", lon = -104.7008, lat = 38.6822 }
 colorado_springs = "=ibus:3453"   # Colorado Springs
 denver_limo_express = "=ibus:375"   # Denver (Limo Express)
-las_vegas_nv_ae_bus = { name = "Las Vegas NV (AE bus)", lon = -115.1450, lat = 36.1680 }
+las_vegas_nv_ae_bus = { name = "Las Vegas NV (AE bus)", lon = -115.1620, lat = 36.1520 }   # 1718 S Industrial Rd, the Limo Express stop (Nick Oct 15 2026: AE looks like Limo Express, whose Denver stop it shares); point approximate
 kingman_az_ae_bus = { name = "Kingman AZ (AE bus)", lon = -114.0530, lat = 35.1894 }
 phoenix_az_ae_bus = { name = "Phoenix AZ (AE bus)", lon = -112.0740, lat = 33.4480 }
 tucson_az_ae_bus = { name = "Tucson AZ (AE bus)", lon = -110.9700, lat = 32.2217 }

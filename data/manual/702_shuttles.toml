@@ -1,6 +1,7 @@
 agency = "702 Shuttles"
 
 [stops]
+las_vegas_eastern_702 = { name = "Las Vegas 1404 N Eastern Ave (702 Shuttles)", lon = -115.1170, lat = 36.1900 }   # Eastern & Searles, approximate (Nick Oct 15 2026)
 las_vegas_dean_martin_blue_diamond_702_s = { name = "Las Vegas Dean Martin Blue Diamond (702 Shuttles)", lon = -115.1868, lat = 36.0414 }
 jean_nv_161_702_shuttles = { name = "Jean NV 161 (702 Shuttles)", lon = -115.3238, lat = 35.7788 }
 primm_bus_stop_702_shuttles = { name = "Primm Bus Stop (702 Shuttles)", lon = -115.3886, lat = 35.6122 }
@@ -17,19 +18,21 @@ el_monte_valley_blvd_702_shuttles = { name = "El Monte Valley Blvd (702 Shuttles
 ontario_fwy_15_702_shuttles = { name = "Ontario FWY 15 (702 Shuttles)", lon = -117.5390, lat = 34.0640 }
 los_angeles_main_and_7th_702_shuttles = { name = "Los Angeles Main and 7th (702 Shuttles)", lon = -118.2537, lat = 34.0433 }
 
+# Every run boards first at 1404 N Eastern Ave, 15 min before Blue Diamond (Nick Oct 15 2026: "clean 15 minute offset
+# each time"). RTC 215 + 110 reach it from Bonanza Rd in 16 min.
 [[trip]]
 id = "t109"
 route = "Las Vegas -> Los Angeles (Nick screenshot Sep 28 2026; daily assumed; stop points approximate)"
 days = "1111111"
 tz = "America/Los_Angeles"
-stops = ["las_vegas_dean_martin_blue_diamond_702_s 15:15", "jean_nv_161_702_shuttles 15:35", "primm_bus_stop_702_shuttles 15:50", "baker_blvd_702_shuttles 16:35", "newberry_springs_702_shuttles 17:10", "barstow_east_main_st_1611_702_shuttles 17:27", "victorville_15445_palmdale_rd_702_shuttl 18:04", "hesperia_main_st_702_shuttles 18:11", "fontana_3892_sierra_ave_ampm_702_shuttle 18:27", "ontario_mills_1090_ontario_mills_dr_702_ 18:37", "claremont_indian_hill_blvd_702_shuttles 18:52", "pomona_gillette_rd_702_shuttles 18:57", "el_monte_valley_blvd_702_shuttles 19:10", "los_angeles_main_and_7th_702_shuttles 19:50"]
+stops = ["las_vegas_eastern_702 15:00", "las_vegas_dean_martin_blue_diamond_702_s 15:15", "jean_nv_161_702_shuttles 15:35", "primm_bus_stop_702_shuttles 15:50", "baker_blvd_702_shuttles 16:35", "newberry_springs_702_shuttles 17:10", "barstow_east_main_st_1611_702_shuttles 17:27", "victorville_15445_palmdale_rd_702_shuttl 18:04", "hesperia_main_st_702_shuttles 18:11", "fontana_3892_sierra_ave_ampm_702_shuttle 18:27", "ontario_mills_1090_ontario_mills_dr_702_ 18:37", "claremont_indian_hill_blvd_702_shuttles 18:52", "pomona_gillette_rd_702_shuttles 18:57", "el_monte_valley_blvd_702_shuttles 19:10", "los_angeles_main_and_7th_702_shuttles 19:50"]
 
 [[trip]]
 id = "t145"
 route = "Las Vegas -> Ontario (Nick screenshot Oct 2 2026, Primm 10:50 to Ontario 13:37; Las Vegas and Jean times inferred from the 15:15 run; daily assumed; Ontario stop point approximate)"
 days = "1111111"
 tz = "America/Los_Angeles"
-stops = ["las_vegas_dean_martin_blue_diamond_702_s 10:15", "jean_nv_161_702_shuttles 10:35", "primm_bus_stop_702_shuttles 10:50", "baker_blvd_702_shuttles 11:35", "newberry_springs_702_shuttles 12:10", "barstow_east_main_st_1611_702_shuttles 12:27", "victorville_15445_palmdale_rd_702_shuttl 13:04", "hesperia_main_st_702_shuttles 13:11", "fontana_3892_sierra_ave_ampm_702_shuttle 13:27", "ontario_fwy_15_702_shuttles 13:37"]
+stops = ["las_vegas_eastern_702 10:00", "las_vegas_dean_martin_blue_diamond_702_s 10:15", "jean_nv_161_702_shuttles 10:35", "primm_bus_stop_702_shuttles 10:50", "baker_blvd_702_shuttles 11:35", "newberry_springs_702_shuttles 12:10", "barstow_east_main_st_1611_702_shuttles 12:27", "victorville_15445_palmdale_rd_702_shuttl 13:04", "hesperia_main_st_702_shuttles 13:11", "fontana_3892_sierra_ave_ampm_702_shuttle 13:27", "ontario_fwy_15_702_shuttles 13:37"]
 
 # Nick screenshot Oct 13 2026 (702 Shuttles, Thu Oct 22): Las Vegas 18:00 -> Blue Diamond 18:15 -> Jean 18:35 -> Primm
 # 18:50 -> Baker 19:35 -> Newberry Springs 20:10 -> Barstow 20:27 (ends). The "Las Vegas, NV" 18:00 stop is not entered;
@@ -43,4 +46,4 @@ id = "t463"
 route = "702 Shuttles Las Vegas Blue Diamond 18:15 -> Primm -> Barstow 20:27 -> Los Angeles 22:50 (daily assumed)"
 days = "1111111"
 tz = "America/Los_Angeles"
-stops = ["las_vegas_dean_martin_blue_diamond_702_s 18:15", "jean_nv_161_702_shuttles 18:35", "primm_bus_stop_702_shuttles 18:50", "baker_blvd_702_shuttles 19:35", "newberry_springs_702_shuttles 20:10", "barstow_east_main_st_1611_702_shuttles 20:27", "victorville_15445_palmdale_rd_702_shuttl 21:04", "hesperia_main_st_702_shuttles 21:11", "fontana_3892_sierra_ave_ampm_702_shuttle 21:27", "ontario_fwy_15_702_shuttles 21:37", "claremont_indian_hill_blvd_702_shuttles 21:52", "pomona_gillette_rd_702_shuttles 21:57", "el_monte_valley_blvd_702_shuttles 22:10", "los_angeles_main_and_7th_702_shuttles 22:50"]
+stops = ["las_vegas_eastern_702 18:00", "las_vegas_dean_martin_blue_diamond_702_s 18:15", "jean_nv_161_702_shuttles 18:35", "primm_bus_stop_702_shuttles 18:50", "baker_blvd_702_shuttles 19:35", "newberry_springs_702_shuttles 20:10", "barstow_east_main_st_1611_702_shuttles 20:27", "victorville_15445_palmdale_rd_702_shuttl 21:04", "hesperia_main_st_702_shuttles 21:11", "fontana_3892_sierra_ave_ampm_702_shuttle 21:27", "ontario_fwy_15_702_shuttles 21:37", "claremont_indian_hill_blvd_702_shuttles 21:52", "pomona_gillette_rd_702_shuttles 21:57", "el_monte_valley_blvd_702_shuttles 22:10", "los_angeles_main_and_7th_702_shuttles 22:50"]
