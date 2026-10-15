@@ -61,7 +61,7 @@ clovis_omnibus = "=ibus:1429"
 portales_omnibus = "=ibus:1745"
 roswell_omnibus = "=ibus:1899"
 caldwell_omnibus = "=ibus:658"
-jerome_id_omnibus = { name = "Jerome ID (Omnibus Express)", lon = -114.5185, lat = 42.7241 }   # point approximate
+jerome_id_omnibus = { name = "Jerome ID (Omnibus Express)", lon = -114.5175, lat = 42.7110 }   # 1410 S Lincoln Ave (Nick Oct 15 2026; OSM geocode)
 burley_omnibus = "=ibus:2612"
 salt_lake_city_omnibus = "=ibus:2604"
 provo_omnibus = "=ibus:3087"

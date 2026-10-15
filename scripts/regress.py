@@ -330,7 +330,7 @@ def _():
         if r['note'].startswith('positioning:'): positioning.append(r['to_uid']); continue
         if R.state[a] == R.state[b]: bad.append((R.stop_name[b], R.state_names[R.state[b]]))
     assert not bad, bad
-    assert positioning == ['amtrak:BAR', 'ibus:2404', 'outrider:3453956'], ('positioning foot links changed; review them and update this list', positioning)
+    assert positioning == ['amtrak:BAR', 'ibus:2404', 'outrider:3453956', 'extra:Nampa ID (Maverik)'], ('positioning foot links changed; review them and update this list', positioning)
 
 
 @check('the Big River Crossing walk keeps the bridge hours (06:00-22:00): Arkansas by 10:45 from 10:00, not by bridge at 23:00')

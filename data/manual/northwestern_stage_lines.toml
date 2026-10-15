@@ -12,7 +12,7 @@ hermiston_or = { name = "Hermiston OR (Space Age Travel Center)", lon = -119.289
 pendleton_or = { name = "Pendleton OR (NWL)", lon = -118.7886, lat = 45.6721 }   # point approximate
 baker_city_or = { name = "Baker City OR (Baker Truck Corral)", lon = -117.8344, lat = 44.7749 }   # point approximate
 ontario_or = { name = "Ontario OR (Malheur Council on Aging)", lon = -116.9629, lat = 44.0266 }   # point approximate
-nampa_id = { name = "Nampa ID (Maverik)", lon = -116.5635, lat = 43.5824 }   # point approximate
+nampa_id = { name = "Nampa ID (Maverik)", lon = -116.5732, lat = 43.5949 }   # 555 Northside Blvd (Nick Oct 15 2026; OSM geocode)
 
 [[trip]]
 id = "t0"

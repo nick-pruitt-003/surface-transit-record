@@ -21,7 +21,7 @@ bliss_id = "Bliss"
 jerome_exit165 = "Jerome (Exit 165)"
 twin_falls_oasis = "Twin Falls (Chevron Oasis)"
 kimberly_id = "Kimberly"
-burley_id = "Burley"
+burley_id = "=ibus:2612"   # Burley, 701 N Overland Ave (Nick Oct 15 2026); the feed has two stops named Burley
 rupert_id = "Rupert"
 american_falls = "American Falls"
 helena = "=ibus:2947"   # Helena
