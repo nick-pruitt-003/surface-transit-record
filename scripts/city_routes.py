@@ -23,7 +23,7 @@ for k in range(len(R.ctrip)):
 inter = sorted(i for i in inter if i < nv)
 ixy = np.asarray([R.stop_xy[i] for i in inter], float)
 keep = json.load(open(os.path.join(DATA_DIR, 'more_gtfs', 'keep_routes.json'), encoding='utf-8'))
-for feed, kept in keep.items():
+for feed, kept in ([] if '--pairs' in sys.argv else keep.items()):
     p = os.path.join(DATA_DIR, 'more_gtfs', feed + '.zip')
     if not os.path.exists(p): continue
     z = zipfile.ZipFile(p); rd = lambda n: csv.DictReader(io.TextIOWrapper(z.open(n), encoding='utf-8-sig'))
@@ -51,3 +51,45 @@ for feed, kept in keep.items():
     print(f'== {feed}: {len(rows)} routes serve intercity stops but are not kept')
     for n, short, long_, names in sorted(rows)[:25]:
         print(f'   {short:8} {long_:30} {-n} stop(s): {"; ".join(names)[:150]}')
+
+
+def pairs():
+    """--pairs: intercity stop pairs 1.5-10 km apart (past walking, so today a modelled local hop) that no kept route
+    serves at both ends, with the most frequent unkept route of the same feed that does. Its output is the allowlist
+    addition that replaces those hops with timetables."""
+    for feed, kept in keep.items():
+        p = os.path.join(DATA_DIR, 'more_gtfs', feed + '.zip')
+        if not os.path.exists(p): continue
+        z = zipfile.ZipFile(p); rd = lambda n: csv.DictReader(io.TextIOWrapper(z.open(n), encoding='utf-8-sig'))
+        stops = {s['stop_id']: (float(s['stop_lon']), float(s['stop_lat'])) for s in rd('stops.txt') if s.get('stop_lat')}
+        xy = np.asarray(list(stops.values())); lo, hi = xy.min(0) - 0.05, xy.max(0) + 0.05
+        here = [inter[k] for k, (x, y) in enumerate(ixy) if lo[0] <= x <= hi[0] and lo[1] <= y <= hi[1]]
+        routes = {r['route_id']: r for r in rd('routes.txt')}
+        trip_route = {t['trip_id']: t['route_id'] for t in rd('trips.txt')}
+        near = {}
+        for sid, (x, y) in stops.items():
+            hit = [i for i in here if hav((x, y), R.stop_xy[i]) <= KM]
+            if hit: near[sid] = hit
+        serves = defaultdict(set); ntrips = defaultdict(set)
+        for st in rd('stop_times.txt'):
+            if st['stop_id'] in near:
+                rid = trip_route.get(st['trip_id']); serves[rid].update(near[st['stop_id']]); ntrips[rid].add(st['trip_id'])
+        keptset = set(kept)
+        is_kept = lambda rid: bool(keptset & {rid, routes.get(rid, {}).get('route_short_name', ''), routes.get(rid, {}).get('route_long_name', '')})
+        add = defaultdict(list)
+        for a in range(len(here)):
+            for b in range(a + 1, len(here)):
+                i, j = here[a], here[b]
+                d = hav(R.stop_xy[i], R.stop_xy[j])
+                if not 1.5 < d <= 10: continue
+                if any(i in s and j in s for rid, s in serves.items() if is_kept(rid)): continue
+                cand = [(len(ntrips[rid]), rid) for rid, s in serves.items() if i in s and j in s and not is_kept(rid)]
+                if cand:
+                    n, rid = max(cand)
+                    add[routes[rid].get('route_short_name') or rid].append(f'{R.stop_name[i][:26]} <-> {R.stop_name[j][:26]} ({d:.1f} km)')
+        if add:
+            print(f'== {feed}: add {sorted(add)}')
+            for r, prs in sorted(add.items()): print(f'   {r}: ' + '; '.join(prs[:4]) + (f' (+{len(prs) - 4} more)' if len(prs) > 4 else ''))
+
+
+if '--pairs' in sys.argv: pairs()
