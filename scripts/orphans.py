@@ -8,7 +8,7 @@
    end says whether a city transit feed has a stop within 1 km, so 'no feed' marks where a missing local feed is
    the reason the two carriers cannot meet.
 """
-import sys
+import os, sys
 from collections import defaultdict
 from datetime import date
 import numpy as np
@@ -59,7 +59,7 @@ for i in inter:
                 if not new or not new_i: continue
                 if all((a, b) in meet for a in new_i for b in new): continue
                 d = hav(R.stop_xy[i], R.stop_xy[j])
-                if not 10 < d <= 40: continue
+                if not float(os.environ.get("ORPHAN_MIN_KM", 10)) < d <= float(os.environ.get("ORPHAN_MAX_KM", 40)): continue
                 key = (frozenset(ag_at[i]), frozenset(ag_at[j]))
                 if key in seen and seen[key][0] <= d: continue
                 seen[key] = (d, i, j)

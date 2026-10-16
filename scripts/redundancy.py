@@ -22,12 +22,9 @@ SHIFT = 42 * 86400   # pickles saved before the Nov migration are on September d
 # after day 2 read "not recoverable"). Optional explicit start clock (UTC epoch) where the pickle's is stale.
 ROUTES = [  # name, pickle, router (first date, days), start override
     ('X', '../out/res_x.pkl', (date(2026, 11, 4), 27), None),
-    # Moorhead on the Portal Bridge bound (start Nov 9+): Mon Nov 9 13:00 CST, in time for the Fargo 14:30 Jefferson
-    # settled on start days Nov 9-15. Its first bus (Fargo 14:30) is not at the start stop, so finish - elapsed is too late a
-    # clock and Mon 00:00 charged 14.5 h of waiting (250.26 h). Start Mon Nov 9 13:00 CST: early enough for the walk to Fargo
-    # (14:20 missed the 14:30), so the total matches the 235.8 h route.
-    ('Moorhead', '../out/mh_nov/eval9.pkl', (date(2026, 11, 9), 22),
-     datetime(2026, 11, 9, 19, 0, tzinfo=timezone.utc).timestamp()),
+    # Moorhead with no modelled hops (Oct 16 2026): start at the Fargo Jefferson stop, walk the measured 6 km to the MN
+    # line and back before the 14:30 to Sioux Falls (the clock starts at the first bus)
+    ('Moorhead', '../out/mh_nov/eval9_fargo.pkl', (date(2026, 11, 9), 22), None),
     ('Control', '../out/control_nov/eval_stl.pkl', (date(2026, 11, 4), 27), None),
     # the record itself (Nick's Oct 6 csv): KC -> Tulsa -> Dallas -> El Paso -> LA -> Las Vegas, pinned (out/wide/rec_true.log)
     ('Record', '../out/wide/rec_true.pkl', (date(2026, 11, 19), 20), None),
@@ -63,7 +60,7 @@ def run(name, path, win, t_over, wb, out):
     win0 = datetime(win[0].year, win[0].month, win[0].day, tzinfo=timezone.utc).timestamp()
     if t0 < win0: t0 += SHIFT
     if t_over: t0 = t_over
-    st = R.stops_matching(d['start'])[0]
+    m = R.stops_matching(d['start']); st = next((i for i in m if R.stop_name[i] == d['start']), m[0])   # exact name first: 'Fargo' is also Fargo Amtrak / NDSU
     S = ts.Search(R, st, t0, [], 1); ts._R, ts._START, ts._T0, ts._SELF, ts._BASE, ts._END = R, st, t0, S, None, None
     f, legs = S.evaluate(d['order'])
     if f >= 1e18 or not S.all_states(legs):

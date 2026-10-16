@@ -59,7 +59,7 @@ def _():
     assert arr and datetime.fromtimestamp(arr[0], CT).strftime('%H:%M') == '06:42', arr
 
 
-@check('control route X (res_x.pkl) is valid: all 48 states, <= 232.0 h from the first bus, Sheridan Thu Nov 12 22:10')
+@check('control route X (res_x.pkl) is valid: all 48 states, <= 232.2 h (no modelled hops) from the first bus, Sheridan Thu Nov 12 22:10')
 def _():
     # X replaced the 237 route as the control on Oct 11 2026: Amtrak moved the City of New Orleans two hours later from
     # Oct 7, and the 237 route finishes at 252 h at best in November. Built by rebuild_x.py.
@@ -68,7 +68,7 @@ def _():
     f, legs = S.evaluate(d['order'])
     assert S.all_states(legs), [R.state_names[s] for s in S.missing(legs)]
     first = next(l[3] for l in legs if l[0] == 'ride')
-    assert (f - first) / 3600 <= 232.0, (f - first) / 3600
+    assert (f - first) / 3600 <= 232.2, (f - first) / 3600
 
 
 @check('router and coverage agree: every state target is collected by a ride or border walk-in (Sunland seed)')
@@ -130,15 +130,16 @@ def _():
     over = [j for j, w in R.foot.get(holmes, ()) if j >= R.first_virtual and R.state[j] == ms]
     assert over, 'Holmes no longer steps over the Mississippi line on foot; MS becomes uncollectable there'
 
-    # The Memphis hop is a local-transit proxy link, and the point of it is that it is LONGER than any plain
-    # walk: the old bug capped foot weights at a made-up 1200, which is twenty minutes in seconds, and that
-    # one number hid every proxy hop the route needs. Asserting the link merely exists would pass with the
-    # bug reinstated, so assert the thing the bug destroyed, a usable link costing more than twenty minutes.
-    bell = R.stops_matching('BELLEVUE BOULEVARD at CA')[0]
-    long_hops = [(j, w) for j, w in R.foot.get(bell, ()) if w > 1200]
-    assert long_hops, ('Bellevue at Carr has no foot link over twenty minutes; a walking-speed cap would '
-                       'leave this stop looking connected while the hop the route uses is gone')
-    assert max(w for _, w in long_hops) > 1200, 'longest link at Bellevue at Carr is under the old 1200 cap'
+    # The Memphis link back from the Mississippi line is LONGER than any plain walk: the old bug capped foot
+    # weights at a made-up 1200, twenty minutes in seconds, and that one number hid every long link the route
+    # needs. It used to be the modelled hop at Bellevue at Carr; modelled hops are off since Oct 16 2026 (taxis are
+    # banned, so a route stands on timetables and walks), and the link is now the measured walk up Airways Blvd from
+    # Holmes Rd to the bus station. Assert the thing the bug destroyed: that link, costing more than twenty minutes.
+    air = R.idx.get('mata:0:AIRHO1SN')
+    assert air is not None, 'Airways Blvd at Holmes Rd is missing; the Memphis walk back to the bus station is gone'
+    long_links = [(j, w) for j, w in R.foot.get(air, ()) if w > 1200]
+    assert long_links, ('Airways Blvd at Holmes has no foot link over twenty minutes; a walking-speed cap would '
+                        'leave it looking connected while the walk the control uses is gone')
 
     # These stops are quiet, and that is the assertion, not an aside. `if n < 6: pass` was here instead: a
     # comment wearing an assertion's clothes, in the same commit that replaced another check for being a
@@ -330,7 +331,7 @@ def _():
         if r['note'].startswith('positioning:'): positioning.append(r['to_uid']); continue
         if R.state[a] == R.state[b]: bad.append((R.stop_name[b], R.state_names[R.state[b]]))
     assert not bad, bad
-    assert positioning == ['amtrak:BAR', 'ibus:2404', 'outrider:3453956', 'extra:Nampa ID (Maverik)', 'amtrak:BAR'], ('positioning foot links changed; review them and update this list', positioning)
+    assert positioning == ['amtrak:BAR', 'ibus:2404', 'outrider:3453956', 'extra:Nampa ID (Maverik)', 'amtrak:BAR', 'flix:bd02b7ef-402c-4319-b4f0-1a1a510bc750', 'amtrak:KNG', 'amtrak:KNG'], ('positioning foot links changed; review them and update this list', positioning)
 
 
 @check('the Big River Crossing walk keeps the bridge hours (06:00-22:00): Arkansas by 10:45 from 10:00, not by bridge at 23:00')

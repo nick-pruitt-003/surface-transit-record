@@ -40,7 +40,9 @@ WALK_MAX_KM = 1.5
 # Beyond walking: a local transit / shuttle proxy, which is a modelled link and not a service anyone runs.
 # Set BUS48_LOCAL_MAX_KM=0 to drop them and keep only real timetables plus walks, which is what a route has
 # to stand on before it can be attempted.
-LOCAL_MAX_KM = float(os.environ.get('BUS48_LOCAL_MAX_KM', 10.0))
+# Default 0 since Oct 16 2026 (Nick: taxis and rideshare are banned, no modelled hop by default): a route stands on
+# timetables, walks up to WALK_MAX_KM and measured walk links. BUS48_LOCAL_MAX_KM=10 brings the old proxy back.
+LOCAL_MAX_KM = float(os.environ.get('BUS48_LOCAL_MAX_KM', 0.0))
 LOCAL_FIXED = 30 * 60      # wait + boarding
 LOCAL_SPEED = 15 / 3.6     # m/s effective
 # more_gtfs feeds that are intercity carriers; every other feed there is city transit. The 1.5-10 km local-transit

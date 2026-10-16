@@ -27,7 +27,7 @@ ORDER = 'OR,AZ,OK,FL,@Hanover (Hanover Inn),ME,WV,MS,MO,WI,MI,ND,MN'
 # (Washington 06:50 -> Boston) off the timetable until Nov 18, and a Nov 5 start reaches Washington on Nov 11.
 CLOCK = datetime(2026, 11, 12, 22, 10, tzinfo=MT)
 DAYS = 20   # Nov 4 -> Nov 23: X finishes Sunday Nov 22
-BOUND_H = 232.0
+BOUND_H = 232.2   # 232.13 h with no modelled hops (default since Oct 16 2026); 231.68 with them
 
 
 def main():

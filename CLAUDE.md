@@ -17,7 +17,7 @@
   the settle picked Thu Nov 5 and met the gap; check any "route broke" against the start day first. When verifying a
   known route, pin its start (`--fixed-start`): a free start drifts (the record "lost Maine" that way).
 - **Replay gate:** `python3 ride_search.py --start "Sheridan WY Taco Bell 1655 Coffeen Ave (Jefferson)" --at
-  2026-11-12T22:10 --end MN --by 2026-11-22T20:10 --tz America/Denver --track ../out/res_x.pkl` (baseline 16/40, exit 0, 48/48 states, since Oct 16: the walk-in chaining and the Oct 15-16 data changes; with BUS48_CHAIN_WALKIN=0 it is 18/41 and loses a state).
+  2026-11-12T22:10 --end MN --by 2026-11-22T20:10 --tz America/Denver --track ../out/res_x.pkl` (baseline 24/46, exit 0, 48/48 states, since Oct 16: no modelled hops by default, walk-in chaining, and the Oct 15-16 data; X is 46 rides at 232.13 h).
 - **ride_search's menu runs in C** (`scripts/menu.c`, `--menu c`, the default; ~18x with the bounded goal scan). The
   `--track` replay calls the Python `rides_from` directly and does **not** exercise it: after any change to
   `menu.c` or `rides_from`/`sort_opts`, run a search with `--menu check`, which compares both every node and exits 4

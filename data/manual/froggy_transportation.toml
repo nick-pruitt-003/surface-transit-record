@@ -1,0 +1,73 @@
+agency = "Froggy Transportation"
+
+# Toledo <-> Detroit Metro Airport shuttle (froggytransportation.com bus-fares and bus-stops, read Oct 16 2026; Nick).
+# Booked: reservations at least 1 h ahead. A scheduled shuttle, not a taxi. DTW is in Michigan (Romulus), so from
+# Toledo it is a two-hour MI round trip (Franklin Park 09:00 -> McNamara 09:50, back 09:57 -> Toledo 11:05).
+# Outbound boards at Hope United (4069 W Sylvania Ave) then Franklin Park (4242 Royer Rd, at the TARTA stop between
+# JCPenney and Kohl's); return runs end at Franklin Park ("Toledo bus stop"). Airport stops are the McNamara and Evans
+# Ground Transportation Centers (points approximate). Local clocks (Eastern throughout).
+[stops]
+hope_united = { name = "Toledo Hope United Methodist Church (Froggy)", lon = -83.6398, lat = 41.6912 }   # 4069 W Sylvania Ave (OSM geocode)
+franklin_park = { name = "Toledo Franklin Park (Froggy)", lon = -83.6370, lat = 41.6939 }   # 4242 Royer Rd (OSM geocode)
+dtw_mcnamara = { name = "Detroit Metro Airport McNamara Terminal (Froggy)", lon = -83.3524, lat = 42.2126 }   # approximate
+dtw_evans = { name = "Detroit Metro Airport Evans Terminal (Froggy)", lon = -83.3567, lat = 42.2228 }   # approximate
+
+[[trip]]
+id = "t476"
+route = "Froggy Toledo 08:45/09:00 -> DTW McNamara 09:50 -> Evans 10:04 (Mon-Sat)"
+days = "1111110"
+stops = ["hope_united 08:45", "franklin_park 09:00", "dtw_mcnamara 09:50", "dtw_evans 10:04"]
+
+[[trip]]
+id = "t477"
+route = "Froggy Toledo 11:45/12:00 -> DTW McNamara 12:50 -> Evans 13:04 (Mon-Sat)"
+days = "1111110"
+stops = ["hope_united 11:45", "franklin_park 12:00", "dtw_mcnamara 12:50", "dtw_evans 13:04"]
+
+[[trip]]
+id = "t478"
+route = "Froggy Toledo 14:45/15:00 -> DTW McNamara 15:50 -> Evans 16:04 (Mon-Sat)"
+days = "1111110"
+stops = ["hope_united 14:45", "franklin_park 15:00", "dtw_mcnamara 15:50", "dtw_evans 16:04"]
+
+[[trip]]
+id = "t479"
+route = "Froggy Toledo 07:45/08:00 -> DTW McNamara 08:50 -> Evans 09:04 (Sun)"
+days = "0000001"
+stops = ["hope_united 07:45", "franklin_park 08:00", "dtw_mcnamara 08:50", "dtw_evans 09:04"]
+
+[[trip]]
+id = "t480"
+route = "Froggy Toledo 13:45/14:00 -> DTW McNamara 14:50 -> Evans 15:04 (Sun)"
+days = "0000001"
+stops = ["hope_united 13:45", "franklin_park 14:00", "dtw_mcnamara 14:50", "dtw_evans 15:04"]
+
+[[trip]]
+id = "t481"
+route = "Froggy DTW McNamara 09:57 -> Evans 10:11 -> Toledo Franklin Park 11:05 (Mon-Sat)"
+days = "1111110"
+stops = ["dtw_mcnamara 09:57", "dtw_evans 10:11", "franklin_park 11:05"]
+
+[[trip]]
+id = "t482"
+route = "Froggy DTW McNamara 12:57 -> Evans 13:11 -> Toledo Franklin Park 14:05 (Mon-Sat)"
+days = "1111110"
+stops = ["dtw_mcnamara 12:57", "dtw_evans 13:11", "franklin_park 14:05"]
+
+[[trip]]
+id = "t483"
+route = "Froggy DTW McNamara 15:57 -> Evans 16:11 -> Toledo Franklin Park 17:05 (Mon-Sat)"
+days = "1111110"
+stops = ["dtw_mcnamara 15:57", "dtw_evans 16:11", "franklin_park 17:05"]
+
+[[trip]]
+id = "t484"
+route = "Froggy DTW McNamara 08:57 -> Evans 09:11 -> Toledo Franklin Park 10:05 (Sun)"
+days = "0000001"
+stops = ["dtw_mcnamara 08:57", "dtw_evans 09:11", "franklin_park 10:05"]
+
+[[trip]]
+id = "t485"
+route = "Froggy DTW McNamara 14:57 -> Evans 15:11 -> Toledo Franklin Park 16:05 (Sun)"
+days = "0000001"
+stops = ["dtw_mcnamara 14:57", "dtw_evans 15:11", "franklin_park 16:05"]
