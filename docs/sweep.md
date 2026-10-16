@@ -475,3 +475,21 @@ Shuttle, Froggy), corrected Greyhound Dallas -> Lamar -> Denver and SLE 06:45.
   free search moved the Lamar pin and took the Omnibus to El Paso (281.3 h). Needs a pinned evaluation that holds the
   chain and re-optimises only the Northwest/Plains end.
 - Redundancy sheet refreshed on the no-hop default (docs/redundancy.xlsx).
+
+## Oct 16 2026: the 8-state localized run (out/eight)
+
+Nick: fastest way to collect IL WI MN ND SD MI NE IA, against X's tail (~32 h 50 m; X is 33.0 h from its 06:30 Chicago
+first bus to the Moorhead walk Sun 15:28). time_search with the other 40 states --done, after loading Coach USA, Land to
+Air, Lamers, Van Galder Dubuque, the Jefferson Upper Midwest tracker fixes and ten city feeds (Sioux Falls, Quad Cities,
+Grand Forks, La Crosse, SMRT, Madison, Green Bay, Rapid City).
+
+- **Free starts (16 runs, ring IL MI WI MN ND SD NE IA rotated both ways)** are flattered: the clock starts at the first
+  bus inside the start state. Best: eastbound Sioux City (NE walked before the clock) -> Sioux Falls -> Fargo ->
+  Minneapolis -> overnight Greyhound via Milwaukee -> Chicago -> Four Winds 09:50 -> New Buffalo 12:30, **27.6 h**
+  (3 seeds); Kalamazoo 09:16 -> Wolverine -> Amtrak Borealis 11:10 -> St Paul 18:41 -> JL 805 21:45 -> Des Moines ->
+  X's Omaha bus -> Sioux Falls -> Fargo 14:05, **29.8 h**, MN collected so no Moorhead walk.
+- **Fair test from X's entry (Chicago Bus Station Sat 05:35, IL done; three seeds)**: all three return X's own tail,
+  Sun 15:28. The Borealis tail needs Michigan before Chicago 11:10 and nothing gets into Michigan and back by then (the
+  earliest Four Winds reaches New Buffalo 12:30). So X's tail is capped by when the route collects Michigan: a faster
+  finish means reaching Chicago with MI already done (from Detroit/Toledo/Kalamazoo), which changes X's middle, not its tail.
+- Also: the afternoon Four Winds run (Chinatown 16:00 -> New Buffalo 18:30 -> back 19:25, Wed-Sat) also makes the 21:15.
