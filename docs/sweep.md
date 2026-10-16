@@ -458,3 +458,20 @@ NM on the Chief.
 Hop option (BUS48_HOP_FEED_KM=1, no modelled local hop where both ends have a city-feed stop within 1 km): X, Moorhead
 and the record unchanged; the control 261.49 h (misses IA NE): its Holmes & Hornsby -> Memphis Bus Station hop was
 hiding a miss, MATA 42 at 09:08 reaches Airways 09:29 for the 09:30 Flix. Kept opt-in pending Nick's call.
+
+## Overnight Oct 16-17 2026 (out/night16, out/sweep8): no modelled hops, all Oct 15-16 data
+
+Default since Oct 16: no modelled local hop (Nick: taxis and rideshare banned), walk-in chaining, new feeds (MTA subway
+and M15, Wichita, MCTS, DART 005/207, TARTA 17/19/22, VRT, RMTD, Valley Metro, VIA 51, Tahoe), new carriers (St George
+Shuttle, Froggy), corrected Greyhound Dallas -> Lamar -> Denver and SLE 06:45.
+
+- **Focused searches from the four known routes (25 min each) all hold, nothing gained:** X 232.1 h, Moorhead 235.8
+  (from the Fargo stop), control 237.5, record 238.8. The new network neither breaks nor beats any of them.
+- **Sweep 8** (32 random seeds, start days Nov 9-15): best 244.4 h (run 29, Billings Farm Road VT Mon 06:15), then
+  251.0, 252.0; one run stopped early as the Fargo/Moorhead family (259.7). Nothing under the record.
+- **Record + Lamar** (Oct 16): Dallas -> Lamar does not fit the record (the Greyhound leaves Dallas 13:35, the record
+  reaches Dallas 17:30); KC -> OKC -> Amarillo -> Lamar (Nick) fits on paper (Flix KC 10:35 -> OKC 16:50, Greyhound
+  19:05 -> Amarillo 23:40/01:05 -> Lamar 04:00 -> Chief 05:33 west, CO early, Buffalo -> Denver -> Omaha free), but the
+  free search moved the Lamar pin and took the Omnibus to El Paso (281.3 h). Needs a pinned evaluation that holds the
+  chain and re-optimises only the Northwest/Plains end.
+- Redundancy sheet refreshed on the no-hop default (docs/redundancy.xlsx).
