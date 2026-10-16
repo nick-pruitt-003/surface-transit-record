@@ -52,6 +52,7 @@ LOCAL_PROXY_ALL = os.environ.get('BUS48_LOCAL_PROXY', 'intercity') == 'all'
 # BUS48_HOP_FEED_KM=1 the hop is not built between two stops that each have a city-feed stop within 1 km; the city
 # routes (keep_routes.json) carry the transfer instead, and the hop stays only where no feed reaches.
 HOP_FEED_KM = float(os.environ.get('BUS48_HOP_FEED_KM', 0))
+CHAIN_WALKIN = os.environ.get('BUS48_CHAIN_WALKIN', '1') == '1'   # walk-in + further walk as one footpath (Oct 16)
 STOP_TZ_LOCAL = os.environ.get('BUS48_STOP_TZ') == '1'
 N_STATES = 48
 STATE_TZ = {'AL':'America/Chicago','AZ':'America/Phoenix','AR':'America/Chicago','CA':'America/Los_Angeles','CO':'America/Denver','CT':'America/New_York','DE':'America/New_York','FL':'America/New_York','GA':'America/New_York','ID':'America/Boise','IL':'America/Chicago','IN':'America/Indiana/Indianapolis','IA':'America/Chicago','KS':'America/Chicago','KY':'America/New_York','LA':'America/Chicago','ME':'America/New_York','MD':'America/New_York','MA':'America/New_York','MI':'America/Detroit','MN':'America/Chicago','MS':'America/Chicago','MO':'America/Chicago','MT':'America/Denver','NE':'America/Chicago','NV':'America/Los_Angeles','NH':'America/New_York','NJ':'America/New_York','NM':'America/Denver','NY':'America/New_York','NC':'America/New_York','ND':'America/Chicago','OH':'America/New_York','OK':'America/Chicago','OR':'America/Los_Angeles','PA':'America/New_York','RI':'America/New_York','SC':'America/New_York','SD':'America/Chicago','TN':'America/Chicago','TX':'America/Chicago','UT':'America/Denver','VT':'America/New_York','VA':'America/New_York','WA':'America/Los_Angeles','WV':'America/New_York','WI':'America/Chicago','WY':'America/Denver'}
@@ -338,6 +339,18 @@ class TimeRouter:
                     if mi > 0: w = int(mi / RUN_MPH * 3600)
                     else: print('walk link: bad miles, keeping minutes', repr(r['miles']), r['to_uid'])
                 self.foot[a].append((b, w)); self.foot[b].append((a, w))
+        # The scan relaxes one footpath per arrival, so a border walk-in followed by any further walk was invisible:
+        # Memphis, MS line -> back to Airways Blvd at Holmes -> 3.85 mi up Airways to the bus station for the 09:30 Flix
+        # was two footpaths (Nick, Oct 16 2026). Chain them once here: each walk-in point gets a direct edge, both ways,
+        # to every stop its base stop walks to, at the summed time. Walk-in points are few (~450), so this is cheap.
+        if CHAIN_WALKIN and self.first_virtual < self.N:
+            base = {v: list(self.foot.get(v, ())) for v in range(self.first_virtual, self.N)}
+            for v, edges in base.items():
+                have = {j for j, _ in edges}
+                for i, w1 in edges:
+                    for j, w2 in list(self.foot.get(i, ())):
+                        if j == v or j in have or j >= self.first_virtual: continue
+                        have.add(j); self.foot[v].append((j, w1 + w2)); self.foot[j].append((v, w1 + w2))
         # connections
         conns = []; self.trip_info = {}
         for fi, f in enumerate(feeds):
@@ -874,7 +887,7 @@ def cached_router(date, days, cache_dir=None, verbose=True):
     # wrong one without a word. BUS48_LOCAL_MAX_KM=5 against a router built at 10 is not an error anyone
     # would see; it is a plausible number from a different universe, which is this project's whole problem.
     sig.append(('cfg', WALKIN_KM, MIN_TRANSFER, SCAN_SLACK, LOCAL_MAX_KM, LOCAL_PROXY_ALL, STOP_TZ_LOCAL,
-                WALK_MAX_KM, WALK_SPEED, RUN_MPH, NO_WALK_LINKS, NO_WALKIN_STATES, SKIP_MANUAL, HOP_FEED_KM))
+                WALK_MAX_KM, WALK_SPEED, RUN_MPH, NO_WALK_LINKS, NO_WALKIN_STATES, SKIP_MANUAL, HOP_FEED_KM, CHAIN_WALKIN))
     key = hashlib.sha1(repr(sig).encode()).hexdigest()[:16]
     path = os.path.join(cache_dir, f'router_{key}.pkl')
     if os.path.exists(path):
