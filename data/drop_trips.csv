@@ -56,3 +56,20 @@ ibus,791,Southeastern Stages: defunct (Nick Oct 15 2026)
 amtrak,271319,Stagecoach Express 8901 (summer calendar): after-midnight time wrapped to 0:15 on the service day, a day early (Nick Oct 15 2026). Replaced by t465
 amtrak,271320,Stagecoach Express 8901: written 1:15 on the service day for Maricopa 22:15 MST the same evening, a day early (amtrak.com, Nick Oct 15 2026). Replaced by t465
 flix,US1144-7308-1935*,Greyhound Dallas 13:35 -> Lamar -> Denver: feed has Lubbock to Lamar 20 min early; greyhound.com shows Amarillo 01:05, Lamar 04:00 (Nick Oct 16 2026). Replaced by t475
+ibus,1059,Dubuque Loras -> Milwaukee Airport (Lamers): route dropped, now Van Galder Dubuque <-> Janesville (Nick Oct 17 2026). See data/manual/van_galder.toml
+ibus,1153,Milwaukee Airport -> Dubuque Loras (Lamers): route dropped, now Van Galder (Nick Oct 17 2026). See data/manual/van_galder.toml
+ibus,1326,Lamers Wausau -> Milwaukee Airport: feed MKE 13:30, golamers.com 13:20 (Nick Oct 17 2026). Replaced by t488 in data/manual/lamers.toml
+ibus,3444,Lamers Milwaukee Airport -> Wausau (golamers.com, Nick Oct 17 2026). Replaced by t489
+ibus,2676,Jefferson Milwaukee -> Minneapolis: feed 09:00 -> 17:10, jeffersonlines.com 08:55 -> 17:45 (Nick Oct 17 2026). Replaced by t492
+ibus,2311,Jefferson JL_907 MoA 17:35 -> Duluth: feed UMN onward 10 min early, tracker Duluth 21:35 (Nick Oct 17 2026). Replaced by t493
+ibus,1877,Jefferson Duluth 21:15/21:30 -> Minneapolis: stale; tracker JL_906 Duluth 21:40 -> Minneapolis 00:10 (Nick Oct 17 2026). Replaced by t494
+ibus,2858,Jefferson Duluth 21:15/21:30 -> Minneapolis: stale; tracker JL_906 Duluth 21:40 -> Minneapolis 00:10 (Nick Oct 17 2026). Replaced by t494
+ibus,700,Jefferson Duluth 21:15/21:30 -> Minneapolis: stale; tracker JL_906 Duluth 21:40 -> Minneapolis 00:10 (Nick Oct 17 2026). Replaced by t494
+ibus,288,Jefferson Duluth 21:15/21:30 -> Minneapolis: stale; tracker JL_906 Duluth 21:40 -> Minneapolis 00:10 (Nick Oct 17 2026). Replaced by t494
+ibus,2445,Jefferson Duluth 21:15/21:30 -> Minneapolis: stale; tracker JL_906 Duluth 21:40 -> Minneapolis 00:10 (Nick Oct 17 2026). Replaced by t494
+ibus,183,Jefferson MSP -> Sioux Falls: feed 11:55 -> 19:00, tracker 11:25 -> 18:25 (Nick Oct 17 2026). Replaced by t495
+ibus,396,Jefferson Sioux Falls -> MSP: feed 10:30, tracker 10:25 with Granite Falls to Litchfield 15-25 min earlier (Nick Oct 17 2026). Replaced by t496
+ibus,1681,Jefferson Pierre 10:00 -> Mobridge 12:01 (sits to 19:30) -> Bismarck 22:25: tracker JL_688 Pierre 09:15 -> Bismarck 14:30 (Nick Oct 17 2026)
+ibus,3629,Jefferson Mobridge 12:01 -> Pierre 14:00: tracker JL_691 11:30 -> 13:30 (Nick Oct 17 2026). Replaced by t497
+ibus,2711,Jefferson Pierre 17:00 -> Bismarck: Fort Yates/Bismarck a day late in the feed; tracker Pierre 16:45 -> Bismarck 22:25 (Nick Oct 17 2026). Replaced by t498
+ibus,1128,Jefferson Mobridge 19:15 -> Pierre 21:15: tracker JL_689 middle stops differ (Nick Oct 17 2026). Replaced by t499

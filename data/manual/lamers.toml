@@ -1,0 +1,52 @@
+agency = "Lamers Connect"
+
+# Lamers Connect runs two daily routes only (golamers.com, read Oct 17 2026; Nick). Milwaukee Airport <-> Dubuque is
+# gone (now Van Galder, data/manual/van_galder.toml). Wausau - Milwaukee replaces the intercity feed's trips 1326/3444
+# (MKE 13:30 there, 13:20 on the site); Green Bay - La Crosse (since Jan 1 2026) was not in the feed at all.
+# Ranges like "8:35-8:40" are arrive/depart. Local clocks (Central throughout).
+[stops]
+wausau_transit = "=ibus:2636"       # 555 Jefferson St
+wausau_lamers = "=ibus:2485"        # 2415 Trailwood Ln, Rothschild
+stevens_point = "=ibus:1226"        # Olympia Restaurant, 200 Division St
+uwsp = "=ibus:2142"                 # UW-Stevens Point, 2050 4th Ave
+waupaca = "=ibus:588"               # Shell (former Mobil), 1222 W Fulton St
+appleton = "=ibus:2214"             # Appleton Transit Center, 100 E Washington St
+uw_oshkosh = "=ibus:1113"           # Gruenhagen Conference Center, 208 Osceola St
+oshkosh = "=ibus:3038"              # 110 Pearl Ave
+fond_du_lac = "=ibus:1988"          # Fondy Mart, 1305 S Main St
+milwaukee = "=ibus:3285"            # Milwaukee Intermodal
+milwaukee_airport = "=ibus:296"     # Milwaukee Airport (MKE)
+green_bay = "=ibus:2088"            # Green Bay Metro, 901 University Ave
+de_pere = { name = "De Pere Lawrence Dr Park-N-Ride (Lamers)", lon = -88.0970, lat = 44.4466 }   # Lawrence Dr & Main Ave (approximate)
+wisconsin_rapids = { name = "Wisconsin Rapids Lamers", lon = -89.8550, lat = 44.3880 }          # 2611 W Grand Ave (approximate)
+tomah = "=amtrak:TOH"               # Tomah Amtrak, 121 W Washington St
+la_crosse = "=ibus:1017"            # Grand River Station, 315 3rd St S
+uw_la_crosse = { name = "UW-La Crosse Student Union (Lamers)", lon = -91.2330, lat = 43.8160 }  # 521 East Ave N (approximate)
+
+[[trip]]
+id = "t488"
+route = "Lamers Wausau 07:45 -> Appleton -> Oshkosh -> Milwaukee 12:50 -> MKE 13:20 (daily)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["wausau_transit 07:45", "wausau_lamers 08:05", "stevens_point 08:35/08:40", "uwsp 08:45", "waupaca 09:20", "appleton 10:05/10:15", "uw_oshkosh 10:55", "oshkosh 11:00", "fond_du_lac 11:35", "milwaukee 12:50", "milwaukee_airport 13:20"]
+
+[[trip]]
+id = "t489"
+route = "Lamers MKE 14:30 -> Milwaukee 15:00 -> Oshkosh -> Appleton -> Wausau 19:55 (daily)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["milwaukee_airport 14:30", "milwaukee 15:00", "fond_du_lac 16:15", "oshkosh 16:45", "uw_oshkosh 16:50", "appleton 17:25/17:30", "waupaca 18:25", "uwsp 19:05", "stevens_point 19:10", "wausau_lamers 19:40", "wausau_transit 19:55"]
+
+[[trip]]
+id = "t490"
+route = "Lamers Green Bay 07:20 -> Appleton -> Stevens Point -> Tomah -> La Crosse 12:35 -> UWL 12:55 (daily)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["green_bay 07:20", "de_pere 07:45", "appleton 08:20", "waupaca 09:10", "uwsp 09:45", "stevens_point 09:55", "wisconsin_rapids 10:30", "tomah 11:45", "la_crosse 12:35", "uw_la_crosse 12:55"]
+
+[[trip]]
+id = "t491"
+route = "Lamers UWL 14:30 -> La Crosse 14:50 -> Tomah -> Stevens Point -> Appleton -> Green Bay 20:05 (daily)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["uw_la_crosse 14:30", "la_crosse 14:50", "tomah 15:45", "wisconsin_rapids 17:00", "stevens_point 17:35", "uwsp 17:40", "waupaca 18:20", "appleton 19:10", "de_pere 19:40", "green_bay 20:05"]

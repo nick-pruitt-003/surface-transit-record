@@ -48,7 +48,7 @@ LOCAL_SPEED = 15 / 3.6     # m/s effective
 # more_gtfs feeds that are intercity carriers; every other feed there is city transit. The 1.5-10 km local-transit
 # proxy link is only built when one end is an intercity stop: city-to-city-stop hops are covered by the real
 # city routes, and building them for every pair of city stops multiplied the footpaths ~9x (Sep 21 2026).
-INTERCITY_MORE = {'concord_coach', 'bustang', 'gobus', 'kimball', 'vttranslines', 'outrider'}
+INTERCITY_MORE = {'coachusa', 'l2a', 'concord_coach', 'bustang', 'gobus', 'kimball', 'vttranslines', 'outrider'}
 LOCAL_PROXY_ALL = os.environ.get('BUS48_LOCAL_PROXY', 'intercity') == 'all'
 # Nick, Oct 15 2026: where a city feed exists, a transfer should ride its timetable, not the modelled hop. With
 # BUS48_HOP_FEED_KM=1 the hop is not built between two stops that each have a city-feed stop within 1 km; the city
@@ -803,6 +803,10 @@ def load_feeds():
         Feed(os.path.join(DATA_DIR, 'flix_gtfs.zip'), 'flix', 'utc', 'dates'),
         Feed(os.path.join(DATA_DIR, 'amtrak_gtfs.zip'), 'amtrak', 'agency', 'dates', max_speed=220, az_summer_offset=True),
         Feed(os.path.join(DATA_DIR, 'intercity_merged_gtfs.zip'), 'ibus', 'infer', 'weekday', skip_agencies=('Greyhound-us', 'FlixBus-us', 'Concord Coach Lines', 'Omnibus Express',
+                                                                                                  # Coach USA carriers: from data/more_gtfs/coachusa.zip, the carrier's own feed (Oct 17 2026)
+                                                                                                  'ShortLine Hudson', 'Coach USA Erie', 'Van Galder (Coach USA)', 'Wisconsin Coach Lines',
+                                                                                                  # Land to Air Express: from data/more_gtfs/l2a.zip (MnDOT, Oct 17 2026)
+                                                                                                  'Land to Air Express',
                                                                                                   # stale: RedCoach's site (Oct 1 2026) runs Dallas -> Houston 12:35, 16:25, 18:55, the feed
                                                                                                   # 09:30, 10:00, 16:00, 18:00; verified departures are in data/manual/redcoach.toml
                                                                                                   'RedCoach',
@@ -824,6 +828,8 @@ def load_feeds():
         more.append(Feed(z, nm, 'agency', 'dates', max_speed=200, keep_routes=set(keep[nm]) if nm in keep else None))
         more[-1].replay = True   # local transit only: an intercity feed that ends has really ended
         more[-1].city = nm not in INTERCITY_MORE
+        if nm == 'coachusa':   # agency.txt says New York for every carrier; the Wisconsin ones run on Central clocks
+            for ag in ('Van Galder (Coach USA)', 'Wisconsin Coach Lines', 'Waukesha County Transit'): more[-1].agency_tz[ag] = ZoneInfo('America/Chicago')
     feeds.append(ExtraFeed(os.path.join(DATA_DIR, 'manual'), feeds + more))
     return feeds + more
 

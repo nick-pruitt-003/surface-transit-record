@@ -1,0 +1,32 @@
+agency = "Coach USA - Van Galder"
+
+# Janesville - Madison - Dubuque (Nick, Coach USA booking and tracker screenshots, Oct 17 2026). Not in the intercity
+# feed: its only Madison <-> Dubuque trips (1059, 1153) are a different run, Milwaukee Airport <-> Dubuque Loras.
+# Coach USA's own GTFS (api.prod.coachusa.com/gtfs, Sep 14 2026) has no Dubuque route either.
+# A Wisconsin -> Iowa crossing at Dubuque, and back. Listed times at an intermediate stop are arrivals with a short
+# dwell; the site shows Madison 10:45/11:15 westbound and 17:15/17:30 eastbound. Days not stated: daily assumed.
+# Local clocks (Central throughout).
+[stops]
+janesville = "=coachusa:835741"   # 3120 N Pontiac Dr - Van Galder Bus Terminal (Coach USA feed)
+madison_uw = "=ibus:3203"        # 250 N. Lake St - Madison UW Campus (N Lake St between Johnson and Dayton)
+madison_dutch_mill = "=ibus:103" # Madison (Dutch Mill Park & Ride)
+verona = "=ibus:3543"            # WisDOT Park & Ride, 2585 Old PB
+mt_horeb = "=ibus:80"            # Pioneer Co-Op, 501 W Main St
+dodgeville = "=ibus:2967"        # Kwik Trip, 1122 N Bequette St
+platteville_kwik = "=ibus:3069"  # Kwik Trip, 1805 Vision Dr
+platteville_uw = "=ibus:171"     # UW Platteville, 1 University Plaza
+dubuque = "=ibus:2793"           # Dubuque Intermodal, 950 Elm St (Jefferson's Dubuque stop)
+
+[[trip]]
+id = "t486"
+route = "Van Galder Janesville 10:00 -> Madison 10:45/11:15 -> Platteville -> Dubuque 13:40 (daily assumed)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["janesville 10:00", "madison_uw 10:45/11:15", "verona 11:35", "mt_horeb 11:55", "dodgeville 12:25", "platteville_kwik 13:00", "platteville_uw 13:10", "dubuque 13:40"]
+
+[[trip]]
+id = "t487"
+route = "Van Galder Dubuque 14:40 -> Platteville -> Madison 17:15/17:30 -> Dutch Mill -> Janesville 18:30 (daily assumed)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["dubuque 14:40", "platteville_uw 15:10", "platteville_kwik 15:25", "dodgeville 16:00", "mt_horeb 16:30", "verona 17:00", "madison_uw 17:15/17:30", "madison_dutch_mill 17:50", "janesville 18:30"]
