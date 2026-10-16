@@ -493,3 +493,22 @@ Grand Forks, La Crosse, SMRT, Madison, Green Bay, Rapid City).
   earliest Four Winds reaches New Buffalo 12:30). So X's tail is capped by when the route collects Michigan: a faster
   finish means reaching Chicago with MI already done (from Detroit/Toledo/Kalamazoo), which changes X's middle, not its tail.
 - Also: the afternoon Four Winds run (Chinatown 16:00 -> New Buffalo 18:30 -> back 19:25, Wed-Sat) also makes the 21:15.
+
+## Oct 16 2026: 9- and 10-state localized runs (out/region), and two follow-ups (out/next)
+
+- **Follow-ups to the 8-state run.** X with Michigan before Chicago (seeded after Maine): 243.8 h and 249.2 h. It
+  reaches Chicago a day early (Harrisburg -> Indianapolis -> Louisville -> Chicago Fri 13:15, Four Winds, Fargo Sat 14:05)
+  but then owes TN, MS, AR and MO and has to come back south. The record seeded with the Sioux City chain: 238.8 h both
+  ways, the record itself (its finish is pinned by the Detroit -> Huntington bus).
+- **10 states (8 + MO, AR).** Fair test from X's own entry (Memphis Bus Station Fri 17:14, TN and MS done), three seeds:
+  all X's route, Sun 15:28. Free starts (flattered): best 45.2 h, Sioux City (NE on foot) -> Sioux Falls -> Fargo ->
+  Minneapolis -> overnight via Milwaukee -> Chicago -> **South Shore Line to Michigan City, city bus, walk to the MI line at
+  Michiana and back** (a weekday Michigan option, Chicago 08:51 -> 15:40) -> Amtrak Lincoln Service -> St Louis ->
+  Greyhound 01:00 -> Blytheville AR.
+- **9 states (8 + MO).** Fair test from St Louis Bus Station Fri 23:00, two seeds: X's route, Sun 15:28. Free starts
+  converge on a reusable eastbound block: **Jefferson Kansas City 01:30 -> Maryville MO -> Omaha 05:40 -> Sioux Falls ->
+  Fargo -> Minneapolis -> overnight Greyhound via Milwaukee -> Chicago -> Four Winds -> New Buffalo MI 12:30 next day**,
+  32.1 h from Maryville (about 35 h from KC). It suits a route that reaches Kansas City around midnight from the south or
+  west (Chief from Newton, Omnibus) and carries on east from Michigan: the reverse of X's direction.
+- Conclusion: from where X actually enters the region (Memphis, St Louis or Chicago), X's own tail is the best found every
+  time. The gains are in shapes that cross the Upper Midwest eastbound.
