@@ -1,0 +1,7 @@
+# bus48 Python dependencies. On a new machine: pip install -r requirements.txt
+# Minimums are the versions verified on the Windows box (Oct 2026); newer should work.
+numpy>=2.0          # everywhere: router arrays, scans, tables
+shapely>=2.0        # time_router.py, common.py: state boundaries and walk-ins
+timezonefinder>=6.0 # time_router.py: stop time zones
+scipy>=1.11         # hub_table.py, net_matrix.py, start_order.py (side scripts)
+openpyxl>=3.1       # redundancy.py, x_itinerary.py, route_sheets.py, time_sheet.py: .xlsx output
