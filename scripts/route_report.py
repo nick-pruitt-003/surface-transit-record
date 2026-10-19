@@ -43,10 +43,10 @@ def miss_penalty(bs, bt, al, at):
 
 def report(name, start, t0, order, end=None, fixed=True, note=''):
     S = ts.Search(R, start, t0, [], 1, end=end)
-    ts._R, ts._START, ts._T0, ts._SELF, ts._BASE, ts._END = R, start, t0, S, None, end
+    ts.bind(R, start, t0, S, end=end)
     if not fixed:   # best start day over the week, at that day's latest clock
         b = S.settle(order); start = b[1]; t0 = S.latest_start(start, b[2], order)
-        S = ts.Search(R, start, t0, [], 1, end=end); ts._START, ts._T0, ts._SELF = start, t0, S
+        S = ts.Search(R, start, t0, [], 1, end=end); ts.rebind(S)
     f, legs = S.evaluate(order)
     rides = [l for l in legs if l[0] == 'ride']
     first = rides[0][3]
@@ -78,10 +78,10 @@ def report(name, start, t0, order, end=None, fixed=True, note=''):
     res = []
     for s in range(N_STATES):
         if s == end: continue
-        S2 = ts.Search(R, start, t0, [], 1, done=[s], end=end); ts._SELF = S2
+        S2 = ts.Search(R, start, t0, [], 1, done=[s], end=end); ts.rebind(S2)
         f2, l2 = S2.evaluate([x for x in order if x != s])
         if f2 != float('inf') and S2.all_states(l2) and f - f2 > 60: res.append(((f - f2) / 3600, ABBR[R.state_names[s]]))
-    ts._SELF = S
+    ts.rebind(S)
     print('\n**Marginal state cost** (finish earlier when that state is dropped, same order): '
           + (', '.join(f'{a} {h:.1f} h' for h, a in sorted(res, reverse=True)) or 'none over a minute; anchors absorb every single-state saving'))
     return (f - first) / 3600

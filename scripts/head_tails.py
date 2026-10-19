@@ -30,7 +30,7 @@ def main():
         m = [s for s in R.stops_matching(d['start']) if R.stop_name[s] == d['start']] or R.stops_matching(d['start'])
         if not m: print(f'# {name}: no stop {d["start"]}', file=sys.stderr); continue
         st, t0 = m[0], d['t0']
-        S = ts.Search(R, st, t0, [], 1); ts._R, ts._START, ts._T0, ts._SELF, ts._BASE, ts._END = R, st, t0, S, None, None
+        S = ts.Search(R, st, t0, [], 1); ts.bind(R, st, t0, S)
         f, legs = S.evaluate(d['order'])
         if not legs: print(f'# {name}: does not evaluate', file=sys.stderr); continue
         got, seq, cut = {int(R.state[st])}, [int(R.state[st])], None
@@ -50,9 +50,9 @@ def main():
         have = set(seq_)
         prefix = [R.state_names[s] for s in d['order'] if isinstance(s, int) and s in have] + ['@' + hub]
         # the fixed head must reproduce: evaluated alone it reaches the hub no later than the old route did
-        S2 = ts.Search(R, st, t0, [], 1); ts._SELF = S2
+        S2 = ts.Search(R, st, t0, [], 1); ts.rebind(S2)
         fh, lh = S2.evaluate([x if x.startswith('@') else R.state_names.index(x) for x in prefix])
-        ts._SELF = S
+        ts.rebind(S)
         if not lh or fh > t + 60:
             print(f'# {name}: SKIP, the fixed head reaches {hub} at {R.fmt_time(fh, st) if fh < 1e18 else "never"}, '
                   f'the old route at {R.fmt_time(t, st)}', file=sys.stderr); continue

@@ -39,7 +39,7 @@ def main():
     R = TimeRouter(load_feeds(), datetime.fromtimestamp(d['t0'], ET).date(), a.days)
     start = R.stop_name.index(d['start']); t0 = d['t0']
     S = Search(R, start, t0, [], 1)
-    ts._R, ts._START, ts._T0, ts._SELF, ts._BASE, ts._END = R, start, t0, S, None, None
+    ts.bind(R, start, t0, S)
     f, legs = S.evaluate(d['order'])
     ab = lambda x: ABBR[R.state_names[x]] if x >= 0 else '--'
 

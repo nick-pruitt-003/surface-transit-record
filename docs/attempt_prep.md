@@ -33,9 +33,12 @@ Mayflower to the Michigan line, then about 6.5 miles to South Bend Airport for t
 clean up. Miss it and the planned route is intact: 17:52 Blackthorn back, 18:55 Greyhound. A ride-hail also does
 it. Details in `routes.md` under RX.
 
-## HT, the route to ride (230.10 h)
+## HT (230.10 h on Oct 1 data; superseded)
 
-Everything leg by leg is in `docs/ht_itinerary.xlsx` (built by `scripts/ht_itinerary.py`): the itinerary, the start
+The route to ride is X, 232.30 h, booked for Thu Nov 12 (`docs/x_itinerary_nov12.xlsx`, HANDOFF 30). HT
+re-searches to 244.2 h on the corrected Plains data. Kept for its on-foot notes.
+
+Everything leg by leg is in `docs/ht_itinerary.xlsx` (built by `scripts/attic/ht_itinerary.py`): the itinerary, the start
 day, what to do if you miss each leg, what to verify, and what to book.
 
 **Start day: Monday** (Tuesday as backup). The chain is daily, so Monday to Wednesday all give 230.10 h; Monday puts

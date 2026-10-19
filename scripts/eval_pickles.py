@@ -24,7 +24,7 @@ for name, path, win, t_over in ROUTES:
     if 'finish' in d and d['finish'] - d['elapsed'] - t0 > 3600: t0 = d['finish'] - d['elapsed'] - 600
     if t_over: t0 = t_over
     m = R.stops_matching(d['start']); st = next((i for i in m if R.stop_name[i] == d['start']), m[0])   # exact name first: 'Fargo' is also Fargo Amtrak / NDSU
-    S = Search(R, st, t0, [], 1); ts._R, ts._START, ts._T0, ts._SELF, ts._BASE, ts._END = R, st, t0, S, None, None
+    S = Search(R, st, t0, [], 1); ts.bind(R, st, t0, S)
     f, legs = S.evaluate(d['order'])
     if f >= 1e18 or not legs: print(f'== {name}: no finish', flush=True); continue
     fb = next(l for l in legs if l[0] == 'ride')

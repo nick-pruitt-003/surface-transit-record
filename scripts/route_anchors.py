@@ -16,13 +16,13 @@ cost at least 20 h. A version that reports it as cheap to miss is measuring the 
 
     python3 route_anchors.py      ->  ../out/route_anchors.txt, ../out/route_anchors.pkl
 """
-import pickle, math
+import pickle
 from collections import defaultdict
 from datetime import date, datetime
 from zoneinfo import ZoneInfo
 import numpy as np
 from time_router import cached_router
-from common import ABBR
+from common import ABBR, within_km
 from pick import gate
 from time_search import Search
 
@@ -35,9 +35,7 @@ CT = ZoneInfo('America/Chicago')
 
 
 def near(i, r_km):
-    lon, lat = R.stop_xy[i]
-    d = np.hypot((xy[:, 0] - lon) * 111.3 * math.cos(math.radians(lat)), (xy[:, 1] - lat) * 111.3)
-    return np.nonzero(d <= r_km)[0].astype(np.int64)
+    return within_km(xy, *R.stop_xy[i], r_km)
 
 
 def earliest(board, t, alight):

@@ -1,5 +1,5 @@
 """X as an itinerary to ride (docs/x_itinerary.xlsx): Sheridan WY Thursday 22:20 to Moorhead MN on foot the second
-Sunday, 232.1 h. Same sheets as ht_itinerary.py; the ending is pinned to Nick's measured 83 min walk from the Fargo
+Sunday, 232.1 h. Same sheets as attic/ht_itinerary.py; the ending is pinned to Nick's measured 83 min walk from the Fargo
 Jefferson station to Moorhead, not the router's Fargo local-transit proxy (MATBUS has no Sunday service).
 
 Leaf script: nothing imports it.   python3 x_itinerary.py   (from scripts/)
@@ -63,7 +63,7 @@ def same_trip_exists(leg, N):
 def main():
     order = [x if x.startswith('@') else st(x) for x in ORDER.split(',')]
     fp = R.stops_matching('Sheridan WY Taco Bell')[0]; t0 = START.timestamp()
-    S = ts.Search(R, fp, t0, [], 1); ts._R, ts._START, ts._T0, ts._SELF, ts._BASE, ts._END = R, fp, t0, S, None, None
+    S = ts.Search(R, fp, t0, [], 1); ts.bind(R, fp, t0, S)
     f, legs = S.evaluate(order)
     assert S.all_states(legs), [ABBR[R.state_names[s]] for s in S.missing(legs)]
     wb = Workbook(); ws = wb.active; ws.title = 'X itinerary'
@@ -103,13 +103,13 @@ def main():
     ws2.append(['Start day', 'Total', 'Finish', 'Notes'])
     for k in range(7):
         t0k = (START + timedelta(days=k)).timestamp()
-        Sk = ts.Search(R, fp, t0k, [], 1); ts._SELF, ts._START, ts._T0 = Sk, fp, t0k
+        Sk = ts.Search(R, fp, t0k, [], 1); ts.rebind(Sk)
         fk, lk = Sk.evaluate(order)
         okk = fk < 1e18 and Sk.all_states(lk)
         ws2.append([(START + timedelta(days=k)).strftime('%A'), f'{(fk - t0k) / 3600:.2f} h' if okk else 'breaks',
                     R.fmt_time(fk, lk[-1][2] if lk[-1][0] == 'walk' else lk[-1][4]) if okk else '',
                     'same order from Sheridan 22:10 that weekday; totals count from 22:10'])
-    ts._SELF, ts._START, ts._T0 = S, fp, t0
+    ts.rebind(S)
     for col, w in zip('ABCD', (22, 16, 18, 110)): ws2.column_dimensions[col].width = w
 
     # ---- If you miss a leg: replay from the boarding stop one minute after the bus left, same remaining order ----
@@ -147,7 +147,7 @@ def main():
             if not pins or pins[-1] != pin: pins.append(pin)
         best_ = None
         for tgt in (pins, rem):   # pins alone (freest), then pins with each leg's states (cannot skip one)
-            S2 = ts.Search(R, bs, bt + 60, [], 1, done=sorted(got)); ts._SELF, ts._START, ts._T0 = S2, bs, bt + 60
+            S2 = ts.Search(R, bs, bt + 60, [], 1, done=sorted(got)); ts.rebind(S2)
             f_, l_ = S2.evaluate(tgt)
             if f_ < 1e18 and S2.all_states(l_) and (best_ is None or f_ < best_[0]): best_ = (f_, l_, 0)
         # Recovery B, wait: the same chain N days later, checked trip by trip (same carrier and route, same times)
@@ -165,7 +165,7 @@ def main():
         ws3.append([k, f'{R.fmt_time(bt, bs)} {ag}', R.stop_name[bs], R.stop_name[al], fin, round((f2 - base_f) / 3600, 1) if ok else '', how])
         c = ws3.cell(ws3.max_row, 6)
         if ok and c.value is not None: c.fill = PatternFill('solid', fgColor='F8D7DA' if c.value >= 20 else 'FFF3CD' if c.value >= 3 else 'D4EDDA')
-        ts._SELF, ts._START, ts._T0 = S, fp, t0
+        ts.rebind(S)
     for col, w in zip('ABCDEFG', (4, 34, 30, 30, 18, 7, 90)): ws3.column_dimensions[col].width = w
     ws3.freeze_panes = 'A2'
 

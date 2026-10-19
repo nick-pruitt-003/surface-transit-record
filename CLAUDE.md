@@ -22,14 +22,23 @@
   `--track` replay calls the Python `rides_from` directly and does **not** exercise it: after any change to
   `menu.c` or `rides_from`/`sort_opts`, run a search with `--menu check`, which compares both every node and exits 4
   on a mismatch (and exits if the C path is not active).
+- **`--key pair` reproduces X (Oct 19).** It orders the frontier by pair margin (the latest you can be at a stop and
+  still collect the tightest pair of owed states) instead of single-state slack. On `--goal --frontier depth
+  --slack-weight 3 --key pair --pairs push --target 232.3`, a chain followed X to Fargo at 230.9 h, X's own time,
+  inside 25 min; the slack key stalled at 39 states. Under slack, X's middle (Newton, OKC, Houston) had 717-2337
+  Midwest-first chains ahead of it in its layer (single-state room to spare, none for a pair like CA+WA); under pair, 0.
+  The run missed the final 83 min walk to the MN line only because `--target 232.3` equals X's time: give it slack
+  (`--target 233`, `--by` +40 min) to confirm the close, then tighten below X for a real beat-X test. Building the pair
+  table for the Nov window takes ~24 min the first time (out/pairs_*.npy, ~320 MB), then it is cached.
 - **Expired local feeds replay their last covered week** (`Feed.replay`, local `more_gtfs` only; the router prints
   which). JTA, TANK and Open Plains have no newer release yet.
 
 Where the history below says 237, res_starttest.pkl or September dates, read the bullets above.
 
 Find a scheduled surface route through all 48 contiguous states faster than the timetabled record of
-238.83 h. Best verified: **237.3 h** (Huntington WV to the Vermont line at Hanover). `docs/HANDOFF.md` has
-the route, the rules, and everything tested and ruled out. Read it before proposing anything.
+238.83 h. Fastest route: **X, 232.30 h** (Sheridan WY to Moorhead MN), booked for a Thu Nov 12 2026 start
+(HANDOFF 30). The 237 h Huntington to Vermont-line route is the search **control** below, not the best result.
+`docs/HANDOFF.md` has the routes, the rules, and everything tested and ruled out. Read it before proposing anything.
 
 ## Working rules
 
@@ -114,7 +123,7 @@ is too strict prunes the answer.
 
 ## Search designs, and why the earlier ones failed
 
-Searching **orderings of the 48 states** (`build_backward.py`, `dfs_backward.py`) is the wrong space. Its
+Searching **orderings of the 48 states** (`attic/build_backward.py`, `attic/dfs_backward.py`) is the wrong space. Its
 branching is the topk of 6 and its leftover estimate has to price a set of states with no idea where or when
 you are. Every form of that estimate failed, measured: plain, doubled, cheapest-entry, and two
 frequency-aware matrices which got *closer to the true remainder* while ranking *worse*. A spanning tree is
@@ -297,8 +306,8 @@ proven otherwise, and unexplained improvements in a gate usually mean the gate g
 
 Instrumenting against the known answer worked every time; running searches blind and reading the result did
 not. `ride_search.py --track` replays the control leg by leg and says which are missing and why.
-`branching.py` measures the real menu size. `bound_probe.py` scores a bound against the true remainder.
-`tail_diag.py`, `dump_diag.py` and `reach_probe.py` do the same for the ordering searches.
+`branching.py` measures the real menu size. The ordering-search diagnostics (`bound_probe.py`, `tail_diag.py`,
+`dump_diag.py`, `reach_probe.py`) are in `scripts/attic/` with that design; its README says how to run them.
 
 State a falsification condition before building, and validate on at least two cases that disagree. A
 reach-based estimate once looked decisive on one dump and was arithmetically broken: it summed n copies of

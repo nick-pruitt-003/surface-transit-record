@@ -20,10 +20,10 @@ RED, GREEN, BLUE, AMBER = (PatternFill('solid', fgColor=c) for c in ('F8D7DA', '
 
 def legs_for(start, t0, order, end=None, fixed=True):
     S = ts.Search(R, start, t0, [], 1, end=end)
-    ts._R, ts._START, ts._T0, ts._SELF, ts._BASE, ts._END = R, start, t0, S, None, end
+    ts.bind(R, start, t0, S, end=end)
     if not fixed:
         b = S.settle(order); start = b[1]; t0 = S.latest_start(start, b[2], order)
-        S = ts.Search(R, start, t0, [], 1, end=end); ts._START, ts._T0, ts._SELF = start, t0, S
+        S = ts.Search(R, start, t0, [], 1, end=end); ts.rebind(S)
     f, legs = S.evaluate(order)
     assert S.all_states(legs), [R.state_names[s] for s in S.missing(legs)]
     return S, f, legs

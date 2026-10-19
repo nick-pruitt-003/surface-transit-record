@@ -49,7 +49,7 @@ def ev(R, stop, t0, order):
     An unreachable order has an infinite finish timestamp.
     """
     S = Search(R, stop, t0, [], 1)
-    ts._R, ts._START, ts._T0, ts._SELF, ts._BASE, ts._END = R, stop, t0, S, None, None
+    ts.bind(R, stop, t0, S)
     return S.evaluate(order)
 
 

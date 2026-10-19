@@ -3,7 +3,7 @@
 # done, so the shared tail (Meteor, Acela, Portland loop, Dartmouth Coach 19:30, VT line 22:14) finishes the route.
 # Deadline Sat Oct 3 16:05 ET. The control's front half starts Fri Sep 25 00:54 ET for that Meteor, X_TOL's Thu Sep 24
 # 22:20 MT. A start later than the control's beats it by the difference. Results in docs/cloud_latest.txt.
-cd "$(dirname "$0")"
+cd "$(dirname "$0")/.."   # run from scripts/: the live modules and ../out are relative to it
 R=../docs/cloud_latest.txt; touch $R
 push () { git add $R; git commit -qm "cloud result: $1" || true; for i in 1 2 3; do git pull -q --rebase && git push -q && return 0; sleep 5; done; echo "PUSH FAILED $1" >&2; return 1; }
 # A search that exits nonzero is recorded as FAILED, which the skip check does not match, published, and the job

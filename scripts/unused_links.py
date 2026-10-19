@@ -17,12 +17,12 @@ listed with its short headway rather than dropped.
 
     python3 unused_links.py           ->  ../out/unused_links.txt
 """
-import argparse, collections, math, pickle
+import argparse, collections, pickle
 from datetime import date, datetime
 from zoneinfo import ZoneInfo
 import numpy as np
 from time_router import cached_router
-from common import ABBR
+from common import ABBR, within_km
 
 ap = argparse.ArgumentParser()
 ap.add_argument('--min-states', type=int, default=3)
@@ -38,9 +38,7 @@ DAYS = 20
 
 
 def near(i, r_km):
-    lon, lat = R.stop_xy[i]
-    d = np.hypot((xy[:, 0] - lon) * 111.3 * math.cos(math.radians(lat)), (xy[:, 1] - lat) * 111.3)
-    return np.nonzero(d <= r_km)[0].astype(np.int64)
+    return within_km(xy, *R.stop_xy[i], r_km)
 
 
 # every dated run: its connections in order (first and last are what the link is measured on)

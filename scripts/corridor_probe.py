@@ -19,7 +19,7 @@ from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
 import numpy as np
 from time_router import cached_router
-from common import ABBR
+from common import ABBR, within_km
 
 AREAS = {'Spokane': (47.6588, -117.4260), 'Salt Lake City': (40.7608, -111.8910), 'Boise': (43.6150, -116.2023)}
 CORRIDOR = {'Pasco': (46.2396, -119.1006), 'Hermiston': (45.8404, -119.2895), 'La Grande': (45.3246, -118.0877)}
@@ -27,9 +27,7 @@ DETOURS = {'Portland': (45.5152, -122.6784), 'Seattle': (47.6062, -122.3321)}
 
 
 def near(R, lat, lon, km):
-    xy = np.asarray(R.stop_xy, dtype=float)
-    d = np.hypot((xy[:, 0] - lon) * 111.3 * np.cos(np.radians(lat)), (xy[:, 1] - lat) * 111.3)
-    return set(np.where(d <= km)[0].tolist())
+    return set(within_km(np.asarray(R.stop_xy, dtype=float), lon, lat, km).tolist())
 
 
 def main():

@@ -33,7 +33,7 @@ def main():
     order = saved['order']; f, legs = S.evaluate(order)
     if not S.all_states(legs):   # data changed since the search: put the missing states back where they cost least
         import time_search as ts
-        ts._R, ts._START, ts._T0, ts._BASE, ts._SELF = R, start, t0, None, S
+        ts.bind(R, start, t0, S)
         order, f, legs = S.repair(order, None); print('repaired, all states:', S.all_states(legs))
     order = expand(R, S, order, legs)
     fin = lambda o: R.finish(start, t0, o) or float('inf')

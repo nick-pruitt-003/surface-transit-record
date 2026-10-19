@@ -5,7 +5,7 @@
 # 11:55 next day: 31.4 h boarding Mon-Thu, 32.2 h Fri, a day more on weekends (Bennington runs weekdays only).
 # It collects NY VT MA NH ME RI CT, so those are --done here. Each run reaches Cleveland with the other 41 states;
 # total = first bus -> next weekday 04:30 at Cleveland + the tail. Beats the control if the front is under 205.9 h.
-cd "$(dirname "$0")"
+cd "$(dirname "$0")/.."   # run from scripts/: the live modules and ../out are relative to it
 R=../docs/cloud_cle.txt; : > $R
 push () { git add $R; git commit -qm "cloud result: $1" || true; for i in 1 2 3; do git pull -q --rebase && git push -q && return 0; sleep 5; done; echo "PUSH FAILED $1" >&2; return 1; }
 # A search that exits nonzero is recorded as FAILED, which the skip check does not match, published, and the job

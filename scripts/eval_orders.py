@@ -29,7 +29,7 @@ for line in open(sys.argv[1], encoding='utf-8'):
     st = (ex or st)[0]
     t0 = datetime.fromisoformat(clock).replace(tzinfo=ZoneInfo(tz)).timestamp()
     S = Search(R, st, t0, [], 1)
-    ts._R, ts._START, ts._T0, ts._SELF, ts._BASE, ts._END = R, st, t0, S, None, None
+    ts.bind(R, st, t0, S)
     f, legs = S.evaluate(o)
     if f >= 1e18 or not legs:
         print(f'== {name}: no finish', flush=True); continue

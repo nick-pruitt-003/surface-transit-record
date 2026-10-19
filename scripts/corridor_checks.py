@@ -18,7 +18,7 @@ from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
 import numpy as np
 from time_router import cached_router
-from common import ABBR
+from common import ABBR, within_km
 import time_search as ts_
 from time_search import Search
 
@@ -32,8 +32,7 @@ def main():
     xy = np.asarray(R.stop_xy, dtype=float)
 
     def near(lat, lon, km):
-        d = np.hypot((xy[:, 0] - lon) * 111.3 * np.cos(np.radians(lat)), (xy[:, 1] - lat) * 111.3)
-        return set(np.where(d <= km)[0].tolist())
+        return set(within_km(xy, lon, lat, km).tolist())
     area = lambda lat, lon, km=10: f'@~{lon},{lat},{km}'
     tc_ = defaultdict(list)
     for k in range(len(R.dep)): tc_[R.ctrip[k]].append(k)
@@ -60,7 +59,7 @@ def main():
     best_ = None
     for h in hun:
         Sx = Search(R, h, tc, [], 1)
-        ts_._R, ts_._START, ts_._T0, ts_._SELF, ts_._BASE, ts_._END = R, h, tc, Sx, None, None
+        ts_.bind(R, h, tc, Sx)
         f, legs = Sx.evaluate(pickle.load(open('../out/hun_ms_meteor.pkl', 'rb'))['order'])
         if best_ is None or f < best_[0]: best_ = (f, legs)
     _, clegs = best_

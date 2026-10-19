@@ -4,7 +4,7 @@
 # but spent three days zigzagging the plains: KC -> Topeka -> Denver -> Cheyenne -> back to Denver -> Omaha -> Fargo ->
 # Billings. SUN2 pins Buffalo WY before Billings, so CO, WY and MT come on the way into the spine
 # (Denver -> Cheyenne -> Buffalo 21:25 -> JL 701 -> Billings 00:25 -> the 01:30 to Spokane), and the plains run one way.
-cd "$(dirname "$0")"
+cd "$(dirname "$0")/.."   # run from scripts/: the live modules and ../out are relative to it
 R=../docs/cloud_sun2.txt; : > $R
 push () { git add $R; git commit -qm "cloud result: $1" || true; for i in 1 2 3; do git pull -q --rebase && git push -q && return 0; sleep 5; done; echo "PUSH FAILED $1" >&2; return 1; }
 # A search that exits nonzero is recorded as FAILED, which the skip check does not match, published, and the job

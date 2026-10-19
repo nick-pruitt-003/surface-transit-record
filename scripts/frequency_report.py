@@ -17,12 +17,13 @@ import numpy as np
 from time_router import TimeRouter, load_feeds
 from time_search import Search
 from hub_table import HUBS
+from common import within_km
 
 DAYS = 14   # long enough for a whole route; per-day counts are averaged over it
 
 
 def near(xy, lon, lat, km):
-    return set(np.where(np.hypot((xy[:, 0] - lon) * 111.3 * np.cos(np.radians(lat)), (xy[:, 1] - lat) * 111.3) <= km)[0].tolist())
+    return set(within_km(xy, lon, lat, km).tolist())
 
 
 def main():

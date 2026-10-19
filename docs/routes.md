@@ -1,7 +1,26 @@
 # Every route at or under the record
 
-Record: **238.83 h** (White River Junction → Huntington). Six of our routes beat it, all re-evaluated on the
-corrected data of Oct 1 2026 (repaired trips, per-stop time zones, the TOML manual trips, new feeds). The full
+Record: **238.83 h** (White River Junction → Huntington).
+
+## Current standing (corrected Plains data, Oct 5-6 2026)
+
+Jefferson as sold, Burlington Trailways gone, Barons and Greyhound re-timed (`docs/sweep.md`, "Corrected Plains
+data"). On this data only three routes still collect all 48 under the record:
+
+| route | hours | start | finish | notes |
+|---|---|---|---|---|
+| **X** | **232.30** | Sheridan WY, Thu 22:20 | Moorhead MN (walk from Fargo) | **the fastest; booked for Thu Nov 12** (HANDOFF 30). Router 231.87; 231.9 with a MATBUS finish on a Friday start |
+| Wheeling | 234.24 | Wheeling WV, Ohio Coach 04:00 | VT line from Hanover | uses Ohio Coach |
+| Control | 237.49 | Huntington WV, Thu 01:00 | VT line from Hanover | the search control |
+
+Every other family in the table below misses some of MN, MO and WI when re-timed on this data, or re-searches
+slower (HT 244.2, RX 245.2). The X described further down is the older Mississippi-finish version, not the booked
+route.
+
+## Oct 1 data (superseded)
+
+Re-evaluated on the corrected
+data of Oct 1 2026 (repaired trips, per-stop time zones, the TOML manual trips, new feeds). The full
 leg tables, waits and connection lists are generated into [`routes_data.md`](routes_data.md) by
 `scripts/route_report.py`; rerun it whenever the data changes.
 
@@ -164,7 +183,7 @@ Neither uses Ohio Coach.
 
 Risks: the Michiana run is the longest measured run in any record route; the HAR finish is a 02:10 departure.
 
-### HT, 230.02 h (NH → FL): the fastest route we have, found Oct 2
+### HT, 230.02 h (NH → FL), found Oct 2; on the Oct 5-6 data it re-searches to 244.2 h
 
 HMS with one change. HMS's focused search had been told to finish in Mississippi, copied from where its sweep run
 happened to end, so it spent its last seven hours on Tallahassee → Mobile → Biloxi. But the 09:00 Memphis →

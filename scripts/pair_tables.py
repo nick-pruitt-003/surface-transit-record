@@ -37,6 +37,13 @@ def _latest_from(F, D, span, nxt):
     return np.maximum(lat, eff)
 
 
+def _spawn_init(router_args, D, span, L, st_stops):
+    """Windows has no fork: each spawned worker loads the same cached router and rebuilds the reverse index."""
+    from time_router import cached_router
+    R = cached_router(*router_args, verbose=False)
+    _W.update(F=B.RevFast(R), D=D, span=span, L=L, st_stops=st_stops)
+
+
 def _row(y):
     """every L[y->z] for one y, relative to D, float32"""
     F, D, span, L, st_stops = _W['F'], _W['D'], _W['span'], _W['L'], _W['st_stops']
@@ -81,7 +88,7 @@ def fingerprint(R, F, D, span, L_end, L):
 
 
 class PairTables:
-    def __init__(self, R, D, span=260, L_end=None, L=None, cache_dir=None, workers=None, verbose=True):
+    def __init__(self, R, D, span=260, L_end=None, L=None, cache_dir=None, workers=None, verbose=True, router_args=None):
         self.R, self.D = R, float(D)
         F = B.RevFast(R)
         st_stops = [[] for _ in range(N_STATES)]
@@ -106,11 +113,24 @@ class PairTables:
         yz = np.full((N_STATES, N_STATES, R.N), -np.inf, dtype=np.float32)
         import multiprocessing as mp
         n = workers or max(1, (os.cpu_count() or 2) - 2)
-        with mp.get_context('fork').Pool(n) as pool:
-            for k, (y, row) in enumerate(pool.imap_unordered(_row, range(N_STATES)), 1):
+        # fork where the platform has it (macOS, Linux); on Windows spawn workers that load the cached router
+        # (router_args, as passed to cached_router), or one process when the caller cannot say which router
+        if 'fork' in mp.get_all_start_methods():
+            pool = mp.get_context('fork').Pool(n)
+        elif router_args is not None:
+            n = min(n, 12)   # each spawned worker holds its own router
+            pool = mp.get_context('spawn').Pool(n, initializer=_spawn_init,
+                                                initargs=(router_args, float(D), span, L, st_stops))
+        else:
+            pool = None; n = 1
+        rows = pool.imap_unordered(_row, range(N_STATES)) if pool else map(_row, range(N_STATES))
+        try:
+            for k, (y, row) in enumerate(rows, 1):
                 yz[y] = row
                 if verbose and k % 8 == 0:
                     print(f'  pair tables: {k}/{N_STATES} rows in {time.time() - t0:.0f} s', flush=True)
+        finally:
+            if pool: pool.close(); pool.join()
         P = np.maximum(yz, yz.transpose(1, 0, 2))            # best order, [y, z, stop]
         del yz
         idx = np.arange(N_STATES); P[idx, idx, :] = np.inf
@@ -227,7 +247,8 @@ def main():
     a = ap.parse_args()
     tz = ZoneInfo(a.tz)
     D = datetime.fromisoformat(a.by).replace(tzinfo=tz).timestamp()
-    R = cached_router(datetime.fromisoformat(a.at).date(), a.days)
+    router_args = (datetime.fromisoformat(a.at).date(), a.days)
+    R = cached_router(*router_args)
     ab = lambda x: ABBR[R.state_names[x]]
     inv = {v: k for k, v in ABBR.items()}
     end_st = R.state_names.index(inv[a.end])
@@ -238,7 +259,7 @@ def main():
     for y in range(N_STATES):
         nxt = {s: float(L_end[s]) for s in st_stops[y] if L_end[s] > -np.inf}
         if nxt: L[y] = _latest_from(F, D, a.span, nxt)
-    PT = PairTables(R, D, a.span, L_end=L_end, L=L)
+    PT = PairTables(R, D, a.span, L_end=L_end, L=L, router_args=router_args)
 
     # Falsification: every node of the control, from its first leg, must survive. It finishes inside D.
     import time_search as ts_
@@ -248,7 +269,7 @@ def main():
     tried = []
     for hun_ in resolve_stop(R, a.control_start):      # every exact match, not the first; keep the fastest
         S = Search(R, hun_, tc, [], 1)
-        ts_._R, ts_._START, ts_._T0, ts_._SELF, ts_._BASE, ts_._END = R, hun_, tc, S, None, None
+        ts_.bind(R, hun_, tc, S)
         fin_, legs_ = S.evaluate(order)
         tried.append((fin_, hun_, legs_))
     fin, hun, legs = min(tried, key=lambda x: x[0])

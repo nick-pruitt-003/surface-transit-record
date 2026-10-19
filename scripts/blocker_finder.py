@@ -66,7 +66,7 @@ def main():
     if not S.all_states(legs0):   # data changed since the search: put the missing states back where they cost least
         print('  missing', [label(R, s) for s in S.missing(legs0)], '-> repairing')
         import time_search as ts
-        ts._R, ts._START, ts._T0, ts._BASE, ts._SELF = R, start, t0, None, S
+        ts.bind(R, start, t0, S)
         order, f0, legs0 = S.repair(order, None)
         print(f'  repaired: {hrs(f0):.1f} h, all states: {S.all_states(legs0)}')
     # Expand to every state as an explicit target in first-visit order (pins kept where the route reaches
