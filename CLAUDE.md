@@ -22,6 +22,14 @@
   `--track` replay calls the Python `rides_from` directly and does **not** exercise it: after any change to
   `menu.c` or `rides_from`/`sort_opts`, run a search with `--menu check`, which compares both every node and exits 4
   on a mismatch (and exits if the C path is not active).
+- **`--key pair` reproduces X (Oct 19).** It orders the frontier by pair margin (the latest you can be at a stop and
+  still collect the tightest pair of owed states) instead of single-state slack. On `--goal --frontier depth
+  --slack-weight 3 --key pair --pairs push --target 232.3`, a chain followed X to Fargo at 230.9 h, X's own time,
+  inside 25 min; the slack key stalled at 39 states. Under slack, X's middle (Newton, OKC, Houston) had 717-2337
+  Midwest-first chains ahead of it in its layer (single-state room to spare, none for a pair like CA+WA); under pair, 0.
+  The run missed the final 83 min walk to the MN line only because `--target 232.3` equals X's time: give it slack
+  (`--target 233`, `--by` +40 min) to confirm the close, then tighten below X for a real beat-X test. Building the pair
+  table for the Nov window takes ~24 min the first time (out/pairs_*.npy, ~320 MB), then it is cached.
 - **Expired local feeds replay their last covered week** (`Feed.replay`, local `more_gtfs` only; the router prints
   which). JTA, TANK and Open Plains have no newer release yet.
 
