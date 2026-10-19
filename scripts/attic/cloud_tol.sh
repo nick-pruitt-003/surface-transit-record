@@ -1,6 +1,6 @@
 #!/bin/bash
 # Cloud job: X_TOL (X with the interior entered at Toledo) then the joint audit. Results pushed to docs/.
-cd "$(dirname "$0")"
+cd "$(dirname "$0")/.."   # run from scripts/: the live modules and ../out are relative to it
 push () { git add ../docs/cloud_tol.txt ../docs/joint_audit.txt 2>/dev/null; git commit -qm "cloud result: $1" || true; for i in 1 2 3; do git pull -q --rebase && git push -q && return 0; sleep 5; done; echo "PUSH FAILED $1" >&2; return 1; }
 mkdir -p ../out; R=../docs/cloud_tol.txt; touch $R
 # A search that exits nonzero is recorded as FAILED, which the skip check does not match, published, and the job

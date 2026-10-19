@@ -6,7 +6,7 @@
 #   and the run is void. Below the control's front half (206.5 h from its first bus) it beats the control.
 # SUN: a whole route from Sunland Park NM, east along the Gulf first and the Northwest spine westbound last, ending in CA
 #   (unforced, the first run turned west and rode the spine eastbound), 90 min.
-cd "$(dirname "$0")"
+cd "$(dirname "$0")/.."   # run from scripts/: the live modules and ../out are relative to it
 R=../docs/cloud_wy_sun.txt
 if [ -n "$RUN_WY" ]; then : > $R; else touch $R; fi   # a SUN-only run keeps the existing WY_LONG entry
 push () { git add $R; git commit -qm "cloud result: $1" || true; for i in 1 2 3; do git pull -q --rebase && git push -q && return 0; sleep 5; done; echo "PUSH FAILED $1" >&2; return 1; }

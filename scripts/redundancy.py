@@ -60,7 +60,7 @@ def run(name, path, win, t_over, wb, out):
     if t0 < win0: t0 += SHIFT
     if t_over: t0 = t_over
     st = R.stops_matching(d['start'])[0]
-    S = ts.Search(R, st, t0, [], 1); ts._R, ts._START, ts._T0, ts._SELF, ts._BASE, ts._END = R, st, t0, S, None, None
+    S = ts.Search(R, st, t0, [], 1); ts.bind(R, st, t0, S)
     f, legs = S.evaluate(d['order'])
     if f >= 1e18 or not S.all_states(legs):
         print(f'{name}: does not evaluate on this window', file=out); return
