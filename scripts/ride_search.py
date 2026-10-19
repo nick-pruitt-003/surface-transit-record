@@ -126,6 +126,13 @@ def main():
                          "the end the way X does (Oct 12: every deep chain sat in the Midwest owing the whole West). "
                          "Judge it with --xprobe, not by eye.")
     ap.add_argument('--slack-weight', type=float, default=1.0)
+    ap.add_argument('--key', choices=('slack', 'pair'), default='slack',
+                    help="the room term in --frontier slack/depth. 'slack': min over owed y of L[y][stop] minus the "
+                         "clock, one state at a time. 'pair': the pair margin, the latest you can be here and still "
+                         "collect the tightest pair of owed states in either order (needs --pairs). Measured Oct 19 "
+                         "over one X-reproduction frontier: X's middle (Newton, OKC, Houston) had 717-2337 ahead "
+                         "under slack and 0-2 under pair, because a Midwest-first chain owing CA and WA from Chicago "
+                         "has single-state room to spare and no room for the pair.")
     ap.add_argument('--xprobe', help="route pickle (e.g. ../out/res_x.pkl): at exit, rank that route's own prefix "
                                      "nodes against the final frontier under this run's ordering")
     ap.add_argument('--credit', type=float, default=5.0, help='hours a collected state is worth when ordering '
@@ -246,6 +253,7 @@ def main():
     # per-state test is structurally unable to see a chain that owes CA and WA from Springfield MA: each is
     # individually reachable, neither after the other.
     PT = None
+    if a.key == 'pair' and not a.pairs: sys.exit('--key pair needs --pairs (push, so the margin doubles as the prune)')
     if a.pairs:
         if L is None:
             sys.exit('--pairs needs the deadline tables, which need --end and --by')
@@ -1248,11 +1256,16 @@ def main():
             else: heapq.heappush(q, it)
         def qpop():
             return q.pop() if layered else heapq.heappop(q)
-        def pri(spent, n, stop_=None, t_=None, col_=None):
+        def room(stop_, t_, col_):
+            if a.key == 'pair' and PT is not None:
+                ow_ = [y for y in range(N_STATES) if y not in col_]
+                if len(ow_) >= 2: return PT.worst(int(stop_), float(t_), ow_)[0]
+            return node_slack(stop_, t_, col_)
+        def pri(spent, n, stop_=None, t_=None, col_=None, room_=None):
             # In depth mode n is the layer, so the credit term is a constant inside it and is left out.
             p_ = spent - (0 if layered else a.credit * 3600 * n)
             if a.frontier in ('slack', 'depth') and L is not None and stop_ is not None:
-                p_ -= a.slack_weight * node_slack(stop_, t_, col_)
+                p_ -= a.slack_weight * (room_ if room_ is not None else room(stop_, t_, col_))
             return p_
         pri_fn[0] = pri
         # The root goes through the same test as every other push. It will not be dead, but "every node in
@@ -1328,10 +1341,16 @@ def main():
                 # That is the point of the push site and the reason the two are not interchangeable: at pop
                 # the node has already been popped, already raised `deepest`, and already sat in the queue
                 # that the exit census reads.
-                if a.pairs == 'push' and pair_dead(to, at, new): continue
+                rm_ = None
+                if a.key == 'pair' and PT is not None and a.pairs == 'push':
+                    # One PT.worst serves as both the push-side kill and the key: dead iff the margin is negative.
+                    rm_ = room(to, at, new)
+                    if rm_ < 0 and N_STATES - len(new) >= 2:
+                        pair_kills[0] += 1; continue
+                elif a.pairs == 'push' and pair_dead(to, at, new): continue
                 queued[k2] = sp_new
                 seq[0] += 1
-                qpush((pri(at - T0, len(new), to, at, new), at - T0, seq[0], to, at, new, trip,
+                qpush((pri(at - T0, len(new), to, at, new, rm_), at - T0, seq[0], to, at, new, trip,
                        path + ((trip, stop, to, t, at, walk, seg),)))
             if len(q) > a.queue:
                 # Drop only what is provably dead: a node whose clock has passed the limit, or passed the
@@ -1534,12 +1553,21 @@ def main():
         dx = _pk2.load(open(a.xprobe, 'rb'))
         stx = R.stop_name.index(dx['start'])
         Sx = _S2(R, stx, dx['t0'], [], 1)
-        ts2._R, ts2._START, ts2._T0, ts2._SELF, ts2._BASE, ts2._END = R, stx, dx['t0'], Sx, None, None
+        ts2.bind(R, stx, dx["t0"], Sx)
         _, legsx = Sx.evaluate(dx['order'])
         qp = sorted(it[0] for it in last_q[0])
         colx = set(); 
         if R.state[stx] >= 0: colx.add(int(R.state[stx]))
         print(f'xprobe: {dx["start"][:30]} order, ranked against the final frontier of {len(qp)} nodes ({a.frontier})')
+        # The same frontier re-ranked under other slack weights, so one run answers what --slack-weight would have
+        # done to the reference's place in each layer. Approximate in one direction only: the frontier itself was
+        # shaped by this run's weight. Slack is recomputed from each node's stop, clock and states, nothing stored.
+        XW = (0, 1, 3, 10, 30, None)                     # None: slack alone, spent ignored
+        qlay = defaultdict(list)                         # layer -> [(spent, slack)]
+        if L is not None:
+            for it in last_q[0]: qlay[len(it[5])].append((it[1], node_slack(it[3], it[4], it[5])))
+        qarr = {k: (np.array([s for s, _ in v]), np.array([x for _, x in v])) for k, v in qlay.items()}
+        xdump = []
         nleg = 0
         for l in legsx:
             if l[0] == 'ride':
@@ -1559,6 +1587,32 @@ def main():
                 rk = bisect.bisect_left(qp, px)
                 print(f'    leg {nleg:2d} {R.stop_name[stop_][:26]:26s} {len(colx):2d} states, {(t_ - T0) / 3600:6.1f} h: '
                       f'would pop after {rk} of {len(qp)}' + ('' if node_slack(stop_, t_, frozenset(colx)) >= 0 else '  (past the deadline tables)'))
+                if len(colx) in qarr:
+                    sp_q, sl_q = qarr[len(colx)]; sx = node_slack(stop_, t_, frozenset(colx)); spx = t_ - T0
+                    xdump.append((nleg, len(colx), spx, sx, R.stop_name[stop_], tuple(sorted(ab(y) for y in colx)), px,
+                                  PT.worst(int(stop_), float(t_), [y for y in range(N_STATES) if y not in colx])[0] if PT is not None else None))
+                    rr = [int(((sp_q - w * sl_q) < (spx - w * sx)).sum()) if w is not None else int((sl_q > sx).sum())
+                          for w in XW]
+                    owx = [y for y in range(N_STATES) if y not in colx]
+                    pm = (f'   pair margin {PT.worst(int(stop_), float(t_), owx)[0] / 3600:+.2f} h'
+                          if PT is not None and len(owx) >= 2 else '')
+                    print('        ahead of it at slack weight ' +
+                          '  '.join(f'{"slack" if w is None else w}:{r}' for w, r in zip(XW, rr)) + pm)
+        if qarr:
+            # Every queued node in the layers the reference passes through, with the stops its path visited, so the
+            # competitors ahead of the reference can be read rather than only counted.
+            def _ends(path_):
+                return tuple(R.stop_name[l[4] if l[0] == 'ride' else l[2]] for l in path_
+                             if isinstance(l, tuple) and l and l[0] in ('ride', 'walk'))
+            xl = {d[1] for d in xdump}
+            def _pm(it):                         # pair margin: the tightest pair of owed states, exact from PT
+                ow_ = [y for y in range(N_STATES) if y not in it[5]]
+                return PT.worst(int(it[3]), float(it[4]), ow_)[0] if PT is not None and len(ow_) >= 2 else None
+            items = {k: [(it[0], it[1], R.stop_name[it[3]], it[4], tuple(sorted(ab(y) for y in it[5])),
+                          node_slack(it[3], it[4], it[5]), _ends(it[7]), _pm(it)) for it in last_q[0] if len(it[5]) == k]
+                     for k in xl}
+            _pk2.dump({'layers': qarr, 'x': xdump, 'items': items}, open('../out/xprobe_last.pkl', 'wb'))
+            print('    frontier (spent, slack) per layer and the reference nodes -> ../out/xprobe_last.pkl')
     if dead_end:
         tot = sum(v[0] for v in dead_end.values())
         print(f'kill spots: {tot} expanded nodes had no surviving ride; top stops (dead ends, at 25+ states, deepest):')
