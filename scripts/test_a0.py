@@ -162,7 +162,7 @@ def scan_horizon_keeps_every_label_it_reaches():
         R = _random_router(rng)
         start = int(rng.integers(0, R.N)); t0 = float(rng.integers(0, 2000))
         one = lambda h: R._scan_fast(np.array([start]), np.array([t0]), np.array([-1], dtype=np.int32),
-                                     'X', want_pred=True, horizon=h)[3]
+                                     'X', want_pred=True, t_end=h)[3]
         full = one(None)
         for h in rng.integers(0, 8000, size=4).astype(float):
             cut = one(h)

@@ -1,6 +1,6 @@
 """Local search over the state order using real timetables as the objective.
 
-usage: python3 time_search.py --start Missoula --at 2026-09-21T07:00 --tz America/Denver \
+usage: python3 time_search.py --start Missoula --at 2026-11-02T07:00 --tz America/Denver \
          --seed ../out/start_newton.pkl [--prefix "Idaho,Washington"] --budget 900 --workers 8 --out ../out/time_best.pkl
 """
 import re, argparse, itertools, json, os, pickle, random, time, sys
@@ -436,6 +436,15 @@ class Search:
             else: hi = mid - 1
         return t_lo + lo * step
 
+    def deadline_for(self, f):
+        """The deadline a finish at f is scored against. One fixed end_by unless end_daily: a daily hinge (the I-90
+        bus, the Silver Meteor) leaves every day, so a front that arrives a day early takes the earlier departure and
+        is not charged the wait to a later deadline (Oct 7: a Thursday arrival scored against Monday read 246.9 h)."""
+        d = self.end_by
+        if getattr(self, 'end_daily', False):
+            while d - 86400 >= f - 60: d -= 86400
+        return d
+
     def settle(self, order):
         """Best start for this order over start stops x 7 start days, each at its latest clock.
         Scored on hours from the first bus boarded to the finish. Returns (elapsed, stop, window start, finish, legs):
@@ -462,7 +471,7 @@ class Search:
                 # With a deadline the clock runs to the deadline (a front for a hinge waits there for its train), so
                 # the latest start wins, not the shortest front: a front a day early is a day lost (Oct 6, the Silver
                 # Meteor front that left Wednesday, reached Jacksonville on Monday and waited 25 h).
-                key = (self.end_by if self.end_by is not None else f) - first
+                key = (self.deadline_for(f) if self.end_by is not None else f) - first
                 if best is None or key < best[0] - 60: best = (key, st, t_lo, f, legs)
         return best
 
@@ -645,6 +654,7 @@ def main():
     ap.add_argument('--exhaustive', type=int, default=7, help='score every order of the owed states when there are at most this many (0 = never)')
     ap.add_argument('--end', help='where the route must finish: a state abbreviation ("VT"), a stop name ("Barstow"), or a point "~lon,lat,km"')
     ap.add_argument('--end-by', help='finish deadline at --end, ISO time in --tz; the search works out the latest start that makes it')
+    ap.add_argument('--end-daily', action='store_true', help='the --end-by deadline repeats every day (a daily hinge): score against the first one on or after arrival')
     ap.add_argument('--fixed-start', action='store_true', help='keep the start stop and the --at clock exactly as given instead of '
                     'trying 7 start days; for a chain that only connects on some weekdays')
     ap.add_argument('--start-alt', default='', help='semicolon list of other stops the start may move to (each tried on 7 days, latest clock)')
@@ -654,7 +664,14 @@ def main():
     _ROUTER_ARGS = (t0.date(), a.days)   # spawned workers load the same cached router
     R = cached_router(*_ROUTER_ARGS)
     # '#idx' is one exact stop; a name prefers an exact match ("Jacksonville" is also Jacksonville NC by substring)
-    exact = lambda q: int(q[1:]) if q.startswith('#') else next((s for s in R.stops_matching(q) if R.stop_name[s] == q), R.stops_matching(q)[0])
+    def exact(q):
+        if q.startswith('#'):
+            i = int(q[1:])
+            if not 0 <= i < R.N: sys.exit(f'no stop #{i}')
+            return i
+        m = R.stops_matching(q)
+        if not m: sys.exit(f'no stop matching {q!r}')
+        return next((s for s in m if R.stop_name[s] == q), m[0])
     start = FREE if a.start.lower().startswith('free') else exact(a.start)
     from common import ABBR
     inv = {v: k for k, v in ABBR.items()}
@@ -673,14 +690,21 @@ def main():
     end = None
     if a.end:   # a state abbreviation (finish anywhere in it) or a stop name
         end = R.state_names.index(inv[a.end]) if a.end in inv else f'@{a.end}'
-        if isinstance(end, str) and not end.startswith('@~') and not R.stops_matching(a.end): sys.exit(f'no stop matching --end {a.end!r}')
+        if isinstance(end, str) and not end.startswith(('@~', '@#')) and not R.stops_matching(a.end): sys.exit(f'no stop matching --end {a.end!r}')
     S = Search(R, start, t0.timestamp(), [x.strip() for x in a.prefix.split(',') if x.strip()], a.workers, done, alts,
                fixed_start=a.fixed_start, end=end, end_by=end_by)
+    S.end_daily = a.end_daily
     S.patience = a.patience; S.idle_kicks = a.idle_kicks; S.exhaustive = a.exhaustive
     S.live(force=True, name=os.path.basename(a.out).replace('.pkl', ''), phase='loading')
     order, f, legs = S.run(seed, a.budget)
     # distinct nonzero exits, so a caller checking status cannot file these as results: 2 unreachable, 3 missed --end-by
     if f == float('inf'): print('FINAL unreachable'); sys.exit(2)
+    if S.best_elapsed == float('inf') and not end_by:
+        # no deadline, so this is not a miss: no route the search tried collected all 48 states inside the window
+        # (sweep 6 run 14 printed "misses --end-by ... nan h late" here, Oct 12)
+        print('FINAL incomplete: no route collected all 48 states inside the timetable window; best partial ends',
+              R.fmt_time(f, [l for l in legs if l[0] == 'ride'][-1][4]))
+        print(R.describe(legs)); sys.exit(3)
     if S.best_elapsed == float('inf'):   # nothing made the deadline: say how close the best route got
         late = (f - end_by) / 3600 if end_by else float('nan')
         # the sign is the verdict: a negative "late" is a route that got there first, and must not read as a miss
@@ -689,14 +713,18 @@ def main():
         print(f'FINAL misses --end-by: best route reaches {a.end} at', R.fmt_time(f, [l for l in legs if l[0] == 'ride'][-1][4]), f'({rel})')
         print(R.describe(legs)); sys.exit(3)
     # FINAL is hours from the first bus boarded to the finish (the start clock is chosen by the search)
-    print('FINAL', round(S.best_elapsed / 3600, 1), 'h', R.fmt_time(f, [l for l in legs if l[0] == 'ride'][-1][4]))
     first = next(l for l in legs if l[0] == 'ride')
+    # Under --end-by best_elapsed is the scoring key (deadline minus first bus), not the journey: report the journey
+    # (Oct 7: a 147 h front printed FINAL 246.9 h, and the record line compared that).
+    elapsed = f - first[3]
+    print('FINAL', round(elapsed / 3600, 1), 'h', R.fmt_time(f, [l for l in legs if l[0] == 'ride'][-1][4]))
+    if end_by is not None: print('DEADLINE KEY', round(S.best_elapsed / 3600, 1), 'h (first bus to the deadline it was scored against)')
     print('START', S.start_name(legs), 'first bus', R.fmt_time(first[3], first[2]))
     if a.end: print('END', a.end, 'arrive', R.fmt_time(f, [l for l in legs if l[0] == 'ride'][-1][4]),
-                    f'| record 238.83 h: {"beats it by" if S.best_elapsed < 238.83 * 3600 else "misses by"} {abs(238.83 - S.best_elapsed / 3600):.1f} h')
+                    f'| record 238.83 h: {"beats it by" if elapsed < 238.83 * 3600 else "misses by"} {abs(238.83 - elapsed / 3600):.1f} h')
     print(' > '.join(R.state_names[x] if isinstance(x, int) else x for x in order))
     print(R.describe(legs))
-    pickle.dump(dict(order=order, finish=f, legs=legs, start=S.start_name(legs), t0=S.t0, elapsed=S.best_elapsed), open(a.out, 'wb'))
+    pickle.dump(dict(order=order, finish=f, legs=legs, start=S.start_name(legs), t0=S.t0, elapsed=elapsed, key=S.best_elapsed), open(a.out, 'wb'))
 
 
 if __name__ == '__main__':

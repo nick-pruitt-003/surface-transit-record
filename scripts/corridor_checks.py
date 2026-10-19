@@ -26,7 +26,7 @@ TZ = ZoneInfo('America/New_York')
 
 
 def main():
-    R = cached_router(datetime(2026, 9, 24).date(), 20, verbose=False)
+    R = cached_router(datetime(2026, 11, 5).date(), 20, verbose=False)
     inv = {v: k for k, v in ABBR.items()}
     S = lambda x: R.state_names.index(inv[x])
     xy = np.asarray(R.stop_xy, dtype=float)
@@ -54,7 +54,7 @@ def main():
         return False
 
     # the control's own clock at each case's start, from the router rather than stored indices
-    tc = datetime(2026, 9, 24, 0, 30, tzinfo=TZ).timestamp()
+    tc = datetime(2026, 11, 5, 0, 30, tzinfo=TZ).timestamp()
     hun = [i for i, n in enumerate(R.stop_name) if n == 'Huntington Bus Stop']
     best_ = None
     for h in hun:

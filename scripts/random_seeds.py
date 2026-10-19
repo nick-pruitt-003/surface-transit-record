@@ -14,7 +14,7 @@ from common import ABBR
 
 n = int(sys.argv[1]) if len(sys.argv) > 1 else 24
 rng = random.Random(int(sys.argv[2]) if len(sys.argv) > 2 else 48)
-R = cached_router(date(2026, 9, 24), 20, verbose=False)
+R = cached_router(date(2026, 11, 5), 20, verbose=False)
 xy = np.asarray(R.stop_xy[:R.first_virtual], dtype=float); st = np.asarray(R.state[:R.first_virtual])
 cen = {s: xy[st == s].mean(axis=0) for s in range(N_STATES)}
 km = lambda a, b: float(np.hypot((cen[a][0] - cen[b][0]) * 85, (cen[a][1] - cen[b][1]) * 111))

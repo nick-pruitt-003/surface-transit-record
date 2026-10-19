@@ -15,7 +15,7 @@ from route_report import R, st
 from common import ABBR
 
 ET = ZoneInfo('America/New_York')
-START = datetime(2026, 9, 28, 6, 19, tzinfo=ET)          # Monday in the timetable window; 06:19 is the latest start that keeps the chain
+START = datetime(2026, 11, 9, 6, 19, tzinfo=ET)          # Monday in the timetable window; 06:19 is the latest start that keeps the chain
 TRIP = datetime(2026, 10, 26).date()   # the Monday Nick is pricing; Book ahead shows these dates (same weekdays and day offsets)
 ORDER = 'ME,@Washington Union Station,GA,WV,MI,ND,NE,WY,OR,AZ,KS,LA,AR,MS,FL'
 

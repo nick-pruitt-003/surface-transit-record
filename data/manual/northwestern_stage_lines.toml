@@ -8,6 +8,11 @@ boise_airport = "=ibus:1465"   # Boise (Airport)
 la_grande_bus_station = "=flix:1e6e4e25-e311-47fd-92cf-c4829424d136"   # La Grande Bus Station
 pasco_bus_stop_2 = "=ibus:2048"   # Pasco Bus Stop
 spokane_2 = "=ibus:9"   # Spokane
+hermiston_or = { name = "Hermiston OR (Space Age Travel Center)", lon = -119.2895, lat = 45.8404 }   # point approximate
+pendleton_or = { name = "Pendleton OR (NWL)", lon = -118.7886, lat = 45.6721 }   # point approximate
+baker_city_or = { name = "Baker City OR (Baker Truck Corral)", lon = -117.8344, lat = 44.7749 }   # point approximate
+ontario_or = { name = "Ontario OR (Malheur Council on Aging)", lon = -116.9629, lat = 44.0266 }   # point approximate
+nampa_id = { name = "Nampa ID (Maverik)", lon = -116.5635, lat = 43.5824 }   # point approximate
 
 [[trip]]
 id = "t0"
@@ -17,11 +22,13 @@ tz = "America/Los_Angeles"
 stops = ["spokane 10:45", "ritzville 11:45/11:55", "pasco_bus_stop 13:10"]
 
 [[trip]]
+# Nick screenshot Oct 13 2026: Boise Airport 08:15 MT -> Nampa 08:45 -> Ontario 09:30 MT (10 min) -> Baker City 09:45 PT ->
+# La Grande 10:35 -> Pendleton 11:30 (15 min) -> Hermiston 12:25 -> Pasco 13:10. Written in Pacific.
 id = "t1"
-route = "NWL Boise -> Pasco (OR stop is really Hermiston; La Grande used as stand-in)"
+route = "NWL Boise Airport 08:15 MT -> Nampa -> Ontario -> Baker City -> La Grande -> Pendleton -> Hermiston -> Pasco 13:10 (daily)"
 days = "1111111"
 tz = "America/Los_Angeles"
-stops = ["boise_airport 07:15", "la_grande_bus_station 10:35/10:40", "pasco_bus_stop_2 13:10"]
+stops = ["boise_airport 07:15", "nampa_id 07:45", "ontario_or 08:30/08:40", "baker_city_or 09:45", "la_grande_bus_station 10:35", "pendleton_or 11:30/11:45", "hermiston_or 12:25", "pasco_bus_stop_2 13:10"]
 
 [[trip]]
 id = "t2"
@@ -29,3 +36,14 @@ route = "NWL Pasco -> Spokane 15:00"
 days = "1111111"
 tz = "America/Los_Angeles"
 stops = ["pasco_bus_stop_2 15:00", "spokane_2 17:05"]
+
+# Nick screenshots Oct 13 2026 (saltlakeexpress.com, Wed Oct 14): NWL Pasco 15:00 -> Hermiston 15:45 -> Pendleton 16:20 -> La
+# Grande 17:15 -> Baker City 18:00 -> Ontario 20:10 MT -> Nampa 20:50 MT -> Boise Airport 21:10 MT, written here in Pacific.
+# Sold through to Salt Lake Express at Boise.
+# Daily assumed (only a Wednesday seen). The backup for a missed Greyhound 13:25 Pasco -> Salt Lake City.
+[[trip]]
+id = "t461"
+route = "NWL Pasco 15:00 -> Boise Airport 21:10 MT (daily assumed)"
+days = "1111111"
+tz = "America/Los_Angeles"
+stops = ["pasco_bus_stop 15:00", "hermiston_or 15:45", "pendleton_or 16:20", "la_grande_bus_station 17:15", "baker_city_or 18:00", "ontario_or 19:10", "nampa_id 19:50", "boise_airport 20:10"]

@@ -14,7 +14,7 @@ import time_router as tr
 from route_report import R
 from common import ABBR
 
-ROUTE = ('X', 'Sheridan WY Taco Bell 1655 Coffeen Ave (Jefferson)', datetime(2026, 9, 24, 22, 10).isoformat(), 'America/Denver',
+ROUTE = ('X', 'Sheridan WY Taco Bell 1655 Coffeen Ave (Jefferson)', datetime(2026, 11, 5, 22, 10).isoformat(), 'America/Denver',
          'OR,AZ,OK,FL,@Hanover (Hanover Inn),ME,WV,MS,MO,WI,MI,ND,MN')
 HINGES = ['Southwest Chief', 'Silver Meteor', 'Union Pacific North', 'JL Chicago 21:15']   # substrings of the service
 STARTS = ['NH', 'WV', 'WY', 'NV', 'WA', 'ME']   # start states to try for each front (skipped when the tail holds them)

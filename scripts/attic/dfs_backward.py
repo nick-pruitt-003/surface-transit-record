@@ -1,6 +1,6 @@
 """Build 48-state routes from the end by depth-first search with backtracking against a time limit.
 
-  python3 dfs_backward.py --end VT --from 2026-10-03T22:14 --tz America/New_York --target 238
+  python3 dfs_backward.py --end VT --from 2026-11-14T22:14 --tz America/New_York --target 238
 
 At each step the timetables offer a menu: the states you could still be in, latest first. Take the best one
 and go on. When what you have spent plus a floor on what is left would pass the time limit, that branch

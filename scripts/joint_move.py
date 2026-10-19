@@ -5,7 +5,7 @@ finder's pairs and triples) is invisible to it. This removes the whole set, then
 (as the state or one of its gateway stops) at its best position, for every insertion order, and polishes
 with single relocations.
 
-  python3 joint_move.py --route ../out/res_denverV7c.pkl --start Pasco --at 2026-09-24T12:00 \
+  python3 joint_move.py --route ../out/res_denverV7c.pkl --start Pasco --at 2026-11-05T12:00 \
       --tz America/Los_Angeles --states AL,FL,MS,AR [--out ../out/joint_x.pkl]
 """
 import argparse, itertools, pickle

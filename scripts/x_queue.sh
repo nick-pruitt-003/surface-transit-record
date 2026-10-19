@@ -12,7 +12,7 @@ fail () { echo "FAILED $1 rc=$2" | tee -a $R; tail -20 "$3" >> $R; push "$1-fail
 run () {  # run <tag> <seed order>
   grep -q "^$1 " $R && { echo "skip $1"; return; }
   echo "$(date -u +%H:%M) start $1"
-  BUS48_MIN_TRANSFER=5 BUS48_WALKIN_KM=1.4 python3 -u time_search.py --start free:WY --at 2026-09-25T12:00 --tz America/Denver \
+  BUS48_MIN_TRANSFER=5 BUS48_WALKIN_KM=1.4 python3 -u time_search.py --start free:WY --at 2026-11-06T12:00 --tz America/Denver \
     --seed-states "$2" --budget 1500 --workers $W --days 20 --out ../out/cx_$1.pkl > ../out/cx_$1.log 2>&1
   local rc=$?; [ $rc -eq 0 ] || fail $1 $rc ../out/cx_$1.log
   echo "$1 rc=0 $(grep -E '^FINAL|^START|^END' ../out/cx_$1.log | tr '\n' ' ')" | tee -a $R

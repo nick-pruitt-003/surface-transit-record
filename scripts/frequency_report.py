@@ -7,7 +7,7 @@ Two views, both from the loaded timetables (one week):
      keeping the sparse ones (<= --max per day). These are the network's structural bottlenecks.
 
   python3 frequency_report.py --route ../out/hun_ms_meteor.pkl --start "Huntington Bus Stop" \
-      --at 2026-09-24T00:30 --tz America/New_York [--max 3] > ../out/frequency_report.txt
+      --at 2026-11-05T00:30 --tz America/New_York [--max 3] > ../out/frequency_report.txt
 """
 import argparse, pickle
 from collections import defaultdict

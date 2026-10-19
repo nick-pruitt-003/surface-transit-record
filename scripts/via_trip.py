@@ -6,9 +6,9 @@ covered states. With --budget, runs time_search from the alight for whatever
 states are still missing.
 
 usage:
-  python3 via_trip.py --start "Dallas I-30" --at 2026-09-25T18:00 --tz America/Chicago \
+  python3 via_trip.py --start "Dallas I-30" --at 2026-11-06T18:00 --tz America/Chicago \
       --via "Dallas I-30 -> Gastonia" --alight Charlotte
-  python3 via_trip.py --start "Huntington Bus Stop" --at 2026-09-24T00:30 --tz America/New_York \
+  python3 via_trip.py --start "Huntington Bus Stop" --at 2026-11-05T00:30 --tz America/New_York \
       --via "Dallas I-30 -> Gastonia" --alight Charlotte --seed ../out/hun_ms_meteor.pkl \
       --budget 300 --workers 4 --out ../out/via_expreso.pkl
 """

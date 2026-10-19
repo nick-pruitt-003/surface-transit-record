@@ -14,7 +14,7 @@ mkdir -p ../out
 python3 -u rebuild_237.py > ../out/rebuild.log 2>&1 && python3 -u regress.py > ../out/regress.log 2>&1 || { echo "REGRESS FAILED" | tee -a $R; tail -25 ../out/regress.log ../out/rebuild.log >> $R; push regress; exit 2; }
 echo "regress ok: $(tail -1 ../out/regress.log)" | tee -a $R
 BUS48_MIN_TRANSFER=5 BUS48_WALKIN_KM=1.4 python3 -u time_search.py --start "Sunland Park Casino" \
-  --start-alt "Sunland Park & Doniphan" --end CA --at 2026-09-24T00:00 --tz America/Denver \
+  --start-alt "Sunland Park & Doniphan" --end CA --at 2026-11-05T00:00 --tz America/Denver \
   --seed-states "NM,TX,OK,AR,TN,MS,LA,AL,FL,GA,SC,NC,VA,MD,DE,NJ,NY,CT,VT,NH,MA,RI,ME,PA,WV,OH,IN,KY,MI,IL,WI,MN,ND,SD,IA,NE,MO,KS,CO,@~-106.690,44.355,1.0,WY,MT,ID,WA,OR,UT,AZ,NV,CA" \
   --budget 5400 --workers ${W:-2} --days 20 --out ../out/sun2.pkl > ../out/sun2.log 2>&1
 rc=$?; [ $rc -eq 0 ] || fail SUN2 $rc ../out/sun2.log

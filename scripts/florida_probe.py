@@ -28,16 +28,16 @@ GATES = {'Pensacola': (30.4213, -87.2169), 'Pensacola loop': (30.4213, -87.2169)
 
 
 def main():
-    R = cached_router(datetime(2026, 9, 24).date(), 20, verbose=False)
+    R = cached_router(datetime(2026, 11, 5).date(), 20, verbose=False)
     ab = lambda x: ABBR[R.state_names[x]]
     inv = {v: k for k, v in ABBR.items()}
     FL = R.state_names.index(inv['FL'])
-    D = datetime(2026, 10, 3, 22, 54, tzinfo=TZ).timestamp()
+    D = datetime(2026, 11, 14, 22, 54, tzinfo=TZ).timestamp()
     PT = PairTables(R, D, 260, verbose=False)
     tcn = defaultdict(list)
     for k in range(len(R.dep)): tcn[R.ctrip[k]].append(k)
 
-    tc = datetime(2026, 9, 24, 0, 30, tzinfo=TZ).timestamp()
+    tc = datetime(2026, 11, 5, 0, 30, tzinfo=TZ).timestamp()
     best_ = None
     for h in [i for i, n in enumerate(R.stop_name) if n == 'Huntington Bus Stop']:
         S = Search(R, h, tc, [], 1)

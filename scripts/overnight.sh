@@ -13,8 +13,8 @@ NOTES=../docs/OVERNIGHT.md
 # No --order here on purpose. Hardcoding it meant every run in this queue inherited whatever the
 # default was when the file was written, which is how a whole night went to `rate` after it had been
 # measured worse. Runs that want a specific ordering pass it themselves.
-COMMON="--end VT --by 2026-10-03T22:54 --tz America/New_York --target 238"
-FWD="--start \"Huntington Bus Stop\" --at 2026-09-24T00:54"
+COMMON="--end VT --by 2026-11-14T22:54 --tz America/New_York --target 238"
+FWD="--start \"Huntington Bus Stop\" --at 2026-11-05T00:54"
 
 note () { echo "$1" >> "$NOTES"; }
 

@@ -16,7 +16,7 @@ from common import ABBR
 from pick import gate
 from time_search import Search
 
-R = cached_router(date(2026, 9, 24), 20)
+R = cached_router(date(2026, 11, 5), 20)
 inv = {v: k for k, v in ABBR.items()}
 DN = ZoneInfo('America/Denver')
 SHE = [i for i, n in enumerate(R.stop_name) if n == 'Sheridan WY Taco Bell 1655 Coffeen Ave (Jefferson)']
@@ -35,7 +35,7 @@ SHAPES = {
 }
 
 
-CHECK = Search(R, SHE[0], datetime(2026, 9, 24, 12, 0, tzinfo=DN).timestamp(), [], 1)   # for its 48-state coverage test
+CHECK = Search(R, SHE[0], datetime(2026, 11, 5, 12, 0, tzinfo=DN).timestamp(), [], 1)   # for its 48-state coverage test
 
 
 def order_of(spec):
@@ -51,7 +51,7 @@ def order_of(spec):
 def best(order):
     res = []
     for d in range(7):
-        t = datetime(2026, 9, 24, 12, 0, tzinfo=DN).timestamp() + d * 86400
+        t = datetime(2026, 11, 5, 12, 0, tzinfo=DN).timestamp() + d * 86400
         f, legs = R.route(SHE, t, order)
         if f is None: res.append((float('inf'), d, None)); continue
         if CHECK.missing(legs): res.append((float('inf'), d, None)); continue   # misses a state: not a route
@@ -64,6 +64,6 @@ def best(order):
 gate('X_TOL order from Sheridan, best of 7 start days', lambda: h, 237.9, 0.1)
 for name in sys.argv[1:] or [k for k in SHAPES if k != 'X_TOL']:
     (h, d, legs), allres = best(order_of(SHAPES[name]))
-    days = '  '.join(f"{(datetime(2026, 9, 24, tzinfo=DN) + timedelta(days=dd)):%a} {hh:.1f}" for hh, dd, _ in allres)
+    days = '  '.join(f"{(datetime(2026, 11, 5, tzinfo=DN) + timedelta(days=dd)):%a} {hh:.1f}" for hh, dd, _ in allres)
     print(f'\n== {name}: best {h:.1f} h (start day offset {d})   by start day: {days}')
     if legs: print(R.describe(legs))

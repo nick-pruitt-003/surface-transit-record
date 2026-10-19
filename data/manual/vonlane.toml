@@ -1,0 +1,131 @@
+agency = "Vonlane"
+
+# Nick screenshot Oct 6 2026 (vonlane.com, Thu Nov 19): Nashville Omni Downtown -> Memphis Hilton, 10:00 and 14:00,
+# 3 h 15 min, $132. Only Thursday confirmed. Stop points approximate: the Omni Nashville Hotel (Rep. John Lewis Way,
+# next to the Greyhound station) and the Hilton Memphis (939 Ridge Lake Blvd, East Memphis).
+[stops]
+nashville_omni = { name = "Nashville Omni Downtown (Vonlane)", lon = -86.7760, lat = 36.1580 }
+memphis_hilton = { name = "Memphis Hilton, Ridge Lake Blvd (Vonlane)", lon = -89.8724, lat = 35.1069 }
+atlanta_grand_hyatt_buckhead = { name = "Atlanta Grand Hyatt Buckhead (Vonlane)", lon = -84.3696, lat = 33.8467 }
+okc_omni = { name = "Oklahoma City Omni (Vonlane)", lon = -97.5155, lat = 35.4627 }
+dallas_doubletree_love_field = { name = "Dallas DoubleTree Love Field (Vonlane)", lon = -96.8508, lat = 32.8396 }
+houston_hyatt_regency = { name = "Houston Hyatt Regency Downtown (Vonlane)", lon = -95.3684, lat = 29.7580 }
+
+[[trip]]
+id = "t428"
+route = "Vonlane Nashville Omni 10:00 -> Memphis Hilton 13:15 (weekdays, Nick: schedule consistent)"
+days = "1111100"
+tz = "America/Chicago"
+stops = ["nashville_omni 10:00", "memphis_hilton 13:15"]
+
+[[trip]]
+id = "t429"
+route = "Vonlane Nashville Omni 14:00 -> Memphis Hilton 17:15 (weekdays, Nick: schedule consistent)"
+days = "1111100"
+tz = "America/Chicago"
+stops = ["nashville_omni 14:00", "memphis_hilton 17:15"]
+
+# Nick screenshots Oct 6 2026 (vonlane.com): Atlanta -> Nashville Tue Oct 27 15:00 ET, 4 h ($152); Oklahoma City ->
+# Dallas Mon Nov 9 10:15 and 14:15 CT, 3 h 15 ($132). Only the days seen are entered. Hotel points approximate.
+[[trip]]
+id = "t430"
+route = "Vonlane Atlanta Grand Hyatt Buckhead 15:00 ET -> Nashville Omni 18:00 CT (weekdays, Nick: schedule consistent)"
+days = "1111100"
+tz = "America/New_York"
+stops = ["atlanta_grand_hyatt_buckhead 15:00", "nashville_omni 19:00"]
+
+[[trip]]
+id = "t431"
+route = "Vonlane Oklahoma City Omni 10:15 -> Dallas DoubleTree Love Field 13:30 (weekdays, Nick: schedule consistent)"
+days = "1111100"
+tz = "America/Chicago"
+stops = ["okc_omni 10:15", "dallas_doubletree_love_field 13:30"]
+
+[[trip]]
+id = "t432"
+route = "Vonlane Oklahoma City Omni 14:15 -> Dallas DoubleTree Love Field 17:30 (weekdays, Nick: schedule consistent)"
+days = "1111100"
+tz = "America/Chicago"
+stops = ["okc_omni 14:15", "dallas_doubletree_love_field 17:30"]
+
+# Nick screenshot Oct 6 2026 (vonlane.com, Wed Oct 21): Nashville -> Atlanta 14:00 CT, 4 h ($152).
+[[trip]]
+id = "t433"
+route = "Vonlane Nashville Omni 14:00 CT -> Atlanta Grand Hyatt Buckhead 19:00 ET (weekdays, Nick: schedule consistent)"
+days = "1111100"
+tz = "America/Chicago"
+stops = ["nashville_omni 14:00", "atlanta_grand_hyatt_buckhead 18:00"]
+
+# Nick screenshot Oct 6 2026 (vonlane.com, Wed Oct 21): Dallas Love Field -> Houston downtown, 3 h 45 ($132). Wednesday only entered.
+
+[[trip]]
+id = "t434"
+route = "Vonlane Dallas DoubleTree Love Field 06:00 -> Houston Hyatt Regency (weekdays, Nick: schedule consistent)"
+days = "1111100"
+tz = "America/Chicago"
+stops = ["dallas_doubletree_love_field 06:00", "houston_hyatt_regency 09:45"]
+
+[[trip]]
+id = "t435"
+route = "Vonlane Dallas DoubleTree Love Field 07:00 -> Houston Hyatt Regency (weekdays, Nick: schedule consistent)"
+days = "1111100"
+tz = "America/Chicago"
+stops = ["dallas_doubletree_love_field 07:00", "houston_hyatt_regency 10:45"]
+
+[[trip]]
+id = "t436"
+route = "Vonlane Dallas DoubleTree Love Field 10:30 -> Houston Hyatt Regency (weekdays, Nick: schedule consistent)"
+days = "1111100"
+tz = "America/Chicago"
+stops = ["dallas_doubletree_love_field 10:30", "houston_hyatt_regency 14:15"]
+
+[[trip]]
+id = "t437"
+route = "Vonlane Dallas DoubleTree Love Field 11:30 -> Houston Hyatt Regency (weekdays, Nick: schedule consistent)"
+days = "1111100"
+tz = "America/Chicago"
+stops = ["dallas_doubletree_love_field 11:30", "houston_hyatt_regency 15:15"]
+
+[[trip]]
+id = "t438"
+route = "Vonlane Dallas DoubleTree Love Field 15:00 -> Houston Hyatt Regency (weekdays, Nick: schedule consistent)"
+days = "1111100"
+tz = "America/Chicago"
+stops = ["dallas_doubletree_love_field 15:00", "houston_hyatt_regency 18:45"]
+
+[[trip]]
+id = "t439"
+route = "Vonlane Dallas DoubleTree Love Field 16:00 -> Houston Hyatt Regency (weekdays, Nick: schedule consistent)"
+days = "1111100"
+tz = "America/Chicago"
+stops = ["dallas_doubletree_love_field 16:00", "houston_hyatt_regency 19:45"]
+
+[[trip]]
+id = "t440"
+route = "Vonlane Dallas DoubleTree Love Field 19:30 -> Houston Hyatt Regency (weekdays, Nick: schedule consistent)"
+days = "1111100"
+tz = "America/Chicago"
+stops = ["dallas_doubletree_love_field 19:30", "houston_hyatt_regency 23:15"]
+
+[[trip]]
+id = "t441"
+route = "Vonlane Dallas DoubleTree Love Field 20:30 -> Houston Hyatt Regency (weekdays, Nick: schedule consistent)"
+days = "1111100"
+tz = "America/Chicago"
+stops = ["dallas_doubletree_love_field 20:30", "houston_hyatt_regency 24:15"]
+
+# Nick screenshot Oct 6 2026 (vonlane.com, Tue Oct 20): Memphis Hilton -> Nashville Omni 10:00 and 16:00, 3 h 15 ($132).
+# Nick: the weekday schedule is the same every weekday, so every Vonlane trip here runs Mon-Fri.
+[[trip]]
+id = "t442"
+route = "Vonlane Memphis Hilton 10:00 -> Nashville Omni 13:15 (weekdays)"
+days = "1111100"
+tz = "America/Chicago"
+stops = ["memphis_hilton 10:00", "nashville_omni 13:15"]
+
+[[trip]]
+id = "t443"
+route = "Vonlane Memphis Hilton 16:00 -> Nashville Omni 19:15 (weekdays)"
+days = "1111100"
+tz = "America/Chicago"
+stops = ["memphis_hilton 16:00", "nashville_omni 19:15"]

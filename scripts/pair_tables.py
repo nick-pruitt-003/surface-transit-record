@@ -214,14 +214,14 @@ def main():
     from time_router import cached_router
     from common import ABBR
     ap = argparse.ArgumentParser()
-    ap.add_argument('--at', default='2026-09-24T00:54')
-    ap.add_argument('--by', default='2026-10-03T22:54')
+    ap.add_argument('--at', default='2026-11-05T00:54')
+    ap.add_argument('--by', default='2026-11-14T22:54')
     ap.add_argument('--tz', default='America/New_York')
     ap.add_argument('--end', default='VT')
     ap.add_argument('--span', type=float, default=260)
     ap.add_argument('--days', type=int, default=20)
     ap.add_argument('--control', default='../out/hun_ms_meteor.pkl')
-    ap.add_argument('--control-at', default='2026-09-24T00:30')
+    ap.add_argument('--control-at', default='2026-11-05T00:30')
     ap.add_argument('--control-start', default='Huntington Bus Stop')
     ap.add_argument('--route', default='../out/deep31.pkl')
     a = ap.parse_args()

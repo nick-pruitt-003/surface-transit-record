@@ -5,11 +5,11 @@ ibus,699,Jefferson Billings -> Minneapolis: the feed has Fargo 15:55 -> Minneapo
 ibus,1229,Jefferson Kansas City -> Sioux Falls: the feed has Omaha -> Sioux Falls 20 min late (10:05); jeffersonlines.com shows 09:45 (Nick Oct 5 2026). Replaced by t360 from Kansas City 01:30
 ibus,290,Omaha -> Chicago overnight: the feed has 21:00 -> 05:25 (Des Moines 23:15); jeffersonlines.com shows JL 1202 21:05 -> 05:45 (Des Moines 23:20/23:45) (Nick Oct 5 2026). Replaced by t403
 ibus,1895,Burlington Trailways Chicago 16:00 -> Des Moines 23:20 -> Omaha 01:30: does not run; Jefferson has nothing between 12:20 and 21:15 out of Chicago (Nick Oct 5 2026)
-ibus,3876,Burlington Trailways Indianapolis -> Denver: Jefferson runs the line only to Des Moines, via Peoria and Cedar Rapids (Nick Oct 5 2026). Replaced by t404
-ibus,2096,Burlington Trailways Denver -> Indianapolis: as ibus 3876, eastbound. Replaced by t405
+ibus,3876,Burlington Trailways Indianapolis -> Denver: Jefferson runs the line only to Des Moines
+ibus,2096,Burlington Trailways Denver -> Indianapolis: as ibus 3876
 ibus,1029,Express Arrow Denver -> Omaha: the feed has 10:00 -> 20:40; booking shows 09:25 -> 20:40 (Nick Oct 5 2026). Replaced by t406
 ibus,1459,Express Arrow Omaha -> Denver: the feed has 07:15 -> 18:10; booking shows 06:40 -> 15:50 (Nick Oct 5 2026). Replaced by t407
-ibus,1497,Burlington Trailways St. Louis -> Cedar Rapids via Hannibal, Quincy, Keokuk: route shut as of March 2026 (Nick Oct 5 2026)
+ibus,1497,Burlington Trailways St. Louis -> Cedar Rapids via Hannibal
 ibus,469,Burlington Trailways Cedar Rapids -> St. Louis: as ibus 1497
 ibus,1190,Burlington Trailways Chicago 06:30 -> Des Moines 15:35: not sold; Chicago -> Des Moines is Greyhound 06:10 / 08:50 / 12:25 and Jefferson 21:15 (Nick Oct 5 2026)
 ibus,3018,Burlington Trailways Chicago 11:00 -> Des Moines 18:10: as ibus 1190
@@ -23,11 +23,22 @@ ibus,569,Burlington Trailways Des Moines 08:15 -> Chicago 15:15: not sold (Nick 
 ibus,2195,Burlington Trailways Des Moines 12:00 -> Chicago 20:30: not sold (Nick Oct 5 2026)
 ibus,1189,Burlington Trailways Burlington IA -> Dubuque (Tue-Thu): no successor; Dubuque is served only by Jefferson Chicago -> Dubuque -> Waterloo -> Minneapolis (Nick Oct 5 2026)
 ibus,2353,Burlington Trailways Dubuque -> Burlington IA (Tue-Thu): as ibus 1189
-ibus,3068,Jefferson Tulsa -> Minneapolis: the feed has Kansas City 19:45 -> Des Moines 22:45; jeffersonlines.com sells 20:05 -> 23:30 and Greyhound 20:35 -> 23:45 (Nick Oct 5 2026). Replaced by the through trip t419 (site, Tulsa 14:20 -> Minneapolis 04:30) and Greyhound t420
-ibus,3069,Barons Columbus (E Mound St) 06:15 -> Chicago: the site shows every stop 10 min earlier (06:10, Michigan City 12:10 CT, Chicago 13:25 CT; Nick Oct 5 2026). Replaced by t423
+ibus,3068,Jefferson Tulsa -> Minneapolis: the feed has Kansas City 19:45 -> Des Moines 22:45; jeffersonlines.com sells 20:05 -> 23:30 and Greyhound 20:35 -> 23:45 (Nick Oct 5 2026). Replaced by the through trip t419 (site
+ibus,3069,Barons Columbus (E Mound St) 06:15 -> Chicago: the site shows every stop 10 min earlier (06:10
 ibus,829,Jefferson Vivian 16:00 -> Pierre 16:45 (daily in the feed): the site sells Vivian 15:40 -> Pierre 16:25 on Mon and Thu only (Nick Oct 5 2026). Replaced by t355
 ibus,176,Jefferson Pierre 14:45 -> Vivian 15:30 (daily in the feed): the Vivian - Pierre - Bismarck chain only works northbound (Nick Oct 5 2026)
 ibus,2897,Barons Charlotte -> Columbus: the feed has Charlotte 17:45 and every stop to Huntington 15-45 min late; the site shows 17:20 (Nick Oct 5 2026). Replaced by t424
 ibus,3152,Greyhound Charlotte -> Detroit: the feed has 06:50 -> 21:45; the site shows 02:50 -> 18:00 (Nick Oct 5 2026). Replaced by t425
 ibus,1156,Express Arrow Buffalo WY -> Denver: the feed has every stop 30 min late (Buffalo 07:50 MT); the booking shows 07:20 -> Denver 15:15 (Nick Oct 6 2026). Replaced by t427
-ibus,1632,Jefferson Billings -> Minneapolis (I-90 eastbound): the feed has Billings 05:00 MT, Buffalo 07:35 and later stops off; jeffersonlines.com sells JL 702 Billings 04:30 -> Buffalo 07:05 -> Minneapolis 23:40 (Nick Oct 6 2026). Replaced by t105
+ibus,1632,Jefferson Billings -> Minneapolis (I-90 eastbound): the feed has Billings 05:00 MT
+ibus,2366,Jefferson Minneapolis -> Brainerd -> Grand Forks -> Fargo: the feed has Minneapolis 11:35 -> Brainerd 14:30; jeffersonlines.com shows 11:20 -> 14:15 -> Grand Forks 19:30 (Nick Oct 8 2026). Replaced by t444
+ibus,1310,Jefferson Minneapolis -> Milwaukee: the feed has 10:15 -> 18:20; jeffersonlines.com shows 10:45 -> 19:30 (Nick Oct 8 2026). Replaced by t445
+ibus,2450,Jefferson Minneapolis -> Des Moines -> Kansas City: the feed has Minneapolis 12:15 -> Kansas City 22:00; jeffersonlines.com shows 12:50 -> 22:10 (Nick Oct 8 2026). Replaced by t447
+ibus,3851,Jefferson Minneapolis -> Kansas City -> Tulsa: the feed has 18:05 -> Kansas City 05:20; jeffersonlines.com shows 18:30 -> 03:30 (Nick Oct 11 2026). Replaced by t448 to Kansas City
+ibus,1305,Jefferson Minneapolis 22:30 -> Kansas City: not sold; the site's overnight is JL 805 at 21:45 (Nick Oct 11 2026)
+flix,US0156-4765-*,Greyhound Minneapolis -> Kansas City: feed 23:30 -> 09:15; greyhound.com shows 23:55 -> 08:40 (Nick Oct 11 2026). Replaced by t449
+ibus,3366,Jefferson Kansas City -> Minneapolis: the feed has 08:20 -> 17:45; jeffersonlines.com shows 08:35 -> 17:50 (Nick Oct 11 2026). Replaced by t450
+flix,US0156-4764-*,Greyhound Kansas City -> Minneapolis: feed Minneapolis 06:15; greyhound.com shows 04:20 (Nick Oct 11 2026). Replaced by t451
+ibus,2011,Jefferson Kansas City -> Minneapolis overnight: the feed has 23:55 -> 09:25; jeffersonlines.com shows 23:25 -> 09:50 (Nick Oct 11 2026). Replaced by t452
+ibus,2101,Jefferson Sioux Falls -> Kansas City: the feed has 20:05 -> Maryville 02:35 -> Kansas City 04:15; jeffersonlines.com shows 19:00 -> 01:15 -> 03:15 (Nick Oct 11 2026). Replaced by t453
+amtrak,263556,BeeLine (Amtrak Thruway) Newton 05:00 ET (04:00 CT) -> Wichita -> Wellington -> Oklahoma City 08:18: not sold; the only BeeLine out of Newton after the 03:00 is PRE 1 06:30 -> Wichita 07:10 (Nick screenshot Oct 13 2026)

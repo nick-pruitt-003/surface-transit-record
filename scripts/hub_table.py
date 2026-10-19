@@ -41,7 +41,7 @@ HUB_KM = 4.0
 
 
 def main():
-    R = TimeRouter(load_feeds(), date(2026, 9, 24), 7)
+    R = TimeRouter(load_feeds(), date(2026, 11, 5), 7)
     xy = np.array(R.stop_xy, dtype=float); N = R.N
     # fastest ride per directed stop pair (seconds)
     ride = (R.arr - R.dep).astype(np.int64)

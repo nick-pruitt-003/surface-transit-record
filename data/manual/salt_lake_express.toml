@@ -10,6 +10,24 @@ stg_sun_river = "Saint George (Sun River)"
 beaver_dam = "Beaver Dam"
 mesquite_virgin_river = "Mesquite (Virgin River)"
 lv_airport = "Las Vegas (Airport)"
+butte_sle = "=ibus:1563"   # Butte
+basin_mt = "=ibus:2086"   # Basin MT
+boulder_mt = "=ibus:2259"   # Boulder MT
+boise_airport_sle = "=ibus:1465"   # Boise (Airport)
+pocatello_td = "Pocatello (Transit Depot)"
+mountain_home_id = { name = "Mountain Home ID (Chevron)", lon = -115.6912, lat = 43.1329 }   # point approximate
+glenns_ferry = "Glenns Ferry (Veltex)"
+bliss_id = "Bliss"
+jerome_exit165 = "Jerome (Exit 165)"
+twin_falls_oasis = "Twin Falls (Chevron Oasis)"
+kimberly_id = "Kimberly"
+burley_id = "Burley"
+rupert_id = "Rupert"
+american_falls = "American Falls"
+helena = "=ibus:2947"   # Helena
+wolf_creek_mt = "=ibus:2153"   # Wolf Creek MT
+cascade_mt = "=ibus:3282"   # Cascade MT
+great_falls = "=ibus:813"   # Great Falls Transit Center
 
 [[trip]]
 id = "t129"
@@ -18,7 +36,10 @@ days = "1111111"
 tz = "America/Denver"
 stops = ["salt_lake_city_airport 06:00", "saint_george_bluff_st_office 11:30/12:00", "las_vegas_airport 14:10"]
 
-# Local clocks per stop (no tz line): Utah Mountain daylight, Beaver Dam Arizona, Mesquite and Las Vegas Pacific.
+# 8035/8040 are written on one UTC-7 clock (America/Phoenix), which in the Nov window is Utah's MST and Arizona's
+# time; Las Vegas 11:40/13:50 PST reads 12:40/14:50 here. The site's per-stop clocks were from daylight time
+# (Utah UTC-6), and under winter time the Beaver Dam rows ran backwards and rolled a day (review Oct 11).
+# Offsets kept from the screenshot: Sun River +5, Beaver Dam +35, Mesquite +45, Las Vegas +2:10.
 # 7021's stops between the airport and St George are all in Utah and left out.
 [[trip]]
 route = "SLE 7021 Salt Lake City (Airport) 04:45 -> Saint George (Bluff St Office) 10:20"
@@ -30,10 +51,39 @@ stops = ["slc_airport 04:45", "stg_bluff 10:20"]
 route = "SLE 8035 Saint George (Bluff St Office) 10:30 -> Las Vegas (Airport) 11:40"
 note = "Nick screenshot Oct 1 2026 (Salt Lake Express site, local times); daily assumed"
 days = "1111111"
-stops = ["stg_bluff 10:30", "stg_sun_river 10:35", "beaver_dam 10:05", "mesquite_virgin_river 10:15", "lv_airport 11:40"]
+tz = "America/Phoenix"
+stops = ["stg_bluff 10:30", "stg_sun_river 10:35", "beaver_dam 11:05", "mesquite_virgin_river 11:15", "lv_airport 12:40"]
 
 [[trip]]
 route = "SLE 8040 Saint George (Bluff St Office) 12:40 -> Las Vegas (Airport) 13:50"
 note = "Nick screenshot Oct 5 2026 (Salt Lake Express site, local times, for Sat Nov 14); Mesquite (CasaBlanca) 12:26 not modelled; daily assumed"
 days = "1111111"
-stops = ["stg_bluff 12:40", "stg_sun_river 12:45", "beaver_dam 12:15", "mesquite_virgin_river 12:25", "lv_airport 13:50"]
+tz = "America/Phoenix"
+stops = ["stg_bluff 12:40", "stg_sun_river 12:45", "beaver_dam 13:15", "mesquite_virgin_river 13:25", "lv_airport 14:50"]
+
+# Nick screenshots Oct 11 2026 (Salt Lake Express site, for Sat Oct 24): Butte <-> Helena <-> Great Falls. Mountain
+# time throughout. Daily assumed. Links the Butte <-> Idaho Falls SLE runs to Great Falls, where NTI (Mon/Thu) reaches
+# the Empire Builder at Shelby. Cascade (Conoco) and Craig Junction left out (no feed stop; Cascade covers it).
+[[trip]]
+route = "SLE Butte 05:30 -> Helena 06:55 -> Great Falls Transit Center 08:30"
+note = "Nick screenshot Oct 11 2026; daily assumed"
+days = "1111111"
+tz = "America/Denver"
+stops = ["butte_sle 05:30", "basin_mt 06:05", "boulder_mt 06:15", "helena 06:55", "wolf_creek_mt 07:25", "cascade_mt 07:55", "great_falls 08:30"]
+
+[[trip]]
+route = "SLE Great Falls Transit Center 21:15 -> Helena 23:00 -> Butte 00:15"
+note = "Nick screenshot Oct 11 2026; daily assumed"
+days = "1111111"
+tz = "America/Denver"
+stops = ["great_falls 21:15", "cascade_mt 21:50", "wolf_creek_mt 22:25", "helena 23:00", "boulder_mt 23:30", "basin_mt 23:40", "butte_sle 24:15"]
+
+# Nick screenshot Oct 13 2026 (saltlakeexpress.com, Wed Oct 14): Boise Airport 21:15 -> Pocatello (SLE Office) 01:05 via Mountain
+# Home, Twin Falls, Burley and American Falls (Wendell not entered: name is ambiguous), connecting from NWL Pasco 15:00 (t461); then the feed's Pocatello 03:40 -> SLC Airport 06:40 and 06:45 ->
+# Saint George 12:20. All Mountain. Daily assumed (only a Wednesday seen).
+[[trip]]
+id = "t462"
+route = "Salt Lake Express Boise Airport 21:15 -> Pocatello 01:05 (daily assumed)"
+days = "1111111"
+tz = "America/Denver"
+stops = ["boise_airport_sle 21:15", "mountain_home_id 21:55", "glenns_ferry 22:20", "bliss_id 22:35", "jerome_exit165 22:55", "twin_falls_oasis 23:15", "kimberly_id 23:30", "burley_id 23:55", "rupert_id 24:05", "american_falls 24:40", "pocatello_td 25:05"]

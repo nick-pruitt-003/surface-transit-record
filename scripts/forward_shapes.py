@@ -55,7 +55,7 @@ def _one(job):
 def main():
     """Parse CLI options, check reference routes, and compare rotated state orders."""
     ap = argparse.ArgumentParser()
-    ap.add_argument('--at', default='2026-09-24T00:54')
+    ap.add_argument('--at', default='2026-11-05T00:54')
     ap.add_argument('--tz', default='America/New_York')
     ap.add_argument('--route', default='../out/res_starttest.pkl')
     ap.add_argument('--days', type=int, default=20)
@@ -83,7 +83,7 @@ def main():
                     'so on every fresh checkout the second gate silently did not run and the harness '
                     'reported one gate as two.')
     ap.add_argument('--record-start', default='White River Junction Bus Station')
-    ap.add_argument('--record-at', default='2026-09-24T04:20')
+    ap.add_argument('--record-at', default='2026-11-05T04:20')
     ap.add_argument('--record-tz', default='America/New_York')
     ap.add_argument('--record-el', type=float, default=239.08, help='hours --record must come back at')
     ap.add_argument('--checkpoint', default='../out/fs_phase1_{tag}.pkl', help='phase 1 results are saved here '
@@ -206,13 +206,13 @@ def main():
         from datetime import date as _date
         from time_router import SCAN_SLACK
         inv = {v: k for k, v in ABBR.items()}
-        t_x = datetime(2026, 9, 26, 22, 0, tzinfo=ZoneInfo('America/Denver')).timestamp()
+        t_x = datetime(2026, 11, 7, 22, 0, tzinfo=ZoneInfo('America/Denver')).timestamp()
         # X's departure is fixed, so a router loaded for other dates (--at, --days) may not hold the Sep 26 bus
         # or the ten days after it, and the gate would fail on the calendar rather than the harness. It then
         # runs on the router it was measured on. A router's days run d0 .. d0 + days - 1.
         d0 = datetime.fromisoformat(a.at).date()
         x_end = datetime.fromtimestamp(t_x + 238.32 * 3600 + SCAN_SLACK, ZoneInfo('UTC')).date() + timedelta(days=1)
-        RX = R if d0 <= _date(2026, 9, 26) and d0 + timedelta(days=a.days) > x_end else cached_router(_date(2026, 9, 24), 20)
+        RX = R if d0 <= _date(2026, 11, 7) and d0 + timedelta(days=a.days) > x_end else cached_router(_date(2026, 11, 5), 20)
         if RX is not R: print(f'route X gate: this router ({d0}, {a.days} days) does not cover Sep 26 to {x_end}; '
                               f'replaying on the Sep 24, 20-day reference router', flush=True)
         x_order = [RX.state_names.index(inv[s]) for s in X_ORDER]

@@ -5,7 +5,7 @@ Given a start stop and datetime and an ordered list of targets (states or
 alights at a stop in every target, using a layered Connection Scan.
 
 usage:
-  python3 time_router.py --start "Missoula" --at 2026-09-21T07:00 --tz America/Denver \
+  python3 time_router.py --start "Missoula" --at 2026-11-02T07:00 --tz America/Denver \
       --order result.pkl [--prefix "Montana,Idaho,Washington,..."] [--days 14]
 """
 import argparse, csv, io, math, os, pickle, sys, time, zipfile
@@ -33,6 +33,9 @@ if RUN_MPH: WALK_SPEED = RUN_MPH * 1609.344 / 3600
 NO_WALK_LINKS = tuple(x.strip() for x in os.environ.get('BUS48_NO_WALK_LINKS', '').split(',') if x.strip())
 # States that may not be entered by a border walk-in (BUS48_NO_WALKIN_STATES=MN: Minnesota only by a ride).
 NO_WALKIN_STATES = tuple(x.strip() for x in os.environ.get('BUS48_NO_WALKIN_STATES', '').split(',') if x.strip())
+# Hand-entered carriers to leave out, by file stem (BUS48_SKIP_MANUAL=ohio_coach: Nick does not ride the cash-only Ohio
+# Coach, and a search that may use it keeps routing through it rather than testing the shape it was given).
+SKIP_MANUAL = tuple(x.strip() for x in os.environ.get('BUS48_SKIP_MANUAL', '').split(',') if x.strip())
 WALK_MAX_KM = 1.5
 # Beyond walking: a local transit / shuttle proxy, which is a modelled link and not a service anyone runs.
 # Set BUS48_LOCAL_MAX_KM=0 to drop them and keep only real timetables plus walks, which is what a route has
@@ -80,6 +83,14 @@ def _drop_trips():
     return _DROP
 
 
+def _dropped(feed, trip_id):
+    """A trip_id ending in '*' in drop_trips.csv drops every trip with that prefix: Flix/Greyhound ids carry a validity
+    date (US0156-4765-0430092026-...), so a stale bus has one copy per date and a refresh adds copies under new ids."""
+    d = _drop_trips()
+    if (feed, trip_id) in d: return True
+    return any(f == feed and t.endswith('*') and trip_id.startswith(t[:-1]) for f, t in d)
+
+
 class Feed:
     """One GTFS zip. tz_mode: 'agency' (times in agency tz, or stop_timezone when
     present — Amtrak), 'infer' (majority state tz per agency), or 'utc'.
@@ -107,7 +118,7 @@ class Feed:
             r = routes.get(t['route_id'], {})
             ag = self.agency.get(r.get('agency_id', ''), {}).get('agency_name', r.get('agency_id', ''))
             if ag in skip_agencies: continue
-            if (name, t['trip_id']) in _drop_trips(): continue   # a feed trip the carrier site contradicts (data/drop_trips.csv)
+            if _dropped(name, t['trip_id']): continue   # a feed trip the carrier site contradicts (data/drop_trips.csv)
             # big city feeds: keep only the listed routes (matched on id, short or long name)
             if keep_routes is not None and not ({t['route_id'], r.get('route_short_name', ''), r.get('route_long_name', '')} & keep_routes): continue
             self.trips[t['trip_id']] = dict(service=t['service_id'], agency=ag, route=(r.get('route_long_name') or r.get('route_short_name') or ''), headsign=t.get('trip_headsign', ''), stops=[])
@@ -138,6 +149,10 @@ class Feed:
         self.cal = {c['service_id']: c for c in rd('calendar.txt')}
         self.cal_dates = defaultdict(dict)
         for c in rd('calendar_dates.txt'): self.cal_dates[c['service_id']][c['date']] = c['exception_type']
+        # last day the feed has any service, for replaying an expired local feed (see runs_on)
+        ends = [c['end_date'] for c in self.cal.values()] + [d for v in self.cal_dates.values() for d, e in v.items() if e == '1']
+        self.last_day = datetime.strptime(max(ends), '%Y%m%d').date() if ends else None
+        self.replay = False; self.replayed = False
         tz_note = f', {len(self.stop_tz)} stop_tz' if self.stop_tz else ''
         print(f'{name}: {len(self.stops)} stops, {len(self.trips)} trips, tz {self.tz}{tz_note}, calendar {calendar_mode}')
 
@@ -178,7 +193,7 @@ class Feed:
     def _bad_segment(self, st, t):
         """Index i of the first segment st[i] -> st[i + 1] that is negative or faster than max_speed, else None."""
         # Fixed service day so DST-correct elapsed time across stop_timezone boundaries
-        d = date(2026, 9, 24); bases = {}
+        d = date(2026, 11, 5); bases = {}
         def base_for(tz):
             if tz not in bases:
                 bases[tz] = datetime(d.year, d.month, d.day, tzinfo=timezone.utc).timestamp() if tz is None else (datetime(d.year, d.month, d.day, 12, tzinfo=tz) - timedelta(hours=12)).timestamp()
@@ -190,6 +205,10 @@ class Feed:
         return None
 
     def runs_on(self, service, d):
+        # An expired local feed (Nick, Oct 11: the window moved to November and MATA, JTA, DART and others ended in
+        # October) replays its last covered week: a day past the feed's end is read as the same weekday 7k days earlier.
+        if getattr(self, 'replay', False) and self.last_day is not None and d > self.last_day:
+            d = d - timedelta(days=7 * -(-(d - self.last_day).days // 7)); self.replayed = True
         ds = d.strftime('%Y%m%d'); dow = ['monday','tuesday','wednesday','thursday','friday','saturday','sunday'][d.weekday()]
         exc = self.cal_dates.get(service, {}).get(ds)
         if exc == '1': return True
@@ -316,6 +335,8 @@ class TimeRouter:
         fixed = [t['dropped'] for f in feeds for t in f.trips.values() if t.get('sane') and t.get('dropped')]
         print(f'{self.N} stops, {sum(len(v) for v in self.foot.values())} footpaths, {len(conns)} connections over {days} days, '
               f'{bad} trips rejected as implausible, {len(fixed)} repaired by dropping {sum(fixed)} stops')
+        rp = [f'{f.name} (ends {f.last_day})' for f in feeds if getattr(f, 'replayed', False)]
+        if rp: print('replaying the last covered week of expired local feeds:', ', '.join(rp))
 
     def stops_matching(self, q):
         q = q.lower(); return [i for i, nm in enumerate(self.stop_name) if q in nm.lower()]
@@ -327,7 +348,11 @@ class TimeRouter:
             d = np.hypot((xy[:, 0] - lon) * 111.3 * np.cos(np.radians(lat)), (xy[:, 1] - lat) * 111.3)
             return set(np.where(d <= km)[0].tolist())
         if isinstance(t, str) and t.startswith('@#'): return {int(t[2:])}   # one exact stop index
-        if isinstance(t, str) and t.startswith('@'): return set(self.stops_matching(t[1:]))
+        if isinstance(t, str) and t.startswith('@'):
+            # an exact name wins over substring matches ('Jacksonville' is also Jacksonville NC by substring, Oct 6);
+            # a name that matches no stop exactly keeps the old substring behaviour
+            m = self.stops_matching(t[1:]); ex = [i for i in m if self.stop_name[i].lower() == t[1:].lower()]
+            return set(ex or m)
         return set(np.where(self.state == t)[0].tolist())
 
     def walk_collects(self, j):
@@ -448,7 +473,15 @@ class TimeRouter:
 
     def _init_fast(self):
         """Flat arrays + compiled scan (csa.c) for finish(); falls back to Python when no compiler."""
+        import ctypes, subprocess
         self._fast = None
+        here = os.path.dirname(os.path.abspath(__file__)); so = os.path.join(here, 'csa.so'); src = os.path.join(here, 'csa.c')
+        try:
+            if not os.path.exists(so) or os.path.getmtime(so) < os.path.getmtime(src):
+                subprocess.run(['cc', '-O3', '-shared', '-fPIC', src, '-o', so], check=True)
+            ctypes.CDLL(so)
+        except Exception as e:
+            print('fast scan unavailable:', e); return
         self.trip_ids = {}
         ct = np.empty(len(self.ctrip), dtype=np.int32)
         for k, key in enumerate(self.ctrip): ct[k] = self.trip_ids.setdefault(key, len(self.trip_ids))
@@ -461,11 +494,10 @@ class TimeRouter:
                         ptr=ptr, to=np.array(to, dtype=np.int32), w=np.array(w, dtype=np.float64), fx=np.array(fx, dtype=np.uint8))
         self._bind_fast()
 
-    def _scan_fast(self, stops, times, trips, target, want_pred=False, horizon=None):
+    def _scan_fast(self, stops, times, trips, target, want_pred=False, t_end=None):
         """One layer in C. Labels come in and go out as parallel arrays (stop, time, trip index or -1).
-
-        horizon: ignore connections departing after it. Every label at or before the horizon is then exactly
-        what the full scan gives, since anything later departs, so arrives, after it."""
+        t_end: scan no connection departing after this (ride_search's goal scan, which only ranks arrivals that
+        can still leave room before the deadline tables close them)."""
         D, I, B = self._ct
         mask = self._masks.get(target)
         if mask is None:
@@ -486,8 +518,8 @@ class TimeRouter:
             pa = (pred['conn'].ctypes.data_as(I), pred['walk'].ctypes.data_as(I), pred['walk_t'].ctypes.data_as(D),
                   pred['bstop'].ctypes.data_as(I), pred['bdep'].ctypes.data_as(D),
                   pred['rconn'].ctypes.data_as(I), pred['walk_ride'].ctypes.data_as(B))
-        n_conn = len(self._fa['dep']) if horizon is None else int(np.searchsorted(self._fa['dep'], horizon, side='right'))
-        rc = self._fast.csa_scan(n_conn, p['dep'], p['arr'], p['cfrom'], p['cto'], p['ctrip'], k0, self.N, len(self.trip_ids),
+        n_end = len(self._fa['dep']) if t_end is None else int(np.searchsorted(self._fa['dep'], t_end, side='right'))
+        rc = self._fast.csa_scan(n_end, p['dep'], p['arr'], p['cfrom'], p['cto'], p['ctrip'], k0, self.N, len(self.trip_ids),
                             p['ptr'], p['to'], p['w'], p['fx'], best.ctypes.data_as(D), lt.ctypes.data_as(I), mask.ctypes.data_as(B),
                             float(MIN_TRANSFER), float(SCAN_SLACK), *pa)
         if rc != 0: raise MemoryError(f'csa_scan failed (rc={rc})')
@@ -680,14 +712,16 @@ class ExtraFeed:
                     or next((s for s in allstops if s[1].lower() == q.lower()), None) or next((s for s in allstops if q.lower() in s[1].lower()), None))
         found = []
         for fp in sorted(glob.glob(os.path.join(path, '*.toml'))):
-            doc = tomllib.load(open(fp, 'rb')); stem = os.path.splitext(os.path.basename(fp))[0]
+            stem = os.path.splitext(os.path.basename(fp))[0]
+            if stem in SKIP_MANUAL: print(f'manual {stem}: skipped (BUS48_SKIP_MANUAL)'); continue
+            doc = tomllib.load(open(fp, 'rb'))
             hits = {key: resolve(ref) for key, ref in doc.get('stops', {}).items()}
             for key, h in hits.items():
                 if h is None: print(f'manual {stem}: no stop for {key} = {doc["stops"][key]!r}')
             for n, tr in enumerate(doc.get('trip', [])):
                 tid = tr.get('id') or f'{stem}:{n}'
                 found.append((int(tid[1:]) if tid[0] == 't' and tid[1:].isdigit() else 10 ** 9, stem, n, tid, doc.get('agency', stem), tr, hits))
-        ref = date(2026, 9, 24)   # rollover offsets taken on one date: right while the window has no DST change (US: Nov 1)
+        ref = date(2026, 11, 5)   # rollover offsets taken on one date: right while the window has no DST change (US: Nov 1)
         for _, stem, n, tid, agency, tr, hits in sorted(found, key=lambda x: x[:3]):
             if tr.get('disabled'): continue
             fixed = ZoneInfo(tr['tz']) if tr.get('tz') else None
@@ -701,7 +735,13 @@ class ExtraFeed:
                 if fixed is None:   # local clocks: roll a time that goes backwards past midnight
                     zones[sid] = ZoneInfo(_tz_at(h[2], h[3]) or 'UTC')
                     off = -datetime(ref.year, ref.month, ref.day, 12, tzinfo=zones[sid]).utcoffset().total_seconds()
-                    if prev is not None and a + roll + off < prev - 60: roll += 86400
+                    if prev is not None and a + roll + off < prev - 60:
+                        # A few minutes or hours backwards is a transcription or time-zone error, not midnight: rolling
+                        # it adds a whole day (t459 Marianna, SLE Beaver Dam under winter time, review Oct 11).
+                        if prev - (a + roll + off) < 6 * 3600:
+                            print(f'manual {stem} {tid}: {key} {tm} runs {(prev - (a + roll + off)) / 60:.0f} min backwards, stop dropped')
+                            continue
+                        roll += 86400
                     a += roll
                     if d + roll + off < a + off - 60: roll += 86400
                     d += roll; prev = d + off
@@ -748,6 +788,7 @@ def load_feeds():
     for z in sorted(glob.glob(os.path.join(DATA_DIR, 'more_gtfs', '*.zip'))):
         nm = os.path.splitext(os.path.basename(z))[0]
         more.append(Feed(z, nm, 'agency', 'dates', max_speed=200, keep_routes=set(keep[nm]) if nm in keep else None))
+        more[-1].replay = True   # local transit only: an intercity feed that ends has really ended
         more[-1].city = nm not in INTERCITY_MORE
     feeds.append(ExtraFeed(os.path.join(DATA_DIR, 'manual'), feeds + more))
     return feeds + more
@@ -756,7 +797,7 @@ def load_feeds():
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--start', required=True, help='substring of the start stop name')
-    ap.add_argument('--at', required=True, help='local start datetime, e.g. 2026-09-21T07:00')
+    ap.add_argument('--at', required=True, help='local start datetime, e.g. 2026-11-02T07:00')
     ap.add_argument('--tz', default='America/Denver')
     ap.add_argument('--order', help='result pickle with a state order, or comma list of states/@stops')
     ap.add_argument('--days', type=int, default=14)
@@ -814,7 +855,7 @@ def cached_router(date, days, cache_dir=None, verbose=True):
     # wrong one without a word. BUS48_LOCAL_MAX_KM=5 against a router built at 10 is not an error anyone
     # would see; it is a plausible number from a different universe, which is this project's whole problem.
     sig.append(('cfg', WALKIN_KM, MIN_TRANSFER, SCAN_SLACK, LOCAL_MAX_KM, LOCAL_PROXY_ALL, STOP_TZ_LOCAL,
-                WALK_MAX_KM, WALK_SPEED, RUN_MPH, NO_WALK_LINKS, NO_WALKIN_STATES))
+                WALK_MAX_KM, WALK_SPEED, RUN_MPH, NO_WALK_LINKS, NO_WALKIN_STATES, SKIP_MANUAL))
     key = hashlib.sha1(repr(sig).encode()).hexdigest()[:16]
     path = os.path.join(cache_dir, f'router_{key}.pkl')
     if os.path.exists(path):

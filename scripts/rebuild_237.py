@@ -31,14 +31,16 @@ SEQ = ('WV KY OH MI IN IL TN MS AR MO NE IA SD ND MN WI WY MT ID WA OR UT NV CA 
 # backward pass reads the latest start straight off that layer; with WV gone the start has to reach layer 0 by
 # boarding, which costs one MIN_TRANSFER. That is the whole difference between 00:59:20 and the 00:54 that
 # regress.py records.
-CLOCKS = (('hun_ms_meteor.pkl', datetime(2026, 9, 24, 0, 30, tzinfo=ET), False),
-          ('res_starttest.pkl', datetime(2026, 9, 24, 0, 54, tzinfo=ET), True))
+CLOCKS = (('hun_ms_meteor.pkl', datetime(2026, 11, 5, 0, 30, tzinfo=ET), False),
+          # 00:39, not 00:54: the Barons bus at Huntington leaves 00:45 as sold (Nick, Oct 5 2026), so a 00:54 clock missed it,
+          # the control slipped a day and the --track replay read 14/41 (Oct 11). regress.py proves 00:39 is the exact latest start.
+          ('res_starttest.pkl', datetime(2026, 11, 5, 0, 39, tzinfo=ET), True))
 
 
 def main():
     assert len(SEQ) == len(set(SEQ)) == 48, len(SEQ)
     os.makedirs(OUT, exist_ok=True)
-    R = TimeRouter(load_feeds(), datetime(2026, 9, 23).date(), 18)
+    R = TimeRouter(load_feeds(), datetime(2026, 11, 4).date(), 18)
     inv = {v: k for k, v in ABBR.items()}
     full = [R.state_names.index(inv[x]) for x in SEQ]
     start = R.stops_matching(START)[0]

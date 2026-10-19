@@ -7,7 +7,7 @@ stops, and repeat until all 48 are placed. The last state picked is the start; i
 need. Several deadlines across the week and a few randomized builds (top-3 choice) are tried; every build is
 checked forward, and the best are saved as seeds (built for this end, not borrowed from another route).
 
-  python3 build_backward.py --end CA --from 2026-09-26T00:00 --tz America/Los_Angeles [--step 6] [--tries 3]
+  python3 build_backward.py --end CA --from 2026-11-07T00:00 --tz America/Los_Angeles [--step 6] [--tries 3]
 """
 import argparse, json, os, pickle, random, time
 from datetime import datetime, timedelta

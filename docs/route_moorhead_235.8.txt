@@ -1,0 +1,232 @@
+router from cache in 1.7 s (router_01d98475b49ae0ce.pkl)
+  drop Minnesota -> 271.1 h
+start 271.1 h, order 13
+  improve 269.2 h after 64 evals
+  drop Ohio -> 269.2 h
+  drop Mississippi -> 269.2 h
+  improve 258.8 h after 192 evals
+  drop Indiana -> 258.8 h
+  pair move: MT+OR+CA hold 73.1 h together
+  pair move: FL+ME+VT hold 51.0 h together
+  pair move: MO+OR+CA hold 48.7 h together
+  pair move: ME+VT+WV hold 27.0 h together
+  start -> Moorhead (MSU - Comstock), first bus d5 Mon 14:30: 236.1 h
+settled 236.1 h from first bus
+kick 1 from 297.3 h
+  improve 295.5 h after 96 evals
+  drop South Dakota -> 295.5 h
+  drop Wisconsin -> 295.5 h
+  drop Iowa -> 295.5 h
+  drop Wyoming -> 295.5 h
+  improve 284.5 h after 160 evals
+  drop Kentucky -> 273.7 h
+  drop Missouri -> 273.7 h
+  improve 263.9 h after 224 evals
+  drop Arkansas -> 263.9 h
+  drop Delaware -> 263.9 h
+  improve 261.2 h after 384 evals
+  drop Arkansas -> 261.2 h
+  improve 255.2 h after 576 evals
+  drop Missouri -> 255.2 h
+  drop Delaware -> 255.2 h
+  drop Pennsylvania -> 255.2 h
+  pair move: MT+OR+CA hold 49.5 h together
+  pair move: NE+MT+OR hold 48.5 h together
+  pair move: OR+CA+FL hold 43.5 h together
+  pair move: CA+OK+FL hold 38.7 h together
+  start -> Moorhead (MSU - Comstock), first bus d6 Tue 03:29: 250.8 h
+kick 3 from 346.6 h
+  improve 311.9 h after 32 evals
+  drop New Hampshire -> 311.9 h
+  drop Wisconsin -> 311.9 h
+  drop Missouri -> 298.1 h
+  drop Iowa -> 298.1 h
+  improve 293.7 h after 96 evals
+  drop Kentucky -> 293.7 h
+  drop Arkansas -> 293.7 h
+  pair move: MT+OR+CA hold 72.9 h together
+  pair move: FL+ME+VT hold 72.6 h together
+  pair move: ME+VT+MI hold 64.8 h together
+  pair move: MI+MS+NE hold 49.1 h together
+  pair move improve 290.4 h
+  drop Mississippi -> 290.4 h
+  drop Missouri -> 290.4 h
+  drop Georgia -> 290.4 h
+  drop South Carolina -> 290.4 h
+  drop North Carolina -> 290.4 h
+  drop Virginia -> 290.4 h
+  drop Maryland -> 290.4 h
+  drop Delaware -> 290.4 h
+  improve 289.0 h after 256 evals
+  drop Rhode Island -> 289.0 h
+  drop New Hampshire -> 289.0 h
+  pair move: MT+OR+CA hold 72.9 h together
+  pair move: MI+NE+AR hold 59.9 h together
+  pair move: WV+OR+CA hold 48.4 h together
+  pair move: FL+MI+NE hold 46.5 h together
+  pair move improve 285.2 h
+  drop Arkansas -> 272.6 h
+  drop Mississippi -> 272.6 h
+  drop Maryland -> 272.6 h
+  drop New Jersey -> 272.6 h
+  improve 272.0 h after 96 evals
+  improve 272.0 h after 364 evals
+  drop Oklahoma -> 272.0 h
+  pair move: AL+FL+WV hold 72.8 h together
+  pair move: WV+MT+OR hold 48.4 h together
+  pair move: NE+AL+FL hold 48.4 h together
+  pair move: MT+OR+CA hold 34.6 h together
+kick 6 from 310.2 h
+  improve 295.5 h after 32 evals
+  drop Montana -> 271.5 h
+  drop Arkansas -> 267.9 h
+  drop Nebraska -> 267.9 h
+  improve 264.7 h after 96 evals
+  drop Kentucky -> 250.3 h
+  drop West Virginia -> 250.3 h
+  improve 250.3 h after 320 evals
+  drop Wyoming -> 250.3 h
+  drop Montana -> 250.3 h
+  drop Oregon -> 250.3 h
+  pair move: WA+CA hold 71.8 h together
+  pair move: WA+CA+FL hold 71.8 h together
+  pair move: WA+CA+OK hold 71.7 h together
+  pair move: SD+WA+CA hold 71.7 h together
+  new best 235.8 h from first bus
+kick 7 from 316.8 h
+  improve 292.8 h after 32 evals
+  drop West Virginia -> 292.8 h
+  drop Connecticut -> 292.8 h
+  drop Rhode Island -> 292.8 h
+  drop Delaware -> 292.8 h
+  drop Mississippi -> 292.8 h
+  improve 282.9 h after 192 evals
+  drop Massachusetts -> 282.9 h
+  drop Connecticut -> 282.9 h
+  drop Rhode Island -> 282.9 h
+  drop New Hampshire -> 282.9 h
+  improve 282.9 h after 288 evals
+  improve 272.9 h after 544 evals
+  drop New Hampshire -> 272.0 h
+  drop South Carolina -> 272.0 h
+  improve 268.9 h after 768 evals
+  drop Rhode Island -> 268.9 h
+  improve 261.8 h after 800 evals
+  drop Louisiana -> 261.8 h
+  drop Delaware -> 261.8 h
+  drop New Jersey -> 261.8 h
+  drop Connecticut -> 261.8 h
+  drop Rhode Island -> 261.8 h
+  drop Vermont -> 261.8 h
+  improve 261.3 h after 1144 evals
+  drop @~-72.3166,43.6514,6 -> 261.2 h
+  pair move: WA+CA+AL hold 97.3 h together
+  pair move: WA+CA hold 71.6 h together
+  pair move: WA+CA+OK hold 71.5 h together
+  pair move: MO+WA+CA hold 71.5 h together
+  start -> Moorhead (MSU - Comstock), first bus d1 Thu 14:30: 246.7 h
+kick 10 from 355.0 h
+  improve 355.0 h after 96 evals
+  drop California -> 355.0 h
+  drop Arizona -> 355.0 h
+  drop Arkansas -> 355.0 h
+  drop Louisiana -> 355.0 h
+  improve 328.2 h after 160 evals
+  drop Mississippi -> 328.2 h
+  drop Pennsylvania -> 328.2 h
+  improve 311.2 h after 256 evals
+  drop Indiana -> 311.2 h
+  drop Georgia -> 311.2 h
+  drop North Carolina -> 311.2 h
+  drop Kentucky -> 311.2 h
+  drop Ohio -> 311.2 h
+  drop Arkansas -> 311.2 h
+  drop South Carolina -> 311.2 h
+  improve 285.2 h after 544 evals
+  drop Maryland -> 285.2 h
+  drop Rhode Island -> 285.2 h
+  pair move: FL+WV+WI hold 48.5 h together
+  pair move: WV+WI+MI hold 44.0 h together
+  pair move: SD+MO hold 37.2 h together
+  pair move: WA+NM hold 35.8 h together
+kick 12 from 295.7 h
+  improve 295.7 h after 320 evals
+  drop California -> 295.7 h
+  drop Arizona -> 295.7 h
+  drop Indiana -> 295.7 h
+  drop Ohio -> 295.7 h
+  drop Texas -> 295.7 h
+  drop Louisiana -> 295.7 h
+  drop West Virginia -> 295.7 h
+  improve 286.1 h after 352 evals
+  drop Delaware -> 286.1 h
+  drop Mississippi -> 286.1 h
+  drop Texas -> 286.1 h
+  pair move: WA+NM hold 48.7 h together
+  pair move: MO+WA+NM hold 48.7 h together
+  pair move: WA+NM+WI hold 48.7 h together
+  pair move: SD+WA+NM hold 48.7 h together
+converged: no new best for 400 s, stopping early
+FINAL 235.8 h d15 Thu 10:16
+START Moorhead (MSU - Comstock) first bus d5 Mon 14:30
+South Dakota > Missouri > Washington > California > Oklahoma > Florida > Maine > Vermont > Michigan > Wisconsin > Arkansas > Mississippi
+  local Moorhead (MSU - Comstock) -> Fargo  (7.5 km, from d5 Mon 13:20)
+d5 Mon 14:30  Fargo, ND  ->  d5 Mon 18:25  Sioux Falls, SD   [Jefferson Lines: JL Fargo 14:30 -> Sisseton Jct -> Summit Corner -> Watertown -> Brookings -> Sioux Falls (SF arrival inferred; Thu-Mon only, Nick Oct 5)]
+d5 Mon 20:05  Sioux Falls, SD  ->  d6 Tue 02:15  Maryville, MO   [Jefferson Lines: Sioux Falls -> Kansas City]
+d6 Tue 03:25  Maryville, MO  ->  d6 Tue 05:40  Omaha, NE   [Jefferson Lines: JL Kansas City 01:30 -> Maryville 03:25 -> Clarinda -> Shenandoah -> Omaha -> Sioux City -> Vermillion -> Sioux Falls 09:45 (daily assumed)]
+d6 Tue 06:15  Omaha, NE  ->  d6 Tue 09:45  Sioux Falls, SD   [Jefferson Lines: JL Omaha 06:15 -> Sioux City -> Vermillion -> Sioux Falls 09:45 (intermediate times assumed; daily assumed)]
+d6 Tue 12:40  Sioux Falls, SD  ->  d7 Wed 00:25  Billings, MT   [Jefferson Lines: Minneapolis -> Billings]
+d7 Wed 01:30  Billings, MT  ->  d7 Wed 10:30  Spokane, WA   [Jefferson Lines: Billings -> Spokane]
+  walk  Spokane -> Spokane  (0.0 km, from d7 Wed 10:30)
+d7 Wed 10:45  Spokane, WA  ->  d7 Wed 13:10  Pasco Bus Stop, WA   [Northwestern Stage Lines: NWL 710 Spokane -> Pasco]
+d7 Wed 13:25  Pasco Bus Stop, WA  ->  d8 Thu 02:30  Salt Lake City Intermodal Trans Ctr, UT   [Greyhound-us: Seattle-Boise-SLC-Denver]
+  local Salt Lake City Intermodal Trans Ctr -> Salt Lake City (Airport)  (6.8 km, from d8 Thu 02:30)
+d8 Thu 04:45  Salt Lake City (Airport), UT  ->  d8 Thu 10:20  Saint George (Bluff St Office), UT   [Salt Lake Express: SLE 7021 Salt Lake City (Airport) 04:45 -> Saint George (Bluff St Office) 10:20]
+d8 Thu 10:30  Saint George (Bluff St Office), UT  ->  d8 Thu 11:40  Las Vegas (Airport), NV   [Salt Lake Express: SLE 8035 Saint George (Bluff St Office) 10:30 -> Las Vegas (Airport) 11:40]
+  local Las Vegas (Airport) -> Las Vegas Bus Terminal  (4.1 km, from d8 Thu 11:40)
+d8 Thu 14:00  Las Vegas Bus Terminal, NV  ->  d8 Thu 18:15  San Bernardino Depot, CA   [Greyhound-us: Los Angeles - Las Vegas]
+  walk  San Bernardino Depot -> San Bernardino  (0.1 km, from d8 Thu 18:15)
+d8 Thu 18:43  San Bernardino, CA  ->  d10 Sat 01:47  Newton, KS   [Amtrak: Southwest Chief]
+  walk  Newton -> Newton (Amtrak)  (0.0 km, from d10 Sat 01:47)
+d10 Sat 03:00  Newton (Amtrak), KS  ->  d10 Sat 06:43  Oklahoma City, OK   [BeeLine Express-Village Travel: Newton (Amtrak) -> Oklahoma City]
+  walk  Oklahoma City -> Oklahoma City Bus Station  (0.0 km, from d10 Sat 06:43)
+  walk  Oklahoma City Bus Station -> Oklahoma City Bus Station  (0.0 km, from d10 Sat 06:43)
+d10 Sat 06:55  Oklahoma City Bus Station, OK  ->  d10 Sat 11:10  Dallas Bus Station, TX   [Greyhound-us: Dallas - Oklahoma City - Kansas City]
+d10 Sat 11:30  Dallas Bus Station, TX  ->  d10 Sat 16:20  Downtown Houston (Gray St.), TX   [FlixBus-us: Dallas - Houston]
+  walk  Downtown Houston (Gray St.) -> Theater District Rusk EB  (1.3 km, from d10 Sat 16:20)
+d10 Sat 16:48  Theater District Rusk EB, TX  ->  d10 Sat 17:09  Magnolia Park Transit Center EB, TX   [Metropolitan Transit Authority of Harris County: METRORAIL GREEN LINE]
+  walk  Magnolia Park Transit Center EB -> Houston Bus Station (Greyhound)  (0.1 km, from d10 Sat 17:09)
+d10 Sat 18:35  Houston Bus Station (Greyhound), TX  ->  d11 Sun 11:00  Tallahassee (CK Steele Bus Plaza), FL   [Greyhound-us: Orlando - Houston]
+d11 Sun 11:25  Tallahassee (CK Steele Bus Plaza), FL  ->  d11 Sun 14:50  Jacksonville (Downtown), FL   [Greyhound-us: Jacksonville - Mobile]
+  walk  Jacksonville (Downtown) -> JRTC Bay H  (0.1 km, from d11 Sun 14:50)
+d11 Sun 15:00  JRTC Bay H, FL  ->  d11 Sun 15:27  Amtrak Station, FL   [Jacksonville Transportation Authority: Kings Road]
+  walk  Amtrak Station -> Jacksonville  (0.3 km, from d11 Sun 15:27)
+d11 Sun 16:11  Jacksonville, FL  ->  d12 Mon 06:25  Washington Union Station, None   [Amtrak: Silver Meteor]
+d12 Mon 06:45  Washington Union Station, None  ->  d12 Mon 13:56  Boston, MA   [Amtrak: Acela]
+  walk  Boston -> Boston South Station  (0.3 km, from d12 Mon 13:56)
+d12 Mon 14:15  Boston South Station, MA  ->  d12 Mon 16:10  Portland, ME, ME   [Concord Coach Lines: Portland, ME to/from Boston & Logan Airport]
+d12 Mon 16:45  Portland, ME, ME  ->  d12 Mon 18:40  Boston South Station, MA   [Concord Coach Lines: Portland, ME to/from Boston & Logan Airport]
+  walk  Boston South Station -> Boston South Station  (0.0 km, from d12 Mon 18:40)
+d12 Mon 19:30  Boston South Station, MA  ->  d12 Mon 22:00  Hanover (Hanover Inn), NH   [Dartmouth Coach: Boston South Station -> Hanover 19:30]
+  walk  Hanover (Hanover Inn) -> VT state line (walk from Hanover (Hanover Inn))  (0.9 km, from d12 Mon 22:00)
+  walk  VT state line (walk from Hanover (Hanover Inn)) -> Hanover (Hanover Inn)  (0.9 km, from d12 Mon 22:14)
+d13 Tue 03:00  Hanover (Hanover Inn), NH  ->  d13 Tue 06:00  Boston South Station, MA   [Dartmouth Coach: Hanover -> Boston South Station 03:00]
+  walk  Boston South Station -> Boston  (0.3 km, from d13 Tue 06:00)
+d13 Tue 07:00  Boston, MA  ->  d13 Tue 12:17  Philadelphia, PA   [Amtrak: Acela]
+d13 Tue 12:42  Philadelphia, PA  ->  d13 Tue 14:26  Harrisburg, PA   [Amtrak: Pennsylvanian]
+  walk  Harrisburg -> Harrisburg Bus Station  (0.1 km, from d13 Tue 14:26)
+d13 Tue 14:50  Harrisburg Bus Station, PA  ->  d14 Wed 04:10  Indianapolis Bus Station, IN   [Greyhound-us: New York - Pittsburgh - St. Louis]
+d14 Wed 05:20  Indianapolis Bus Station, IN  ->  d14 Wed 08:00  Chicago Train Station, IL   [Greyhound-us: Atlanta - Chicago]
+  local Chicago Train Station -> 35th & State St (Four Winds shuttle)  (5.4 km, from d14 Wed 08:00)
+d14 Wed 09:50  35th & State St (Four Winds shuttle), IL  ->  d14 Wed 12:30  Four Winds Casino New Buffalo MI (shuttle), MI   [Four Winds Casino Shuttle (Chinatown): Chinatown 09:50 -> Four Winds New Buffalo (Wed-Sat, from Oct 28 2026)]
+d14 Wed 13:00  Four Winds Casino New Buffalo MI (shuttle), MI  ->  d14 Wed 13:25  2734 S. Wentworth Bus Depot (Four Winds shuttle), IL   [Four Winds Casino Shuttle (Chinatown): Four Winds New Buffalo 12:00 -> Chinatown (arrival assumed +1 h 40 min; Wed-Sat)]
+  local 2734 S. Wentworth Bus Depot (Four Winds shuttle) -> Chicago Union Station  (3.9 km, from d14 Wed 13:25)
+d14 Wed 15:05  Chicago Union Station, IL  ->  d14 Wed 16:35  Milwaukee, WI   [Amtrak: Empire Builder]
+d14 Wed 17:44  Milwaukee, WI  ->  d14 Wed 19:31  Chicago Union Station, IL   [Amtrak: Borealis]
+d14 Wed 20:05  Chicago Union Station, IL  ->  d15 Thu 06:42  Memphis, TN   [Amtrak: City of New Orleans]
+d15 Thu 06:55  Memphis, TN  ->  d15 Thu 07:28  Arkansas line on Big River Crossing (on foot from Memphis Amtrak), AR   [On foot (Big River Crossing, open 06:00-22:00): Memphis Amtrak -> Arkansas line on Big River Crossing (walk)]
+d15 Thu 07:40  Arkansas line on Big River Crossing (on foot from Memphis Amtrak), AR  ->  d15 Thu 08:13  Memphis, TN   [On foot (Big River Crossing, open 06:00-22:00): Arkansas line on Big River Crossing -> Memphis Amtrak (walk)]
+  walk  Memphis -> UNION AVENUE at 4TH STREET  (1.5 km, from d15 Thu 08:13)
+d15 Thu 08:46  UNION AVENUE at 4TH STREET, TN  ->  d15 Thu 08:52  WILLIAM HUDSON TRANSIT CENTER, TN   [MATA: UNION]
+d15 Thu 09:15  WILLIAM HUDSON TRANSIT CENTER, TN  ->  d15 Thu 10:02  IRS, TN   [MATA: AIRPORT]
+  walk  IRS -> MS state line (walk from IRS)  (1.0 km, from d15 Thu 10:02)

@@ -36,7 +36,7 @@ def main():
     ap.add_argument('--route', required=True, help='ride_search --out pickle')
     ap.add_argument('--leg-stop', default='Salt Lake City', help='test the node after the LAST leg ending at a '
                     'stop whose name contains this')
-    ap.add_argument('--at', default='2026-09-24T00:54'); ap.add_argument('--by', default='2026-10-03T22:54')
+    ap.add_argument('--at', default='2026-11-05T00:54'); ap.add_argument('--by', default='2026-11-14T22:54')
     ap.add_argument('--tz', default='America/New_York'); ap.add_argument('--span', type=float, default=260)
     ap.add_argument('--days', type=int, default=20); ap.add_argument('--km', type=float, default=10)
     a = ap.parse_args()

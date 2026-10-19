@@ -252,7 +252,162 @@ a 0.2 km walk-in across the Red River; set aside.
   Spokane all checked on the carrier sites). Searched from it, free end and Huntington end: 238.8 both, locally optimal.
   Lesson: a search from a start returning worse than a known route from that start means seed it with that route.
 
+## Hinge fronts, the Butte lollipop and the day-earlier X (Oct 6 afternoon)
+
+Hinge table (scripts/hinge_fronts.py): X's once-daily hinges, each with X's own tail kept and a front searched to the
+hinge (--end/--end-by/--done). Totals are first bus to the hinge's departure plus the tail.
+- Southwest Chief (San Bernardino Sat 18:43): from WY, NV, WA all 231.7 (every free start drifted to Sheridan).
+- Silver Meteor (Jacksonville Amtrak Tue 16:11): WY, NV, WA 232.2. Chicago 21:15: WY 231.7.
+- Pinned starts into X's Chicago finish (deadline the second Saturday): Metra/Kenosha from Hanover 273.4, Huntington
+  270.4, Portland ME 260.6; the 21:15 from Hanover ~274 (Friday's bus), Huntington 279.0, Portland ~276.
+Fixes on the way: --end-by now picks the latest start (the front's own length had sent a Meteor front a day early);
+--start/--start-alt/--end take '#idx' and exact names (Jacksonville FL vs NC); free:XX starts drift, so pin stops.
+- Day-earlier X: the Wednesday-start front reaches Jacksonville Monday; X's tail runs a day earlier except Flix
+  Nashville -> Memphis (Thu) and Metra (Fri schedule). Same total (it is X a day earlier). docs/x_day_earlier.xlsx:
+  Vonlane Nashville 10:00 -> Memphis Hilton 13:15, MATA 50 -> Poplar & Cleveland -> 42 Crosstown -> Holmes, MS on
+  foot, back to Airways 17:16 for the 17:45 (real MATA only); Friday Wisconsin by Hiawatha 06:10 / 08:05 (plan B
+  Wisconsin Coach O'Hare 07:30 -> Kenosha). Nick's plan.
+- Butte lollipop (Nick: Las Vegas -> Saint George -> SLC -> Idaho Falls -> Butte -> Spokane -> Pasco -> Greyhound via
+  Boise and SLC across I-80 to Denver): inside the record shape 249.9 (record 238.8); from Primm/Barstow/Las Vegas
+  first 260.8.
+
+Conclusion: X's 231.7 front is the best way into each of its hinges from the West, and its Chicago finish only pays
+with the West done first; East and Appalachian starts pay 30-40 h to reach it.
+
+## Start-point sweeper and the Moorhead family (Oct 6 evening)
+
+Free starts all drift back to Sheridan, so 11 starts were pinned and searched from three seeds each (X's order, X
+reversed, the record's order), 15 min each, out/starts. Best per start: Moorhead 239.0 (new Plains-first shape),
+Idaho Falls 239.0 (X plus a start via Jackson WY and Butte -> Bozeman -> back west), Pine Bluffs 241.2, Portland ME
+242.5, Laramie 244.3, Fargo 246.9, Butte 248.5, Brattleboro 251.5, Kingman 255.2, El Paso 258.2, Rock Springs 263.5.
+Cheyenne with Nick's reverse-lollipop seed: 238.2, which is X plus Cheyenne -> Buffalo.
+
+**Moorhead, Michigan moved earlier (mh_mi_east): 235.8 h, under the record, no Ohio Coach** (full legs in
+docs/route_moorhead_235.8.txt): Moorhead Mon -> Fargo 14:30 -> Sioux Falls -> Maryville loop -> Sioux Falls -> I-90 bus
+12:40 -> Billings -> X's West (Spokane, Pasco, SLC, Saint George, Las Vegas, Chief) -> OKC, Dallas, Houston,
+Tallahassee, Jacksonville -> Silver Meteor -> Acela -> Portland midday, Hanover overnight on Dartmouth Coach (19:30 up,
+03:00 back) -> Acela, Pennsylvanian, Harrisburg -> Indianapolis -> Chicago Wed 08:00 -> Four Winds 09:50 (MI) ->
+Empire Builder to Milwaukee (WI), Borealis back -> City of New Orleans 20:05 -> Memphis Thu 06:42 -> Big River
+Crossing (AR) -> MATA -> MS line at IRS ~10:16. To check: the Moorhead -> Fargo start hop (modelled; MATBUS on a
+Monday), the Wednesday Four Winds 09:50, Borealis. Nick (Oct 6): out-and-backs on timetabled services are allowed (the
+old no-U-turn rule was a router workaround), so the Maryville loop and the Hanover overnight stand. The second
+variant (mh_mi_fl) was stopped unrun when the machine was shut down.
+
+Standing on the corrected data: X 232.1 (231.9 with the Friday-start MATBUS finish), Moorhead 235.8, Wheeling 234.24
+(Ohio Coach), control 237.5, record shape 238.8.
+
 ## Next
 
 - More sweeps with other random seeds: one 5-hour sweep found RX, the cheapest new-family finder we have.
 - Block tests on RX, as for Wheeling (HANDOFF 29): start, front to Jacksonville, Northeast, Midwest, West.
+
+## HT tail as a finish (Oct 7)
+
+HT's tail, Sioux Falls I-90 bus 12:40 -> Billings -> Spokane -> Pasco -> SLC -> Saint George -> Las Vegas -> Southwest
+Chief -> Newton -> OKC -> Fort Worth -> Longview -> Shreveport -> Memphis (AR walk-in) -> Birmingham -> Tallahassee, still
+evaluates on today's data: 126.75 h, every start day (`out/hinges/ht_tail_eval.py`). Fronts to Sioux Falls holding the
+other 29 states (`out/hinges/jobs_ht.txt`, hinge method, start pinned):
+
+| front | reaches Sioux Falls | front h | total with tail |
+|---|---|---|---|
+| Ledyard, Mon deadline | Wed 06:40 -> Thu 09:45 (next week) | ~147 | ~277 |
+| Huntington, Mon / Fri deadline | Sat 03:30 -> Fri 09:45 | ~151 | ~281 |
+| Ledyard, Fri deadline | Wed 06:40 -> Mon 09:45 | ~124 | ~254 |
+
+A front needs under ~105 h to beat X and ~112 h for the record. HT's old front was 102.4 h on the phantom Fargo 15:50 ->
+Sioux Falls bus; without it the Plains before Sioux Falls (ND, MN, MO, IA, NE) cost a Midwest loop of a day or more.
+
+## Beat-X searches, Oct 12 2026 (November window, X = 231.68 h)
+
+`ride_search --goal --by start+231.5 h`, 40 min each. First pass with the default credit frontier (6 -> ~250 nodes/s after
+the menu.c port), second with `--frontier depth --slack-weight 3 --queue 1500000`. Nothing reached 48 states under 231.5 h.
+
+| start -> end | credit: nodes / deepest | depth: nodes / deepest | depth: queue at exit |
+|---|---|---|---|
+| Sheridan Thu 22:10 -> MN | 642,766 / 33 | 291,084 / 38 | nothing past 35 states: every deeper chain died on the deadline |
+| Sheridan -> TN | 611,628 / 34 | 272,530 / 39 | up to 38 still queued |
+| Moorhead Mon 14:20 -> TN | 319,603 / 34 | 294,953 / 33 | up to 31 |
+| Foley Park Thu 04:30 -> WV | 150,908 / 33 | 307,738 / 38 | nothing past 35 |
+| Weirton Thu 06:00 -> ME | (not rerun) | 300,888 / 33 | up to 30 |
+
+Why depth: `--xprobe` ranked X's own prefix against the final frontier. Under credit X's middle (Newton -> Houston ->
+Jacksonville, 12-17 states) sat 96-99% back; slack blends at 0.25/0.5/1.0 never fixed the middle without burying the
+Northeast; per-depth layers with `--slack-weight 3` put it 8-58% back and the Northeast at the front. Not proof that
+nothing beats X (shallower layers were still queued), but much stronger evidence than the sweeps.
+
+## Using X's Chicago slack, Oct 13 2026
+
+X's tail only needs Chicago by Sat 11:15 (Four Winds 12:00 -> back 15:30 -> Metra 16:32 Kenosha -> 19:08 back -> bus
+station 21:06 for the 21:15 to Omaha); X arrives 05:35, so 5.5 h of slack. Front search to Chicago Bus Station by Sat
+Nov 21 11:10 holding all but WI MI IA NE SD ND MN, latest start, free start in WY / MT / WA:
+
+| start state | front (first bus -> Chicago) | start |
+|---|---|---|
+| WY | 198.2 h | Sheridan Thu 22:20 (X's own front) |
+| MT | 211.6 h | 13 h earlier: WY then costs a detour |
+| WA | 198.2 h | drifted back to Sheridan |
+
+The slack cannot buy a later start: the Sheridan bus is daily, so the next start is 24 h later. Also checked: leaving
+New York any time Thu 07:20-10:30 reaches Indiana Fri 03:00 either way, so the Portland 23:59 Flix (in the feed every
+night of the window except Nov 18-19, X's nights) would not shorten X either.
+
+## Robustness, Memphis, Southwest starts and the control, Oct 13 2026
+
+**X's backups** (`x_itinerary.py` "If you miss a leg", now on Nov 12 timetables):
+- Pasco 13:25 Greyhound missed: Northwestern 15:00 -> Hermiston/Pendleton/La Grande (OR) -> Boise 21:10, Salt Lake Express
+  21:15 -> Pocatello 01:05, 03:40 -> SLC airport 06:40 -> Saint George 12:20, the same southbound bus. **No loss**
+  (was +32 h before the Oregon stops were entered). Reverse chain Saint George 16:30 -> Pasco 13:10 also in the data.
+- Las Vegas Flix missed: 702 Shuttles Blue Diamond 18:15 -> Barstow 20:27 + 2.5 mi run to the depot for the Chief 20:47.
+  Fit-run only (on the platform ~20:43); the router shows a 1 min miss because it adds the 5 min boarding allowance.
+- **Southwest Chief missed** (search from the Barstow 702 stop Sat 20:20, free order and finish): best recovery is
+  Barstow -> LA -> Greyhound 23:30 -> Phoenix -> El Paso -> Omnibus to Kansas City ..., about **247 h** total. The
+  Chief is X's single point of failure.
+
+**Memphis** (from Nick's sheet: Huntington front -> St Louis -> Greyhound 01:00 -> Memphis Airways 06:30 with MO AR
+on the bus, MATA 42 to Holmes and back):
+- Memphis -> Billings, Plains states only: the sheet's own chain (Conway -> KC 01:30 -> Omaha -> SF -> Fargo -> MSP ->
+  Eau Claire -> Billings Sat 00:25). Nothing faster.
+- Memphis, free order, Plains first: 204.7 h to the Vermont line -> **old control back at 237.5 h** on November data.
+- Memphis, south first: 237.8 h from Memphis alone. Plains first is right.
+
+**Southwest-first starts** (none under the record): RX order 251.2 (drifted to Rowland Heights), CA 268.1
+(Montclair), NV 243.8 (Saint George, 1 Ohio Coach leg), RX + Fargo->KC->Denver chain 244.3 (drifted to Maryville).
+
+**Control** (Huntington Thu Nov 12 00:45 -> VT line Sat Nov 21 22:14): original order and Nick's St Louis/Airways
+order both evaluate 237.5 h; a 25 min search seeded with the St Louis order found nothing lower.
+
+**Wheeling** (Oct 13, November data): its own order 260.2 h (the City of New Orleans now runs 2 h later, so the
+Chicago -> Jackson -> St Louis -> Chicago loop costs a day); run in the control's shape (Columbus -> Detroit -> St Louis
+-> Memphis) a 25 min search reaches 245.9 h, because nothing west of Wheeling passes Kentucky cheaply (the evaluation
+detoured Cleveland -> Cincinnati -> TANK to Covington). Off the list.
+
+**Record shape** (WRJ -> Huntington): cannot run in the Nov 4-24 window. On a Nov 5 or Nov 12 start the Thursday 13:00
+Acela Boston -> Washington is absent (Portal Bridge, back Nov 16), so it misses the 21:45 Flix to Jacksonville and
+comes out 251.8 h; a Nov 19 start finishes after Nov 24. The 238.75 of Oct 11 predates the Oct 11 Amtrak release.
+
+**Record shape on an extended window** (Oct 13, `--days` 20 from Nov 19, i.e. to Dec 8): best 242.8 h, Foley Park Tue
+Nov 24 09:40 -> Fri Dec 4, through Thanksgiving. A Thu Nov 19 start loses Maine (it rides Dartmouth Coach 03:00 and
+C&J to Portsmouth instead of WRJ 04:35 -> Boston -> Portland; Concord Coach runs that week, so the WRJ Greyhound is
+the likely gap). The control on Nov 5 - Dec 1 stays 237.5 h (Nov 12 start). Default window unchanged (Nov 4-24).
+
+**Correction (Oct 13):** the record shape is intact on Thu Nov 19. Pinned to WRJ 04:25 (`--fixed-start`) it runs
+WRJ 04:35 -> Boston -> Portland -> Boston -> Acela 13:00 -> ... -> Huntington Sun Nov 29 03:25, **238.833 h**, exactly
+the record. The "loses Maine" result above came from the free start-day settle drifting to Hanover/Portsmouth, not
+from the data: the WRJ 04:35 (Flix trip US0260-3534-0430112026) runs daily Nov 2-30 (Nick confirmed it sold Nov 19).
+
+## Redundancy, Oct 13 2026 (`scripts/redundancy.py`, docs/redundancy.xlsx)
+
+Each ride missed by one minute; recovery = the route's own pruned order from there (validated: X missing the Pasco
+Greyhound recovers via Northwestern -> Boise -> SLE at 0.0 h), or the whole remaining chain N days later. No backup is
+faster than any plan (no hidden savings). Costs above 24 h are "at least a day": the replay is not a full search and
+can overstate (the ride kit finds Houston -> Tallahassee covered via the 22:00 to Mobile; this shows +96).
+- X: covered 0 h from Spokane to Houston except the Chief, plus the Memphis MATA and the whole Chicago Saturday; +24 h
+  for the Meteor and the Friday chain to Chicago and the Plains finish; > 1 day at Sheridan, Billings, the Chief,
+  Houston/Tallahassee, the Acela and the New England block.
+- Control: front Huntington -> St Louis is the weak point (+117 h), Eau Claire/MSP -> Billings/Chief +92 h, Plains +24 h,
+  the East end forgiving (+2 to +16 h).
+- Record: nearly every miss +24 h (same chain next day); SLE, Pasco/Spokane, St Louis -> KC, Toledo -> Detroit 0 h.
+- Moorhead: its order now evaluates at 248.3 h (best start Thu); off the list pending a repair search.
+- Moorhead (Oct 13, Portal Bridge bound: start Mon Nov 9, 235.8 h): covered 0 h from Spokane to Houston except the
+  Chief, the whole New England loop, the Chicago Wednesday and the Memphis walk-ins; +24 h for the Plains block, the
+  Gulf-to-Washington legs and the Capitol Limited; **the Chief +144 h**, the one single point of failure it shares with X.

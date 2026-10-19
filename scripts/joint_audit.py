@@ -14,7 +14,7 @@ from common import ABBR
 from pick import gate
 from joint_table import HUBS
 
-R = cached_router(date(2026, 9, 24), 20)
+R = cached_router(date(2026, 11, 5), 20)
 inv = {v: k for k, v in ABBR.items()}
 xy = np.asarray(R.stop_xy, dtype=float)
 
@@ -63,14 +63,14 @@ def audit(name, start, t, order, want, from_clock):
 ny, dn = ZoneInfo('America/New_York'), ZoneInfo('America/Denver')
 ctl = [R.state_names.index(inv[x]) for x in 'WV KY OH MI IN IL TN MS AR MO IA NE SD ND MN WI WY MT ID WA OR UT AZ NV CA NM CO KS OK TX LA AL FL GA SC NC VA MD DE PA NJ NY CT RI MA ME NH VT'.split()]
 hun = [i for i, n in enumerate(R.stop_name) if n == 'Huntington Bus Stop']
-audit('control (Huntington -> Hanover)', hun, datetime(2026, 9, 24, 0, 54, tzinfo=ny).timestamp(), ctl, 237.34, True)
+audit('control (Huntington -> Hanover)', hun, datetime(2026, 11, 5, 0, 54, tzinfo=ny).timestamp(), ctl, 237.34, True)
 # the record re-search's order (out/res_record2.pkl), by name so a fresh checkout without out/ can run this
 rec = [R.state_names.index(n) for n in ['Maine', 'Florida', 'Louisiana', 'Missouri', 'Kansas', 'Texas', 'California', 'Idaho',
                                         'Oregon', 'Wyoming', 'Colorado', 'South Dakota', 'North Dakota', 'Michigan', 'West Virginia']]
 wrj = [i for i, n in enumerate(R.stop_name) if n == 'White River Junction Bus Station']
-audit('record (White River Junction -> Huntington)', wrj, datetime(2026, 9, 24, 4, 20, tzinfo=ny).timestamp(), rec, 239.08, True)
+audit('record (White River Junction -> Huntington)', wrj, datetime(2026, 11, 5, 4, 20, tzinfo=ny).timestamp(), rec, 239.08, True)
 xo = ['Wyoming', 'Montana', 'Arizona', '@Albuquerque Bus Station', 'Louisiana', 'Florida', 'Maine', 'Vermont',
       'West Virginia', 'Kentucky', 'Michigan', 'North Dakota', 'Nebraska', 'Arkansas', 'Mississippi']
 she = [i for i, n in enumerate(R.stop_name) if n == 'Sheridan WY Taco Bell 1655 Coffeen Ave (Jefferson)']
-audit('X (Sheridan -> Southaven)', she, datetime(2026, 9, 26, 12, 0, tzinfo=dn).timestamp(),
+audit('X (Sheridan -> Southaven)', she, datetime(2026, 11, 7, 12, 0, tzinfo=dn).timestamp(),
       [n if n.startswith('@') else R.state_names.index(n) for n in xo], 239.50, False)

@@ -29,11 +29,11 @@ ap.add_argument('--min-states', type=int, default=3)
 ap.add_argument('--max-per-day', type=float, default=3.0)
 a = ap.parse_args()
 
-R = cached_router(date(2026, 9, 24), 20)
+R = cached_router(date(2026, 11, 5), 20)
 ab = lambda y: ABBR[R.state_names[y]]
 xy = np.asarray(R.stop_xy[:R.first_virtual], dtype=float)
 CT = ZoneInfo('America/Chicago')
-T_FROM = datetime(2026, 9, 24, tzinfo=CT).timestamp()
+T_FROM = datetime(2026, 11, 5, tzinfo=CT).timestamp()
 DAYS = 20
 
 

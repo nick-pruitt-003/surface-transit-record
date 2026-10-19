@@ -22,11 +22,11 @@ import build_backward as BB
 from common import ABBR
 
 ET = ZoneInfo('America/New_York')
-DEADLINE = datetime(2026, 10, 3, 22, 14, tzinfo=ET)
+DEADLINE = datetime(2026, 11, 14, 22, 14, tzinfo=ET)
 # what the reference has placed at step 19, backwards from Vermont, with Oklahoma held back to the end
 EAST = 'NH ME MA RI CT NY NJ PA DE MD VA NC SC GA FL AL LA TX'.split()
 LAST = 'OK'
-REF = datetime(2026, 9, 30, 17, 20, tzinfo=ET)   # the reference's own latest time in Oklahoma
+REF = datetime(2026, 11, 11, 17, 20, tzinfo=ET)   # the reference's own latest time in Oklahoma
 
 
 def main():

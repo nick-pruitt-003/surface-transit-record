@@ -8,7 +8,7 @@ mkdir -p ../out; R=../docs/cloud_tol.txt; touch $R
 fail () { echo "FAILED $1 rc=$2" | tee -a $R; tail -20 "$3" >> $R; push "$1-failed"; exit 3; }
 python3 -u x_gate.py || { echo "GATE FAILED (X did not reproduce 239.50)" | tee -a $R; push gate; exit 2; }
 BUS48_MIN_TRANSFER=5 BUS48_WALKIN_KM=1.4 python3 -u time_search.py \
-  --start "Sheridan WY Taco Bell 1655 Coffeen Ave (Jefferson)" --at 2026-09-24T12:00 --tz America/Denver \
+  --start "Sheridan WY Taco Bell 1655 Coffeen Ave (Jefferson)" --at 2026-11-05T12:00 --tz America/Denver \
   --seed-states "WY,MT,AZ,@Albuquerque Bus Station,LA,FL,ME,VT,@Toledo Bus Stop,MI,WV,KY,ND,NE,AR,MS" \
   --budget 1800 --workers ${W:-2} --days 20 --out ../out/fam_XTOL.pkl > ../out/fam_XTOL.log 2>&1
 rc=$?; [ $rc -eq 0 ] || fail X_TOL $rc ../out/fam_XTOL.log

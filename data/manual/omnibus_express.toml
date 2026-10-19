@@ -1,0 +1,135 @@
+agency = "Omnibus Express"
+
+# Nick screenshot Oct 11 2026 (Omnibus Express site, Fri Nov 20 2026, bus line AE): Kansas City 13:01 -> Topeka ->
+# Emporia -> Wichita -> Pratt -> Dodge City -> Garden City -> Liberal -> Tyrone OK -> Hooker -> Guymon -> Texoma ->
+# Stratford TX -> Dalhart -> Tucumcari NM 00:30 -> El Paso (Via Internacional) 06:28. The merged feed has this route with
+# placeholder times (every stop 30 min apart from 08:00), which is why Omnibus Express is on its skip list. Stops are
+# the feed's; times are each stop's local clock (Central to Dalhart, Mountain at Tucumcari and El Paso). Friday is the
+# only day seen.
+[stops]
+kansas_city_omnibus = "=ibus:1117"
+topeka_omnibus = "=ibus:1005"
+emporia_omnibus = "=ibus:67"
+wichita_omnibus = "=ibus:790"
+pratt_omnibus = "=ibus:93"
+dodge_city_omnibus = "=ibus:229"
+garden_city_omnibus = "=ibus:867"
+liberal_omnibus = "=ibus:2359"
+tyrone_omnibus = "=ibus:2191"
+hooker_omnibus = "=ibus:1556"
+guymon_omnibus = "=ibus:328"
+texoma_omnibus = "=ibus:1025"
+stratford_omnibus = "=ibus:2235"
+dalhart_omnibus = "=ibus:261"
+tucumcari_omnibus = "=ibus:453"
+el_paso_omnibus = "=ibus:3247"
+houston_telephone_rd_omnibus = "=ibus:3244"
+beaumont_omnibus = "=ibus:3586"
+port_arthur_omnibus = "=ibus:609"
+orange_tx_omnibus = { name = "Orange TX (Omnibus Express)", lon = -93.7366, lat = 30.0930 }   # point approximate
+lake_charles_omnibus = "=ibus:165"
+lafayette_omnibus = "=ibus:3600"
+baton_rouge_omnibus = "=ibus:357"
+hammond_omnibus = "=ibus:2788"
+slidell_omnibus = "=ibus:2496"
+gulfport_omnibus = "=ibus:2339"
+biloxi_omnibus = "=ibus:3392"
+pascagoula_omnibus = "=ibus:2295"
+grand_bay_al_omnibus = { name = "Grand Bay AL (Omnibus Express)", lon = -88.3420, lat = 30.4766 }   # point approximate
+mobile_omnibus = "=ibus:3018"
+loxley_omnibus = "=ibus:2077"
+pensacola_omnibus = "=ibus:2880"
+crestview_omnibus = { name = "Crestview FL (Omnibus Express)", lon = -86.5705, lat = 30.7621 }   # point approximate
+marianna_omnibus = { name = "Marianna FL (Omnibus Express)", lon = -85.2263, lat = 30.7744 }   # point approximate
+tallahassee_omnibus = "=ibus:3356"
+lake_city_omnibus = "=ibus:2294"
+okc_omnibus = "=ibus:1524"
+el_reno_omnibus = "=ibus:3134"
+weatherford_ok_omnibus = "=ibus:2078"
+clinton_ok_omnibus = "=ibus:971"
+elk_city_omnibus = "=ibus:1#180"
+sayre_omnibus = "=ibus:3062"
+erick_omnibus = "=ibus:812"
+shamrock_omnibus = "=ibus:1109"
+amarillo_omnibus = "=ibus:136"
+hereford_omnibus = "=ibus:30"
+friona_omnibus = "=ibus:2317"
+bovina_omnibus = "=ibus:2887"
+farwell_omnibus = "=ibus:262"
+texico_omnibus = "=ibus:724"
+clovis_omnibus = "=ibus:1429"
+portales_omnibus = "=ibus:1745"
+roswell_omnibus = "=ibus:1899"
+caldwell_omnibus = "=ibus:658"
+jerome_id_omnibus = { name = "Jerome ID (Omnibus Express)", lon = -114.5185, lat = 42.7241 }   # point approximate
+burley_omnibus = "=ibus:2612"
+salt_lake_city_omnibus = "=ibus:2604"
+provo_omnibus = "=ibus:3087"
+albuquerque_omnibus = { name = "Albuquerque NM (Omnibus Express)", lon = -106.6504, lat = 35.0844 }   # point approximate
+los_lunas_omnibus = { name = "Los Lunas NM (Omnibus Express)", lon = -106.7334, lat = 34.8062 }   # point approximate
+hatch_nm_omnibus = { name = "Hatch NM (Omnibus Express)", lon = -107.1531, lat = 32.6648 }   # point approximate
+
+[[trip]]
+id = "t454"
+route = "Omnibus Express Kansas City 13:01 -> Wichita -> Liberal -> Guymon -> Dalhart -> Tucumcari -> El Paso 06:28 (daily per the booking engine, Nov 9-22)"
+days = "1111111"
+stops = ["kansas_city_omnibus 13:01", "topeka_omnibus 13:40", "emporia_omnibus 14:40", "wichita_omnibus 17:00", "pratt_omnibus 18:30", "dodge_city_omnibus 19:45", "garden_city_omnibus 20:45", "liberal_omnibus 21:30", "tyrone_omnibus 21:50", "hooker_omnibus 22:15", "guymon_omnibus 22:35", "texoma_omnibus 22:55", "stratford_omnibus 23:15", "dalhart_omnibus 23:50", "tucumcari_omnibus 24:30", "el_paso_omnibus 30:28"]
+
+# Nick screenshot Oct 11 2026 (Omnibus Express site, Wed Oct 28 2026): El Paso 19:03 -> Tucumcari 23:55 -> Dalhart 02:30 ->
+# Guymon -> Liberal -> Garden City -> Dodge City -> Pratt -> Wichita 11:00 -> Emporia -> Topeka -> Kansas City 14:00.
+# Daily (booking engine queried for Nov 9-22 2026).
+[[trip]]
+id = "t455"
+route = "Omnibus Express El Paso 19:03 -> Tucumcari -> Dalhart -> Guymon -> Liberal -> Wichita -> Kansas City 14:00 (daily per the booking engine, Nov 9-22)"
+days = "1111111"
+stops = ["el_paso_omnibus 19:03", "tucumcari_omnibus 23:55", "dalhart_omnibus 26:30", "stratford_omnibus 27:00", "texoma_omnibus 27:30", "guymon_omnibus 28:00", "hooker_omnibus 28:20", "tyrone_omnibus 28:35", "liberal_omnibus 29:00", "garden_city_omnibus 30:15", "dodge_city_omnibus 31:15", "pratt_omnibus 32:30", "wichita_omnibus 35:00", "emporia_omnibus 36:20", "topeka_omnibus 37:30", "kansas_city_omnibus 38:00"]
+
+# Nick screenshot Oct 11 2026 (Omnibus Express site, Fri Oct 30 2026): Caldwell ID 08:00 -> Jerome -> Burley -> Salt Lake
+# City 15:30 -> Provo 16:30 -> Albuquerque 01:30 -> Los Lunas -> Hatch NM 04:15. The site also lists El Paso 04:16, one
+# minute after Hatch (about 75 min apart), so the El Paso time is a site error; 05:33 from the reverse trip's Hatch -> El Paso running time (78 min). Runs Friday to
+# Monday, no service Tuesday to Thursday (Nick). All stops on Mountain time.
+[[trip]]
+id = "t456"
+route = "Omnibus Express Caldwell ID 08:00 -> Burley -> Salt Lake City -> Provo -> Albuquerque -> Hatch NM 04:15 -> El Paso 05:33 (Hatch + 78 min) (Tue Fri Sat Sun per the booking engine, Nov 9-22)"
+days = "0100111"
+tz = "America/Denver"
+stops = ["caldwell_omnibus 08:00", "jerome_id_omnibus 11:00", "burley_omnibus 12:00", "salt_lake_city_omnibus 15:30", "provo_omnibus 16:30", "albuquerque_omnibus 25:30", "los_lunas_omnibus 26:00", "hatch_nm_omnibus 28:15", "el_paso_omnibus 29:33"]
+
+# Nick screenshots Oct 11 2026 (Omnibus Express site, Fri Oct 30 2026), Oklahoma City <-> El Paso via Amarillo, Clovis and
+# Roswell. Times are each stop's local clock (Central to Farwell TX, Mountain from Texico NM); the Farwell/Texico pair only
+# reads consistently that way. Friday seen each way; Fri-Mon assumed, the Caldwell pattern (Nick: try it as such).
+[[trip]]
+id = "t457"
+route = "Omnibus Express Oklahoma City 18:00 -> Amarillo -> Clovis -> Roswell -> El Paso 04:28 (daily per the booking engine, Nov 9-22)"
+days = "1111111"
+stops = ["okc_omnibus 18:00", "el_reno_omnibus 18:30", "weatherford_ok_omnibus 19:00", "elk_city_omnibus 19:45", "sayre_omnibus 20:00", "erick_omnibus 20:15", "shamrock_omnibus 20:30", "amarillo_omnibus 22:30", "hereford_omnibus 23:15", "friona_omnibus 23:45", "bovina_omnibus 23:55", "farwell_omnibus 24:10", "texico_omnibus 23:15", "clovis_omnibus 23:30", "portales_omnibus 23:50", "roswell_omnibus 25:20", "el_paso_omnibus 28:28"]
+
+[[trip]]
+id = "t458"
+route = "Omnibus Express El Paso 19:02 -> Roswell -> Clovis -> Amarillo -> Oklahoma City 09:00 (daily per the booking engine, Nov 9-22)"
+days = "1111111"
+stops = ["el_paso_omnibus 19:02", "roswell_omnibus 22:30", "portales_omnibus 23:50", "clovis_omnibus 24:10", "texico_omnibus 24:20", "farwell_omnibus 26:30", "bovina_omnibus 26:45", "friona_omnibus 27:00", "hereford_omnibus 27:20", "amarillo_omnibus 28:05", "shamrock_omnibus 29:35", "erick_omnibus 30:00", "sayre_omnibus 30:15", "elk_city_omnibus 30:35", "clinton_ok_omnibus 31:05", "weatherford_ok_omnibus 31:20", "el_reno_omnibus 32:15", "okc_omnibus 33:00"]
+
+# Nick screenshot Oct 11 2026 (Omnibus Express site, Fri Oct 30 2026): Houston (Telephone Rd) 19:30 -> Beaumont -> Lake
+# Charles -> Lafayette 23:50 -> Baton Rouge -> Slidell 02:15 -> Mississippi coast (flag stops, drop-off when booked) ->
+# Mobile 03:30 -> Pensacola 06:25 -> Crestview -> Marianna 08:14 -> Tallahassee 09:00 -> Lake City 11:00. Replaces the
+# disabled AE bus t72. The site lists Biloxi 02:20 before Gulfport 02:25; entered in road order (Gulfport first). Three
+# segments are faster than a bus can go (Slidell -> Mobile, Pensacola -> Crestview, Marianna -> Tallahassee); the
+# router's sanity check drops a stop that implies over 130 km/h. Marianna left out: 32:14 CT is 09:14 ET, after
+# Tallahassee's 09:00, and the local-clock rollover read that as a day (review Oct 11). Per-stop local clocks. Fri-Mon assumed (Nick).
+[[trip]]
+id = "t459"
+route = "Omnibus Express Houston 19:30 -> Lafayette -> Baton Rouge -> Slidell -> Mobile -> Pensacola -> Tallahassee -> Lake City 11:00 (daily per the booking engine, Nov 9-22)"
+days = "1111111"
+stops = ["houston_telephone_rd_omnibus 19:30", "beaumont_omnibus 21:00", "port_arthur_omnibus 21:30", "orange_tx_omnibus 22:05", "lake_charles_omnibus 22:35", "lafayette_omnibus 23:50", "baton_rouge_omnibus 24:55", "hammond_omnibus 25:45", "slidell_omnibus 26:15", "gulfport_omnibus 26:20", "biloxi_omnibus 26:25", "pascagoula_omnibus 26:40", "grand_bay_al_omnibus 27:00", "mobile_omnibus 27:30", "loxley_omnibus 28:20", "pensacola_omnibus 30:25", "crestview_omnibus 30:45", "tallahassee_omnibus 33:00", "lake_city_omnibus 35:00"]
+
+# Read from the Omnibus booking engine (scripts/omnibus_fetch.py ELP CAL 2026-11-20, consultaItinerario), Oct 12 2026:
+# El Paso 19:02 -> Hatch 20:20 -> Los Lunas 22:35 -> Albuquerque 23:05 -> Provo 08:35 -> Salt Lake City 09:20 ->
+# Burley 12:15 -> Jerome 13:15 -> Caldwell 16:00. Runs Wed Thu Fri Sun per the engine's departure lists, Nov 9-22.
+# All stops on Mountain time.
+[[trip]]
+id = "t460"
+route = "Omnibus Express El Paso 19:02 -> Hatch -> Albuquerque -> Provo -> Salt Lake City -> Burley -> Caldwell ID 16:00 (Wed Thu Fri Sun per the booking engine, Nov 9-22)"
+days = "0011101"
+tz = "America/Denver"
+stops = ["el_paso_omnibus 19:02", "hatch_nm_omnibus 20:20", "los_lunas_omnibus 22:35", "albuquerque_omnibus 23:05", "provo_omnibus 32:35", "salt_lake_city_omnibus 33:20", "burley_omnibus 36:15", "jerome_id_omnibus 37:15", "caldwell_omnibus 40:00"]

@@ -1,6 +1,6 @@
 """Re-time saved routes on the current data (e.g. after adding a carrier), expanded to every state as a target.
 
-  python3 retime.py NAME:START:AT:TZ [...]     e.g. denverV7c:Pasco:2026-09-24T12:00:America/Los_Angeles
+  python3 retime.py NAME:START:AT:TZ [...]     e.g. denverV7c:Pasco:2026-11-05T12:00:America/Los_Angeles
 """
 import pickle, sys
 from datetime import datetime

@@ -1,5 +1,32 @@
 # bus48
 
+## Current state (Oct 11 2026): read this before the history below
+
+- **Timetable window is Nov 4-24 2026** (moved +42 days from Sep 23; same weekdays, so d1 is still a Thursday). The
+  Flix/Greyhound feed of Oct 11 starts Oct 11 and the attempt is in November. Window ends before Thanksgiving.
+- **Control is route X**, not the 237 route: `python3 rebuild_x.py` writes `out/res_x.pkl` (Sheridan WY Thu Nov 12
+  22:10 MT, 231.68 h, latest start 22:15). Amtrak moved the City of New Orleans two hours later from Oct 7 2026 and
+  the 237 route is 252 h at best in November. X starts Nov 12 because the Portal Bridge cutover keeps Acela 2152
+  (Washington 06:50) off the timetable until Nov 18. **Update Oct 13:** the 237 route is back at **237.5 h** in
+  November (Huntington Thu Nov 12 00:45 -> VT line Sat Nov 21 22:14), via Nick's St Louis Greyhound 01:00 -> Memphis
+  Airways 06:30 (MO, AR on the bus) and MATA 42 to Holmes; X stays the control. The Southwest Chief is X's single point
+  of failure: missing it costs ~15 h (247 h). See docs/sweep.md, Oct 13.
+- **Portal Bridge bound (Oct 13):** the early Washington -> Boston Acelas (06:40-06:50) are absent until Mon Nov 16, so a
+  route reaching the Northeast Corridor before Nov 16 is judged on a broken week. Searches and evaluations use
+  `--at 2026-11-09 --days 22` (start days Nov 9-15, window to Dec 1). Moorhead's 235.8 h fell to 248.3 h purely because
+  the settle picked Thu Nov 5 and met the gap; check any "route broke" against the start day first. When verifying a
+  known route, pin its start (`--fixed-start`): a free start drifts (the record "lost Maine" that way).
+- **Replay gate:** `python3 ride_search.py --start "Sheridan WY Taco Bell 1655 Coffeen Ave (Jefferson)" --at
+  2026-11-12T22:10 --end MN --by 2026-11-22T20:10 --tz America/Denver --track ../out/res_x.pkl` (baseline 21/40, exit 0).
+- **ride_search's menu runs in C** (`scripts/menu.c`, `--menu c`, the default; ~18x with the bounded goal scan). The
+  `--track` replay calls the Python `rides_from` directly and does **not** exercise it: after any change to
+  `menu.c` or `rides_from`/`sort_opts`, run a search with `--menu check`, which compares both every node and exits 4
+  on a mismatch (and exits if the C path is not active).
+- **Expired local feeds replay their last covered week** (`Feed.replay`, local `more_gtfs` only; the router prints
+  which). JTA, TANK and Open Plains have no newer release yet.
+
+Where the history below says 237, res_starttest.pkl or September dates, read the bullets above.
+
 Find a scheduled surface route through all 48 contiguous states faster than the timetabled record of
 238.83 h. Fastest route: **X, 232.30 h** (Sheridan WY to Moorhead MN), booked for a Thu Nov 12 2026 start
 (HANDOFF 30). The 237 h Huntington to Vermont-line route is the search **control** below, not the best result.

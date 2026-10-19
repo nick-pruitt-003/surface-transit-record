@@ -21,7 +21,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--min-states', type=int, default=4, help='states a ride must collect to count as long')
     ap.add_argument('--max-per-day', type=float, default=2.0, help='departures per day for it to count as rare')
-    ap.add_argument('--day', default='2026-09-23'); ap.add_argument('--days', type=int, default=14)
+    ap.add_argument('--day', default='2026-11-04'); ap.add_argument('--days', type=int, default=14)
     a = ap.parse_args()
     R = TimeRouter(load_feeds(), datetime.fromisoformat(a.day).date(), a.days)
     ab = lambda x: ABBR[R.state_names[x]] if x >= 0 else '--'

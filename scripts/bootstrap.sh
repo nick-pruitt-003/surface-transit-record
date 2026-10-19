@@ -58,8 +58,8 @@ The search that the measurements point at, --goal rather than the default slack 
 (replay: 38/40 legs inside --width 12 against 31/40, Saint George rank 3 against 509160):
 
   python3 ride_search.py --start "Wheeling 949 Main St (Jaguar)" \
-    --at 2026-09-24T03:55 --tz America/New_York \
-    --end VT --by 2026-10-04T01:55 --target 238 \
+    --at 2026-11-05T03:55 --tz America/New_York \
+    --end VT --by 2026-11-15T01:55 --target 238 \
     --goal --pairs push --budget 7200 --out ../out/wheeling_goal.pkl
 
 Budget notes, measured rather than guessed:

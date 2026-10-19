@@ -28,7 +28,7 @@ from time_search import Search
 
 FLAG_H = 6.0   # marks a row as an anchor in the report; permissive, and it prunes nothing
 
-R = cached_router(date(2026, 9, 24), 20)
+R = cached_router(date(2026, 11, 5), 20)
 inv = {v: k for k, v in ABBR.items()}
 xy = np.asarray(R.stop_xy[:R.first_virtual], dtype=float)
 CT = ZoneInfo('America/Chicago')
@@ -67,14 +67,14 @@ def routes():
 
     ctl = [R.state_names.index(inv[x]) for x in 'WV KY OH MI IN IL TN MS AR MO IA NE SD ND MN WI WY MT ID WA OR UT '
            'AZ NV CA NM CO KS OK TX LA AL FL GA SC NC VA MD DE PA NJ NY CT RI MA ME NH VT'.split()]
-    build('control', named('Huntington Bus Stop'), datetime(2026, 9, 24, 0, 54, tzinfo=ny).timestamp(), ctl, 237.34, True)
+    build('control', named('Huntington Bus Stop'), datetime(2026, 11, 5, 0, 54, tzinfo=ny).timestamp(), ctl, 237.34, True)
     rec = pickle.load(open('../out/res_record2.pkl', 'rb'))['order']
-    build('record', named('White River Junction Bus Station'), datetime(2026, 9, 24, 4, 20, tzinfo=ny).timestamp(),
+    build('record', named('White River Junction Bus Station'), datetime(2026, 11, 5, 4, 20, tzinfo=ny).timestamp(),
           rec, 239.08, True)
     spec = 'NV @Albuquerque_Bus_Station LA @Toledo_Bus_Stop WV ND AR FL ME VT'
     xt = [('@' + x[1:].replace('_', ' ')) if x.startswith('@') else R.state_names.index(inv[x]) for x in spec.split()]
     build('X_TOL', named('Sheridan WY Taco Bell 1655 Coffeen Ave (Jefferson)'),
-          datetime(2026, 9, 24, 12, 0, tzinfo=dn).timestamp(), xt, 237.9, False, days=7)
+          datetime(2026, 11, 5, 12, 0, tzinfo=dn).timestamp(), xt, 237.9, False, days=7)
     return out
 
 

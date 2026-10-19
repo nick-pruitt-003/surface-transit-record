@@ -35,8 +35,8 @@ def search_for(R, start, t0):
 
 
 print('settings: MIN_TRANSFER', tr.MIN_TRANSFER // 60, 'min, WALKIN_KM', tr.WALKIN_KM, ', SCAN_SLACK', tr.SCAN_SLACK / 3600, 'h')
-R = cached_router(datetime(2026, 9, 23).date(), 18)
-t237 = datetime(2026, 9, 24, 0, 30, tzinfo=ET).timestamp()
+R = cached_router(datetime(2026, 11, 4).date(), 20)   # Nov 4-23: the X control finishes Sunday Nov 22
+t237 = datetime(2026, 11, 5, 0, 30, tzinfo=ET).timestamp()
 hun = R.stops_matching('Huntington Bus Stop')[0]
 
 
@@ -45,30 +45,35 @@ def _():
     assert (tr.MIN_TRANSFER, tr.WALKIN_KM, tr.SCAN_SLACK) == (300, 1.4, 86400), (tr.MIN_TRANSFER, tr.WALKIN_KM, tr.SCAN_SLACK)
 
 
-@check('Amtrak times are agency (Eastern) time: CONO Effingham 10:01 PM, Memphis 4:42 AM Central')
+@check('Amtrak times are agency (Eastern) time: CONO Effingham 12:01 AM, Memphis 6:42 AM Central (the Oct 7 2026 timetable)')
 def _():
     efg = R.stops_matching('Effingham Amtrak Station')[0]; mem = R.idx['amtrak:MEM']
-    day = datetime(2026, 9, 24, tzinfo=CT).timestamp()
+    day = datetime(2026, 11, 5, tzinfo=CT).timestamp()
     ks = [k for k in range(len(R.dep)) if R.cfrom[k] == efg and day < R.dep[k] < day + 86400
           and R.trip_info[(R.ctrip[k][0], R.ctrip[k][1])][1] == 'City of New Orleans']
     deps = {datetime.fromtimestamp(R.dep[k], CT).strftime('%H:%M') for k in ks}
-    assert '22:01' in deps, deps
-    k = ks[[datetime.fromtimestamp(R.dep[j], CT).strftime('%H:%M') for j in ks].index('22:01')]
+    # Amtrak moved the City of New Orleans two hours later from Oct 7 2026 (Effingham 25:01 Eastern in the feed)
+    assert '00:01' in deps, deps
+    k = ks[[datetime.fromtimestamp(R.dep[j], CT).strftime('%H:%M') for j in ks].index('00:01')]
     key = R.ctrip[k]; arr = [R.arr[j] for j in range(k, min(k + 400000, len(R.dep))) if R.ctrip[j] == key and R.cto[j] == mem]
-    assert arr and datetime.fromtimestamp(arr[0], CT).strftime('%H:%M') == '04:42', arr
+    assert arr and datetime.fromtimestamp(arr[0], CT).strftime('%H:%M') == '06:42', arr
 
 
-@check('237 route (hun_ms_meteor) is valid: all 48 states, finish <= 238.0 h from the 12:30 AM clock')
+@check('control route X (res_x.pkl) is valid: all 48 states, <= 232.0 h from the first bus, Sheridan Thu Nov 12 22:10')
 def _():
-    S = search_for(R, hun, t237)
-    f, legs = S.evaluate(pickle.load(open(OUT + 'hun_ms_meteor.pkl', 'rb'))['order'])
+    # X replaced the 237 route as the control on Oct 11 2026: Amtrak moved the City of New Orleans two hours later from
+    # Oct 7, and the 237 route finishes at 252 h at best in November. Built by rebuild_x.py.
+    d = pickle.load(open(OUT + 'res_x.pkl', 'rb')); st = R.stop_name.index(d['start'])
+    S = search_for(R, st, d['t0'])
+    f, legs = S.evaluate(d['order'])
     assert S.all_states(legs), [R.state_names[s] for s in S.missing(legs)]
-    assert (f - t237) / 3600 <= 238.0, (f - t237) / 3600
+    first = next(l[3] for l in legs if l[0] == 'ride')
+    assert (f - first) / 3600 <= 232.0, (f - first) / 3600
 
 
 @check('router and coverage agree: every state target is collected by a ride or border walk-in (Sunland seed)')
 def _():
-    st = R.stops_matching('McNutt & Calle Morocco')[0]; t0 = datetime(2026, 9, 23, tzinfo=ZoneInfo('America/Denver')).timestamp()
+    st = R.stops_matching('McNutt & Calle Morocco')[0]; t0 = datetime(2026, 11, 4, tzinfo=ZoneInfo('America/Denver')).timestamp()
     S = search_for(R, st, t0)
     inv = {v: k for k, v in ts.ABBR.items()}
     order = [R.state_names.index(inv[x]) for x in 'TX,LA,MS,AL,FL,GA,SC,NC,VA,MD,DE,PA,NJ,NY,CT,RI,MA,ME,NH,VT,OH,WV,KY,TN,AR,MO,IL,IN,MI,WI,MN,IA,NE,KS,OK,CO,WY,SD,ND,MT,ID,WA,OR,UT,AZ,NV,CA'.split(',')]
@@ -76,12 +81,11 @@ def _():
     assert f < float('inf') and S.all_states(legs), [R.state_names[s] for s in S.missing(legs)]
 
 
-@check('backward report on the 237 result: every layer feasible, slack >= 0, latest start = 12:39 AM Thu, and forward agrees')
+@check('backward report on the X control: every layer feasible, slack >= 0, latest start = 10:15 PM Thu at Sheridan, and forward agrees')
 def _():
-    # The clock is 00:30, not the pickle's 00:54: that was set for the Barons bus at Huntington 01:00, and the bus as
-    # sold (Nick, Oct 5 2026) leaves 00:45, so 00:54 misses it, the forward pass finishes a day later and the backward
-    # report then answers for that later finish (10:10). A stale clock, not a backward bug: assert they agree instead.
-    d = pickle.load(open(OUT + 'res_starttest.pkl', 'rb')); order = d['order']; t0 = datetime(2026, 9, 24, 0, 30, tzinfo=ET).timestamp()
+    # The clock is the pickle's 22:10, ten minutes before the 22:20 Jefferson. A stale clock once read as a backward bug
+    # here (the 237 route's Barons bus moved to 00:45 under a 00:54 clock): the check asserts the two passes agree.
+    d = pickle.load(open(OUT + 'res_x.pkl', 'rb')); order = d['order']; t0 = d['t0']
     start = R.stop_name.index(d['start'])
     fw, bad = B.forward(R, start, t0, order); assert bad is None, bad
     rev = [[] for _ in range(R.N)]
@@ -96,7 +100,7 @@ def _():
         lat = {s: v for s, v in lat.items() if v > float('-inf')}; stays = stay
         assert lat, f'layer {k} ({order[k]}) empty'
         assert max(v - fw[k][s] for s, v in lat.items()) >= -60, f'layer {k} negative slack'
-    assert datetime.fromtimestamp(ls, ET).strftime('%a %H:%M') == 'Thu 00:39', datetime.fromtimestamp(ls, ET)
+    assert datetime.fromtimestamp(ls, ZoneInfo('America/Denver')).strftime('%a %H:%M') == 'Thu 22:15', datetime.fromtimestamp(ls, ZoneInfo('America/Denver'))
     # the latest start is exact: forward from it makes the same finish, and one minute later does not
     g, _ = B.forward(R, start, ls, order); assert min(g[-1].values()) == D, 'forward from the latest start misses the finish'
     g, _ = B.forward(R, start, ls + 60, order); assert min(g[-1].values()) > D, 'a later start still makes it: the bound is loose'
@@ -250,6 +254,8 @@ def _():
 @check("stop clocks print in the stop's own zone: South Hammond IN is Central, Window Rock (Navajo Nation) Mountain daylight")
 def _():
     # noon UTC on Sep 24: 07:00 CDT, 06:00 MDT. A state's zone gives 08:00 (Indiana as Eastern) and 05:00 (Arizona, no DST).
+    # Kept in September on purpose, not moved with the timetable window: only under daylight time does the Navajo Nation
+    # (DST) differ from the rest of Arizona (none), and fmt_time needs no timetable.
     t = datetime(2026, 9, 24, 12, 0, tzinfo=ZoneInfo('UTC')).timestamp()
     for q, want in (('South Hammond', '07:00'), ('Window Rock - Bashas Parking Lot', '06:00'), ('Flagstaff', '05:00')):
         s = R.stops_matching(q)[0]; got = R.fmt_time(t, s)
@@ -280,7 +286,7 @@ def _():
 @check('prefix-shared scoring (finish_many / _finish_block) equals one-at-a-time _finish on all 24 orders of AZ UT CO NM')
 def _():
     import itertools
-    t0 = datetime(2026, 9, 24, tzinfo=ZoneInfo('America/Denver')).timestamp()
+    t0 = datetime(2026, 11, 5, tzinfo=ZoneInfo('America/Denver')).timestamp()
     four = [R.state_names.index(n) for n in ('Arizona', 'Utah', 'Colorado', 'New Mexico')]
     S = Search(R, ts.FREE, t0, [], 1, [s for s in range(N_STATES) if s not in four])
     ts.bind(R, ts.FREE, t0, S)
@@ -298,7 +304,7 @@ def _():
     sc = R.idx['ibus:339']; ne = R.state_names.index('Nebraska')
     bank = R.stops_matching('Nebraska bank at South Sioux City')[0]
     assert R.walk_collects(bank) and not R._crosses(sc, bank), 'the measured link no longer counts as a walk-in'
-    t = datetime(2026, 10, 4, 21, 50, tzinfo=CT).timestamp()
+    t = datetime(2026, 11, 15, 21, 50, tzinfo=CT).timestamp()
     S = Search(R, sc, t, [], 1, [s for s in range(N_STATES) if s != ne], end=ne)
     ts.bind(R, sc, t, S, end=ne)
     f, legs = S.evaluate([ne])
@@ -309,14 +315,21 @@ def _():
 @check('every measured on-foot link ends across a state line from where it starts')
 def _():
     # The Moorhead walk's end point sat 200 m west of the Red River, so Nick's measured 83 min walk to Minnesota
-    # collected nothing and X waited a day for a bus. A foot link (one with miles) exists only to cross a line.
+    # collected nothing and X waited a day for a bus. A foot link (one with miles) exists to cross a line, unless its note
+    # says 'positioning:' (Oct 13: the 2.5 mi run from the 702 Shuttles stop to Barstow Amtrak for the Chief, a fit-run
+    # backup inside California). Those must still resolve, and there must be no more of them than are named here.
     import csv, os
-    bad = []
+    bad = []; positioning = []
     for r in csv.DictReader(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'data', 'walk_links.csv'), encoding='utf-8')):
-        if not (r.get('miles') or '').strip() or r['from_uid'] not in R.idx or r['to_uid'] not in R.idx: continue
+        if not (r.get('miles') or '').strip(): continue
+        # an end point the router cannot resolve drops the link without a word ('walk link: unknown stop'), which is
+        # the same failure as an end point on the wrong bank, so it fails here too
+        if r['from_uid'] not in R.idx or r['to_uid'] not in R.idx: bad.append(('unresolved', r['from_uid'], r['to_uid'])); continue
         a, b = R.idx[r['from_uid']], R.idx[r['to_uid']]
+        if r['note'].startswith('positioning:'): positioning.append(r['to_uid']); continue
         if R.state[a] == R.state[b]: bad.append((R.stop_name[b], R.state_names[R.state[b]]))
     assert not bad, bad
+    assert positioning == ['amtrak:BAR'], ('positioning foot links changed; review them and update this list', positioning)
 
 
 @check('the Big River Crossing walk keeps the bridge hours (06:00-22:00): Arkansas by 10:45 from 10:00, not by bridge at 23:00')
@@ -327,7 +340,7 @@ def _():
     mid = R.stops_matching('Arkansas line on Big River Crossing')[0]
     assert not R.foot.get(mid) and all(j != mid for i in R.foot for j, _ in R.foot[i]), 'mid-bridge point has a footpath'
     def reach(h):
-        t = datetime(2026, 9, 30, h, 0, tzinfo=CT).timestamp()
+        t = datetime(2026, 11, 11, h, 0, tzinfo=CT).timestamp()
         S = Search(R, mem, t, [], 1, [s for s in range(N_STATES) if s != ar], end=ar)
         ts.bind(R, mem, t, S, end=ar)
         f, legs = S.evaluate([ar]); return f - t, legs

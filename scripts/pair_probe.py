@@ -33,8 +33,8 @@ from pair_tables import resolve_stop, check_path, leg_states
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument('--at', default='2026-09-24T00:54', help='the search start, for elapsed hours')
-    ap.add_argument('--by', default='2026-10-03T22:54', help='deadline: start + target, as the search uses')
+    ap.add_argument('--at', default='2026-11-05T00:54', help='the search start, for elapsed hours')
+    ap.add_argument('--by', default='2026-11-14T22:54', help='deadline: start + target, as the search uses')
     ap.add_argument('--tz', default='America/New_York')
     ap.add_argument('--end', default='VT')
     ap.add_argument('--span', type=float, default=260, help='hours the tables scan back over, as ride_search')
@@ -46,7 +46,7 @@ def main():
     ap.add_argument('--control', help='a time_search route pickle with legs (hun_ms_meteor.pkl); '
                     'tests its nodes as the falsification check')
     ap.add_argument('--control-start', default='Huntington Bus Stop')
-    ap.add_argument('--control-at', default='2026-09-24T00:30', help='the control\'s own clock, as regress')
+    ap.add_argument('--control-at', default='2026-11-05T00:30', help='the control\'s own clock, as regress')
     ap.add_argument('--control-min', type=int, default=28,
                     help='control nodes holding at least this many states are tested')
     ap.add_argument('--nodes', help='pickle of [dict(stop=int|name, t=epoch, collected=[state ids], '
