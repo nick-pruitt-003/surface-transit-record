@@ -50,9 +50,9 @@ def main():
         have = set(seq_)
         prefix = [R.state_names[s] for s in d['order'] if isinstance(s, int) and s in have] + ['@' + hub]
         # the fixed head must reproduce: evaluated alone it reaches the hub no later than the old route did
-        S2 = ts.Search(R, st, t0, [], 1); ts._SELF = S2
+        S2 = ts.Search(R, st, t0, [], 1); ts.rebind(S2)
         fh, lh = S2.evaluate([x if x.startswith('@') else R.state_names.index(x) for x in prefix])
-        ts._SELF = S
+        ts.rebind(S)
         if not lh or fh > t + 60:
             print(f'# {name}: SKIP, the fixed head reaches {hub} at {R.fmt_time(fh, st) if fh < 1e18 else "never"}, '
                   f'the old route at {R.fmt_time(t, st)}', file=sys.stderr); continue

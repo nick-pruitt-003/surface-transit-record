@@ -16,6 +16,12 @@ def bind(R, start, t0, S, base=None, end=None):
     global _R, _START, _T0, _SELF, _BASE, _END
     _R, _START, _T0, _SELF, _BASE, _END = R, start, t0, S, base, end
 
+def rebind(S):
+    """Switch to another Search on the same router mid-run. Start, clock and end come from S itself, so the
+    helpers can never evaluate one search against another's start; router and base stay as bound."""
+    global _START, _T0, _SELF, _END
+    _START, _T0, _SELF, _END = S.start, S.t0, S, S.end
+
 FREE = -1   # start value: begin anywhere in the order's first state (the search picks that state)
 
 def _src(start, order):

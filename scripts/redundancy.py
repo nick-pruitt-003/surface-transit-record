@@ -98,22 +98,22 @@ def run(name, path, win, t_over, wb, out):
         # full = every owed state in the order the route collects it, no stop pins: reroutes freely (a Sunday without the
         # Las Vegas Thruway takes the 14:00 Greyhound) while still aiming at states the pruned order leaves implicit
         for tgt in (own, pins, rem, full):
-            S2 = ts.Search(R, bs, bt + 60, [], 1, done=sorted(got)); ts._SELF, ts._START, ts._T0 = S2, bs, bt + 60
+            S2 = ts.Search(R, bs, bt + 60, [], 1, done=sorted(got)); ts.rebind(S2)
             f2, l2 = S2.evaluate(tgt)
             if f2 < 1e18 and S2.all_states(l2) and (best is None or f2 < best[0]): best = (f2, l2)
-        ts._SELF, ts._START, ts._T0 = S, st, t0
+        ts.rebind(S)
         waited = 0
         for N in (1, 2, 3):   # wait: catch the same bus N days later, the router free to substitute after that
             if best is not None and best[0] <= f + N * 86400: break
             tN = bt + N * 86400 - 600
             hit = False
             for tgt in (own, pins, rem, full):   # next-day replay may follow the original path (pins) or re-route (own)
-                S3 = ts.Search(R, bs, tN, [], 1, done=sorted(got)); ts._SELF, ts._START, ts._T0 = S3, bs, tN
+                S3 = ts.Search(R, bs, tN, [], 1, done=sorted(got)); ts.rebind(S3)
                 f3, l3 = S3.evaluate(tgt)
                 if f3 < 1e18 and S3.all_states(l3) and (best is None or f3 < best[0]): best, waited, hit = (f3, l3), N, True
             if not hit and all(same_trip_exists(R, x, N) for x in legs[i:] if x[0] == 'ride'):
                 if best is None or f + N * 86400 < best[0]: best, waited = (f + N * 86400, []), N
-        ts._SELF, ts._START, ts._T0 = S, st, t0
+        ts.rebind(S)
         ag = R.trip_info[(trip[0], trip[1])][0]
         if best is None:
             cost, how = None, 'not recoverable in the window'

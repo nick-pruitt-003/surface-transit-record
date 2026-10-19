@@ -179,6 +179,21 @@ def scan_horizon_keeps_every_label_it_reaches():
             assert (full['best'][~kept] > h).all(), (h, start)
 
 
+# ---- time_search.bind / rebind: a mid-run switch takes start, clock and end from the new search ------------
+
+@test
+def rebind_takes_start_clock_and_end_from_the_search():
+    import time_search as ts
+    from types import SimpleNamespace as NS
+    a, b = NS(start=1, t0=100.0, end=None), NS(start=7, t0=900.0, end=3)
+    ts.bind('R', a.start, a.t0, a, base='B')
+    ts.rebind(b)
+    assert (ts._R, ts._BASE) == ('R', 'B'), 'rebind must keep the router and base'
+    assert (ts._SELF, ts._START, ts._T0, ts._END) == (b, 7, 900.0, 3)
+    ts.rebind(a)
+    assert (ts._SELF, ts._START, ts._T0, ts._END) == (a, 1, 100.0, None), 'switching back restores the first search'
+
+
 # ---- shape_followup's log parser against the exact format forward_shapes prints ------------------------------
 
 @test
