@@ -29,6 +29,8 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 
 BUILD_VERSION = 'pairs-v1'
 _W = {}      # worker state, inherited by fork
+_TRI = {}    # n -> upper-triangle index pairs, for worst_and_mean
+TRIPLES_VERSION = 'v1'   # in the triples cache name: bump when TripleTables changes how a triple is built
 
 
 def _latest_from(F, D, span, nxt):
@@ -103,6 +105,8 @@ class PairTables:
                              'are what encodes the end state, the transfer time, the span and the '
                              'deadline. Without them the key cannot tell a Vermont table from a Maine one.')
         key = fingerprint(R, F, D, span, L_end, L)
+        self.key, self.span, self.F, self.cache_dir = key, span, F, cache_dir
+        self.st_stops = st_stops
         path = os.path.join(cache_dir, f'pairs_{key}.npy')
         if os.path.exists(path):
             self.P = np.load(path, mmap_mode='r')
@@ -149,8 +153,184 @@ class PairTables:
         i = int(np.argmin(sub)); a, b = divmod(i, len(o))
         return float(sub.flat[i]), int(o[a]), int(o[b])
 
+    def worst_and_mean(self, stop, t, owed, k):
+        """(tightest margin, mean of the k tightest unordered-pair margins), seconds. The first is the exact
+        dead test; the second is only a ranking key (--pair-k), so it never prunes anything."""
+        o = np.asarray(owed, dtype=np.int64)
+        n = len(o)
+        if n < 2: return np.inf, np.inf
+        # Upper-triangle pairs gathered straight from the stop's flat 48x48 block: one take instead of an
+        # np.ix_ submatrix plus a fresh triu_indices per call, which is what cost --pair-k 10 its 15% (Oct 19).
+        tri = _TRI.get(n)
+        if tri is None:
+            i_, j_ = np.triu_indices(n, 1); tri = _TRI[n] = (i_, j_)
+        flat = (o[tri[0]] * self.P.shape[2] + o[tri[1]])
+        m = np.asarray(self.P[stop]).reshape(-1).take(flat)
+        rel = np.float32(t - self.D)
+        if k >= len(m): return float(m.min() - rel), float(m.mean() - rel)
+        part = np.partition(m, k - 1)[:k]
+        return float(part.min() - rel), float(part.mean() - rel)
+
     def dead(self, stop, t, owed):
         return self.worst(stop, t, owed)[0] < 0
+
+
+def triple_index():
+    """(T, idx) for every x < y < z: T is the (n, 3) array of triples, idx[x, y, z] its row (any order)."""
+    from itertools import combinations
+    T = np.array(list(combinations(range(N_STATES), 3)), dtype=np.int16)
+    idx = np.full((N_STATES,) * 3, -1, dtype=np.int32)
+    for i, (a, b, c) in enumerate(T):
+        for p in ((a, b, c), (a, c, b), (b, a, c), (b, c, a), (c, a, b), (c, b, a)): idx[p] = i
+    return T, idx
+
+
+def full_paths(cache_dir, key):
+    base = os.path.join(cache_dir, f'triples_full_{TRIPLES_VERSION}_{key}')
+    return base + '.npy', base + '_done.npy'
+
+
+def _tri_init_spawn(router_args, D, span, pairs_path, st_stops):
+    from time_router import cached_router
+    R = cached_router(*router_args, verbose=False)
+    _W.update(F=B.RevFast(R), D=D, span=span, P=np.load(pairs_path, mmap_mode='r'), st_stops=st_stops, N=R.N)
+
+
+def _tri_row(item):
+    """one full triple row, relative to D: the max over which of the three is collected first"""
+    i, (a, b, c) = item
+    F, D, span, P, st_stops = _W['F'], _W['D'], _W['span'], _W['P'], _W['st_stops']
+    out = None
+    for x, y, z in ((a, b, c), (b, a, c), (c, a, b)):
+        nxt = {s: D + float(P[s, y, z]) for s in st_stops[x] if np.isfinite(P[s, y, z])}
+        if not nxt: continue
+        r = _latest_from(F, D, span, nxt)
+        out = r if out is None else np.maximum(out, r)
+    if out is None: return i, np.full(_W['N'], -np.inf, dtype=np.float32)
+    return i, (out - D).astype(np.float32)
+
+
+def build_full_triples(PT, router_args=None, workers=None, verbose=True):
+    """Every triple, once, into one memory-mapped (triple, stop) float32 array next to the pair table, so the
+    search tests triples by lookup instead of paying three ~1.3 s scans inline for each new one (Oct 19: 4
+    nodes/s instead of ~70). Resumable: a done flag per row is saved as rows land, and a restart builds only
+    what is missing. Workers fork where the platform has it, else spawn and load the cached router."""
+    import multiprocessing as mp
+    T, _ = triple_index()
+    path, done_path = full_paths(PT.cache_dir, PT.key)
+    N = PT.R.N
+    full = (np.lib.format.open_memmap(path, mode='r+') if os.path.exists(path) else
+            np.lib.format.open_memmap(path, mode='w+', dtype=np.float32, shape=(len(T), N)))
+    done = np.load(done_path) if os.path.exists(done_path) else np.zeros(len(T), dtype=bool)
+    todo = [(int(i), tuple(int(v) for v in T[i])) for i in np.flatnonzero(~done)]
+    if verbose: print(f'triples: {len(T)} in all, {len(todo)} to build, {N} stops, '
+                      f'{len(T) * N * 4 / 1e9:.1f} GB at {os.path.basename(path)}', flush=True)
+    if not todo: return path
+    pairs_path = os.path.join(PT.cache_dir, f'pairs_{PT.key}.npy')
+    n = workers or max(1, (os.cpu_count() or 2) - 2)
+    if 'fork' in mp.get_all_start_methods():
+        _W.update(F=PT.F, D=PT.D, span=PT.span, P=PT.P, st_stops=PT.st_stops, N=N)
+        pool = mp.get_context('fork').Pool(n)
+    else:
+        if router_args is None: raise ValueError('spawn workers need router_args to load the router')
+        n = min(n, 12)
+        pool = mp.get_context('spawn').Pool(n, initializer=_tri_init_spawn,
+                                            initargs=(router_args, PT.D, PT.span, pairs_path, PT.st_stops))
+    t0 = time.time(); last = t0
+    try:
+        for k, (i, row) in enumerate(pool.imap_unordered(_tri_row, todo, chunksize=4), 1):
+            full[i] = row; done[i] = True
+            if time.time() - last > 60 or k == len(todo):
+                full.flush(); np.save(done_path, done); last = time.time()
+                if verbose:
+                    el = time.time() - t0
+                    print(f'  triples: {k}/{len(todo)} in {el / 60:.0f} min, '
+                          f'~{el / k * (len(todo) - k) / 60:.0f} min left', flush=True)
+    finally:
+        pool.close(); pool.join(); full.flush(); np.save(done_path, done)
+    return path
+
+
+class TripleTables:
+    """Exact triple bound, one step past the pairs and built the same way (triple_probe.py, Oct 19).
+
+    P[s, y, z] is the latest you can be at s and still collect y and z in the best order and finish. One more
+    reverse scan, seeded from x's stops with P[., y, z], gives the latest anywhere to collect x first, then y
+    and z, then finish. The max over which of the three goes first is T[x, y, z][stop]. A node past it is dead,
+    not estimated dead. Built lazily: a node tests the few triples its own tightest pair points at (the
+    tightest pair, plus the owed states tight against both), each new triple costs three scans (~1.3 s each on
+    the Nov window), and the dead family shares owed sets heavily (94 triples served 300 deep nodes). Kept on
+    disk next to the pair table under the same fingerprint, so a rerun starts with every triple already built.
+
+    Measured on the saved Oct 19 frontier: X survives at every layer it reaches (triple margin +52 to +16 h);
+    23-25% of sampled nodes at 30-32 states die that the pair test let through."""
+
+    def __init__(self, PT, tries=3, verbose=True):
+        self.PT, self.tries, self.verbose = PT, tries, verbose
+        self.path = os.path.join(PT.cache_dir, f'triples_{TRIPLES_VERSION}_{PT.key}.npz')
+        self.T = {}; self.first = {}; self.scans = 0; self.scan_s = 0.0; self.dirty = False
+        # The precomputed array (build_triples.py), when there is one. Rows are used where their done flag is
+        # set; anything else still falls back to the lazy build. Complete, it makes a triple a lookup, so
+        # margin() tests every third state instead of the --triple-tries closest ones.
+        self.full = None; self.full_done = None; self.full_complete = False
+        fp, dp = full_paths(PT.cache_dir, PT.key)
+        if os.path.exists(fp) and os.path.exists(dp):
+            self.full = np.load(fp, mmap_mode='r'); self.full_done = np.load(dp)
+            self.full_complete = bool(self.full_done.all())
+            _, self.idx3 = triple_index()
+            if verbose: print(f'triple tables: precomputed {int(self.full_done.sum())}/{len(self.full_done)} '
+                              f'({os.path.basename(fp)})', flush=True)
+        if os.path.exists(self.path):
+            with np.load(self.path) as z:          # closed, or Windows refuses os.replace onto it in save()
+                for k in z.files: self.T[tuple(int(v) for v in k.split('_'))] = z[k]
+            if verbose: print(f'triple tables from cache: {len(self.T)} ({os.path.basename(self.path)})', flush=True)
+
+    def _first_then(self, x, y, z):
+        k = (x,) + ((y, z) if y < z else (z, y))
+        if k not in self.first:
+            PT = self.PT
+            nxt = {s: PT.D + float(PT.P[s, y, z]) for s in PT.st_stops[x] if np.isfinite(PT.P[s, y, z])}
+            t1 = time.time()
+            self.first[k] = (_latest_from(PT.F, PT.D, PT.span, nxt).astype(np.float64) if nxt
+                             else np.full(PT.R.N, -np.inf))
+            self.scans += 1; self.scan_s += time.time() - t1
+        return self.first[k]
+
+    def table(self, x, y, z):
+        if self.full is not None:
+            i = int(self.idx3[x, y, z])
+            if self.full_done[i]: return self.full[i]
+        k = tuple(sorted((int(x), int(y), int(z))))
+        if k not in self.T:
+            a, b, c = k
+            T = np.maximum(np.maximum(self._first_then(a, b, c), self._first_then(b, a, c)), self._first_then(c, a, b))
+            self.T[k] = (T - self.PT.D).astype(np.float32); self.dirty = True
+            for k1 in ((a, b, c), (b, a, c), (c, a, b)): self.first.pop(k1, None)   # unique to this triple
+        return self.T[k]
+
+    def margin(self, stop, t, owed):
+        """smallest triple margin (seconds) over the triples this node's tightest pair points at"""
+        o = np.asarray(owed, dtype=np.int64)
+        if len(o) < 3: return np.inf
+        PT = self.PT
+        blk = np.asarray(PT.P[stop])
+        sub = blk[np.ix_(o, o)]
+        i = int(np.argmin(sub)); y, z = int(o[i // len(o)]), int(o[i % len(o)])
+        rest = [int(x) for x in o if x != y and x != z]
+        rest.sort(key=lambda x: min(float(blk[x, y]), float(blk[x, z])))
+        rel = np.float32(t - PT.D)
+        third = rest if self.full_complete else rest[:self.tries]      # a lookup each, so all of them
+        return min(float(self.table(x, y, z)[stop] - rel) for x in third)
+
+    def dead(self, stop, t, owed):
+        return self.margin(stop, t, owed) < 0
+
+    def save(self):
+        if not self.dirty: return
+        tmp = self.path + f'.{os.getpid()}.tmp.npz'
+        np.savez(tmp, **{'_'.join(map(str, k)): v for k, v in self.T.items()})
+        os.replace(tmp, self.path); self.dirty = False
+        if self.verbose: print(f'triple tables: {len(self.T)} cached to {os.path.basename(self.path)}', flush=True)
 
 
 def resolve_stop(R, name):

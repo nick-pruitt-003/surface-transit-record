@@ -8,7 +8,8 @@
    Mirrors ride_search.rides_from (the `cap is not None` branch: deadline tables present, no Menu/dedupe) and
    ride_search.sort_opts with order='slack' and no pair re-rank. Key, ascending: (0 if (trip, to) is a goal ride
    else 1 [only when goals are given], 1 if the option collects nothing new else 0 [only with split on], -slack).
-   States are bits of a uint64 (48 states). Build: cc -O3 -shared -fPIC menu.c -o menu.so */
+   City-transit trips may only be left at `useful` stops or in another state than the boarding stop
+   (ride_search --city-stops). States are bits of a uint64 (48 states). Build: cc -O3 -shared -fPIC menu.c -o menu.so */
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
@@ -47,6 +48,8 @@ int menu_top(int s, double t, int aboard, uint64_t collected,
              const int *bptr, const int *bconn, const double *bdep,          /* departures per stop, by time */
              const int *tptr, const int *tconn, const int *conn_pos,         /* connections per trip, in order */
              const int *ctrip, const int *cto, const double *arr, const double *dep, const int *state,
+             const unsigned char *city_trip, const unsigned char *useful,  /* --city-stops: per trip, per stop */
+             int skip_city,                                                 /* --city-hop: city trips come whole, from Python */
              const int *fptr, const int *fto, const double *fw,              /* footpaths (R.foot order) */
              const int *wptr, const int *wy, const double *ww,               /* walk-ins per stop */
              const double *L, const double *L_end, const double *cap,
@@ -74,6 +77,7 @@ int menu_top(int s, double t, int aboard, uint64_t collected,
         for (int i = a; i < hi && bdep[i] <= t_ok + horizon; i++) {
             int k = bconn[i]; int key = ctrip[k];
             if (seen_stamp[key] == stamp) continue;
+            if (skip_city && city_trip[key]) continue;
             if (!(key == aboard && j == s) && dep[k] < t_ok + min_transfer) continue;
             seen_stamp[key] = stamp;
             uint64_t got = 0; int fresh = 0;
@@ -93,6 +97,8 @@ int menu_top(int s, double t, int aboard, uint64_t collected,
                     }
                     if (at > L_end[to]) continue;
                 }
+                /* --city-stops useful: ride through city-transit stops where getting off cannot matter */
+                if (!useful[to] && city_trip[key] && state[to] == state[j]) continue;
                 {   Cand c; c.to = to; c.at = at; c.trip = key; c.got = got; c.walk = -1; c.k = k; c.kk = kk; c.gen = gen++;
                     uint64_t nb = got & ~collected;
                     c.k1 = 1;
@@ -130,4 +136,74 @@ int menu_top(int s, double t, int aboard, uint64_t collected,
     *o_total = gen;
     free(top);
     return n;
+}
+
+/* --city-hop's scan, in C: ride_search.city_scan line for line. Earliest arrival over city transit only from
+   (s, t), within H and `rounds` rides, RAPTOR-style rounds. Profiled Oct 19 the Python version cost ~1 s a node
+   (92 calls, 90 s of a 90 s budget), which is what made --city-hop unusable. Outputs: best/pred per stop, valid
+   where bstamp[v] == gen; `touched` lists stops in the order Python's dict would have inserted them. The seen
+   set per (u, j) is keyed (route id, next stop), as Python's (feed, route, cto). Returns the touched count. */
+#define CS_HBITS 15
+int city_scan(int s, double t, int aboard, double H, double min_transfer, int rounds,
+              const int *bptr, const int *bconn, const double *bdep,
+              const int *tptr, const int *tconn, const int *conn_pos,
+              const int *ctrip, const int *cto, const double *arr, const double *dep,
+              const unsigned char *city_trip, const int *rid,
+              const int *fptr, const int *fto, const double *fw,
+              int gen, int *bstamp, double *best, int *pk, int *pkk, int *pu,
+              int *touched, int *marked, int *nxt, int *mstamp,
+              int *hr, int *hc, int *hstamp, int *hgen,
+              const unsigned char *hop_target, const int *cfrom, const int *state, int *ends, int *n_ends)
+{
+    int nt = 0, nm = 1, hg = *hgen;
+    bstamp[s] = gen; best[s] = t; pk[s] = pkk[s] = pu[s] = -1; touched[nt++] = s; marked[0] = s;
+    for (int rnd = 0; rnd < rounds; rnd++) {
+        int nn = 0; int mg = ++hg;                  /* per-round stamp for the first-occurrence dedupe */
+        for (int mi = 0; mi < nm; mi++) {
+            int u = marked[mi]; double tu = best[u];
+            int nfoot = fptr[u + 1] - fptr[u];
+            for (int e = -1; e < nfoot; e++) {
+                int j = (e < 0) ? u : fto[fptr[u] + e];
+                double t_ok = tu + ((e < 0) ? 0.0 : fw[fptr[u] + e]);
+                int lo = bptr[j], hi = bptr[j + 1];
+                if (lo == hi) continue;
+                int a = lo, b = hi;
+                while (a < b) { int m = (a + b) >> 1; if (bdep[m] < t_ok) a = m + 1; else b = m; }
+                hg++;                                               /* fresh seen_r per (u, j) */
+                for (int i = a; i < hi && bdep[i] <= H; i++) {
+                    int k = bconn[i]; int key = ctrip[k];
+                    if (!city_trip[key]) continue;
+                    if (!(rnd == 0 && key == aboard && j == s) && dep[k] < t_ok + min_transfer) continue;
+                    int r_ = rid[key], c_ = cto[k];
+                    unsigned h = ((unsigned)r_ * 2654435761u ^ (unsigned)c_ * 40503u) & ((1u << CS_HBITS) - 1);
+                    int dup = 0;
+                    while (hstamp[h] == hg) { if (hr[h] == r_ && hc[h] == c_) { dup = 1; break; } h = (h + 1) & ((1u << CS_HBITS) - 1); }
+                    if (dup) continue;
+                    hstamp[h] = hg; hr[h] = r_; hc[h] = c_;
+                    for (int q = tptr[key] + conn_pos[k]; q < tptr[key + 1]; q++) {
+                        int kk = tconn[q]; double at = arr[kk];
+                        if (at > H) break;
+                        int to = cto[kk];
+                        if (bstamp[to] != gen) { bstamp[to] = gen; best[to] = INFINITY; touched[nt++] = to; }
+                        if (at < best[to]) {
+                            best[to] = at; pk[to] = k; pkk[to] = kk; pu[to] = u;
+                            if (mstamp[to] != mg) { mstamp[to] = mg; nxt[nn++] = to; }
+                        }
+                    }
+                }
+            }
+        }
+        if (!nn) break;
+        memcpy(marked, nxt, sizeof(int) * (size_t)nn); nm = nn;
+    }
+    *hgen = hg;
+    /* the useful ends, in touched order: an intercity stop / walk-in (hop_target) or the first stop in a new state */
+    int ne = 0;
+    for (int i = 1; i < nt; i++) {
+        int v = touched[i];
+        int cross = state[v] >= 0 && state[v] != state[s] && state[cfrom[pkk[v]]] != state[v];
+        if (hop_target[v] || cross) ends[ne++] = v;
+    }
+    *n_ends = ne;
+    return nt;
 }

@@ -53,6 +53,9 @@ class Opt(NamedTuple):
                         # because a looping trip visits a stop twice and matching by stop starts and stops
                         # at the first occurrence, crediting the wrong stretch. Local transit loops, and
                         # local transit is what this route cannot do without.
+    legs: tuple = ()    # --city-hop only: the real city-transit rides of a one-move city journey, as path
+                        # tuples (trip, from, to, t, at, walk, seg). Empty for every ordinary ride. `trip` and
+                        # `seg` are then the LAST leg's, so aboard and staying-on keep their meaning.
 
 
 def final_stop(legs):
@@ -107,6 +110,13 @@ def main():
                     'default until a replay says otherwise: a ranking change that reproduces fewer of the '
                     'control\'s legs is a worse ranking however good its reasoning sounds.')
     ap.add_argument('--width', type=int, default=12, help='rides tried per node')
+    ap.add_argument('--city-stops', choices=('useful', 'all'), default='all',
+                    help="where a city-transit ride may be left. 'all': at every stop it calls at, the old behaviour. "
+                         "'useful' (Oct 19): only where getting off can matter: an intercity stop or one the router "
+                         "links on foot to an intercity stop, a border walk-in point, a stop in another state than the "
+                         "one boarded at, or an interchange (a second city route there or a footpath away). The NYC "
+                         "subway made every station its own node, and the deepest layers of the X reproduction "
+                         "filled with chains parked at Christopher St, 2 Av and 28 St owing the same 15 states.")
     ap.add_argument('--menu', choices=('c', 'py', 'check'), default='c',
                     help="how best_first builds a node's menu. 'c' (menu.c) generates the candidates and keeps only "
                          "the top --width, which is all best_first uses: profiled Oct 12, a node offered ~59000 "
@@ -163,7 +173,33 @@ def main():
     ap.add_argument('--anatomy', action='store_true', help='with --track, break down each leg\'s option '
                     'list: how many options, how many distinct destinations, and how many survive exact '
                     'dominance. Answers whether a node with a million options has a million choices.')
+    ap.add_argument('--city-hop', action='store_true',
+                    help="offer city transit as one move: a small timetable scan over city feeds only, from the node, "
+                    "to every intercity stop (or one a footpath away), border walk-in point, and first stop in "
+                    "another state, carrying its real legs. Single city rides leave the menu. What the modelled "
+                    "local hop was, with timetables instead of the taxi estimate (Oct 19: X's 23 legs outside the "
+                    "width were mostly city legs once hops went off). Python menu only for now (--menu py).")
+    ap.add_argument('--depth-bias', type=float, default=0.0,
+                    help="--frontier depth: extra pops per turn for deeper layers (deepest gets 1 + this, the "
+                    "shallowest 1). 0 is plain round-robin.")
+    ap.add_argument('--hop-slots', type=int, default=0, help='--city-hop: also keep the best this many hops ranked '
+                    'below --width, so city positioning is never cut entirely (Chicago to O''Hare for the Kenosha bus '
+                    'is 625 of 780 under --goal)')
+    ap.add_argument('--city-horizon', type=float, default=4.0, help='hours a --city-hop journey may take')
+    ap.add_argument('--city-rounds', type=int, default=4, help='city rides a --city-hop journey may chain')
+    ap.add_argument('--triples', choices=('off', 'push'), default='off',
+                    help="exact triple bound at push, after the pair test (pair_tables.TripleTables). Needs --pairs.")
+    ap.add_argument('--triple-gate', type=float, default=24.0,
+                    help="hours: only test nodes whose pair margin is under this. A cost gate, not a correctness "
+                    "rule: the bound is exact, so where it runs cannot prune a live chain")
+    ap.add_argument('--triple-tries', type=int, default=3, help="triples tested per node")
+    ap.add_argument('--pair-k', type=int, default=1, help="with --key pair: rank by the mean of the k tightest owed "
+                    "pair margins instead of the tightest alone (1). Ranking only; the prune is still the tightest.")
     ap.add_argument('--days', type=int, default=20); ap.add_argument('--out')
+    ap.add_argument('--resume-at', help='start the search at --start at this time (same --tz), with --have already '
+                    'collected; the clock still runs from --at, so a mid-route node of a known route can be '
+                    'searched on its own (diagnostic)')
+    ap.add_argument('--have', help='comma-separated state abbreviations already collected at --resume-at')
     a = ap.parse_args()
     back = a.dir == 'backward'
     when = datetime.fromisoformat(a.by if back else a.at).replace(tzinfo=ZoneInfo(a.tz))
@@ -193,7 +229,8 @@ def main():
     nserv = {s: len({R.trip_info.get(R.ctrip[k], ('', ''))[1] for k in v}) for s, v in board_at.items()}
     print(f'  indexed {len(R.dep)} connections over {len(trip_conns)} trips in {time.time() - t_build:.0f} s', flush=True)
 
-    START = R.stops_matching(a.start)[0] if a.start else None
+    START = (int(a.start[1:]) if a.start and a.start.startswith('#') else      # '#N': router stop index
+             R.stops_matching(a.start)[0] if a.start else None)
     inv = {v: k for k, v in ABBR.items()}
 
     # A state is collected by a ride OR by a border walk-in (Nick's rule 1 and 4). Counting only the states a
@@ -202,15 +239,172 @@ def main():
     # MS, MS stays owed for the rest of the route, and alight_ok then correctly refuses every stop east of
     # Texas because Mississippi can no longer be reached. time_router already built exactly these links, to the
     # virtual border points at and beyond first_virtual and to measured walk-link ends (R.walk_collects), so read them off rather than invent a rule.
-    walkin = {}
+    walkin = {}; walkin_to = {}       # walkin_to[(i, y)]: the far point of that walk-in, for a one-way finish
     for i in range(R.N):
         near = {}
         for j, w in R.foot.get(i, ()):
             if R.walk_collects(j):
                 y = int(R.state[j])
-                if y not in near or w < near[y]: near[y] = float(w)
+                if y not in near or w < near[y]: near[y] = float(w); walkin_to[(i, y)] = int(j)
         if near: walkin[i] = tuple(sorted(near.items()))
     print(f'  {len(walkin)} stops can step over a state line on foot', flush=True)
+
+    # Where a city-transit ride may be left (--city-stops useful). City transit is only ever a way between
+    # intercity stops, or over a state line, so a stop on it matters only if one of those is reachable from it
+    # without riding on: an intercity stop or a footpath to one, a border walk-in, or another city route to
+    # change to. A stop in another state than the boarding stop is let through in rides_from/menu.c. These are
+    # structural facts read off the router, not counts or radii: every footpath it built counts, however long.
+    _city_feed = {fi for fi, f_ in enumerate(R.feeds) if getattr(f_, 'city', False)}
+    _ct = R.ctrip
+    city_trip_key = {key for key in trip_conns if key[0] in _city_feed}
+    inter_stop = np.zeros(R.N, dtype=bool); city_routes = defaultdict(set)
+    for k in range(len(R.dep)):
+        key = _ct[k]; a_, b_ = int(R.cfrom[k]), int(R.cto[k])
+        if key[0] in _city_feed:
+            rt = R.trip_info.get((key[0], key[1]), ('', '', ''))[1]
+            city_routes[a_].add((key[0], rt)); city_routes[b_].add((key[0], rt))
+        else:
+            inter_stop[a_] = inter_stop[b_] = True
+    useful_stop = np.zeros(R.N, dtype=bool)
+    hop_target = np.zeros(R.N, dtype=bool)   # --city-hop ends: an intercity stop or a footpath to one, a walk-in
+    for s_ in range(R.N):
+        nb = [s_] + [j for j, _ in R.foot.get(s_, ())]
+        if any(inter_stop[j] for j in nb) or s_ in walkin:
+            useful_stop[s_] = True; hop_target[s_] = True; continue
+        rts = set()
+        for j in nb: rts |= city_routes.get(j, set())
+        if len(rts) >= 2: useful_stop[s_] = True
+    if a.city_stops == 'all': useful_stop[:] = True
+    useful_l = useful_stop.tolist(); hop_target_l = hop_target.tolist()
+    if a.city_hop:
+        if back or a.mode != 'best': sys.exit('--city-hop is forward best-first only')
+        if a.dedupe: sys.exit('--city-hop does not go through Menu (--dedupe) yet')
+    _route_of = {}; _endl_cache = []; cs_checked = [0]; CM = None
+
+    def _endl_list():
+        if not _endl_cache: _endl_cache.append(L_end.tolist())
+        return _endl_cache[0]
+
+    def route_of(key):
+        r_ = _route_of.get(key)
+        if r_ is None: r_ = _route_of[key] = R.trip_info.get((key[0], key[1]), ('', ''))[1]
+        return r_
+    _cs_cache = {}
+
+    def city_scan(s, t, aboard):
+        """Earliest arrival over city transit only, from (s, t), within --city-horizon and --city-rounds rides.
+        Rounds as in RAPTOR: each one boards from the stops the last one improved, or their footpaths, so a
+        journey is at most --city-rounds rides. Only the first departure per (route, next stop) is boarded at a
+        stop: a later trip of the same route out the same way cannot arrive anywhere sooner. Returns (best,
+        pred), pred[v] = (boarding conn, alighting conn, stop boarded from)."""
+        ck = (s, t, aboard if aboard in city_trip_key else None)
+        hit = _cs_cache.get(ck)
+        if hit is not None: return hit
+        cs = CM.get('cs') if CM is not None else None
+        if cs is not None:
+            res = cs(s, t, aboard)
+            if a.menu == 'check':
+                ref = _city_scan_reduce(s, *_city_scan_py(s, t, aboard))
+                if res != ref or list(res[0]) != list(ref[0]):
+                    print(f'city_scan C/Python mismatch at stop {s} t {t}', flush=True); sys.exit(4)
+                cs_checked[0] += 1
+            if len(_cs_cache) > 200000: _cs_cache.clear()
+            _cs_cache[ck] = res
+            return res
+        res = _city_scan_py(s, t, aboard)
+        if len(_cs_cache) > 200000: _cs_cache.clear()
+        _cs_cache[ck] = res
+        return res
+
+    def _city_scan_reduce(s, best, pred):
+        """Python's full scan cut down as menu.c's city_scan returns it: the useful ends in scan order, then the
+        chains behind them. Only for --menu check."""
+        ends = [v for v in best if v != s and v in pred and (hop_target_l[v] or (
+            R.state[v] >= 0 and R.state[v] != R.state[s] and R.state[int(R.cfrom[pred[v][1]])] != R.state[v]))]
+        b2 = {v: best[v] for v in ends}; p2 = {}
+        for v in ends:
+            x = v
+            while x != s and x not in p2:
+                p2[x] = pred[x]
+                if x not in b2: b2[x] = best[x]
+                x = pred[x][2]
+        b2[s] = best[s]
+        return b2, p2
+
+    def _city_scan_py(s, t, aboard):
+        H = t + a.city_horizon * 3600
+        best = {s: t}; pred = {}; marked = [s]
+        for rnd in range(a.city_rounds):
+            nxt = []
+            for u in marked:
+                tu = best[u]
+                for j, w in [(u, 0)] + list(R.foot.get(u, ())):
+                    t_ok = tu + w
+                    times = dep_times.get(j)
+                    if not times: continue
+                    i = bisect.bisect_left(times, t_ok); bl = board_at[j]; seen_r = set()
+                    while i < len(times) and times[i] <= H:
+                        k = bl[i]; i += 1
+                        key = R.ctrip[k]
+                        if key not in city_trip_key: continue
+                        if not (rnd == 0 and key == aboard and j == s) and R.dep[k] < t_ok + MIN_TRANSFER: continue
+                        rk = (key[0], route_of(key), int(R.cto[k]))
+                        if rk in seen_r: continue
+                        seen_r.add(rk)
+                        for kk in trip_conns[key][int(conn_pos[k]):]:
+                            at = float(R.arr[kk])
+                            if at > H: break
+                            to = int(R.cto[kk])
+                            if at < best.get(to, np.inf):
+                                best[to] = at; pred[to] = (k, kk, u); nxt.append(to)
+            if not nxt: break
+            marked = list(dict.fromkeys(nxt))
+        return best, pred
+
+    def city_hops(s, t, aboard, collected, cap, capl, endl, push):
+        """One option per useful end of a city journey from (s, t): the moves --city-hop puts on the menu in
+        place of the single city rides. The deadline tests are the ride loop's, applied at the end."""
+        best, pred = city_scan(s, t, aboard)
+        for v, at in best.items():
+            if v == s or v not in pred: continue
+            k_last, kk_last, _u = pred[v]
+            cross = R.state[v] >= 0 and R.state[v] != R.state[s] and R.state[int(R.cfrom[kk_last])] != R.state[v]
+            if not (hop_target_l[v] or cross): continue
+            legs = []; got = set(); x = v
+            while x in pred and x != s:
+                k, kk, u = pred[x]
+                key = R.ctrip[k]; cs = trip_conns[key]
+                for c_ in cs[int(conn_pos[k]):int(conn_pos[kk]) + 1]:
+                    st_ = int(R.state[int(R.cto[c_])])
+                    if st_ >= 0: got.add(st_)
+                legs.append((key, u, x, best[u], float(R.arr[kk]), None, (k, kk)))
+                x = u
+            if x != s: continue
+            legs.reverse()
+            key = legs[-1][0]
+            fresh = any(y not in collected for y in got)
+            if cap is not None:
+                if not fresh:
+                    if at > capl[v]: continue
+                else:
+                    if at > capl[v] and any(at > L[y][v] for y in range(N_STATES)
+                                            if y not in collected and y not in got): continue
+                    if at > endl[v]: continue
+            elif not alight_ok(v, at, [y for y in range(N_STATES) if y not in collected and y not in got]):
+                continue
+            push(v, at, key, got, None, legs[-1][6], tuple(legs))
+            for y, w in walkin.get(v, ()):
+                if y in got or y in collected: continue
+                at2 = at + 2 * w
+                if cap is not None and (at2 > endl[v] or at > L[y][v]): continue
+                if cap is not None and at2 > capl[v] and any(
+                        at2 > L[z][v] for z in range(N_STATES) if z not in collected and z not in got and z != y):
+                    continue
+                lg = legs[:-1] + [legs[-1][:4] + (at2, y) + legs[-1][6:]]   # leg time includes the walk, as rides do
+                push(v, at2, key, got | {y}, y, legs[-1][6], tuple(lg))
+    city_stops_only = int(sum(1 for s_ in city_routes if not useful_stop[s_]))
+    print(f'  city transit: {len(city_trip_key)} trips; {city_stops_only} of {len(city_routes)} city stops are '
+          f'pass-through only (--city-stops {a.city_stops})', flush=True)
 
     # Both clocks on the same node. Going forward the search knows how long it has been out; these tables give
     # it the other half, how long it has left. One reverse scan from the end at its deadline gives the latest
@@ -260,7 +454,13 @@ def main():
             sys.exit('--pairs needs the deadline tables, which need --end and --by')
         from pair_tables import PairTables
         PT = PairTables(R, D, a.span, L_end=L_end, L=L, router_args=router_args)
-    pair_kills = [0]
+    pair_kills = [0]; triple_kills = [0]
+    TT = None
+    if a.triples != 'off':
+        if PT is None or a.key != 'pair' or a.pairs != 'push':
+            sys.exit('--triples needs --key pair --pairs push (it is tested where the pair margin is computed)')
+        from pair_tables import TripleTables
+        TT = TripleTables(PT, tries=a.triple_tries)
 
     # menu.c: the same menu as rides_from + sort_opts, top --width only. Flat arrays built once, here, from the
     # same board_at / trip_conns / conn_pos / walkin the Python path reads, so both see one index.
@@ -268,11 +468,13 @@ def main():
     if (a.menu != 'py' and L is not None and a.order == 'slack' and not a.dedupe
             and not (PT is not None and a.rerank) and N_STATES <= 64):
         import ctypes, subprocess
-        here = os.path.dirname(os.path.abspath(__file__)); so = os.path.join(here, 'menu.so')
-        src = os.path.join(here, 'menu.c')
+        here = os.path.dirname(os.path.abspath(__file__)); src = os.path.join(here, 'menu.c')
+        # named by the source's hash: Windows cannot overwrite a DLL another running search has loaded
+        import hashlib
+        so = os.path.join(here, f'menu_{hashlib.sha1(open(src, "rb").read()).hexdigest()[:10]}.so')
         try:
-            if not os.path.exists(so) or os.path.getmtime(so) < os.path.getmtime(src):
-                cmd = (['clang', '-O3', '-shared', src, '-o', so, '-fuse-ld=lld', '-Wl,/EXPORT:menu_top']
+            if not os.path.exists(so):
+                cmd = (['clang', '-O3', '-shared', src, '-o', so, '-fuse-ld=lld', '-Wl,/EXPORT:menu_top', '-Wl,/EXPORT:city_scan']
                        if os.name == 'nt' else ['cc', '-O3', '-shared', '-fPIC', src, '-o', so])
                 subprocess.run(cmd, check=True)
             lib = ctypes.CDLL(so)
@@ -299,19 +501,21 @@ def main():
                        conn_pos=np.ascontiguousarray(conn_pos, dtype=np.int32), ctrip=ct_,
                        cto=np.ascontiguousarray(R._fa['cto'], dtype=np.int32), arr=R._fa['arr'], dep=R._fa['dep'],
                        state=np.ascontiguousarray(R.state, dtype=np.int32),
+                       city_trip=np.array([1 if tkey[ii_] in city_trip_key else 0 for ii_ in range(len(tid))], dtype=np.uint8),
+                       useful=np.ascontiguousarray(useful_stop, dtype=np.uint8),
                        fptr=R._fa['ptr'], fto=R._fa['to'], fw=R._fa['w'],
                        wptr=wptr, wy=np.array(wyl, dtype=np.int32), ww=np.array(wwl, dtype=np.float64),
                        L=np.ascontiguousarray(L, dtype=np.float64), L_end=np.ascontiguousarray(L_end, dtype=np.float64))
-            Dp = ctypes.POINTER(ctypes.c_double); Ip = ctypes.POINTER(ctypes.c_int)
+            Dp = ctypes.POINTER(ctypes.c_double); Ip = ctypes.POINTER(ctypes.c_int); Bp = ctypes.POINTER(ctypes.c_ubyte)
             Up = ctypes.POINTER(ctypes.c_uint64); LLp = ctypes.POINTER(ctypes.c_longlong)
             lib.menu_top.restype = ctypes.c_int
             lib.menu_top.argtypes = ([ctypes.c_int, ctypes.c_double, ctypes.c_int, ctypes.c_uint64,
                                       ctypes.c_int, ctypes.c_int, ctypes.c_int]
-                                     + [Ip, Ip, Dp, Ip, Ip, Ip, Ip, Ip, Dp, Dp, Ip, Ip, Ip, Dp, Ip, Ip, Dp, Dp, Dp, Dp]
+                                     + [Ip, Ip, Dp, Ip, Ip, Ip, Ip, Ip, Dp, Dp, Ip, Bp, Bp, ctypes.c_int, Ip, Ip, Dp, Ip, Ip, Dp, Dp, Dp, Dp]
                                      + [ctypes.c_double, ctypes.c_double, ctypes.c_int, ctypes.c_int, Ip, Ip,
                                         ctypes.c_int, Ip, ctypes.c_int]
                                      + [Ip, Dp, Ip, Up, Ip, Ip, Ip, LLp])
-            ptr_ = lambda v: v.ctypes.data_as(Dp if v.dtype == np.float64 else Ip)
+            ptr_ = lambda v: v.ctypes.data_as(Dp if v.dtype == np.float64 else Bp if v.dtype == np.uint8 else Ip)
             CMp = {k_: ptr_(v) for k_, v in CMa.items()}
             W_ = max(1, a.width)
             CMo = dict(to=np.zeros(W_, np.int32), at=np.zeros(W_), trip=np.zeros(W_, np.int32),
@@ -320,6 +524,50 @@ def main():
             seen_stamp = np.zeros(len(tid), np.int32); stamp_ = [0]
             CM = dict(lib=lib, a=CMa, p=CMp, o=CMo, tid=tid, tkey=tkey, seen=seen_stamp, stamp=stamp_, W=W_,
                       Up=Up, LLp=LLp, Ip=Ip, Dp=Dp, total=[0])
+            if a.city_hop:
+                # --city-hop's per-node scan in C (menu.c city_scan); Python keeps the hop assembly
+                rmap = {}
+                rid = np.array([rmap.setdefault((tkey[ii_][0], route_of(tkey[ii_])), len(rmap)) for ii_ in range(len(tid))],
+                               dtype=np.int32)
+                csa_ = dict(rid=rid, bstamp=np.full(R.N, -1, np.int32), best=np.zeros(R.N), pk=np.zeros(R.N, np.int32),
+                            pkk=np.zeros(R.N, np.int32), pu=np.zeros(R.N, np.int32), touched=np.zeros(R.N + 1, np.int32),
+                            marked=np.zeros(R.N + 1, np.int32), nxt=np.zeros(R.N + 1, np.int32),
+                            mstamp=np.zeros(R.N, np.int32), hr=np.zeros(1 << 15, np.int32), hc=np.zeros(1 << 15, np.int32),
+                            hstamp=np.zeros(1 << 15, np.int32), hgen=np.zeros(1, np.int32),
+                            hop_target=np.ascontiguousarray(hop_target, dtype=np.uint8),
+                            cfrom=np.ascontiguousarray(R._fa['cfrom'], dtype=np.int32),
+                            ends=np.zeros(R.N + 1, np.int32), n_ends=np.zeros(1, np.int32))
+                csp_ = {k_: ptr_(v) for k_, v in csa_.items()}
+                lib.city_scan.restype = ctypes.c_int
+                lib.city_scan.argtypes = ([ctypes.c_int, ctypes.c_double, ctypes.c_int, ctypes.c_double, ctypes.c_double, ctypes.c_int]
+                                          + [Ip, Ip, Dp, Ip, Ip, Ip, Ip, Ip, Dp, Dp, Bp, Ip, Ip, Ip, Dp, ctypes.c_int]
+                                          + [Ip, Dp, Ip, Ip, Ip, Ip, Ip, Ip, Ip, Ip, Ip, Ip, Ip]
+                                          + [Bp, Ip, Ip, Ip, Ip])
+                cs_gen = [0]; P_ = CMp
+
+                def _cs(s, t, aboard):
+                    cs_gen[0] += 1; g = cs_gen[0]
+                    ab = tid.get(aboard, -1) if aboard in city_trip_key else -1
+                    n_ = lib.city_scan(int(s), float(t), int(ab), float(t + a.city_horizon * 3600), float(MIN_TRANSFER),
+                                       int(a.city_rounds), P_['bptr'], P_['bconn'], P_['bdep'], P_['tptr'], P_['tconn'],
+                                       P_['conn_pos'], P_['ctrip'], P_['cto'], P_['arr'], P_['dep'], P_['city_trip'],
+                                       csp_['rid'], P_['fptr'], P_['fto'], P_['fw'], g, csp_['bstamp'], csp_['best'],
+                                       csp_['pk'], csp_['pkk'], csp_['pu'], csp_['touched'], csp_['marked'], csp_['nxt'],
+                                       csp_['mstamp'], csp_['hr'], csp_['hc'], csp_['hstamp'], csp_['hgen'],
+                                       csp_['hop_target'], csp_['cfrom'], P_['state'], csp_['ends'], csp_['n_ends'])
+                    # only the useful ends (in scan order) and the chains behind them: the rest never leaves C
+                    ends_ = csa_['ends'][:int(csa_['n_ends'][0])].tolist()
+                    bv, pk_, pkk_, pu_ = csa_['best'], csa_['pk'], csa_['pkk'], csa_['pu']
+                    best = {v: float(bv[v]) for v in ends_}; pred = {}
+                    for v in ends_:
+                        x = v
+                        while x != s and x not in pred:
+                            pred[x] = (int(pk_[x]), int(pkk_[x]), int(pu_[x]))
+                            if x not in best: best[x] = float(bv[x])
+                            x = pred[x][2]
+                    best[s] = float(bv[s])
+                    return best, pred
+                CM['cs'] = _cs
             print(f'  menu.c: {len(bconn)} departures, {len(tid)} trips, {len(wyl)} walk-ins indexed', flush=True)
 
     if a.menu == 'check' and CM is None:
@@ -332,7 +580,7 @@ def main():
         cm = 0
         for y_ in collected: cm |= 1 << y_
         cap = np.ascontiguousarray(ceiling(collected), dtype=np.float64)
-        gl = list(goal or ())
+        gl = [g for g in (goal or ()) if g[0] != 'hop']       # hop goals are matched in Python, not C
         gt = np.array([c_['tid'][g[0]] for g in gl], dtype=np.int32) if gl else np.zeros(1, np.int32)
         gs_ = np.array([int(g[1]) for g in gl], dtype=np.int32) if gl else np.zeros(1, np.int32)
         ab = c_['tid'].get(aboard, -2) if aboard is not None else -2
@@ -340,7 +588,9 @@ def main():
         if c_['stamp'][0] > 2_000_000_000: c_['seen'][:] = 0; c_['stamp'][0] = 0
         n = c_['lib'].menu_top(int(stop), float(t), int(ab), cm, R.N, N_STATES, len(c_['tid']),
                                p['bptr'], p['bconn'], p['bdep'], p['tptr'], p['tconn'], p['conn_pos'], p['ctrip'],
-                               p['cto'], p['arr'], p['dep'], p['state'], p['fptr'], p['fto'], p['fw'],
+                               p['cto'], p['arr'], p['dep'], p['state'], p['city_trip'], p['useful'],
+                               1 if a.city_hop else 0,
+                               p['fptr'], p['fto'], p['fw'],
                                p['wptr'], p['wy'], p['ww'], p['L'], p['L_end'],
                                cap.ctypes.data_as(c_['Dp']), float(a.horizon * 3600), float(MIN_TRANSFER),
                                1 if a.split == 'on' else 0, len(gl), gt.ctypes.data_as(c_['Ip']),
@@ -360,6 +610,14 @@ def main():
             out.append(Opt(int(o['to'][i]), float(o['at'][i]), c_['tkey'][int(o['trip'][i])],
                            frozenset(y for y in range(N_STATES) if g_ >> y & 1),
                            None if w_ < 0 else w_, (int(o['k'][i]), int(o['kk'][i]))))
+        if a.city_hop:
+            # City journeys come whole from Python (city_hops) and C left city trips out, so the top --width of
+            # everything is the top --width of C's head plus the hops: re-sort the union with the same key.
+            capl_ = cap.tolist()
+            city_hops(stop, t, aboard, collected, cap, capl_, _endl_list(),
+                      lambda w_, t_, k_, g_, wk_=None, sg_=(), lg_=(): out.append(Opt(w_, t_, k_, frozenset(g_), wk_, sg_, lg_)))
+            sort_opts(out, collected, lambda o_: len(o_[3] - collected), t, goal=goal)
+            out[c_['W']:] = [o_ for o_ in out[c_['W']:] if o_.legs][:a.hop_slots]   # --hop-slots
         return out
 
     def pair_dead(stop, t, collected):
@@ -513,7 +771,11 @@ def main():
         """
         grp = (lambda o: n_new(o) == 0) if a.split == 'on' else (lambda o: False)
         gs = goal or ()
-        pre = ((lambda o: (0 if (o.trip, int(o.stop)) in gs else 1, grp(o))) if gs else
+        # A --city-hop move is a goal move when it ends where the fastest chain leaves city transit (goal_first adds
+        # ('hop', stop)). Matching its first leg's trip instead promoted too many hops and pushed two intercity
+        # legs of X out of the width (37 -> 35 of 42, Oct 19).
+        pre = ((lambda o: (0 if (o.trip, int(o.stop)) in gs or (o.legs and ('hop', int(o.stop)) in gs) else 1,
+                           grp(o))) if gs else
                (lambda o: (grp(o),)))
         if a.order == 'slack' and L is not None:
             cap = ceiling(collected)
@@ -633,16 +895,26 @@ def main():
             sc = capg[sa] - v
             s_ = int(sa[int(np.argmax(np.where(fin, sc, -np.inf)))])
             first = None; by_ride = False   # as in _route_fast: a walk off a ride into b leaves b by that ride
+            chain = []                      # (trip, alight stop), last ride first
             for _ in range(400):            # a chain longer than this is a predecessor loop, not a route
                 if not by_ride and walk_[s_] >= 0:
                     by_ride = bool(pred['walk_ride'][s_]); s_ = int(walk_[s_])
                 elif (k_ := int(pred['rconn'][s_] if by_ride else conn_[s_])) >= 0:
                     by_ride = False
                     first = (R.ctrip[k_], s_)       # overwritten each step back, so it ends on the earliest
+                    chain.append(first)
                     s_ = int(bstop_[int(ct[k_])])
                 else:
                     break
             if first: out.add(first)
+            if a.city_hop and chain:
+                # --city-hop: the goal move is the city journey as a whole, named by where the chain gets off
+                # its leading city rides. A hop picks its own rides, so matching the first ride's trip misses
+                # it (the Salt Lake airport hop stayed at 110 of 316); the stop it ends at does not.
+                chain.reverse()
+                if chain[0][0] in city_trip_key:
+                    i_ = next((i for i, c in enumerate(chain) if c[0] not in city_trip_key), len(chain))
+                    out.add(('hop', int(chain[i_ - 1][1])))
         return out
 
     def alight_ok(to, at, owed_after):
@@ -667,7 +939,7 @@ def main():
         menu = Menu() if (a.dedupe and not raw) else None
         out = []
         push = menu.add if menu is not None else (
-            lambda w_, t_, k_, g_, wk_=None, sg_=(): out.append(Opt(w_, t_, k_, frozenset(g_), wk_, sg_)))
+            lambda w_, t_, k_, g_, wk_=None, sg_=(), lg_=(): out.append(Opt(w_, t_, k_, frozenset(g_), wk_, sg_, lg_)))
         all_states = range(N_STATES)
         if cap is None and L is not None: cap = ceiling(collected)
         # Plain lists for the two deadline arrays, and only once `cap` is actually filled in: reading them
@@ -693,6 +965,7 @@ def main():
                 k = board_at[j][i]; i += 1
                 key = R.ctrip[k]
                 if key in seen: continue
+                if a.city_hop and key in city_trip_key: continue     # offered whole, by city_hops below
                 # staying aboard is free only on the same trip at the same stop; if this came from a stop
                 # walked to, the chain got off and walked, so it pays the transfer like anything else
                 if not (key == aboard and j == s) and R.dep[k] < t_ok + MIN_TRANSFER: continue
@@ -728,6 +1001,8 @@ def main():
                             if at > endl[to]: continue
                     elif not alight_ok(to, at, [y for y in all_states if y not in collected and y not in got]):
                         continue
+                    # --city-stops useful: ride through city-transit stops where getting off cannot matter
+                    if not useful_l[to] and key in city_trip_key and R.state[to] == R.state[j]: continue
                     push(to, at, key, got, None, (k, kk))
                     # Stepping over the line on foot is how the route takes Mississippi, but it is a move, not
                     # a freebie: you get off, walk out, and walk back, and only then carry on. Crediting it at
@@ -746,6 +1021,7 @@ def main():
                                 at2 > L[z][to] for z in all_states if z not in collected and z not in got and z != y):
                             continue
                         push(to, at2, key, got | {y}, y, (k, kk))
+        if a.city_hop: city_hops(s, t, aboard, collected, cap, capl, endl, push)
         return menu.list() if menu is not None else out
 
     best = [None]; limit = [a.target * 3600]; seen_nodes = [0]; t_run = time.time(); deepest = [0]
@@ -831,7 +1107,7 @@ def main():
         n_new = lambda o: len(o[3] - collected)
         sort_opts(opts, collected, n_new, t)
         for o in opts[:a.width]:
-            to, at, trip, got, walk, seg = o
+            to, at, trip, got, walk, seg = o[:6]
             new = collected | got
             path.append((trip, stop, to, t, at, walk, seg))
             dfs(to, at, new, trip, path)
@@ -886,7 +1162,7 @@ def main():
             menu = Menu(back=True) if a.dedupe else None
             out = []
             push = menu.add if menu is not None else (
-                lambda w_, t_, k_, g_, wk_=None, sg_=(): out.append(Opt(w_, t_, k_, frozenset(g_), wk_, sg_)))
+                lambda w_, t_, k_, g_, wk_=None, sg_=(), lg_=(): out.append(Opt(w_, t_, k_, frozenset(g_), wk_, sg_, lg_)))
             for j, w in [(s_, 0)] + list(R.foot.get(s_, ())):
                 t_ok = t - w
                 times = arr_times.get(j)
@@ -950,7 +1226,7 @@ def main():
             n_new = lambda o: len(o[3] - collected)
             sort_opts(opts, collected, n_new, t, back=True)
             for o in opts[:a.width]:
-                frm, bt, trip, got, walk, seg = o
+                frm, bt, trip, got, walk, seg = o[:6]
                 new = collected | got
                 sp2 = D - bt
                 if sp2 > limit[0]: continue
@@ -1030,7 +1306,7 @@ def main():
             if _l[0] == 'walk' and R.walk_collects(_l[2]):
                 by_walk.setdefault(_l[1], set()).add(int(R.state[_l[2]]))
         lost = 0
-        tightest = [np.inf, '']
+        tightest = [np.inf, '', np.inf]
         # The result-writing path has no gate of its own, and that is how be64aa9 shipped: a `far` field
         # added to the legs the search pushes but not to the ones it writes, so every `--out` raised
         # ValueError, with regress green and --track green. The replay is already walking real legs through
@@ -1039,8 +1315,27 @@ def main():
         # the set of states the chain was credited with. Only the options the menu actually returned go in,
         # so this measures the writer and not the replay's bookkeeping.
         rec_path = []; rec_got = set(_ss)
+        if a.city_hop:
+            # A run of consecutive city rides in the control is one --city-hop move, ending where the run ends
+            # or at a stop the control walks a state line from. It is reproduced by a hop option to the same
+            # stop arriving no later; trip identity cannot apply, since the hop picks its own rides. The tally
+            # counts these groups as legs, so it is not comparable with a replay run without --city-hop.
+            grp = []; i_ = 0
+            while i_ < len(rides):
+                l_ = rides[i_]
+                if l_[1] in city_trip_key:
+                    m_ = i_
+                    while (m_ + 1 < len(rides) and rides[m_ + 1][1] in city_trip_key
+                           and rides[m_][4] not in by_walk): m_ += 1
+                    grp.append(tuple(l_[:4]) + (rides[m_][4], rides[m_][5], m_ - i_ + 1))
+                    i_ = m_ + 1
+                else:
+                    grp.append(l_); i_ += 1
+            print(f'  --city-hop: {len(rides)} control rides replay as {len(grp)} moves', flush=True)
+            rides = grp
         for n, l in enumerate(rides, 1):
-            _, trip, bs, bt, al, at = l
+            _, trip, bs, bt, al, at = l[:6]
+            hop_n = l[6] if len(l) > 6 else 0
             opts = rides_from(stop, t, aboard, collected)
             raw_opts = rides_from(stop, t, aboard, collected, raw=True) if a.dedupe else opts
             n_new = lambda o: len(o[3] - collected)
@@ -1095,7 +1390,13 @@ def main():
             # and without this the replay counts the ride-plus-detour variant as the same move. It showed
             # up as the tally rising from 30/40 to 31/40 on a refactor that was meant to change nothing,
             # which is the shape of a gate quietly getting easier to pass.
-            same = lambda o: o[0] == al and o[2] == trip and o.walk is None
+            # A hop group ending where the control walks a line is one move in the search, hop plus walk-in, so it
+            # is matched as that; the walk's state is then credited by by_walk as for every other walk-in.
+            _hw = by_walk.get(al, set())
+            same = ((lambda o: bool(o.legs) and o[0] == al and (o.walk in _hw if _hw else o.walk is None)
+                     and o[1] <= at + (2 * max((w for y_, w in walkin.get(al, ()) if y_ in _hw), default=0) if _hw else 0))
+                    if hop_n else
+                    (lambda o: o[0] == al and o[2] == trip and o.walk is None and not o.legs))
             rank = next((i + 1 for i, o in enumerate(opts) if same(o)), None)
             got = next((o[3] for o in opts if same(o)), frozenset())
             info = R.trip_info.get(trip, ('', ''))
@@ -1147,7 +1448,12 @@ def main():
                           f'  {"covers it" if cov else "does NOT cover it"}', flush=True)
                 lost += 1; gone += 1
             else:
-                flag = '' if rank <= a.width else f'  <-- OUTSIDE --width {a.width}'
+                # --hop-slots: the best city hops beyond --width are kept too, so a hop counts as reachable if it is
+                # within that many of the hops ranked below the cut.
+                hrank = (sum(1 for o in opts[a.width:rank] if o.legs) if rank > a.width and opts[rank - 1].legs else None)
+                inside = rank <= a.width or (hrank is not None and hrank <= a.hop_slots)
+                flag = ('' if rank <= a.width else f'  hop slot {hrank}/{a.hop_slots}' if inside else
+                        f'  <-- OUTSIDE --width {a.width}' + (f' (hop {hrank} below the cut)' if hrank else ''))
                 # Rank within the leg's own group as well as overall. The sort puts every ride that
                 # collects a state ahead of every ride that collects none, so a positioning leg's overall
                 # rank is mostly the size of the group in front of it and says nothing about how badly it is
@@ -1168,9 +1474,10 @@ def main():
                             f'{pair_margin[1] / 3600:+.1f} h' if pair_margin else '')
                          if pair_rank else ''), flush=True)
                 if a.anatomy: anatomy(opts, al, trip, n_new)
-                if rank > a.width: lost += 1
+                if not inside: lost += 1
                 o_ = opts[rank - 1]
-                rec_path.append((o_[2], stop, o_[0], t, o_[1], o_.walk, o_.seg))
+                if o_.legs: rec_path.extend(o_.legs)
+                else: rec_path.append((o_[2], stop, o_[0], t, o_[1], o_.walk, o_.seg))
                 rec_got |= set(o_[3]) | ({o_.walk} if o_.walk is not None else set())
             collected = collected | got | frozenset(by_walk.get(al, ()))
             stop, t, aboard = al, at, trip
@@ -1188,11 +1495,23 @@ def main():
                         pair_kills[0] += 1
                     elif m_ < tightest[0]:
                         tightest[0] = m_; tightest[1] = f'leg {n} {R.stop_name[stop][:24]} {ab(y_)}&{ab(z_)}'
+                    # Ungated here on purpose: the search only tests under --triple-gate, the gate tests every node.
+                    if TT is not None and len(owed_) >= 3:
+                        tm_ = TT.margin(int(stop), float(t), owed_)
+                        if tm_ < 0:
+                            print(f'         TRIPLE-DEAD after this leg: misses by {-tm_ / 3600:.1f} h', flush=True)
+                            triple_kills[0] += 1
+                        elif tm_ < tightest[2]:
+                            tightest[2] = tm_
         if PT is not None:
             print(f'\npair test against the control: {pair_kills[0]} of its {len(rides)} nodes killed; '
                   f'tightest margin {tightest[0] / 3600:+.2f} h ({tightest[1]})', flush=True)
-            if pair_kills[0]:
-                print('FAIL: the pair prune kills the control. It is not a prune, it is a bug.', flush=True)
+            if TT is not None:
+                print(f'triple test against the control: {triple_kills[0]} killed; tightest margin '
+                      f'{tightest[2] / 3600:+.2f} h; {TT.scans} scans', flush=True)
+                TT.save()
+            if pair_kills[0] or triple_kills[0]:
+                print('FAIL: the pair/triple prune kills the control. It is not a prune, it is a bug.', flush=True)
                 sys.exit(1)
         if rec_path:
             rec = route_record(rec_path, rec_path[-1][4] - rec_path[0][3], rec_got, False)
@@ -1238,14 +1557,23 @@ def main():
             86-99% back at 0.25, 58-88% at 0.5). Within one layer the state count is equal, so the key only
             has to say which chain is earliest and roomiest."""
             def __init__(s, items=()):
-                s.h = {}; s.n = 0; s.cur = -1
+                s.h = {}; s.n = 0; s.cur = -1; s.left = 0
                 for it in items: s.push(it)
             def push(s, it):
                 heapq.heappush(s.h.setdefault(len(it[5]), []), it); s.n += 1
             def pop(s):
+                # --depth-bias B: the deepest live layer gets 1 + B pops per turn, the shallowest 1, linear in
+                # between. Every layer still gets a turn every cycle, so nothing is starved; a chain that is
+                # nearly done just stops waiting behind thirty-odd shallower layers for each step (Oct 19: the
+                # pair-k run sat at 40/48 for 12 min with one pop in ~38 going to that layer).
+                if s.left > 0 and s.h.get(s.cur):
+                    s.left -= 1; s.n -= 1
+                    return heapq.heappop(s.h[s.cur])
                 ks = sorted(k for k, v in s.h.items() if v)
                 nxt = [k for k in ks if k > s.cur]
                 s.cur = nxt[0] if nxt else ks[0]; s.n -= 1
+                if a.depth_bias > 0 and len(ks) > 1:
+                    s.left = int(round(a.depth_bias * (s.cur - ks[0]) / (ks[-1] - ks[0])))
                 return heapq.heappop(s.h[s.cur])
             def __len__(s): return s.n
             def __iter__(s): return (it for v in s.h.values() for it in v)
@@ -1257,11 +1585,22 @@ def main():
             else: heapq.heappush(q, it)
         def qpop():
             return q.pop() if layered else heapq.heappop(q)
-        def room(stop_, t_, col_):
+        def room2(stop_, t_, col_):
+            """(exact margin, key). The margin is the tightest owed pair and is the only thing that prunes.
+            The key is the mean of the --pair-k tightest pairs (k=1: the margin itself). Measured Oct 19 on the
+            saved frontier (key_probe.py): at Jacksonville, layer 17, X had 1093 of 5952 ahead under the margin
+            and 45 under the mean of the 10 tightest. The ones ahead were Sheridan-then-east chains that reach 17
+            states 21 h cheaper and still owe the whole Gulf and Southwest; any one pair of that is in reach, ten
+            of them are not."""
             if a.key == 'pair' and PT is not None:
                 ow_ = [y for y in range(N_STATES) if y not in col_]
-                if len(ow_) >= 2: return PT.worst(int(stop_), float(t_), ow_)[0]
-            return node_slack(stop_, t_, col_)
+                if len(ow_) >= 2:
+                    if a.pair_k <= 1:
+                        m_ = PT.worst(int(stop_), float(t_), ow_)[0]; return m_, m_
+                    return PT.worst_and_mean(int(stop_), float(t_), ow_, a.pair_k)
+            s_ = node_slack(stop_, t_, col_); return s_, s_
+        def room(stop_, t_, col_):
+            return room2(stop_, t_, col_)[1]
         def pri(spent, n, stop_=None, t_=None, col_=None, room_=None):
             # In depth mode n is the layer, so the credit term is a constant inside it and is left out.
             p_ = spent - (0 if layered else a.credit * 3600 * n)
@@ -1293,6 +1632,21 @@ def main():
                 print(f'  [{time.time() - t_run:5.0f}s] FOUND {spent / 3600:.2f} h, {len(collected)} states, '
                       f'{len(path)} rides', flush=True)
                 continue
+            # Finishing on foot over the end state's line, one way (Oct 20). A walk-in is modelled out and back to
+            # the stop, so a chain whose last state is the end state collected it but never stood in it, and the
+            # test above could not fire: every route ending like X (Fargo, walk to the Moorhead line) was
+            # unfinishable. When the end state is all that is owed, the walk out is the finish.
+            if END_ST is not None and len(collected) == NEED - 1 and END_ST not in collected:
+                for y_, w_ in walkin.get(stop, ()):
+                    if y_ != END_ST: continue
+                    tf = t + w_
+                    if tf - T0 <= limit[0] and (L is None or tf <= D):
+                        j_ = walkin_to[(stop, y_)]
+                        limit[0] = tf - T0
+                        best[0] = (tf - T0, list(path) + [(None, stop, j_, t, tf, y_, None)], frozenset(collected | {y_}))   # trip None: on foot
+                        print(f'  [{time.time() - t_run:5.0f}s] FOUND {(tf - T0) / 3600:.2f} h, {NEED} states, '
+                              f'{len(path)} rides + the walk over the {ab(END_ST)} line from {R.stop_name[stop][:28]}',
+                              flush=True)
             if len(collected) > deepest[0]:
                 deepest[0] = len(collected); deep_path[0] = (spent, list(path), frozenset(collected))
                 print(f'  [{time.time() - t_run:5.0f}s] {len(collected)}/{NEED} states, {spent / 3600:6.1f} h spent, '
@@ -1314,7 +1668,7 @@ def main():
                 if a.menu == 'check':
                     ref = rides_from(stop, t, aboard, collected)
                     sort_opts(ref, collected, lambda o: len(o[3] - collected), t, goal=goal)
-                    ref = ref[:a.width]
+                    ref = ref[:a.width] + [o_ for o_ in ref[a.width:] if o_.legs][:a.hop_slots]
                     if [tuple(x) for x in ref] != [tuple(x) for x in opts]:
                         print(f'  MENU MISMATCH at node {seen_nodes[0]} ({R.stop_name[stop]}, {len(collected)} states):')
                         for x_, y_ in zip(ref, opts + [None] * len(ref)): print('    py', tuple(x_), '\n    c ', y_)
@@ -1328,8 +1682,8 @@ def main():
                 # Nothing out of here survives the deadline tables: a kill spot. Where chains run out of moves is
                 # the question the exit census cannot answer, since it only lists what is still alive.
                 de = dead_end[stop]; de[0] += 1; de[1] += len(collected) >= 25; de[2] = max(de[2], len(collected))
-            for o in opts[:a.width]:
-                to, at, trip, got, walk, seg = o
+            for o in opts[:a.width] + [o_ for o_ in opts[a.width:] if o_.legs][:a.hop_slots]:
+                to, at, trip, got, walk, seg = o[:6]
                 new = collected | got
                 # Dominance when queuing, not only when popped. Many queued nodes share a stop, a set of
                 # states and a boarded trip, and only the earliest of those can ever matter; checking at push
@@ -1345,14 +1699,17 @@ def main():
                 rm_ = None
                 if a.key == 'pair' and PT is not None and a.pairs == 'push':
                     # One PT.worst serves as both the push-side kill and the key: dead iff the margin is negative.
-                    rm_ = room(to, at, new)
-                    if rm_ < 0 and N_STATES - len(new) >= 2:
+                    mg_, rm_ = room2(to, at, new)
+                    if mg_ < 0 and N_STATES - len(new) >= 2:
                         pair_kills[0] += 1; continue
+                    if (TT is not None and mg_ < a.triple_gate * 3600 and N_STATES - len(new) >= 3
+                            and TT.dead(to, at, [y for y in range(N_STATES) if y not in new])):
+                        triple_kills[0] += 1; continue
                 elif a.pairs == 'push' and pair_dead(to, at, new): continue
                 queued[k2] = sp_new
                 seq[0] += 1
                 qpush((pri(at - T0, len(new), to, at, new, rm_), at - T0, seq[0], to, at, new, trip,
-                       path + ((trip, stop, to, t, at, walk, seg),)))
+                       path + (o.legs or ((trip, stop, to, t, at, walk, seg),))))
             if len(q) > a.queue:
                 # Drop only what is provably dead: a node whose clock has passed the limit, or passed the
                 # latest it could still collect something it owes. Both are facts. The old rule kept the best
@@ -1472,10 +1829,11 @@ def main():
         rides_ = [x for x in path_ if x[0] is not None]
         if not rides_: return None
         st0_ = rides_[0][1]; t0_ = rides_[0][3]
-        order_ = []
-        for trip_, frm_, to_, bt_, at_, walk_, _seg in path_:
-            for st_ in (int(R.state[frm_]), int(R.state[to_]), walk_):
-                if st_ is not None and st_ >= 0 and st_ not in order_: order_.append(st_)
+        # The order the router follows has to hold every state the chain is in, including the ones a ride only
+        # passes through (Oct 20: X's West Virginia, on the Harrisburg -> Indianapolis bus). Built from boarding
+        # and alighting stops alone it dropped WV, the router picked a bus that skips it, and a real route
+        # (232.30 h, X itself) was reported unconfirmed. route_record already gets this right; use it.
+        order_ = route_record(path_, 0.0, set(), True)['order']
         try:
             import time_search as ts_
             from time_search import Search as S_
@@ -1495,6 +1853,13 @@ def main():
                     where_ = ab(int(R.state[end_stop_])) if end_stop_ is not None else '?'
                     return (f'router reaches every state but finishes in {where_}, not {ab(END_ST)}',
                             (f_ - t0_) / 3600)
+            # A greedy order evaluation can collect every state and still not be this path: chasing pass-through
+            # states as separate targets takes other buses (step 1, Oct 20: path 232.30 h, order 256.3 h). Say so
+            # instead of confirming a different route. verify_path.py replays the path itself, leg by leg.
+            mine_ = (path_[-1][4] - t0_) / 3600
+            if (f_ - t0_) / 3600 > mine_ + 0.05:
+                return (f'router follows the order but takes {(f_ - t0_) / 3600:.2f} h against the path, {mine_:.2f} h '
+                        f'(greedy order evaluation); check the path with verify_path.py', (f_ - t0_) / 3600)
             return ('router confirms', (f_ - t0_) / 3600)
         except Exception as e:
             return (f'could not be checked ({type(e).__name__}: {e})', None)
@@ -1540,7 +1905,14 @@ def main():
     if START is None: print('need --start'); return
     start_states = set()      # a walk-in at the start is a move like any other, and costs its time
     if R.state[START] >= 0: start_states.add(int(R.state[START]))
-    if a.mode == 'best': best_first(START, T0, frozenset(start_states))
+    t_first = T0
+    if a.resume_at:
+        t_first = datetime.fromisoformat(a.resume_at).replace(tzinfo=ZoneInfo(a.tz)).timestamp()
+        for ab_ in (a.have or '').split(','):
+            if ab_.strip(): start_states.add(R.state_names.index(inv[ab_.strip()]))
+        print(f'  resuming at {R.stop_name[START]} {R.fmt_time(t_first, START)}, {(t_first - T0) / 3600:.1f} h in, '
+              f'{len(start_states)} states held', flush=True)
+    if a.mode == 'best': best_first(START, t_first, frozenset(start_states))
     else: dfs(START, T0, frozenset(start_states), None, [])
     el = time.time() - t_run
     print(f'\n{seen_nodes[0]} nodes in {el:.0f} s ({seen_nodes[0] / max(el, 1):.0f}/s), {sum(len(v) for v in dom_stop.values())} kept '
@@ -1624,11 +1996,16 @@ def main():
             print('  where chains at 25+ states died: ' + ', '.join(f'{R.stop_name[st_][:24]} {n_}' for n_, st_ in deep_))
     if CM is not None:
         print(f'menu: {"C" if a.menu != "py" else "py"}, {CM["total"][0]} candidates scored'
-              + (f', {menu_checked[0]} nodes checked against the Python menu, all identical' if a.menu == 'check' else ''))
+              + (f', {menu_checked[0]} nodes checked against the Python menu, all identical' if a.menu == 'check' else '')
+              + (f'; city_scan C = Python on {cs_checked[0]} scans' if a.menu == 'check' and a.city_hop else ''))
     if PT is not None:
         print('pair table built, prune switched off (--pairs report); the census below is the measurement'
               if a.pairs == 'report' else
               f'pair prune at {a.pairs}: {pair_kills[0]} nodes killed for owing an uncollectable pair')
+    if TT is not None:
+        print(f'triple prune at push: {triple_kills[0]} nodes killed for owing an uncollectable triple; '
+              f'{len(TT.T)} triples, {TT.scans} scans this run ({TT.scan_s:.0f} s)', flush=True)
+        TT.save()
     census(last_q[0] or [])
     if best[0] is None:
         print(f'nothing reached {NEED} states under {a.target} h in the budget')

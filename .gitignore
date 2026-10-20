@@ -9,5 +9,8 @@ __pycache__/
 .DS_Store
 
 scripts/menu.so
+scripts/menu_*.so
 scripts/menu.lib
 scripts/menu.exp
+scripts/menu_*.lib
+scripts/menu_*.exp
