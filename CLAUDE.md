@@ -17,7 +17,7 @@
   the settle picked Thu Nov 5 and met the gap; check any "route broke" against the start day first. When verifying a
   known route, pin its start (`--fixed-start`): a free start drifts (the record "lost Maine" that way).
 - **Replay gate:** `python3 ride_search.py --start "Sheridan WY Taco Bell 1655 Coffeen Ave (Jefferson)" --at
-  2026-11-12T22:10 --end MN --by 2026-11-22T20:10 --tz America/Denver --track ../out/res_x.pkl` (baseline 24/46, exit 0, 48/48 states, since Oct 16: no modelled hops by default, walk-in chaining, and the Oct 15-16 data; X is 46 rides at 232.13 h).
+  2026-11-12T22:10 --end MN --by 2026-11-22T20:10 --tz America/Denver --track ../out/res_x.pkl` (baseline 24/48 rides, exit 0, 48/48 states, Oct 20; since Oct 16: no modelled hops by default, walk-in chaining, and the Oct 15-16 data; X is 46 rides at 232.13 h).
 - **ride_search's menu runs in C** (`scripts/menu.c`, `--menu c`, the default; ~18x with the bounded goal scan). The
   `--track` replay calls the Python `rides_from` directly and does **not** exercise it: after any change to
   `menu.c` or `rides_from`/`sort_opts`, run a search with `--menu check`, which compares both every node and exits 4
@@ -27,9 +27,18 @@
   --slack-weight 3 --key pair --pairs push --target 232.3`, a chain followed X to Fargo at 230.9 h, X's own time,
   inside 25 min; the slack key stalled at 39 states. Under slack, X's middle (Newton, OKC, Houston) had 717-2337
   Midwest-first chains ahead of it in its layer (single-state room to spare, none for a pair like CA+WA); under pair, 0.
-  The run missed the final 83 min walk to the MN line only because `--target 232.3` equals X's time: give it slack
-  (`--target 233`, `--by` +40 min) to confirm the close, then tighten below X for a real beat-X test. Building the pair
-  table for the Nov window takes ~24 min the first time (out/pairs_*.npy, ~320 MB), then it is cached.
+  **Corrected Oct 20:** the missed final walk was not deadline slack. A walk-in was modelled out and back to the stop,
+  so a chain whose last state is the end state collected it but never stood in it, and no route ending like X (Fargo,
+  walk over the Red River) could finish at all. Fixed with a one-way finish in best_first. **X reproduces on current
+  data** (no modelled hops, Oct 15-20 feeds): `--goal --frontier depth --slack-weight 3 --key pair --pairs push
+  --pair-k 10 --depth-bias 8 --city-hop --hop-slots 4 --triples push --target 233 --by 2026-11-22T15:10` FOUND 232.30 h
+  at 1604 s, ~50-70 nodes/s; `verify_path.py` replays it leg by leg. Building the pair table takes ~7 min; the full
+  triple table (`build_triples.py`, 17296 triples, ~3.6 GB) ~2 h, both cached per deadline (`--by`).
+- **`confirm()` is not a path check.** It hands a state order to the greedy `Search.evaluate`, which chases each state
+  as its own target: on step 1's 232.30 h path it missed X's West Virginia (passed through on the Harrisburg bus) and,
+  given the pass-through states, came back at 256.3 h. It now says when its time disagrees. `verify_path.py <pkl>`
+  is the real check: the router's own scan per leg, states recounted from the connections ridden; it rejects a 30 min
+  early arrival and a dropped walk-in (both tested). A path pickle only verifies against the router it was found on.
 - **Expired local feeds replay their last covered week** (`Feed.replay`, local `more_gtfs` only; the router prints
   which). JTA, TANK and Open Plains have no newer release yet.
 

@@ -512,3 +512,24 @@ Grand Forks, La Crosse, SMRT, Madison, Green Bay, Rapid City).
   west (Chief from Newton, Omnibus) and carries on east from Michigan: the reverse of X's direction.
 - Conclusion: from where X actually enters the region (Memphis, St Louis or Chicago), X's own tail is the best found every
   time. The gains are in shapes that cross the Upper Midwest eastbound.
+
+## Oct 19-20: X reproduces on current data; beat-X 231 and the South Sioux City start
+
+- **The search reproduces X with no modelled hops** (taxis banned), Sheridan Thu Nov 12 22:10 MT: FOUND 232.30 h, 43
+  legs, verified leg by leg (`verify_path.py`). What it took, in order of discovery:
+  - the NYC subway was not the cause of the 37-state plateau (WSL no-subway run, same plateau);
+  - `--pair-k 10` (rank by the mean of the 10 tightest pair margins) put X first in nearly every layer;
+  - `--city-hop` (a city-transit journey as one move) with the scan in C (`menu.c city_scan`, ~1 s/node to ms) and
+    the goal ranking matching hops by where they leave city transit; replay 41/42 under `--goal`;
+  - exact triple prune with a precomputed table (`build_triples.py`), `--depth-bias 8`;
+  - **the finish**: the search could never complete a route ending with a walk over the end state's line (walk-ins
+    were out and back), which is how X ends. One-way finish added. This, not deadline slack, was the old "missed the
+    final walk".
+- **Beat-X at 231 h** (1 h, full fixes, triples for that deadline): nothing found. Triples killed ~255000 chains, pairs
+  ~115000, but 46850 were still queued at the budget (deepest 29-33 states): not found, not proved absent.
+- **South Sioux City start** (Nebraska bank on foot, eastbound Plains block to Michigan, then the rest), time_search,
+  start days from Nov 13: `ssc_west` 273.7 h, `ssc_ca` 255.2 h, `ssc_south` 270.1 h. The block is fast (~28 h for 8
+  states) but leaves the East, South and West to follow and costs 23+ h against X. (A Nov 9 start reached the NEC inside
+  the Portal Bridge gap; identical 273.7 h from Nov 13 shows the gap was not the cost.)
+- Data (5fdfc34): Elkhart Interurban Trolley + walk to the Michigan line on SR-19 (point at 41.7615 N; 41.7597 is still
+  Indiana, which regress caught), Sage Stage, Eastern Sierra, Tahoe TTD, KCK.
