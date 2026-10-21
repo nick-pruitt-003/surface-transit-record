@@ -544,10 +544,10 @@ start dates Nov 10-16 so the NEC is always reached after the Portal Bridge gap).
 
 | start | A: Sheridan -> Nashville | middle: Nashville 09:35 -> MS -> Memphis Bus Station by 17:40 | B: Memphis 17:45 -> Moorhead | total |
 |---|---|---|---|---|
-| Tue | = X (178.42 h) | Vonlane 10:00 -> MATA -> Holmes walk, Memphis 17:14 | = X (45.72 h) | **232.13 h** |
+| Tue | = X (178.42 h) | **misses**: Vonlane runs 12:00 (no 10:00) on Wednesdays and the 11:30 Flix does not run Wed/Thu; Memphis 18:29 | breaks | **out** (corrected Oct 21, see below) |
 | Wed | = X | Vonlane, 17:14 | = X | **232.13 h** |
 | Thu | = X | Vonlane, 17:14 | = X | **232.13 h** (X) |
-| Fri | = X | Greyhound 11:30 -> Airways walk, 17:00 | = X | **232.13 h** |
+| Fri | = X | Vonlane 10:00 Saturday (or the 11:30 Greyhound + Airways walk, 17:00) | = X | **232.13 h** |
 | Sat | = X | Greyhound 11:30, 17:32 | +7.79 h (finish 23:15) | 239.9 h, over the record |
 | Sun | = X | Vonlane, 17:14 | +7.79 h | 239.9 h |
 | Mon | = X | Vonlane, 17:14 | = X | **232.13 h**, but finishes Thu Nov 26 (Thanksgiving, holiday service not modelled) |
@@ -562,3 +562,9 @@ start dates Nov 10-16 so the NEC is always reached after the Portal Bridge gap).
 - Block B on this data reaches Kenosha by the Coach USA bus from W Jackson Blvd via O'Hare (Kenosha Brat Stop 08:15,
   back 08:45), not Metra; Metra UP-N also runs Sundays at X's times (06:32 -> 08:15, 09:08 -> 10:50).
 - Not rechecked on the data added in 5fdfc34 (Elkhart trolley, Sage Stage, Eastern Sierra, Tahoe TTD, KCK).
+
+**Correction, same day (Nick's vonlane.com screenshots, data/manual/vonlane.toml):** Nashville -> Memphis Vonlane runs
+10:00 and 14:00 on Thu Nov 19, Fri Nov 20 and Sat Nov 21, but **12:00 and 14:00 on Wed Nov 18 (no 10:00)**. The 11:30
+Flix (2243) does not run Wednesdays or Thursdays. So the Tuesday start, whose middle falls on a Wednesday, reaches the
+Memphis bus station at 18:29 and misses the 17:45 to St Louis; evaluated end to end it breaks. **X's start days: Mon, Wed,
+Thu, Fri at 232.13 h** (Mon finishes on Thanksgiving in the Nov 16 week). Mon, Tue and Sun Vonlane are still assumed.

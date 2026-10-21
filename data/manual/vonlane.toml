@@ -1,7 +1,8 @@
 agency = "Vonlane"
 
 # Nick screenshot Oct 6 2026 (vonlane.com, Thu Nov 19): Nashville Omni Downtown -> Memphis Hilton, 10:00 and 14:00,
-# 3 h 15 min, $132. Only Thursday confirmed. Stop points approximate: the Omni Nashville Hotel (Rep. John Lewis Way,
+# 3 h 15 min, $132. Nick screenshots Oct 21 2026: Fri Nov 20 10:00 and 14:00 (as Thursday); Wed Nov 18 12:00 and 14:00,
+# NO 10:00 on Wednesday; Sat Nov 21 10:00 and 14:00 (Saturday runs). Mon, Tue and Sun still assumed to match Thu/Fri. Stop points approximate: the Omni Nashville Hotel (Rep. John Lewis Way,
 # next to the Greyhound station) and the Hilton Memphis (939 Ridge Lake Blvd, East Memphis).
 [stops]
 nashville_omni = { name = "Nashville Omni Downtown (Vonlane)", lon = -86.7760, lat = 36.1580 }
@@ -13,17 +14,24 @@ houston_hyatt_regency = { name = "Houston Hyatt Regency Downtown (Vonlane)", lon
 
 [[trip]]
 id = "t428"
-route = "Vonlane Nashville Omni 10:00 -> Memphis Hilton 13:15 (weekdays, Nick: schedule consistent)"
-days = "1111100"
+route = "Vonlane Nashville Omni 10:00 -> Memphis Hilton 13:15 (Mon Tue Thu Fri Sat; not Wednesday, Nick Oct 21)"
+days = "1101110"
 tz = "America/Chicago"
 stops = ["nashville_omni 10:00", "memphis_hilton 13:15"]
 
 [[trip]]
 id = "t429"
-route = "Vonlane Nashville Omni 14:00 -> Memphis Hilton 17:15 (weekdays, Nick: schedule consistent)"
-days = "1111100"
+route = "Vonlane Nashville Omni 14:00 -> Memphis Hilton 17:15 (Mon-Sat; Wed, Thu, Fri, Sat seen, Nick Oct 21)"
+days = "1111110"
 tz = "America/Chicago"
 stops = ["nashville_omni 14:00", "memphis_hilton 17:15"]
+
+[[trip]]
+id = "t500"
+route = "Vonlane Nashville Omni 12:00 -> Memphis Hilton 15:15 (Wednesday, in place of the 10:00; Nick screenshot Wed Nov 18)"
+days = "0010000"
+tz = "America/Chicago"
+stops = ["nashville_omni 12:00", "memphis_hilton 15:15"]
 
 # Nick screenshots Oct 6 2026 (vonlane.com): Atlanta -> Nashville Tue Oct 27 15:00 ET, 4 h ($152); Oklahoma City ->
 # Dallas Mon Nov 9 10:15 and 14:15 CT, 3 h 15 ($132). Only the days seen are entered. Hotel points approximate.
