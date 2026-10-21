@@ -24,3 +24,10 @@ route = "Dallas -> Houston 18:55 (Nick screenshot of redcoachusa Oct 1 2026; dai
 days = "1111111"
 tz = "America/Chicago"
 stops = ["dallas_1376_marilla_st_redcoach 18:55", "houston_808_jefferson_st_redcoach 22:50"]
+
+[[trip]]
+id = "t501"
+route = "Houston -> Dallas 12:00 (Nick screenshot of redcoachusa Oct 21 2026, Wed Nov 25; daily assumed)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["houston_808_jefferson_st_redcoach 12:00", "dallas_1376_marilla_st_redcoach 15:55"]

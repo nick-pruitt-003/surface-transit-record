@@ -15,7 +15,7 @@ newton_amtrak = { name = "Newton (Amtrak) (PRE)", lon = -97.3445, lat = 38.0465 
 
 [[trip]]
 id = "t146"
-route = "PRE 40 Oklahoma City 21:30 -> OKC Amtrak -> Wellington KS -> Wichita -> Newton (Amtrak) 01:30 (Nick screenshot Oct 5 2026: it runs on to Newton for the Chief; daily assumed)"
+route = "PRE 40 Oklahoma City 21:30 -> OKC Amtrak -> Wellington KS -> Wichita -> Newton (Amtrak) 01:30 (Nick screenshot Oct 5 2026: it runs on to Newton for the Chief; daily assumed; confirmed Wed Nov 25 -> Thu Nov 26 01:30 by Amtrak booking screenshot Oct 21)"
 days = "1111111"
 tz = "America/Chicago"
 stops = ["okc_bus 21:30", "okc_amtrak 21:35/21:45", "wellington_ks 23:40/24:05", "wichita 24:35/24:50", "newton_amtrak 25:30"]
