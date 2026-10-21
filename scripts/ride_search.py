@@ -200,8 +200,13 @@ def main():
                     'collected; the clock still runs from --at, so a mid-route node of a known route can be '
                     'searched on its own (diagnostic)')
     ap.add_argument('--have', help='comma-separated state abbreviations already collected at --resume-at')
+    ap.add_argument('--skip', help='backward only: comma-separated states the chain does not owe (held as collected '
+                    'from the end), for a front that hands over to a known tail, e.g. WY,UT,ID,OR,WA,MT')
+    ap.add_argument('--end-stop', help='backward only: seed at the stops of --end with exactly this name (else those '
+                    'containing it), not at every stop of the state, for a front that must meet one departure')
     a = ap.parse_args()
     back = a.dir == 'backward'
+    if (a.skip or a.end_stop) and not back: sys.exit('--skip and --end-stop are backward only')
     when = datetime.fromisoformat(a.by if back else a.at).replace(tzinfo=ZoneInfo(a.tz))
     T0 = when.timestamp()
     router_args = ((when.date() if not back else (when - __import__('datetime').timedelta(days=12)).date()), a.days)
@@ -1194,7 +1199,16 @@ def main():
 
         start_c = set()
         if R.state[st_stops[END_ST][0]] >= 0: start_c.add(END_ST)
-        seeds = [(int(x), D) for x in st_stops[END_ST]]
+        for ab_ in (a.skip or '').split(','):
+            if ab_.strip(): start_c.add(R.state_names.index(inv[ab_.strip()]))
+        ends = st_stops[END_ST]
+        if a.end_stop:
+            m_ = [i for i in ends if a.end_stop.lower() in R.stop_name[i].lower()]
+            ends = [i for i in m_ if R.stop_name[i].lower() == a.end_stop.lower()] or m_
+            if not ends: sys.exit(f'--end-stop {a.end_stop!r}: no stop of that name in {a.end}')
+            print(f'  seeding at {len(ends)} stop(s) named {R.stop_name[ends[0]]!r}', flush=True)
+        if a.skip: print(f'  not owed (--skip): {a.skip}; {N_STATES - len(start_c)} states to collect', flush=True)
+        seeds = [(int(x), D) for x in ends]
         q = []; seq = [0]
         for st0_, t0_ in seeds:
             heapq.heappush(q, (-(D - t0_) + a.credit * 3600 * len(start_c), D - t0_, seq[0], st0_, t0_,
