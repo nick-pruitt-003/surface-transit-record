@@ -533,3 +533,32 @@ Grand Forks, La Crosse, SMRT, Madison, Green Bay, Rapid City).
   the Portal Bridge gap; identical 273.7 h from Nov 13 shows the gap was not the cost.)
 - Data (5fdfc34): Elkhart Interurban Trolley + walk to the Michigan line on SR-19 (point at 41.7615 N; 41.7597 is still
   Indiana, which regress caught), Sage Stage, Eastern Sierra, Tahoe TTD, KCK.
+
+## Start days for X, in blocks (Oct 21 2026, data as of afce6d6)
+
+X's order evaluated as a whole only works on Thursday, but that test is too blunt: X's pruned order lets the evaluator
+pick its own way to each target, and on Saturday and Sunday it heads for North Dakota via Minneapolis and skips SD IA
+NE. Nick's observation that the Friday X is X's own legs from Sheridan to Nashville and from Memphis (MS done) to
+Moorhead gives a better test: three pieces, each shifted by whole days from the Thursday start (Sheridan 22:10 MT,
+start dates Nov 10-16 so the NEC is always reached after the Portal Bridge gap). Leaf scripts, not committed.
+
+| start | A: Sheridan -> Nashville | middle: Nashville 09:35 -> MS -> Memphis Bus Station by 17:40 | B: Memphis 17:45 -> Moorhead | total |
+|---|---|---|---|---|
+| Tue | = X (178.42 h) | Vonlane 10:00 -> MATA -> Holmes walk, Memphis 17:14 | = X (45.72 h) | **232.13 h** |
+| Wed | = X | Vonlane, 17:14 | = X | **232.13 h** |
+| Thu | = X | Vonlane, 17:14 | = X | **232.13 h** (X) |
+| Fri | = X | Greyhound 11:30 -> Airways walk, 17:00 | = X | **232.13 h** |
+| Sat | = X | Greyhound 11:30, 17:32 | +7.79 h (finish 23:15) | 239.9 h, over the record |
+| Sun | = X | Vonlane, 17:14 | +7.79 h | 239.9 h |
+| Mon | = X | Vonlane, 17:14 | = X | **232.13 h**, but finishes Thu Nov 26 (Thanksgiving, holiday service not modelled) |
+
+- **Block A runs identically every day** (Sheridan to Nashville, 178.42 h to the minute).
+- **The weekend loss is one bus:** Jefferson Sioux Falls 10:00 -> Fargo 14:05 runs Thu-Mon only (`jefferson_lines.toml`,
+  Nick Oct 5). Block B reaches Sioux Falls on start day + 10, which is Tue or Wed for a Sat or Sun start.
+- **The middle has two ways through:** Vonlane Nashville (Omni) 10:00 -> Memphis Hilton on weekdays and Sunday, the 11:30
+  Greyhound plus the Airways Blvd walk on Saturday. Both make the 17:45 Memphis -> St Louis bus.
+- **For the Michigan day** (start + 9): Mon, Tue and Wed starts put it on Wed, Thu or Fri, the only starts where a
+  weekday-only service such as Berrien Bus (24 h advance call, booked Mon-Fri) can be used.
+- Block B on this data reaches Kenosha by the Coach USA bus from W Jackson Blvd via O'Hare (Kenosha Brat Stop 08:15,
+  back 08:45), not Metra; Metra UP-N also runs Sundays at X's times (06:32 -> 08:15, 09:08 -> 10:50).
+- Not rechecked on the data added in 5fdfc34 (Elkhart trolley, Sage Stage, Eastern Sierra, Tahoe TTD, KCK).
