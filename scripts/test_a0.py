@@ -71,8 +71,8 @@ def final_stop_reads_the_right_index_for_rides_and_walks():
 def opt_keeps_walk_out_of_the_trip_slot():
     from ride_search import Opt
     o = Opt(5, 1.0, ('f', 't', 0), frozenset({1, 2}), walk=2)
-    to, at, trip, got, walk, seg = o
-    assert trip == ('f', 't', 0) and walk == 2 and seg == ()
+    to, at, trip, got, walk, seg, legs = o
+    assert trip == ('f', 't', 0) and walk == 2 and seg == () and legs == ()
     assert Opt(5, 1.0, ('f', 't', 0), frozenset()).walk is None
 
 
