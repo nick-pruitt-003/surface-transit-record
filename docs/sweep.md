@@ -568,3 +568,67 @@ start dates Nov 10-16 so the NEC is always reached after the Portal Bridge gap).
 Flix (2243) does not run Wednesdays or Thursdays. So the Tuesday start, whose middle falls on a Wednesday, reaches the
 Memphis bus station at 18:29 and misses the 17:45 to St Louis; evaluated end to end it breaks. **X's start days: Mon, Wed,
 Thu, Fri at 232.13 h** (Mon finishes on Thanksgiving in the Nov 16 week). Mon, Tue and Sun Vonlane are still assumed.
+
+## Oct 21-22 2026: can a front reach Denver by Fri Nov 27 10:05? (branch `denver-backward`)
+
+Question (from RX): RX reaches Denver at 196.3 h (Fri 16:05) and its West then takes 38.5 h to Sheridan. Nick found
+that being in Denver for the **Greyhound 10:05 Denver -> Cheyenne -> Salt Lake** collects WY at Cheyenne and ends in
+Missoula, 2h15 shorter. Anchor Fri Nov 27 (start about Thu Nov 19, after the Portal Bridge Acela gap).
+
+**The Denver chain, evaluated** (`Search.evaluate`, order WY UT ID OR WA @Missoula, from Denver Union Station Bus
+Concourse 09:55 Fri Nov 27; router Nov 9 + 22 days):
+
+| leg | dep | arr |
+|---|---|---|
+| Greyhound Denver -> Cheyenne (WY) -> Salt Lake City Intermodal | Fri 10:05 | Fri 20:20 |
+| Salt Lake Express SLC Transit Center -> Pocatello | Fri 21:45 | Sat 01:25 |
+| Salt Lake Express Pocatello -> Boise Airport | Sat 03:40 | Sat 07:45 |
+| Northwestern Stage Lines Boise -> Pendleton (OR) -> Pasco | Sat 08:15 | Sat 13:10 |
+| Flix Pasco -> Spokane | Sat 14:40 | Sat 17:00 |
+| Jefferson Lines Spokane -> Missoula (MT) | Sat 17:10 | **Sat Nov 28 22:10 MT** |
+
+36.08 h from the 10:05 departure (36.25 h from a 09:55 clock). Ending at `MT` instead of `@Missoula` gives the same
+finish. To beat X (232.13 h) the first bus must leave after **Thu Nov 19 06:02 MT** and the front must be on the 10:05,
+so it may take at most 196.05 h; the search used 195.9 h (about 9 min margin).
+
+**Data (Nick's screenshots, Oct 21):** RedCoach Houston 12:00 -> Dallas 15:55 added (`redcoach.toml` t501); PRE 40
+`t146` confirmed Wed Nov 25 -> Newton Thu 01:30. The Greyhound **Kansas City 23:05 -> Topeka 00:10 -> Junction City
+01:25 -> Salina 02:30 (dep 03:05) -> Goodland 05:50 -> Denver 09:30 MT** is already in the Flix feed and runs Thu Nov 26
+-> Fri Nov 27 on the router, so nothing was added. **Thanksgiving:** it leaves Kansas City on Thanksgiving night (Thu
+Nov 26), and any front reaching Denver by Fri 10:05 rides Thanksgiving Day itself. Holiday service is not modelled.
+
+**Code:** `ride_search.py --skip WY,UT,...` (backward only: states held as collected from the end) and `--end-stop`
+(backward only: seed at one named stop of `--end`, not every stop in the state; without it any CO stop at 10:05
+would count). Forward refuses both. regress 15/15, test_a0 11/11, `--track ../out/res_x.pkl` 24/48 rides, 48/48
+states, exit 0 (baseline). Not added: `--key pair` / `--pairs push` for backward. The pair tables are forward
+("collect y then z, then finish"), and backward needs the mirror ("collect y then z after an earliest start"), which is
+a new table and not a small option. There is also no `--workers` flag; ride_search is one process.
+
+**Run 1, backward** (`--dir backward --end CO --end-stop "Denver Union Station Bus Concourse" --by
+2026-11-27T10:05 --tz America/Denver --target 195.9 --skip WY,UT,ID,OR,WA,MT --order rate --budget 2700`):
+**nothing found.** 1925 nodes in 2708 s (0.7/s; the `still_collectable` reverse scan per node is nearly all of it).
+Deepest 27/48 at 75.9 h back, at Hanover Tue Nov 24 08:11: Hanover -> Boston -> Portsmouth (ME walk-in) -> Boston ->
+New York Wed 06:40 -> Indianapolis Thu -> Des Moines -> **Kansas City 23:05** -> Denver. The search did find the KC
+23:05 as the way in. At exit, **0 of 67 depth-27 nodes and 2 of 244 depth-26 nodes were still per-state live**, so
+the deep end of the frontier was dead and the rest was shallow. `--order rate` because the default `slack` key reads
+the forward `L` tables (latest you can be at a stop and still collect y *after* it), which do not mean anything for a
+chain built backwards; the code comment says backward "has no tables", but it does once `--end`/`--by` are given.
+That is worth fixing before backward is relied on.
+
+**Run 2, forward from RX's start** (cross-check with the machinery that reproduced X): Primm Bus Stop (702 Shuttles)
+Thu Nov 19 10:40 PT, `--resume-at` the same time with `--have WY,UT,ID,OR,WA,MT`, `--end CO --by 2026-11-27T09:00
+--tz America/Los_Angeles` (10:00 MT), `--target 190.4` (Primm 10:50 to Denver 10:00 is 190.2 h), `--goal --frontier
+depth --slack-weight 3 --key pair --pairs push --pair-k 10 --depth-bias 8 --city-hop --hop-slots 4 --budget 1800
+--days 10`. **Nothing found.** Pair tables took 41 min on this 4-core container (not the ~7 min measured elsewhere).
+52364 nodes in 1800 s (29/s); deepest 31/48 at 93.3 h, Providence Mon Nov 23 10:59, via the Southwest Chief from
+Barstow to Galesburg, then Indianapolis -> Columbus -> Winston-Salem -> Raleigh -> Washington -> New York -> Portsmouth
+(ME) -> Boston. **This run was budget-bound, not stuck:** every node in the exit frontier (depth 19-30, 20550 nodes)
+was pair-live. Its deepest live nodes were in Detroit owing SD KY MO CO IN KS IL VT MN IA SC NH FL ND ME NE WI LA. The
+fixed Primm start is also later than the Thu 06:02 limit allows, so it is a test of RX's shape, not of the question.
+
+**Answer: no.** No front reaching Denver for the Fri Nov 27 10:05 within 195.9 h was found, so the
+Denver -> Cheyenne -> Missoula West-last route does not beat X on this evidence. **This is not a proof.** The backward
+search is slow (under 1 node/s) and has no pair key, and the forward cross-check ended with its whole frontier still
+live. A firmer answer needs either the mirrored pair tables for backward or a longer forward run (2 h+, free start
+day/time around Thu Nov 19 06:00). `verify_path.py` was not run, because there was no route to verify. Chains:
+`out/denver_back.pkl`, `out/primm_fwd.pkl` (logs alongside; out/ is not committed).
