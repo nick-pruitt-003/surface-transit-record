@@ -39,7 +39,7 @@ grand_bay_al_omnibus = { name = "Grand Bay AL (Omnibus Express)", lon = -88.3420
 mobile_omnibus = "=ibus:3018"
 loxley_omnibus = "=ibus:2077"
 pensacola_omnibus = "=ibus:2880"
-crestview_omnibus = { name = "Crestview FL (Omnibus Express)", lon = -86.5705, lat = 30.7621 }   # point approximate
+crestview_omnibus = { name = "Crestview FL (Omnibus Express)", lon = -86.5681, lat = 30.7273 }   # 3351 S Ferdon Blvd, Crestview FL 32536 (Nick Oct 23 2026; Census geocode)
 marianna_omnibus = { name = "Marianna FL (Omnibus Express)", lon = -85.2263, lat = 30.7744 }   # point approximate
 tallahassee_omnibus = "=ibus:3356"
 lake_city_omnibus = "=ibus:2294"

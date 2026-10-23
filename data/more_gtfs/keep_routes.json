@@ -1,6 +1,11 @@
 {
  "jta": [
-  "4"
+  "4",
+  "902",
+  "903",
+  "904",
+  "105",
+  "811"
  ],
  "metra": [
   "UP-N",
@@ -430,5 +435,54 @@
  ],
  "smart_mn": [
   "74433"
+ ],
+ "rts_gainesville": [
+  "12",
+  "1",
+  "5"
+ ],
+ "ms_cta": [
+  "04_RT 4 DIberville _RT 4 DIberville _FFBF9F6A"
+ ],
+ "greenlink": [
+  "503",
+  "504"
+ ],
+ "comet": [
+  "101",
+  "1",
+  "91",
+  "92"
+ ],
+ "montgomery_m": [
+  "6168",
+  "6160",
+  "6179"
+ ],
+ "texarkana_tline": [
+  "ROUTEONE",
+  "ROUTETHREE",
+  "ROUTEEIGHT"
+ ],
+ "dayton_rta": [
+  "01",
+  "02",
+  "09",
+  "18",
+  "44"
+ ],
+ "river_valley_metro": [
+  "ROUTE_3",
+  "ROUTE_8"
+ ],
+ "ecat": [
+  "2775",
+  "2783",
+  "2784",
+  "3564",
+  "2790",
+  "2792",
+  "2780",
+  "2782"
  ]
 }

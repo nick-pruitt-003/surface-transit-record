@@ -208,6 +208,20 @@ def followup_parses_forward_shapes_rows():
     assert not ROW.match('  rot  3 start: chose X, runner-up Y, gap 0.5')
 
 
+@test
+def untimed_stops_are_interpolated_by_distance_not_dropped():
+    # CTA Gulfport, ECAT and Montgomery time only their timepoints (80-87% of stop_times blank); dropping the blanks hid
+    # the stop a measured walk ends at (Biloxi -> Automall @ Timber Grove, Oct 23 2026). Interpolate by distance instead.
+    from time_router import _interpolate
+    pts = {'A': ('f:A', 'A', 0.0, 0.0), 'B': ('f:B', 'B', 0.01, 0.0), 'C': ('f:C', 'C', 0.03, 0.0), 'Z': ('f:Z', 'Z', 0.05, 0.0)}
+    stops = [(0, 'Z', None, None), (1, 'A', 1000, 1000), (2, 'B', None, None), (3, 'C', 1600, 1660), (4, 'Z', None, None)]
+    out = _interpolate(stops, pts)
+    assert [x[1] for x in out] == ['A', 'B', 'C'], out          # unanchored ends dropped, the middle one kept
+    assert out[1][2] == out[1][3] and 1000 < out[1][2] < 1600, out[1]
+    assert abs(out[1][2] - 1200) <= 1, out[1]                     # B is a third of the way from A to C
+    assert _interpolate([(0, 'A', None, None)], pts) == []
+
+
 if __name__ == '__main__':
     print()
     for name, ok, info in results: print(('PASS ' if ok else 'FAIL ') + name + ('' if ok else '\n     ' + info))

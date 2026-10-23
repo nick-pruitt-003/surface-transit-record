@@ -98,6 +98,30 @@ def _dropped(feed, trip_id):
     return any(f == feed and t.endswith('*') and trip_id.startswith(t[:-1]) for f, t in d)
 
 
+def _interpolate(stops, pts):
+    """Untimed stops (GTFS leaves non-timepoints blank: CTA Gulfport, ECAT, Montgomery ~80-87% of rows, Oct 23 2026)
+    get a time by straight-line distance between the timed stops either side, as trip planners do. Blank stops before
+    the first or after the last timed stop are dropped (nothing to anchor them)."""
+    timed = [i for i, x in enumerate(stops) if x[2] is not None]
+    if not timed: return []
+    out = []
+    for i0, i1 in zip(timed, timed[1:]):
+        out.append(stops[i0])
+        gap = stops[i0:i1 + 1]
+        if len(gap) <= 2: continue
+        cum = [0.0]
+        for p, q in zip(gap, gap[1:]):
+            a, b = pts[p[1]], pts[q[1]]
+            cum.append(cum[-1] + hav((a[2], a[3]), (b[2], b[3])))
+        t0, t1 = stops[i0][3], stops[i1][2]
+        for k in range(1, len(gap) - 1):
+            f = cum[k] / cum[-1] if cum[-1] > 0 else k / (len(gap) - 1)
+            tk = int(round(t0 + f * (t1 - t0)))
+            out.append((gap[k][0], gap[k][1], tk, tk))
+    out.append(stops[timed[-1]])
+    return out
+
+
 class Feed:
     """One GTFS zip. tz_mode: 'agency' (times in agency tz, or stop_timezone when
     present — Amtrak), 'infer' (majority state tz per agency), or 'utc'.
@@ -134,9 +158,11 @@ class Feed:
             t = self.trips.get(st['trip_id'])
             if t is None or st['stop_id'] not in self.stops: continue
             a = st.get('arrival_time') or st.get('departure_time'); d = st.get('departure_time') or a
-            if not a: continue
-            t['stops'].append((int(st['stop_sequence']), st['stop_id'], hms(a), hms(d)))
-        for t in self.trips.values(): t['stops'].sort()
+            t['stops'].append((int(st['stop_sequence']), st['stop_id'], hms(a) if a else None, hms(d) if d else None))
+        for t in self.trips.values():
+            t['stops'].sort()
+            if any(x[2] is None for x in t['stops']): t['stops'] = _interpolate(t['stops'], self.stops)
+
         if keep_routes is not None:   # unused stops only add footpaths
             used = {sid for t in self.trips.values() for _, sid, _, _ in t['stops']}
             self.stops = {k: v for k, v in self.stops.items() if k in used}
