@@ -1,6 +1,89 @@
 agency = "Tornado Bus"
 
 [stops]
+louisville_tropicana_tornado = "=ibus:444"   # Louisville KY (La Tropicana #153) (feed point Louisville)
+seymour_ta_tornado = { name = "TA Travel Center Seymour IN (Tornado)", lon = -85.8990, lat = 38.9310 }   # I-65 exit 50; point approximate
+indianapolis_tbc_tornado = "=ibus:204"   # TBC Office Indianapolis (feed point Indianapolis)
+anderson_speedway_tornado = "=ibus:2442"   # Speedway-Anderson IN (feed point)
+fort_wayne_flying_j_tornado = "=ibus:1740"   # Flying J Fort Wayne (feed point Fort Wayne)
+toledo_la_mexicana_tornado = { name = "Tienda La Mexicana Toledo OH (Tornado)", lon = -83.5254, lat = 41.6366 }   # 764 Oak St, Toledo OH 43605 (Nick Oct 22 2026; Census geocoder)
+columbus_sullivant_tornado = { name = "Tornado Columbus OH 3629 Sullivant Ave", lon = -83.0960, lat = 39.9425 }   # 3629 Sullivant Ave, Columbus OH 43228 (Nick Oct 23 2026; Census geocoder); COTA 6 at the door; no trip yet, the API crawl gives the times
+detroit_maria_travel_tornado = { name = "Maria International Travel Detroit (Tornado)", lon = -83.1039, lat = 42.3174 }   # 1938 Campbell St (Nick; OpenStreetMap)
+michigan_city_haros_tornado = { name = "Haro's Supermarket Michigan City IN (Tornado)", lon = -86.8966, lat = 41.7070 }   # 1708 Franklin St, Michigan City IN 46360 (Nick Oct 23 2026; Census geocoder)
+south_bend_erskine_tornado = { name = "Tornado South Bend IN 700 W Ireland Rd", lon = -86.2580, lat = 41.6288 }   # 700 W Ireland Rd, South Bend IN 46614 (Nick Oct 23 2026; Census geocoder)
+benton_harbor_la_perla_tornado = { name = "La Perla Produce Benton Harbor MI (Tornado)", lon = -86.4322, lat = 42.0957 }   # 1231 Pipestone Rd, Benton Harbor MI 49022 (Nick Oct 23 2026; Census geocoder)
+holland_santa_fe_tornado = { name = "Supermercado Santa Fe Holland MI (Tornado)", lon = -86.1366, lat = 42.8273 }   # 981 Butternut Dr, Holland MI 49424 (Nick Oct 23 2026; Census geocoder)
+grand_rapids_arias_tornado = { name = "Arias Supermarket Grand Rapids MI (Tornado)", lon = -85.6647, lat = 42.8847 }   # 4346 Division Ave S, Grand Rapids MI 49548 (Nick Oct 23 2026; Census geocoder); about 8 km south of downtown
+florence_ky_guadalupana_tornado = { name = "La Guadalupana #112 Florence KY (Tornado)", lon = -84.6266, lat = 38.9990 }   # point approximate, address wanted
+glendale_ky_pilot_tornado = { name = "Pilot I-65 exit 86 Glendale KY (Tornado)", lon = -85.9030, lat = 37.6000 }   # point approximate
+cave_city_shell_tornado = { name = "Shell Cave City KY (Tornado)", lon = -85.9570, lat = 37.1400 }   # point approximate
+smiths_grove_tc_tornado = { name = "Smiths Grove Travel Center KY (Tornado)", lon = -86.2060, lat = 37.0510 }   # point approximate
+franklin_ky_shell_tornado = { name = "Shell I-65 exit 6 Franklin KY (Tornado)", lon = -86.5560, lat = 36.7000 }   # point approximate
+nashville_tbc_tornado = { name = "TBC Nashville (4031 Nolensville Pike)", lon = -86.7296, lat = 36.0862 }   # Nick; OpenStreetMap
+dickson_pilot_tornado = { name = "Pilot Dickson TN (Tornado)", lon = -87.3446, lat = 36.0287 }   # I-40 exit 172; point approximate
+jackson_tn_el_mezcal_tornado = "=ibus:519"   # El Mezcal Grocery Jackson TN (feed point Jackson)
+memphis_quiktrip_tornado = { name = "QuikTrip Memphis TN (Tornado)", lon = -89.8367, lat = 35.1722 }   # 1731 Whitten Rd, Memphis TN 38134 (Nick Oct 22 2026; Census geocoder)
+osceola_ia_caseys_tornado = "=ibus:35"   # Casey's Gas Station-Osceola IA (feed point Osceola)
+des_moines_seguros_tornado = { name = "Seguros Mundo Latino Des Moines (Tornado)", lon = -93.5934, lat = 41.5941 }   # 1541 E Grand Ave, Des Moines (Nick; OpenStreetMap)
+marshalltown_villachuato_tornado = { name = "Abarrotes Villachuato Marshalltown (Tornado)", lon = -92.9128, lat = 42.0506 }   # 107 N Center St, Marshalltown IA (Nick; OpenStreetMap)
+ames_bp_tornado = "=ibus:2536"   # BP Gas Station-Ames (feed point Ames)
+williams_ia_flying_j_tornado = "=ibus:3278"   # Gas Station Flying J-Williams IA
+albert_lea_tornado = "=ibus:1630"   # Albert Lea (Tienda Mexicana Talamantes) (feed point)
+owatonna_kwik_trip_tornado = "=ibus:1564"   # Kwik Trip 403-Owatonna (feed point)
+inver_grove_heights_tornado = "=ibus:157"   # Inver Grove Heights (El Rincon Mexicano) (feed point)
+st_paul_guadalupana_tornado = { name = "Tienda La Guadalupana Saint Paul (Tornado)", lon = -93.0772, lat = 44.9294 }   # 178 Cesar Chavez St, St Paul (Nick; OpenStreetMap)
+minneapolis_tornado = { name = "Tornado Minneapolis (1522 E Lake St)", lon = -93.2528, lat = 44.9486 }   # 1522 E Lake St (Nick; OpenStreetMap)
+missouri_valley_shell_tornado = { name = "Shell Gas Station Missouri Valley IA (Tornado)", lon = -95.9010, lat = 41.5560 }   # I-29 exit 75 area; point approximate
+south_sioux_city_la_fashion_tornado = { name = "L.A. Fashion South Sioux City NE (Tornado)", lon = -96.4132, lat = 42.4798 }   # 1021 Dakota Ave, South Sioux City NE 68776 (Nick Oct 22 2026; Census geocoder)
+sioux_city_la_plazita_tornado = { name = "La Plazita Latina Sioux City IA (Tornado)", lon = -96.4240, lat = 42.5003 }   # 1300 W 4th St, Sioux City IA 51103 (Nick Oct 22 2026; Census geocoder)
+omaha_tbc_tornado = { name = "TBC Omaha (Tornado)", lon = -95.9488, lat = 41.2072 }   # point approximate (South Omaha), address wanted
+percival_pilot_tornado = { name = "Pilot Travel Center Percival IA (Nebraska City) (Tornado)", lon = -95.8178, lat = 40.7616 }   # I-29 exit 10, Iowa; point approximate
+st_joseph_arbys_tornado = { name = "Arbys St. Joseph MO (Tornado)", lon = -94.8467, lat = 39.7675 }   # point approximate, address wanted
+lincoln_la_ilucion_tornado = { name = "La Ilucion Lincoln NE (Tornado)", lon = -96.7025, lat = 40.8045 }   # 916 S 13th St, Lincoln NE 68508 (Nick Oct 22 2026; Census geocoder)
+york_petro_tornado = { name = "Petro Travel Center York NE (Tornado)", lon = -97.5937, lat = 40.8293 }   # I-80 exit 353; point approximate
+concordia_loves_tornado = { name = "Love's Concordia KS (Tornado)", lon = -97.6603, lat = 39.5540 }   # point approximate
+salina_la_nena_tornado = "=ibus:2460"   # La Nena Ice Cream Shop, Salina (feed point Salina)
+paqueteria_mexico_tornado = { name = "Paqueteria Mexico Wichita KS (Tornado)", lon = -97.3360, lat = 37.7246 }   # 114 E 21st St N, Wichita KS 67214 (Nick Oct 22 2026); point from the address, near 21st and Broadway
+doraville_tornado = "=ibus:1#3441"   # Atlanta (TBC Doraville)
+oxford_al_racetrac_tornado = { name = "Race-Trac Oxford AL (Tornado)", lon = -85.8350, lat = 33.6140 }   # same point as El Expreso's
+birmingham_mcd_tornado = "=ibus:3401"   # McDonalds-Birmingham (feed point Birmingham)
+tuscaloosa_quiktrip_tornado = "=ibus:1383"   # Quick Trip Gas Station-Tuscaloosa
+meridian_pilot_tornado = "=ibus:1027"   # Pilot Travel Center-Meridian
+tyler_shell_tornado = "=ibus:320"   # Tyler, TX (Shell Gas Station)
+longview_shell_tornado = "=ibus:2823"   # Shell Gas Station-Longview
+marshall_exxon_tornado = "=ibus:3224"   # Exxon Gas Station-Marshall
+shreveport_quiktrip_tornado = "=ibus:1781"   # QuikTrip Gas Station (exit 8)-Shreveport
+monroe_kangaroo_tornado = "=ibus:2417"   # Kangaroo Express-Monroe
+jackson_ms_flying_j_tornado = "=ibus:529"   # Jackson, MS (Flying J Travel center)
+sherman_quiktrip_tornado = "=ibus:517"   # Quick Trip (Sherman area; feed point Sherman)
+atoka_loves_tornado = "=ibus:1373"   # Love's Travel Stop-Atoka
+mcalester_mcd_tornado = "=ibus:2746"   # McDonald's-McAlester
+checotah_tornado = "=ibus:2735"   # Phillips 66 Gas Station-Checotah
+fort_smith_carnitas_tornado = "=ibus:2147"   # El Grande Carnitas-Fort Smith
+springdale_tornado = "=ibus:920"   # El Ranchito (TBC)-Springdale
+kansas_city_ks_tornado = "=ibus:2760"   # Tornado & El Expreso Bus Company Kansas (TBC KS)
+okc_plaza_latina_tornado = { name = "Plaza Latina-Oklahoma City (Tornado)", lon = -97.4939, lat = 35.4207 }   # 1050 SE 44th St (Nick; OpenStreetMap geocode)
+carthage_rio_grande_tornado = { name = "Rio Grande Market-Carthage MO (Tornado)", lon = -94.3119, lat = 37.1752 }   # 511 Lyon St, Carthage MO (Nick; OpenStreetMap geocode)
+tulsa_el_mercadito_tornado = { name = "Tulsa El Mercadito (Tornado)", lon = -95.8512, lat = 36.1308 }   # 2136 S Garnett Rd (Nick; OpenStreetMap geocode)
+defuniak_springs_tornado = "=ibus:3591"   # Whataburger-Defuniak Springs
+bonifay_tornado = "=ibus:265"   # Exxon Gas Station - Bonifay
+marianna_tornado = "=ibus:2092"   # Pilot Travel Center - MAR (Marianna)
+tallahassee_tornado = "=ibus:386"   # Flying J Travel Center - TAL
+live_oak_tornado = "=ibus:2482"   # Busy Bee-Live Oak
+lake_city_tornado = "=ibus:578"   # El Potro-Lake City
+gainesville_tornado = "=ibus:500"   # Gainesville FL (Circle K Station)
+crestview_mcd_tornado = "=ibus:3613"   # Crestview (McDonald's)
+pensacola_tornado = "=ibus:1822"   # Shell/Circle K Station-Pensacola
+loxley_tornado = "=ibus:1293"   # Loves Travel Center-Loxley
+grand_bay_tornado = "=ibus:3169"   # TA Travel Center-Grand Bay
+moss_point_tornado = "=ibus:2380"   # Pilot Travel Center - MOSS
+biloxi_tornado = "=ibus:2407"   # Loves Travel Center-Biloxi
+slidell_tornado = "=ibus:2897"   # TA Travel Center-Slidell
+covington_tornado = "=ibus:404"   # Exxon Gas Station-Covington
+hammond_tornado = "=ibus:2742"   # Petro Gas Station-Hammond
+baton_rouge_tornado = "=ibus:3008"   # Baton Rouge (Walmart)
+lafayette_ta_tornado = "=ibus:1490"   # TA Travel Center-Lafayette
+houston_lockwood_tornado = "=ibus:222"   # Tornado & El Expreso Lockwood
 milwaukee_agencia_de_viajes_mexico = "=ibus:1358"   # Milwaukee( Agencia De Viajes Mexico)
 tornado_bus_company_waukegan = "=ibus:306"   # Tornado Bus Company - Waukegan
 tornado_el_expreso_bus_company_chicago = "=ibus:3344"   # Tornado & El Expreso Bus Company Chicago
@@ -34,27 +117,141 @@ tornado_el_expreso_bus_company_lockwood = "=ibus:222"   # Tornado & El Expreso B
 [[trip]]
 id = "t51"
 route = "Route 3 Milwaukee -> Dallas (real times from tornadobus.com Sep 24 2026; daily assumed; Effingham stop location approximate)"
-days = "1111111"
+days = "0000000"   # was "1111111"; superseded by tornado_api.toml (booking API crawl, Oct 23 2026)
 tz = "America/Chicago"
 stops = ["milwaukee_agencia_de_viajes_mexico 09:30", "tornado_bus_company_waukegan 10:30", "tornado_el_expreso_bus_company_chicago 11:30", "taco_del_norte_kankakee 13:55", "walmart_rantoul 14:40", "lupita_s_grocery_effingham_tornado 16:25", "el_rancherito_of_mt_vernon 17:25", "marion 17:55", "anna_gasolinera_shell 18:20", "flying_j_travel_center_mathews 19:20", "chinese_buffet_blytheville 20:20", "tornado_bus_company_west_memphis 21:18", "little_rock 23:48", "hope 25:18", "texarkana 25:48", "elvis_super_texmex_restaurant_winfield 26:44", "tornado_el_expreso_bus_company_dallas_i_ 29:24"]
 
 [[trip]]
 id = "t101"
 route = "El Paso -> Dallas Jefferson (Nick screenshots Sep 21 2026; Wed 9/23 7:00 PM EP shown; daily assumed; EP 7PM MDT stored as 8PM CDT)"
-days = "1111111"
+days = "0000000"   # was "1111111"; superseded by tornado_api.toml (booking API crawl, Oct 23 2026)
 tz = "America/Chicago"
 stops = ["tornado_el_expreso_bus_company_el_paso 20:00", "odessa 24:25", "midland_stripes 25:00", "mc_donalds_pilot_travel_center_big_sprin 26:00", "abilene_7_eleven 27:45", "tornado_bus_company_fort_worth 29:25", "tornado_el_expreso_bus_company_jefferson 30:30"]
 
 [[trip]]
 id = "t102"
 route = "El Paso -> Houston Lockwood (Nick screenshots Sep 21 2026; Wed 9/23 7:30 PM EP; 13h15; daily assumed; EP 7:30PM MDT=8:30PM CDT; Austin 5:31 after SA stretched to 6:30)"
-days = "1111111"
+days = "0000000"   # was "1111111"; superseded by tornado_api.toml (booking API crawl, Oct 23 2026)
 tz = "America/Chicago"
 stops = ["tornado_el_expreso_bus_company_el_paso 20:30", "tornado_el_expreso_bus_company_san_anton 29:30", "tornado_el_expreso_bus_company_austin 30:30", "tornado_el_expreso_bus_company_katy 31:55", "tornado_bus_company_airline 32:30", "tornado_el_expreso_bus_company_lockwood 32:45"]
 
 [[trip]]
 id = "t103"
 route = "Dallas Jefferson -> Dallas I-30 (transfer stub for Expreso board; ~45min)"
-days = "1111111"
+days = "0000000"   # was "1111111"; superseded by tornado_api.toml (booking API crawl, Oct 23 2026)
 tz = "America/Chicago"
 stops = ["tornado_el_expreso_bus_company_jefferson 07:00", "tornado_el_expreso_bus_company_dallas_i_ 07:45"]
+
+[[trip]]
+id = "t502"
+route = "Route 1 Crestview 20:57 -> Pensacola -> Mobile area -> Biloxi -> Slidell -> Baton Rouge -> Lafayette -> Lake Charles -> Beaumont -> Houston Lockwood 06:57 (tornadobus.com, Nick Oct 22 2026, daily; replaces feed trip 1814; the whole Tornado feed is skipped (placeholder times, stops evenly 30 min apart); Lake Charles 04:22 and Beaumont 05:37 stops not in the data, omitted)"
+days = "0000000"   # was "1111111"; superseded by tornado_api.toml (booking API crawl, Oct 23 2026)
+tz = "America/Chicago"
+stops = ["crestview_mcd_tornado 20:57", "pensacola_tornado 21:37", "loxley_tornado 22:12", "grand_bay_tornado 22:52", "moss_point_tornado 23:12", "biloxi_tornado 24:07", "slidell_tornado 25:02", "covington_tornado 25:27", "hammond_tornado 25:52", "baton_rouge_tornado 26:42", "lafayette_ta_tornado 27:37", "houston_lockwood_tornado 30:57"]
+
+[[trip]]
+id = "t503"
+route = "Route 1 eastbound Houston Lockwood 19:30 -> Lafayette 23:10 -> Baton Rouge -> Hammond -> Covington -> Slidell 01:30 -> Biloxi -> Mobile area -> Pensacola -> Crestview 04:50 -> Marianna 06:00 CT -> Tallahassee 08:05 ET -> Live Oak -> Lake City -> Gainesville 10:05 ET (tornadobus.com, Nick Oct 22 2026; daily assumed; Beaumont 20:45 and Lake Charles 22:05 stops not in the data, omitted). Florida stops east of Marianna are stored in Central (site shows Eastern)"
+days = "0000000"   # was "1111111"; superseded by tornado_api.toml (booking API crawl, Oct 23 2026)
+tz = "America/Chicago"
+stops = ["houston_lockwood_tornado 19:30", "lafayette_ta_tornado 23:10", "baton_rouge_tornado 24:00", "hammond_tornado 24:45", "covington_tornado 25:00", "slidell_tornado 25:30", "biloxi_tornado 26:05", "moss_point_tornado 26:50", "grand_bay_tornado 27:05", "loxley_tornado 27:35", "pensacola_tornado 28:00", "crestview_mcd_tornado 28:50", "defuniak_springs_tornado 29:20", "bonifay_tornado 29:40", "marianna_tornado 30:00", "tallahassee_tornado 31:05", "live_oak_tornado 32:15", "lake_city_tornado 32:30", "gainesville_tornado 33:05"]
+
+[[trip]]
+id = "t504"
+route = "Route 8 Dallas I-30 19:30 -> Sherman -> Atoka -> McAlester -> Checotah -> Fort Smith 00:15 -> Springdale 01:40 -> Kansas City KS 05:45 -> St. Joseph 06:40 -> Percival IA 08:10 -> Omaha 09:10 -> Missouri Valley IA 09:55 -> La Plazita Latina 11:03 -> South Sioux City NE 11:14 (tornadobus.com, Nick Oct 22 2026; THURSDAYS ONLY)"
+days = "0000000"   # was "0001000"; superseded by tornado_api.toml (booking API crawl, Oct 23 2026)
+tz = "America/Chicago"
+stops = ["tornado_el_expreso_bus_company_dallas_i_ 19:30", "sherman_quiktrip_tornado 20:35", "atoka_loves_tornado 21:40", "mcalester_mcd_tornado 22:30", "checotah_tornado 23:10", "fort_smith_carnitas_tornado 24:15", "springdale_tornado 25:40", "kansas_city_ks_tornado 29:45", "st_joseph_arbys_tornado 30:40", "percival_pilot_tornado 32:10", "omaha_tbc_tornado 33:10", "missouri_valley_shell_tornado 33:55", "sioux_city_la_plazita_tornado 35:03", "south_sioux_city_la_fashion_tornado 35:14"]
+
+[[trip]]
+id = "t505"
+route = "Dallas I-30 19:15 -> Oklahoma City 22:30 -> Tulsa 00:25 -> Carthage MO 02:25 -> Kansas City KS 04:25 -> Osceola IA 07:25 -> Des Moines 11:11 (long wait, probably a driver change per Nick) -> Marshalltown 12:21 -> Ames 13:21 -> Williams IA 14:21 -> Albert Lea MN 15:26 -> Owatonna -> Inver Grove Heights -> St Paul 17:36 -> Minneapolis 18:06; Dallas -> Minneapolis daily (Nick) (tornadobus.com, Nick Oct 22 2026; daily). stops geocoded from addresses (Nick)"
+days = "0000000"   # was "1111111"; superseded by tornado_api.toml (booking API crawl, Oct 23 2026)
+tz = "America/Chicago"
+stops = ["tornado_el_expreso_bus_company_dallas_i_ 19:15", "okc_plaza_latina_tornado 22:30", "tulsa_el_mercadito_tornado 24:25", "carthage_rio_grande_tornado 26:25", "kansas_city_ks_tornado 28:25", "osceola_ia_caseys_tornado 31:25", "des_moines_seguros_tornado 35:11", "marshalltown_villachuato_tornado 36:21", "ames_bp_tornado 37:21", "williams_ia_flying_j_tornado 38:21", "albert_lea_tornado 39:26", "owatonna_kwik_trip_tornado 39:56", "inver_grove_heights_tornado 41:06", "st_paul_guadalupana_tornado 41:36", "minneapolis_tornado 42:06"]
+
+[[trip]]
+id = "t506"
+route = "Route 8 Kansas City KS 21:31 -> Springdale 01:01 -> Fort Smith 02:16 -> Checotah -> McAlester -> Atoka -> Sherman -> Dallas I-30 07:00 (tornadobus.com, Nick Oct 22 2026; THURSDAYS; the Friday run starts in Omaha, t514; whether Thursday's does too is not known)"
+days = "0000000"   # was "0001000"; superseded by tornado_api.toml (booking API crawl, Oct 23 2026)
+tz = "America/Chicago"
+stops = ["kansas_city_ks_tornado 21:31", "springdale_tornado 25:01", "fort_smith_carnitas_tornado 26:16", "checotah_tornado 27:26", "mcalester_mcd_tornado 28:06", "atoka_loves_tornado 28:56", "sherman_quiktrip_tornado 29:56", "tornado_el_expreso_bus_company_dallas_i_ 31:00"]
+
+[[trip]]
+id = "t507"
+route = "Minneapolis 10:00 -> St Paul 10:25 -> Inver Grove Heights -> Owatonna -> Albert Lea 12:00 -> Williams IA 13:00 -> Ames 13:50 -> Marshalltown 14:30 -> Des Moines 15:30 -> Osceola 16:25 -> Kansas City KS 20:00 -> Rio Grande Market 22:15 -> Tulsa (El Mercadito) 23:55 -> Oklahoma City (Plaza Latina) 02:10 -> Dallas I-30 05:30 (tornadobus.com, Nick Oct 22 2026; daily). stops geocoded from addresses (Nick)"
+days = "0000000"   # was "1111111"; superseded by tornado_api.toml (booking API crawl, Oct 23 2026)
+tz = "America/Chicago"
+stops = ["minneapolis_tornado 10:00", "st_paul_guadalupana_tornado 10:25", "inver_grove_heights_tornado 10:45", "owatonna_kwik_trip_tornado 11:30", "albert_lea_tornado 12:00", "williams_ia_flying_j_tornado 13:00", "ames_bp_tornado 13:50", "marshalltown_villachuato_tornado 14:30", "des_moines_seguros_tornado 15:30", "osceola_ia_caseys_tornado 16:25", "kansas_city_ks_tornado 20:00", "carthage_rio_grande_tornado 22:15", "tulsa_el_mercadito_tornado 23:55", "okc_plaza_latina_tornado 26:10", "tornado_el_expreso_bus_company_dallas_i_ 29:30"]
+
+
+[[trip]]
+id = "t509"
+route = "Route 9 Atlanta (Doraville) 18:00 ET -> Oxford AL 18:25 -> Birmingham 18:55 -> Tuscaloosa 19:40 -> Meridian 21:10 -> Jackson MS 22:45 -> Monroe 00:30 -> Shreveport 02:00 -> Marshall 02:25 -> Longview 02:50 -> Tyler 03:35 -> Dallas I-30 05:05 CT (tornadobus.com, Nick Oct 22 2026; daily). Site times read as local, Atlanta stored as 17:00 CT. Oxford -> Birmingham 30 min looks short; kept as shown. The site shows end points in Eastern and intermediate stops in local time inconsistently (Nick); times here are fixed from durations: Monroe 00:30 and Jackson -> Shreveport 3 h 15 per Nick, Jackson -> Dallas 6 h 20 as the site shows, Shreveport -> Tyler spacing as shown. Eastbound is El Expreso t100 (same bus)"
+days = "0000000"   # was "1111111"; superseded by tornado_api.toml (booking API crawl, Oct 23 2026)
+tz = "America/Chicago"
+stops = ["doraville_tornado 17:00", "oxford_al_racetrac_tornado 18:25", "birmingham_mcd_tornado 18:55", "tuscaloosa_quiktrip_tornado 19:40", "meridian_pilot_tornado 21:10", "jackson_ms_flying_j_tornado 22:45", "monroe_kangaroo_tornado 24:30", "shreveport_quiktrip_tornado 26:00", "marshall_exxon_tornado 26:25", "longview_shell_tornado 26:50", "tyler_shell_tornado 27:35", "tornado_el_expreso_bus_company_dallas_i_ 29:05"]
+
+[[trip]]
+id = "t512"
+route = "Route 3 Dallas I-30 19:15 -> Winfield -> Texarkana 22:02 -> Hope -> Little Rock 23:57 -> West Memphis 01:57 -> Blytheville 03:02 -> Mathews MO 04:02 -> Anna IL 05:02 -> Marion -> Mt Vernon 06:07 -> Arcola -> Rantoul 08:52 -> Kankakee 09:52 -> Chicago 10:52 -> Waukegan 12:22 -> Milwaukee 13:07, all Central (tornadobus.com, Nick Oct 22 2026; daily assumed). Sunoco 20:57, Arcola 08:07, Road Ranger 08:37 and Kwik Trip 12:42 stops have no location in the data, omitted. Replaces feed trip 1055"
+days = "0000000"   # was "1111111"; superseded by tornado_api.toml (booking API crawl, Oct 23 2026)
+tz = "America/Chicago"
+stops = ["tornado_el_expreso_bus_company_dallas_i_ 19:15", "elvis_super_texmex_restaurant_winfield 20:45", "texarkana 22:02", "hope 22:27", "little_rock 23:57", "tornado_bus_company_west_memphis 25:57", "chinese_buffet_blytheville 27:02", "flying_j_travel_center_mathews 28:02", "anna_gasolinera_shell 29:02", "marion 29:27", "el_rancherito_of_mt_vernon 30:07", "walmart_rantoul 32:52", "taco_del_norte_kankakee 33:52", "tornado_el_expreso_bus_company_chicago 34:52", "tornado_bus_company_waukegan 36:22", "milwaukee_agencia_de_viajes_mexico 37:07"]
+
+[[trip]]
+id = "t513"
+route = "Route 7 Dallas I-30 19:30 -> Dallas Jefferson Blvd 19:45 -> Fort Worth 20:30 -> Abilene 23:00 -> Big Spring 00:55 -> Midland 01:40 -> Odessa 02:05 -> El Paso 06:15 MT (tornadobus.com, Nick Oct 22 2026; daily assumed). Local clocks: Odessa 02:05 CT -> El Paso 06:15 MT is 5 h 10 for ~280 miles; read as Eastern it would be 3 h 10, impossible. Midland is Flying J, stored at the feed's Midland (Stripes) point; Abilene (Alon) at the feed's Abilene point"
+days = "0000000"   # was "1111111"; superseded by tornado_api.toml (booking API crawl, Oct 23 2026)
+stops = ["tornado_el_expreso_bus_company_dallas_i_ 19:30", "tornado_el_expreso_bus_company_jefferson 19:45", "tornado_bus_company_fort_worth 20:30", "abilene_7_eleven 23:00", "mc_donalds_pilot_travel_center_big_sprin 00:55", "midland_stripes 01:40", "odessa 02:05", "tornado_el_expreso_bus_company_el_paso 06:15"]
+
+[[trip]]
+id = "t514"
+route = "South Sioux City NE 16:00 -> La Plazita Latina (Sioux City IA) 16:10 -> Omaha 18:00 -> Percival IA 18:43 -> St. Joseph MO 20:13 -> Kansas City KS 21:24 -> Springdale 01:01 -> Fort Smith 02:16 -> Checotah -> McAlester -> Atoka -> Sherman -> Dallas I-30 07:00 (tornadobus.com, Nick Oct 22 2026; FRIDAYS). The site lists a Love's Sioux City stop at the same minute as Omaha, omitted"
+days = "0000000"   # was "0000100"; superseded by tornado_api.toml (booking API crawl, Oct 23 2026)
+tz = "America/Chicago"
+stops = ["south_sioux_city_la_fashion_tornado 16:00", "sioux_city_la_plazita_tornado 16:10", "omaha_tbc_tornado 18:00", "percival_pilot_tornado 18:43", "st_joseph_arbys_tornado 20:13", "kansas_city_ks_tornado 21:24", "springdale_tornado 25:01", "fort_smith_carnitas_tornado 26:16", "checotah_tornado 27:26", "mcalester_mcd_tornado 28:06", "atoka_loves_tornado 28:56", "sherman_quiktrip_tornado 29:56", "tornado_el_expreso_bus_company_dallas_i_ 31:00"]
+
+[[trip]]
+id = "t515"
+route = "South Sioux City NE 16:30 -> La Plazita Latina (Sioux City IA) 16:40 -> Omaha 18:21/18:45 -> Lincoln 19:45 -> York NE 20:45 -> Concordia KS 21:50 -> Salina 22:50 -> Paqueteria Mexico (Wichita?) 00:50 -> Oklahoma City 03:30 -> Dallas I-30 07:15 (tornadobus.com, Nick Oct 22 2026; WEDNESDAYS). Omaha arrival from the Sioux City page, departure from the Omaha page; the Love's Sioux City stop shows the Omaha minute, omitted"
+days = "0000000"   # was "0010000"; superseded by tornado_api.toml (booking API crawl, Oct 23 2026)
+tz = "America/Chicago"
+stops = ["south_sioux_city_la_fashion_tornado 16:30", "sioux_city_la_plazita_tornado 16:40", "omaha_tbc_tornado 18:21/18:45", "lincoln_la_ilucion_tornado 19:45", "york_petro_tornado 20:45", "concordia_loves_tornado 21:50", "salina_la_nena_tornado 22:50", "paqueteria_mexico_tornado 24:50", "okc_plaza_latina_tornado 27:30", "tornado_el_expreso_bus_company_dallas_i_ 31:15"]
+
+[[trip]]
+id = "t516"
+route = "Dallas I-30 ~16:50 (estimated) -> Oklahoma City 20:35 -> Paqueteria Mexico (Wichita?) 23:15 -> Salina 01:26 -> York NE 04:00 -> Lincoln 05:20 -> Omaha 06:25 -> Missouri Valley IA 07:15 -> La Plazita Latina 08:30 -> South Sioux City NE 08:58 (tornadobus.com, Nick Oct 22 2026; TUESDAYS). The site shows Dallas 19:30 -> OKC 20:35 (1 h 05 for ~200 miles, impossible); Dallas set 3 h 45 before OKC, as the Wednesday southbound run takes"
+days = "0000000"   # was "0100000"; superseded by tornado_api.toml (booking API crawl, Oct 23 2026)
+tz = "America/Chicago"
+stops = ["tornado_el_expreso_bus_company_dallas_i_ 16:50", "okc_plaza_latina_tornado 20:35", "paqueteria_mexico_tornado 23:15", "salina_la_nena_tornado 25:26", "york_petro_tornado 28:00", "lincoln_la_ilucion_tornado 29:20", "omaha_tbc_tornado 30:25", "missouri_valley_shell_tornado 31:15", "sioux_city_la_plazita_tornado 32:30", "south_sioux_city_la_fashion_tornado 32:58"]
+
+[[trip]]
+id = "t519"
+route = "Detroit 06:30 -> Toledo 07:40 -> (La Michoacana #2 Columbus area 10:10, Las Delicias Hamilton OH area 11:50) -> Florence KY 11:30 ET -> (La Preferida 12:30, no location) -> Glendale KY 14:00 ET -> Cave City 14:30 CT -> Smiths Grove 14:45 -> Franklin KY 15:45 -> Nashville 16:35 -> Dickson 18:35 -> Jackson TN 19:35 -> Memphis 20:35 -> West Memphis 21:15 -> Little Rock 23:15 -> Hope 01:13 -> Texarkana 01:43 -> Winfield 02:43 -> Dallas I-30 04:13 (tornadobus.com, Nick Oct 22 2026; via Florence KY on Mon/Wed/Thu/Sat; Sun/Tue/Fri it runs via Indianapolis instead, not yet entered). Local clocks at each stop. The site's Columbus 10:10 / Hamilton 11:50 / Florence 11:30 cannot all be right (Hamilton after Florence; Columbus -> Florence 1 h 20 for ~115 miles), so those two stops are omitted and Florence 11:30 kept, as the later times follow from it"
+days = "0000000"   # was "1011010"; superseded by tornado_api.toml (booking API crawl, Oct 23 2026)
+stops = ["detroit_maria_travel_tornado 06:30", "toledo_la_mexicana_tornado 07:40", "florence_ky_guadalupana_tornado 11:30", "glendale_ky_pilot_tornado 14:00", "cave_city_shell_tornado 14:30", "smiths_grove_tc_tornado 14:45", "franklin_ky_shell_tornado 15:45", "nashville_tbc_tornado 16:35", "dickson_pilot_tornado 18:35", "jackson_tn_el_mezcal_tornado 19:35", "memphis_quiktrip_tornado 20:35", "tornado_bus_company_west_memphis 21:15", "little_rock 23:15", "hope 01:13", "texarkana 01:43", "elvis_super_texmex_restaurant_winfield 02:43", "tornado_el_expreso_bus_company_dallas_i_ 04:13"]
+
+[[trip]]
+id = "t521"
+route = "Grand Rapids 08:30 ET -> Holland 09:00 -> Benton Harbor 09:45 -> South Bend 10:15 ET -> Michigan City 10:30 CT -> Chicago 11:30 CT (tornadobus.com, Nick Oct 22 2026; daily). Local clocks; stop points are the feed's city points"
+days = "0000000"   # was "1111111"; superseded by tornado_api.toml (booking API crawl, Oct 23 2026)
+stops = ["grand_rapids_arias_tornado 08:30", "holland_santa_fe_tornado 09:00", "benton_harbor_la_perla_tornado 09:45", "south_bend_erskine_tornado 10:15", "michigan_city_haros_tornado 10:30", "tornado_el_expreso_bus_company_chicago 11:30"]
+
+[[trip]]
+id = "t522"
+route = "Chicago 11:51 CT -> Michigan City -> South Bend 15:52 ET -> Benton Harbor 16:33 -> Holland 17:33 -> Grand Rapids ~18:13 ET (tornadobus.com, Nick Oct 22 2026; daily). The site's times are inconsistent (Grand Rapids 17:13 is before Holland 17:33): intermediates read as Eastern (Michigan City 15:06 ET = 14:06 CT), Grand Rapids set 40 min after Holland"
+days = "0000000"   # was "1111111"; superseded by tornado_api.toml (booking API crawl, Oct 23 2026)
+stops = ["tornado_el_expreso_bus_company_chicago 11:51", "michigan_city_haros_tornado 14:06", "south_bend_erskine_tornado 15:52", "benton_harbor_la_perla_tornado 16:33", "holland_santa_fe_tornado 17:33", "grand_rapids_arias_tornado 18:13"]
+
+[[trip]]
+id = "t523"
+route = "Dallas I-30 19:15 -> Winfield -> Texarkana 21:30 -> Hope -> Little Rock 23:30 -> West Memphis 01:30 -> Memphis 01:50 -> Jackson TN 02:50 -> Nashville 04:50 -> Franklin KY -> Smiths Grove -> Cave City 06:30 CT -> Glendale 07:00 ET -> Louisville 07:45 -> Seymour IN 09:51 -> Indianapolis 11:01 -> Anderson -> Fort Wayne 13:16 -> Tienda La Mexicana (Toledo?) 15:01 -> Detroit 16:01 (tornadobus.com, Nick Oct 22 2026; daily). Local clocks. Sunoco 21:00, El Mercadito 08:01 and Mexico Lindo #212 09:01 have no locations, omitted"
+days = "0000000"   # was "1111111"; superseded by tornado_api.toml (booking API crawl, Oct 23 2026)
+stops = ["tornado_el_expreso_bus_company_dallas_i_ 19:15", "elvis_super_texmex_restaurant_winfield 20:15", "texarkana 21:30", "hope 22:00", "little_rock 23:30", "tornado_bus_company_west_memphis 01:30", "memphis_quiktrip_tornado 01:50", "jackson_tn_el_mezcal_tornado 02:50", "nashville_tbc_tornado 04:50", "franklin_ky_shell_tornado 05:45", "smiths_grove_tc_tornado 06:15", "cave_city_shell_tornado 06:30", "glendale_ky_pilot_tornado 07:00", "louisville_tropicana_tornado 07:45", "seymour_ta_tornado 09:51", "indianapolis_tbc_tornado 11:01", "anderson_speedway_tornado 11:46", "fort_wayne_flying_j_tornado 13:16", "toledo_la_mexicana_tornado 15:01", "detroit_maria_travel_tornado 16:01"]
+
+[[trip]]
+id = "t524"
+route = "Detroit -> Dallas via Indianapolis (SUN/TUE/FRI): Detroit 06:30 -> Toledo 07:30 -> Fort Wayne 09:15 -> Anderson 10:45 -> Indianapolis 11:30 -> (Seymour 13:10, El Mercadito 13:00: inconsistent, omitted) -> Louisville 13:15 (tornadobus.com, Nick Oct 22 2026). South of Louisville not yet entered. Local clocks"
+days = "0000000"   # was "0100101"; superseded by tornado_api.toml (booking API crawl, Oct 23 2026)
+stops = ["detroit_maria_travel_tornado 06:30", "toledo_la_mexicana_tornado 07:30", "fort_wayne_flying_j_tornado 09:15", "anderson_speedway_tornado 10:45", "indianapolis_tbc_tornado 11:30", "louisville_tropicana_tornado 13:15"]

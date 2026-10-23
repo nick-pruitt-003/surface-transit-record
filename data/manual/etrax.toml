@@ -1,0 +1,74 @@
+agency = "ETrax (CEFS, Effingham IL deviated route)"
+
+# CEFS ETrax, Effingham IL: hourly loop, Mon-Fri, first loop 08:00, last loop begins 15:00 (cefseoc.org/etrax, Nick
+# screenshot Oct 23 2026). Times are the published minutes past the hour; deviations (booked 24 h ahead) are not modelled.
+# Stop points from the Census geocoder; the VA Clinic (1101 Ford Ave, :20) did not geocode and is left out.
+# Not entered: no service on Thanksgiving Day and Black Friday (Nov 26-27 2026) or the other listed holidays.
+
+[stops]
+etrax_hshs_health = { name = "HSHS St Anthony's Health Center (Main Entrance) Effingham (ETrax)", lon = -88.552938, lat = 39.127607 }   # 900 W Temple Ave, Effingham, IL 62401
+etrax_brookstone = { name = "Brookstone Estates Effingham (ETrax)", lon = -88.550277, lat = 39.134773 }   # 1101 N Maple St, Effingham, IL 62401
+etrax_bonutti = { name = "Sarah Bush Bonutti Clinic Effingham (ETrax)", lon = -88.558832, lat = 39.134870 }   # 1303 W Evergreen Ave, Effingham, IL 62401
+etrax_ta = { name = "TA Travel Center (Pump 1) Effingham (ETrax)", lon = -88.566699, lat = 39.135083 }   # 1702 W Evergreen Ave, Effingham, IL 62401
+etrax_walmart = { name = "Walmart (Garden Center) Effingham (ETrax)", lon = -88.561002, lat = 39.139380 }   # 1204 Avenue of Mid America, Effingham, IL 62401
+etrax_lake_pointe = { name = "Lake Pointe Apartments Effingham (ETrax)", lon = -88.564865, lat = 39.142342 }   # 1700 Ford Ave, Effingham, IL 62401
+etrax_save_a_lot = { name = "Save-a-Lot Effingham (ETrax)", lon = -88.556451, lat = 39.123098 }   # 101 N Keller Dr, Effingham, IL 62401
+etrax_kirbys = { name = "Kirby's IGA Effingham (ETrax)", lon = -88.545934, lat = 39.121834 }   # 101 S Merchant St, Effingham, IL 62401
+etrax_county_bldg = { name = "Effingham County Building Parking Lot Effingham (ETrax)", lon = -88.542132, lat = 39.121428 }   # 101 N 4th St, Effingham, IL 62401
+etrax_hshs_hosp = { name = "HSHS St Anthony's Memorial Hospital (Prairie Heart) Effingham (ETrax)", lon = -88.549315, lat = 39.125805 }   # 503 N Maple St, Effingham, IL 62401
+
+[[trip]]
+id = "t602"
+route = "ETrax loop 08:00 HSHS Health Center -> TA Travel Center -> Walmart -> TA -> Save-a-Lot -> Kirby's IGA -> County Building -> HSHS Memorial Hospital"
+days = "1111100"
+tz = "America/Chicago"
+stops = ["etrax_hshs_health 08:00", "etrax_brookstone 08:05", "etrax_bonutti 08:08", "etrax_ta 08:12", "etrax_walmart 08:17", "etrax_lake_pointe 08:23", "etrax_ta 08:30", "etrax_save_a_lot 08:35", "etrax_kirbys 08:39", "etrax_county_bldg 08:43", "etrax_hshs_hosp 08:48"]
+
+[[trip]]
+id = "t603"
+route = "ETrax loop 09:00 HSHS Health Center -> TA Travel Center -> Walmart -> TA -> Save-a-Lot -> Kirby's IGA -> County Building -> HSHS Memorial Hospital"
+days = "1111100"
+tz = "America/Chicago"
+stops = ["etrax_hshs_health 09:00", "etrax_brookstone 09:05", "etrax_bonutti 09:08", "etrax_ta 09:12", "etrax_walmart 09:17", "etrax_lake_pointe 09:23", "etrax_ta 09:30", "etrax_save_a_lot 09:35", "etrax_kirbys 09:39", "etrax_county_bldg 09:43", "etrax_hshs_hosp 09:48"]
+
+[[trip]]
+id = "t604"
+route = "ETrax loop 10:00 HSHS Health Center -> TA Travel Center -> Walmart -> TA -> Save-a-Lot -> Kirby's IGA -> County Building -> HSHS Memorial Hospital"
+days = "1111100"
+tz = "America/Chicago"
+stops = ["etrax_hshs_health 10:00", "etrax_brookstone 10:05", "etrax_bonutti 10:08", "etrax_ta 10:12", "etrax_walmart 10:17", "etrax_lake_pointe 10:23", "etrax_ta 10:30", "etrax_save_a_lot 10:35", "etrax_kirbys 10:39", "etrax_county_bldg 10:43", "etrax_hshs_hosp 10:48"]
+
+[[trip]]
+id = "t605"
+route = "ETrax loop 11:00 HSHS Health Center -> TA Travel Center -> Walmart -> TA -> Save-a-Lot -> Kirby's IGA -> County Building -> HSHS Memorial Hospital"
+days = "1111100"
+tz = "America/Chicago"
+stops = ["etrax_hshs_health 11:00", "etrax_brookstone 11:05", "etrax_bonutti 11:08", "etrax_ta 11:12", "etrax_walmart 11:17", "etrax_lake_pointe 11:23", "etrax_ta 11:30", "etrax_save_a_lot 11:35", "etrax_kirbys 11:39", "etrax_county_bldg 11:43", "etrax_hshs_hosp 11:48"]
+
+[[trip]]
+id = "t606"
+route = "ETrax loop 12:00 HSHS Health Center -> TA Travel Center -> Walmart -> TA -> Save-a-Lot -> Kirby's IGA -> County Building -> HSHS Memorial Hospital"
+days = "1111100"
+tz = "America/Chicago"
+stops = ["etrax_hshs_health 12:00", "etrax_brookstone 12:05", "etrax_bonutti 12:08", "etrax_ta 12:12", "etrax_walmart 12:17", "etrax_lake_pointe 12:23", "etrax_ta 12:30", "etrax_save_a_lot 12:35", "etrax_kirbys 12:39", "etrax_county_bldg 12:43", "etrax_hshs_hosp 12:48"]
+
+[[trip]]
+id = "t607"
+route = "ETrax loop 13:00 HSHS Health Center -> TA Travel Center -> Walmart -> TA -> Save-a-Lot -> Kirby's IGA -> County Building -> HSHS Memorial Hospital"
+days = "1111100"
+tz = "America/Chicago"
+stops = ["etrax_hshs_health 13:00", "etrax_brookstone 13:05", "etrax_bonutti 13:08", "etrax_ta 13:12", "etrax_walmart 13:17", "etrax_lake_pointe 13:23", "etrax_ta 13:30", "etrax_save_a_lot 13:35", "etrax_kirbys 13:39", "etrax_county_bldg 13:43", "etrax_hshs_hosp 13:48"]
+
+[[trip]]
+id = "t608"
+route = "ETrax loop 14:00 HSHS Health Center -> TA Travel Center -> Walmart -> TA -> Save-a-Lot -> Kirby's IGA -> County Building -> HSHS Memorial Hospital"
+days = "1111100"
+tz = "America/Chicago"
+stops = ["etrax_hshs_health 14:00", "etrax_brookstone 14:05", "etrax_bonutti 14:08", "etrax_ta 14:12", "etrax_walmart 14:17", "etrax_lake_pointe 14:23", "etrax_ta 14:30", "etrax_save_a_lot 14:35", "etrax_kirbys 14:39", "etrax_county_bldg 14:43", "etrax_hshs_hosp 14:48"]
+
+[[trip]]
+id = "t609"
+route = "ETrax loop 15:00 HSHS Health Center -> TA Travel Center -> Walmart -> TA -> Save-a-Lot -> Kirby's IGA -> County Building -> HSHS Memorial Hospital"
+days = "1111100"
+tz = "America/Chicago"
+stops = ["etrax_hshs_health 15:00", "etrax_brookstone 15:05", "etrax_bonutti 15:08", "etrax_ta 15:12", "etrax_walmart 15:17", "etrax_lake_pointe 15:23", "etrax_ta 15:30", "etrax_save_a_lot 15:35", "etrax_kirbys 15:39", "etrax_county_bldg 15:43", "etrax_hshs_hosp 15:48"]

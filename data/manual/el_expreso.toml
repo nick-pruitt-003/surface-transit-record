@@ -1,6 +1,37 @@
 agency = "El Expreso"
 
 [stops]
+charlotte_tbc_ee = { name = "TBC Charlotte (4801 N Tryon St)", lon = -80.7860, lat = 35.2586 }   # Nick; OpenStreetMap
+selma_nc_la_raza_ee = { name = "Tienda La Raza Selma NC (Tornado)", lon = -78.2845, lat = 35.5357 }   # point approximate (Selma), address wanted
+dunn_circle_k_ee = { name = "Circle K Dunn NC (Tornado)", lon = -78.6142, lat = 35.3063 }   # point approximate
+fayetteville_kangaroo_ee = "=ibus:711"   # Kangaroo Express-Fayetteville (feed point Fayetteville Bus Station)
+lumberton_riveras_ee = "=ibus:1507"   # Rivera's Supermarket 2 (assumed Lumberton, feed point)
+florence_sc_ta_ee = "=ibus:2015"   # TA Travel Center-Florence SC (feed point)
+columbia_sc_mcd_ee = "=ibus:1773"   # Columbia SC (McDonalds) (feed point Columbia)
+aiken_shell_ee = "=ibus:1173"   # Shell Gas Station-Aiken (feed point)
+north_augusta_slp_ee = { name = "SLP Mexican Grill North Augusta SC (Tornado)", lon = -81.9650, lat = 33.5018 }   # point approximate
+grovetown_circle_k_ee = { name = "Circle K Grovetown GA (Tornado)", lon = -82.1985, lat = 33.4504 }   # point approximate
+thomson_loves_ee = "=ibus:1589"   # Loves Travel Center-Thomson (feed point)
+manassas_mexico_lindo_ee = { name = "Mexico Lindo Supermarket Manassas VA (El Expreso)", lon = -77.51140, lat = 38.78092 }   # 8084 Sudley Rd, Manassas VA 20109 (Nick Oct 23 2026; Census geocoder)
+fredericksburg_surianita_ee = { name = "La Surianita Fredericksburg VA (El Expreso)", lon = -77.48089, lat = 38.30551 }   # 1215-B Snowden St, Fredericksburg VA 22401 (Nick Oct 23 2026)
+petersburg_adrianas_ee = { name = "Adriana's Mini Market Petersburg VA (El Expreso)", lon = -77.34980, lat = 37.21070 }   # Nick Oct 23 2026 (point; Adriana's is the Petersburg stop)
+richmond_el_rey_ee = { name = "El Rey Supermarket Richmond VA (El Expreso)", lon = -77.50775, lat = 37.59375 }   # 6006 W Broad St, Richmond VA 23230 (Nick Oct 23 2026); GRTC 19 at the door
+raleigh_tbc_ee = { name = "TBC Raleigh (4005 New Bern Ave)", lon = -78.5682, lat = 35.7992 }   # Nick; OpenStreetMap
+durham_rlb_ee = "=ibus:2510"   # Variedades RLB-Durham (feed point Durham)
+burlington_ta_ee = "=ibus:2904"   # TA Travel Center-Burlington NC
+greensboro_mercadito_ee = "=ibus:1191"   # Greensboro, El Mercadito #2 (feed point Greensboro)
+opelika_shell_ee = "=ibus:1481"   # Shell Gas Station-Opelika (feed point Opelika)
+montgomery_ta_ee = "=ibus:1932"   # TA Travel Center-Montgomery (feed point Montgomery)
+grand_bay_ta_ee = "=ibus:3169"   # TA Travel Center-Grand Bay
+biloxi_loves_ee = "=ibus:2407"   # Loves Travel Center-Biloxi
+gulfport_flying_j_ee = "=ibus:2339"   # Flying J-Gulfport (feed point Gulfport)
+slidell_ta_ee = "=ibus:2897"   # TA Travel Center-Slidell
+covington_exxon_ee = "=ibus:404"   # Exxon Gas Station-Covington
+hammond_petro_ee = "=ibus:2742"   # Petro Gas Station-Hammond
+baton_rouge_walmart_ee = "=ibus:3008"   # Baton Rouge (Walmart)
+lafayette_ta_ee = "=ibus:1490"   # TA Travel Center-Lafayette
+lake_charles_pilot_ee = "=ibus:165"   # Pilot Travel Center-LCHA (feed point Lake Charles)
+houston_lockwood_ee = "=ibus:222"   # Tornado & El Expreso Lockwood, Houston
 tornado_el_expreso_bus_company_southwest = "=ibus:2957"   # Tornado & El Expreso Bus Company Southwest
 tornado_el_expreso_bus_company_katy = "=ibus:1632"   # Tornado & El Expreso Bus Company Katy
 tornado_el_expreso_bus_company_austin = "=ibus:2953"   # Tornado & El Expreso Bus Company Austin
@@ -18,24 +49,58 @@ tuscaloosa_bus_stop = "=ibus:1383"   # Tuscaloosa Bus Stop
 birmingham_express_carriers = "=ibus:3401"   # Birmingham (Express Carriers)
 oxford_al_race_trac_el_expreso = { name = "Oxford AL Race-Trac (El Expreso)", lon = -85.8350, lat = 33.6140 }
 doraville = "=ibus:1#3441"   # Doraville
-bbwireless_near_jefferson_ga_el_expreso = { name = "BBWireless near Jefferson GA (El Expreso)", lon = -82.5500, lat = 34.1200 }
-restaurant_el_jinete_jefferson_ga_el_exp = { name = "Restaurant El Jinete-Jefferson GA (El Expreso)", lon = -82.4690, lat = 34.1170 }
-flying_j_i_85_sc_el_expreso_approx = { name = "Flying J I-85 SC (El Expreso approx)", lon = -82.1000, lat = 34.5500 }
-taqueria_guadalajara_3_el_expreso_approx = { name = "Taqueria Guadalajara #3 (El Expreso approx)", lon = -81.8500, lat = 34.8000 }
-servicios_zapata_el_expreso_approx = { name = "Servicios Zapata (El Expreso approx)", lon = -81.5500, lat = 35.0000 }
+bbwireless_near_jefferson_ga_el_expreso = { name = "BBWireless, Gainesville GA (El Expreso)", lon = -83.8395, lat = 34.2818 }   # 415 Atlanta Hwy #2, Gainesville GA (Nick; OpenStreetMap geocode); key kept for existing trips
+restaurant_el_jinete_jefferson_ga_el_exp = { name = "Restaurant El Jinete, Jefferson GA (El Expreso)", lon = -83.6432, lat = 34.1523 }   # 4932 US-129, Jefferson GA (Nick; OpenStreetMap geocode)
+flying_j_i_85_sc_el_expreso_approx = { name = "Flying J, Carnesville GA (El Expreso)", lon = -83.2830, lat = 34.3550 }   # 10226 Old Federal Rd, Carnesville GA, I-85 exit 160 (Nick); OpenStreetMap has no match, point at the exit, approximate; key kept
+taqueria_guadalajara_3_el_expreso_approx = { name = "Taqueria Guadalajara #3, Greenville SC (El Expreso)", lon = -82.4356, lat = 34.8083 }   # 2803 White Horse Rd, Greenville SC (Nick; OpenStreetMap geocode); key kept for existing trips
+servicios_zapata_el_expreso_approx = { name = "Servicios Zapata, Spartanburg SC (El Expreso)", lon = -81.9935, lat = 34.9930 }   # 114 William Jolley Dr, Spartanburg SC (Nick; OpenStreetMap geocode); key kept for existing trips
 gastonia = "=ibus:1044"   # Gastonia
 charlotte_bus_station = "=ibus:2883"   # Charlotte Bus Station
 
 [[trip]]
 id = "t99"
 route = "Houston Southwest -> El Paso (Nick screenshots Sep 21 2026; Fri 9/25; daily assumed; Houston 9:00 PM and El Paso 6:45 AM MDT kept; screenshot Austin 10:35/SA 11:00 PM implied ~200 km/h so stretched to 12:30/2:00 AM CDT)"
-days = "1111111"
+days = "0000000"   # was "1111111"; superseded by tornado_api.toml (booking API crawl, Oct 23 2026)
 tz = "America/Chicago"
 stops = ["tornado_el_expreso_bus_company_southwest 21:00", "tornado_el_expreso_bus_company_katy 21:30", "tornado_el_expreso_bus_company_austin 24:30", "tornado_el_expreso_bus_company_san_anton 26:00", "tornado_el_expreso_bus_company_el_paso 31:45"]
 
 [[trip]]
 id = "t100"
 route = "Dallas I-30 -> Gastonia NC via Atlanta (Nick screenshots Sep 21 2026; Fri 9/25 7:15 PM Dallas; daily assumed; all clocks treated as America/Chicago as on booking UI; I-85 curbside stops approx; Charlotte ~30 min after Gastonia per Nick)"
-days = "1111111"
+days = "0000000"   # was "1111111"; superseded by tornado_api.toml (booking API crawl, Oct 23 2026)
 tz = "America/Chicago"
-stops = ["tornado_el_expreso_bus_company_dallas_i_ 19:15", "tyler 20:45", "longview 21:20", "marshall 21:40", "quiktrip_gas_station_exit_8_shreveport 22:20", "kangaroo_express_monroe 23:50", "jackson_ms_flying_j_travel_center 25:35", "meridian_bus_stop 26:54", "tuscaloosa_bus_stop 28:39", "birmingham_express_carriers 29:29", "oxford_al_race_trac_el_expreso 30:39", "doraville 32:19", "bbwireless_near_jefferson_ga_el_expreso 34:10", "restaurant_el_jinete_jefferson_ga_el_exp 34:25", "flying_j_i_85_sc_el_expreso_approx 35:35", "taqueria_guadalajara_3_el_expreso_approx 36:40", "servicios_zapata_el_expreso_approx 37:25", "gastonia 38:10", "charlotte_bus_station 38:40"]
+stops = ["tornado_el_expreso_bus_company_dallas_i_ 19:15", "tyler 20:45", "longview 21:20", "marshall 21:40", "quiktrip_gas_station_exit_8_shreveport 22:20", "kangaroo_express_monroe 23:50", "jackson_ms_flying_j_travel_center 25:35", "meridian_bus_stop 26:54", "tuscaloosa_bus_stop 28:39", "birmingham_express_carriers 29:29", "oxford_al_race_trac_el_expreso 30:39", "doraville 32:19", "bbwireless_near_jefferson_ga_el_expreso 34:10", "restaurant_el_jinete_jefferson_ga_el_exp 34:25", "flying_j_i_85_sc_el_expreso_approx 35:35", "taqueria_guadalajara_3_el_expreso_approx 36:40", "servicios_zapata_el_expreso_approx 37:25", "gastonia 38:10", "charlotte_tbc_ee 38:40"]
+
+[[trip]]
+id = "t510"
+route = "Raleigh 08:30 -> Durham 09:00 -> Burlington 09:30 -> Greensboro 10:00 -> (three tiendas, no locations, omitted) -> Charlotte 11:30 -> Gastonia 12:00 -> Servicios Zapata 12:50 -> Taqueria Guadalajara #3 13:30 -> Flying J 15:10 -> El Jinete Jefferson GA 15:25 -> BBWireless 16:05 -> Atlanta (Doraville) 17:20, all Eastern (tornadobus.com, Nick Oct 22 2026; daily assumed). Raleigh -> Dallas (Nick): starts in Raleigh, fed by t517 from Manassas VA: continues as Tornado t509 Atlanta 18:00 -> Dallas"
+days = "0000000"   # was "1111111"; superseded by tornado_api.toml (booking API crawl, Oct 23 2026)
+tz = "America/New_York"
+stops = ["raleigh_tbc_ee 08:30", "durham_rlb_ee 09:00", "burlington_ta_ee 09:30", "greensboro_mercadito_ee 10:00", "charlotte_tbc_ee 11:30", "gastonia 12:00", "servicios_zapata_el_expreso_approx 12:50", "taqueria_guadalajara_3_el_expreso_approx 13:30", "flying_j_i_85_sc_el_expreso_approx 15:10", "restaurant_el_jinete_jefferson_ga_el_exp 15:25", "bbwireless_near_jefferson_ga_el_expreso 16:05", "doraville 17:20"]
+
+[[trip]]
+id = "t511"
+route = "Charlotte 13:00 ET -> Greenville SC -> Atlanta (Doraville) 19:30 ET -> Opelika 19:30 CT -> Montgomery -> Grand Bay -> Biloxi -> Gulfport -> Slidell -> Baton Rouge -> Lafayette 03:10 -> Lake Charles 04:05 -> Houston (Lockwood) 06:35. Houston is estimated: the site shows Lake Charles 04:05 -> Houston 05:16 (1 h 11, impossible for ~140 miles; La Vaquita 2 shown 05:15 on one page and 04:15 on another), so 06:35 uses Tornado Route 1's Beaumont -> Houston 1 h 20 after La Vaquita/Beaumont 05:15. Charlotte -> Houston through bus (tornadobus.com, Nick Oct 22 2026; daily assumed). Local clocks at every stop, as the site shows intermediates. A second 'Guadalajara' stop at 15:02 is left out"
+days = "0000000"   # was "1111111"; superseded by tornado_api.toml (booking API crawl, Oct 23 2026)
+stops = ["charlotte_tbc_ee 13:00", "gastonia 13:30", "servicios_zapata_el_expreso_approx 14:30", "taqueria_guadalajara_3_el_expreso_approx 15:02", "bbwireless_near_jefferson_ga_el_expreso 17:14", "doraville 19:30", "opelika_shell_ee 19:30", "montgomery_ta_ee 20:26", "grand_bay_ta_ee 23:20", "biloxi_loves_ee 23:50", "gulfport_flying_j_ee 00:05", "slidell_ta_ee 00:45", "covington_exxon_ee 01:15", "hammond_petro_ee 01:40", "baton_rouge_walmart_ee 02:20", "lafayette_ta_ee 03:10", "lake_charles_pilot_ee 04:05", "houston_lockwood_ee 06:35"]
+
+[[trip]]
+id = "t517"
+route = "Manassas VA 03:00 -> Fredericksburg 04:00 -> Richmond 05:00 -> Adriana's Mini Market (Petersburg) 05:40 -> Raleigh 07:40, connecting to the 08:30 Raleigh -> Charlotte -> Atlanta -> Dallas bus (tornadobus.com, Nick Oct 22 2026; southbound Tue/Thu/Sat per Nick; northbound is t518, Raleigh 22:00 Mon/Wed/Fri; stop points are the feed's city points)"
+days = "0101010"
+tz = "America/New_York"
+stops = ["manassas_mexico_lindo_ee 03:00", "fredericksburg_surianita_ee 04:00", "richmond_el_rey_ee 05:00", "petersburg_adrianas_ee 05:40", "raleigh_tbc_ee 07:40"]
+
+[[trip]]
+id = "t518"
+route = "Raleigh 22:00 -> Oxford NC 23:00 -> Henderson 23:20 -> Little Mexico VA 00:20 -> Adriana's 01:20 -> Richmond 01:50 -> Fredericksburg 02:50 -> Manassas VA 03:50 (tornadobus.com, Nick Oct 22 2026; MON/WED/FRI). Oxford, Henderson and Little Mexico have no location in the data, omitted"
+days = "1010100"
+tz = "America/New_York"
+stops = ["raleigh_tbc_ee 22:00", "petersburg_adrianas_ee 25:20", "richmond_el_rey_ee 25:50", "fredericksburg_surianita_ee 26:50", "manassas_mexico_lindo_ee 27:50"]
+
+[[trip]]
+id = "t520"
+route = "Selma NC 08:00 -> Dunn 09:15 -> Fayetteville 09:30 -> Rivera's (Lumberton?) 10:00 -> Florence SC 11:00 -> Columbia 12:00 -> Aiken 12:30 -> North Augusta 13:30 -> Grovetown GA 15:00 -> Thomson 15:15 -> Atlanta (Doraville) 17:15 (tornadobus.com, Nick Oct 22 2026; daily assumed). Connects to the Atlanta 19:30 -> Houston bus (t511); Nick: no-transfer bus to Houston. The site's Gilbert/Batesburg/Camden/Aiken times overlap (12:10-12:30) and are rough; Tienda Zacatepec, Gilbert, Batesburg and Camden omitted"
+days = "0000000"   # was "1111111"; superseded by tornado_api.toml (booking API crawl, Oct 23 2026)
+tz = "America/New_York"
+stops = ["selma_nc_la_raza_ee 08:00", "dunn_circle_k_ee 09:15", "fayetteville_kangaroo_ee 09:30", "lumberton_riveras_ee 10:00", "florence_sc_ta_ee 11:00", "columbia_sc_mcd_ee 12:00", "aiken_shell_ee 12:30", "north_augusta_slp_ee 13:30", "grovetown_circle_k_ee 15:00", "thomson_loves_ee 15:15", "doraville 17:15"]

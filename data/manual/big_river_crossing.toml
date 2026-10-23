@@ -2,6 +2,8 @@ agency = "On foot (Big River Crossing, open 06:00-22:00)"
 
 [stops]
 memphis_amtrak = "=amtrak:MEM"
+wm_tornado_brc = { name = "West Memphis Tornado 2304 N Service Rd (on foot to Big River Crossing)", lon = -90.156021, lat = 35.158077 }   # the TBC West Memphis point (tornado_api.toml)
+memphis_brc_tn_end = { name = "Big River Crossing Tennessee end (on foot)", lon = -90.07177, lat = 35.12641 }   # Nick Oct 23 2026 (point)
 ar_line = { name = "Arkansas line on Big River Crossing (on foot from Memphis Amtrak)", lon = -90.0850, lat = 35.1275 }
 
 # Google walking 1.3 mi, 31-33 min Memphis Amtrak -> mid-bridge (Arkansas line). The bridge is open 6 AM - 10 PM, so the
@@ -1309,3 +1311,1324 @@ route = "Arkansas line on Big River Crossing -> Memphis Amtrak (walk)"
 days = "1111111"
 tz = "America/Chicago"
 stops = ["ar_line 21:40", "memphis_amtrak 22:13"]
+
+
+# West Memphis Tornado stop <-> the Tennessee end of the Big River Crossing on foot: Google walking 2 h 34 min (Nick, Oct 23
+# 2026). The bridge (open 06:00-22:00) is the last ~22 min of the walk from West Memphis and the first ~22 min from Memphis,
+# so West Memphis departures run 03:50-19:20 and Tennessee-end departures 06:00-21:30, every 10 min.
+
+[[trip]]
+id = "t610"
+route = "West Memphis Tornado -> Big River Crossing -> Tennessee end (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["wm_tornado_brc 03:50", "memphis_brc_tn_end 06:24"]
+
+[[trip]]
+id = "t611"
+route = "West Memphis Tornado -> Big River Crossing -> Tennessee end (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["wm_tornado_brc 04:00", "memphis_brc_tn_end 06:34"]
+
+[[trip]]
+id = "t612"
+route = "West Memphis Tornado -> Big River Crossing -> Tennessee end (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["wm_tornado_brc 04:10", "memphis_brc_tn_end 06:44"]
+
+[[trip]]
+id = "t613"
+route = "West Memphis Tornado -> Big River Crossing -> Tennessee end (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["wm_tornado_brc 04:20", "memphis_brc_tn_end 06:54"]
+
+[[trip]]
+id = "t614"
+route = "West Memphis Tornado -> Big River Crossing -> Tennessee end (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["wm_tornado_brc 04:30", "memphis_brc_tn_end 07:04"]
+
+[[trip]]
+id = "t615"
+route = "West Memphis Tornado -> Big River Crossing -> Tennessee end (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["wm_tornado_brc 04:40", "memphis_brc_tn_end 07:14"]
+
+[[trip]]
+id = "t616"
+route = "West Memphis Tornado -> Big River Crossing -> Tennessee end (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["wm_tornado_brc 04:50", "memphis_brc_tn_end 07:24"]
+
+[[trip]]
+id = "t617"
+route = "West Memphis Tornado -> Big River Crossing -> Tennessee end (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["wm_tornado_brc 05:00", "memphis_brc_tn_end 07:34"]
+
+[[trip]]
+id = "t618"
+route = "West Memphis Tornado -> Big River Crossing -> Tennessee end (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["wm_tornado_brc 05:10", "memphis_brc_tn_end 07:44"]
+
+[[trip]]
+id = "t619"
+route = "West Memphis Tornado -> Big River Crossing -> Tennessee end (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["wm_tornado_brc 05:20", "memphis_brc_tn_end 07:54"]
+
+[[trip]]
+id = "t620"
+route = "West Memphis Tornado -> Big River Crossing -> Tennessee end (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["wm_tornado_brc 05:30", "memphis_brc_tn_end 08:04"]
+
+[[trip]]
+id = "t621"
+route = "West Memphis Tornado -> Big River Crossing -> Tennessee end (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["wm_tornado_brc 05:40", "memphis_brc_tn_end 08:14"]
+
+[[trip]]
+id = "t622"
+route = "West Memphis Tornado -> Big River Crossing -> Tennessee end (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["wm_tornado_brc 05:50", "memphis_brc_tn_end 08:24"]
+
+[[trip]]
+id = "t623"
+route = "West Memphis Tornado -> Big River Crossing -> Tennessee end (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["wm_tornado_brc 06:00", "memphis_brc_tn_end 08:34"]
+
+[[trip]]
+id = "t624"
+route = "West Memphis Tornado -> Big River Crossing -> Tennessee end (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["wm_tornado_brc 06:10", "memphis_brc_tn_end 08:44"]
+
+[[trip]]
+id = "t625"
+route = "West Memphis Tornado -> Big River Crossing -> Tennessee end (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["wm_tornado_brc 06:20", "memphis_brc_tn_end 08:54"]
+
+[[trip]]
+id = "t626"
+route = "West Memphis Tornado -> Big River Crossing -> Tennessee end (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["wm_tornado_brc 06:30", "memphis_brc_tn_end 09:04"]
+
+[[trip]]
+id = "t627"
+route = "West Memphis Tornado -> Big River Crossing -> Tennessee end (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["wm_tornado_brc 06:40", "memphis_brc_tn_end 09:14"]
+
+[[trip]]
+id = "t628"
+route = "West Memphis Tornado -> Big River Crossing -> Tennessee end (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["wm_tornado_brc 06:50", "memphis_brc_tn_end 09:24"]
+
+[[trip]]
+id = "t629"
+route = "West Memphis Tornado -> Big River Crossing -> Tennessee end (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["wm_tornado_brc 07:00", "memphis_brc_tn_end 09:34"]
+
+[[trip]]
+id = "t630"
+route = "West Memphis Tornado -> Big River Crossing -> Tennessee end (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["wm_tornado_brc 07:10", "memphis_brc_tn_end 09:44"]
+
+[[trip]]
+id = "t631"
+route = "West Memphis Tornado -> Big River Crossing -> Tennessee end (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["wm_tornado_brc 07:20", "memphis_brc_tn_end 09:54"]
+
+[[trip]]
+id = "t632"
+route = "West Memphis Tornado -> Big River Crossing -> Tennessee end (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["wm_tornado_brc 07:30", "memphis_brc_tn_end 10:04"]
+
+[[trip]]
+id = "t633"
+route = "West Memphis Tornado -> Big River Crossing -> Tennessee end (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["wm_tornado_brc 07:40", "memphis_brc_tn_end 10:14"]
+
+[[trip]]
+id = "t634"
+route = "West Memphis Tornado -> Big River Crossing -> Tennessee end (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["wm_tornado_brc 07:50", "memphis_brc_tn_end 10:24"]
+
+[[trip]]
+id = "t635"
+route = "West Memphis Tornado -> Big River Crossing -> Tennessee end (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["wm_tornado_brc 08:00", "memphis_brc_tn_end 10:34"]
+
+[[trip]]
+id = "t636"
+route = "West Memphis Tornado -> Big River Crossing -> Tennessee end (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["wm_tornado_brc 08:10", "memphis_brc_tn_end 10:44"]
+
+[[trip]]
+id = "t637"
+route = "West Memphis Tornado -> Big River Crossing -> Tennessee end (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["wm_tornado_brc 08:20", "memphis_brc_tn_end 10:54"]
+
+[[trip]]
+id = "t638"
+route = "West Memphis Tornado -> Big River Crossing -> Tennessee end (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["wm_tornado_brc 08:30", "memphis_brc_tn_end 11:04"]
+
+[[trip]]
+id = "t639"
+route = "West Memphis Tornado -> Big River Crossing -> Tennessee end (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["wm_tornado_brc 08:40", "memphis_brc_tn_end 11:14"]
+
+[[trip]]
+id = "t640"
+route = "West Memphis Tornado -> Big River Crossing -> Tennessee end (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["wm_tornado_brc 08:50", "memphis_brc_tn_end 11:24"]
+
+[[trip]]
+id = "t641"
+route = "West Memphis Tornado -> Big River Crossing -> Tennessee end (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["wm_tornado_brc 09:00", "memphis_brc_tn_end 11:34"]
+
+[[trip]]
+id = "t642"
+route = "West Memphis Tornado -> Big River Crossing -> Tennessee end (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["wm_tornado_brc 09:10", "memphis_brc_tn_end 11:44"]
+
+[[trip]]
+id = "t643"
+route = "West Memphis Tornado -> Big River Crossing -> Tennessee end (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["wm_tornado_brc 09:20", "memphis_brc_tn_end 11:54"]
+
+[[trip]]
+id = "t644"
+route = "West Memphis Tornado -> Big River Crossing -> Tennessee end (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["wm_tornado_brc 09:30", "memphis_brc_tn_end 12:04"]
+
+[[trip]]
+id = "t645"
+route = "West Memphis Tornado -> Big River Crossing -> Tennessee end (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["wm_tornado_brc 09:40", "memphis_brc_tn_end 12:14"]
+
+[[trip]]
+id = "t646"
+route = "West Memphis Tornado -> Big River Crossing -> Tennessee end (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["wm_tornado_brc 09:50", "memphis_brc_tn_end 12:24"]
+
+[[trip]]
+id = "t647"
+route = "West Memphis Tornado -> Big River Crossing -> Tennessee end (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["wm_tornado_brc 10:00", "memphis_brc_tn_end 12:34"]
+
+[[trip]]
+id = "t648"
+route = "West Memphis Tornado -> Big River Crossing -> Tennessee end (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["wm_tornado_brc 10:10", "memphis_brc_tn_end 12:44"]
+
+[[trip]]
+id = "t649"
+route = "West Memphis Tornado -> Big River Crossing -> Tennessee end (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["wm_tornado_brc 10:20", "memphis_brc_tn_end 12:54"]
+
+[[trip]]
+id = "t650"
+route = "West Memphis Tornado -> Big River Crossing -> Tennessee end (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["wm_tornado_brc 10:30", "memphis_brc_tn_end 13:04"]
+
+[[trip]]
+id = "t651"
+route = "West Memphis Tornado -> Big River Crossing -> Tennessee end (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["wm_tornado_brc 10:40", "memphis_brc_tn_end 13:14"]
+
+[[trip]]
+id = "t652"
+route = "West Memphis Tornado -> Big River Crossing -> Tennessee end (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["wm_tornado_brc 10:50", "memphis_brc_tn_end 13:24"]
+
+[[trip]]
+id = "t653"
+route = "West Memphis Tornado -> Big River Crossing -> Tennessee end (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["wm_tornado_brc 11:00", "memphis_brc_tn_end 13:34"]
+
+[[trip]]
+id = "t654"
+route = "West Memphis Tornado -> Big River Crossing -> Tennessee end (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["wm_tornado_brc 11:10", "memphis_brc_tn_end 13:44"]
+
+[[trip]]
+id = "t655"
+route = "West Memphis Tornado -> Big River Crossing -> Tennessee end (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["wm_tornado_brc 11:20", "memphis_brc_tn_end 13:54"]
+
+[[trip]]
+id = "t656"
+route = "West Memphis Tornado -> Big River Crossing -> Tennessee end (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["wm_tornado_brc 11:30", "memphis_brc_tn_end 14:04"]
+
+[[trip]]
+id = "t657"
+route = "West Memphis Tornado -> Big River Crossing -> Tennessee end (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["wm_tornado_brc 11:40", "memphis_brc_tn_end 14:14"]
+
+[[trip]]
+id = "t658"
+route = "West Memphis Tornado -> Big River Crossing -> Tennessee end (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["wm_tornado_brc 11:50", "memphis_brc_tn_end 14:24"]
+
+[[trip]]
+id = "t659"
+route = "West Memphis Tornado -> Big River Crossing -> Tennessee end (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["wm_tornado_brc 12:00", "memphis_brc_tn_end 14:34"]
+
+[[trip]]
+id = "t660"
+route = "West Memphis Tornado -> Big River Crossing -> Tennessee end (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["wm_tornado_brc 12:10", "memphis_brc_tn_end 14:44"]
+
+[[trip]]
+id = "t661"
+route = "West Memphis Tornado -> Big River Crossing -> Tennessee end (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["wm_tornado_brc 12:20", "memphis_brc_tn_end 14:54"]
+
+[[trip]]
+id = "t662"
+route = "West Memphis Tornado -> Big River Crossing -> Tennessee end (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["wm_tornado_brc 12:30", "memphis_brc_tn_end 15:04"]
+
+[[trip]]
+id = "t663"
+route = "West Memphis Tornado -> Big River Crossing -> Tennessee end (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["wm_tornado_brc 12:40", "memphis_brc_tn_end 15:14"]
+
+[[trip]]
+id = "t664"
+route = "West Memphis Tornado -> Big River Crossing -> Tennessee end (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["wm_tornado_brc 12:50", "memphis_brc_tn_end 15:24"]
+
+[[trip]]
+id = "t665"
+route = "West Memphis Tornado -> Big River Crossing -> Tennessee end (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["wm_tornado_brc 13:00", "memphis_brc_tn_end 15:34"]
+
+[[trip]]
+id = "t666"
+route = "West Memphis Tornado -> Big River Crossing -> Tennessee end (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["wm_tornado_brc 13:10", "memphis_brc_tn_end 15:44"]
+
+[[trip]]
+id = "t667"
+route = "West Memphis Tornado -> Big River Crossing -> Tennessee end (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["wm_tornado_brc 13:20", "memphis_brc_tn_end 15:54"]
+
+[[trip]]
+id = "t668"
+route = "West Memphis Tornado -> Big River Crossing -> Tennessee end (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["wm_tornado_brc 13:30", "memphis_brc_tn_end 16:04"]
+
+[[trip]]
+id = "t669"
+route = "West Memphis Tornado -> Big River Crossing -> Tennessee end (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["wm_tornado_brc 13:40", "memphis_brc_tn_end 16:14"]
+
+[[trip]]
+id = "t670"
+route = "West Memphis Tornado -> Big River Crossing -> Tennessee end (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["wm_tornado_brc 13:50", "memphis_brc_tn_end 16:24"]
+
+[[trip]]
+id = "t671"
+route = "West Memphis Tornado -> Big River Crossing -> Tennessee end (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["wm_tornado_brc 14:00", "memphis_brc_tn_end 16:34"]
+
+[[trip]]
+id = "t672"
+route = "West Memphis Tornado -> Big River Crossing -> Tennessee end (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["wm_tornado_brc 14:10", "memphis_brc_tn_end 16:44"]
+
+[[trip]]
+id = "t673"
+route = "West Memphis Tornado -> Big River Crossing -> Tennessee end (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["wm_tornado_brc 14:20", "memphis_brc_tn_end 16:54"]
+
+[[trip]]
+id = "t674"
+route = "West Memphis Tornado -> Big River Crossing -> Tennessee end (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["wm_tornado_brc 14:30", "memphis_brc_tn_end 17:04"]
+
+[[trip]]
+id = "t675"
+route = "West Memphis Tornado -> Big River Crossing -> Tennessee end (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["wm_tornado_brc 14:40", "memphis_brc_tn_end 17:14"]
+
+[[trip]]
+id = "t676"
+route = "West Memphis Tornado -> Big River Crossing -> Tennessee end (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["wm_tornado_brc 14:50", "memphis_brc_tn_end 17:24"]
+
+[[trip]]
+id = "t677"
+route = "West Memphis Tornado -> Big River Crossing -> Tennessee end (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["wm_tornado_brc 15:00", "memphis_brc_tn_end 17:34"]
+
+[[trip]]
+id = "t678"
+route = "West Memphis Tornado -> Big River Crossing -> Tennessee end (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["wm_tornado_brc 15:10", "memphis_brc_tn_end 17:44"]
+
+[[trip]]
+id = "t679"
+route = "West Memphis Tornado -> Big River Crossing -> Tennessee end (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["wm_tornado_brc 15:20", "memphis_brc_tn_end 17:54"]
+
+[[trip]]
+id = "t680"
+route = "West Memphis Tornado -> Big River Crossing -> Tennessee end (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["wm_tornado_brc 15:30", "memphis_brc_tn_end 18:04"]
+
+[[trip]]
+id = "t681"
+route = "West Memphis Tornado -> Big River Crossing -> Tennessee end (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["wm_tornado_brc 15:40", "memphis_brc_tn_end 18:14"]
+
+[[trip]]
+id = "t682"
+route = "West Memphis Tornado -> Big River Crossing -> Tennessee end (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["wm_tornado_brc 15:50", "memphis_brc_tn_end 18:24"]
+
+[[trip]]
+id = "t683"
+route = "West Memphis Tornado -> Big River Crossing -> Tennessee end (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["wm_tornado_brc 16:00", "memphis_brc_tn_end 18:34"]
+
+[[trip]]
+id = "t684"
+route = "West Memphis Tornado -> Big River Crossing -> Tennessee end (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["wm_tornado_brc 16:10", "memphis_brc_tn_end 18:44"]
+
+[[trip]]
+id = "t685"
+route = "West Memphis Tornado -> Big River Crossing -> Tennessee end (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["wm_tornado_brc 16:20", "memphis_brc_tn_end 18:54"]
+
+[[trip]]
+id = "t686"
+route = "West Memphis Tornado -> Big River Crossing -> Tennessee end (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["wm_tornado_brc 16:30", "memphis_brc_tn_end 19:04"]
+
+[[trip]]
+id = "t687"
+route = "West Memphis Tornado -> Big River Crossing -> Tennessee end (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["wm_tornado_brc 16:40", "memphis_brc_tn_end 19:14"]
+
+[[trip]]
+id = "t688"
+route = "West Memphis Tornado -> Big River Crossing -> Tennessee end (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["wm_tornado_brc 16:50", "memphis_brc_tn_end 19:24"]
+
+[[trip]]
+id = "t689"
+route = "West Memphis Tornado -> Big River Crossing -> Tennessee end (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["wm_tornado_brc 17:00", "memphis_brc_tn_end 19:34"]
+
+[[trip]]
+id = "t690"
+route = "West Memphis Tornado -> Big River Crossing -> Tennessee end (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["wm_tornado_brc 17:10", "memphis_brc_tn_end 19:44"]
+
+[[trip]]
+id = "t691"
+route = "West Memphis Tornado -> Big River Crossing -> Tennessee end (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["wm_tornado_brc 17:20", "memphis_brc_tn_end 19:54"]
+
+[[trip]]
+id = "t692"
+route = "West Memphis Tornado -> Big River Crossing -> Tennessee end (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["wm_tornado_brc 17:30", "memphis_brc_tn_end 20:04"]
+
+[[trip]]
+id = "t693"
+route = "West Memphis Tornado -> Big River Crossing -> Tennessee end (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["wm_tornado_brc 17:40", "memphis_brc_tn_end 20:14"]
+
+[[trip]]
+id = "t694"
+route = "West Memphis Tornado -> Big River Crossing -> Tennessee end (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["wm_tornado_brc 17:50", "memphis_brc_tn_end 20:24"]
+
+[[trip]]
+id = "t695"
+route = "West Memphis Tornado -> Big River Crossing -> Tennessee end (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["wm_tornado_brc 18:00", "memphis_brc_tn_end 20:34"]
+
+[[trip]]
+id = "t696"
+route = "West Memphis Tornado -> Big River Crossing -> Tennessee end (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["wm_tornado_brc 18:10", "memphis_brc_tn_end 20:44"]
+
+[[trip]]
+id = "t697"
+route = "West Memphis Tornado -> Big River Crossing -> Tennessee end (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["wm_tornado_brc 18:20", "memphis_brc_tn_end 20:54"]
+
+[[trip]]
+id = "t698"
+route = "West Memphis Tornado -> Big River Crossing -> Tennessee end (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["wm_tornado_brc 18:30", "memphis_brc_tn_end 21:04"]
+
+[[trip]]
+id = "t699"
+route = "West Memphis Tornado -> Big River Crossing -> Tennessee end (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["wm_tornado_brc 18:40", "memphis_brc_tn_end 21:14"]
+
+[[trip]]
+id = "t700"
+route = "West Memphis Tornado -> Big River Crossing -> Tennessee end (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["wm_tornado_brc 18:50", "memphis_brc_tn_end 21:24"]
+
+[[trip]]
+id = "t701"
+route = "West Memphis Tornado -> Big River Crossing -> Tennessee end (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["wm_tornado_brc 19:00", "memphis_brc_tn_end 21:34"]
+
+[[trip]]
+id = "t702"
+route = "West Memphis Tornado -> Big River Crossing -> Tennessee end (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["wm_tornado_brc 19:10", "memphis_brc_tn_end 21:44"]
+
+[[trip]]
+id = "t703"
+route = "West Memphis Tornado -> Big River Crossing -> Tennessee end (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["wm_tornado_brc 19:20", "memphis_brc_tn_end 21:54"]
+
+[[trip]]
+id = "t704"
+route = "Tennessee end -> Big River Crossing -> West Memphis Tornado (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_brc_tn_end 06:00", "wm_tornado_brc 08:34"]
+
+[[trip]]
+id = "t705"
+route = "Tennessee end -> Big River Crossing -> West Memphis Tornado (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_brc_tn_end 06:10", "wm_tornado_brc 08:44"]
+
+[[trip]]
+id = "t706"
+route = "Tennessee end -> Big River Crossing -> West Memphis Tornado (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_brc_tn_end 06:20", "wm_tornado_brc 08:54"]
+
+[[trip]]
+id = "t707"
+route = "Tennessee end -> Big River Crossing -> West Memphis Tornado (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_brc_tn_end 06:30", "wm_tornado_brc 09:04"]
+
+[[trip]]
+id = "t708"
+route = "Tennessee end -> Big River Crossing -> West Memphis Tornado (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_brc_tn_end 06:40", "wm_tornado_brc 09:14"]
+
+[[trip]]
+id = "t709"
+route = "Tennessee end -> Big River Crossing -> West Memphis Tornado (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_brc_tn_end 06:50", "wm_tornado_brc 09:24"]
+
+[[trip]]
+id = "t710"
+route = "Tennessee end -> Big River Crossing -> West Memphis Tornado (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_brc_tn_end 07:00", "wm_tornado_brc 09:34"]
+
+[[trip]]
+id = "t711"
+route = "Tennessee end -> Big River Crossing -> West Memphis Tornado (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_brc_tn_end 07:10", "wm_tornado_brc 09:44"]
+
+[[trip]]
+id = "t712"
+route = "Tennessee end -> Big River Crossing -> West Memphis Tornado (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_brc_tn_end 07:20", "wm_tornado_brc 09:54"]
+
+[[trip]]
+id = "t713"
+route = "Tennessee end -> Big River Crossing -> West Memphis Tornado (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_brc_tn_end 07:30", "wm_tornado_brc 10:04"]
+
+[[trip]]
+id = "t714"
+route = "Tennessee end -> Big River Crossing -> West Memphis Tornado (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_brc_tn_end 07:40", "wm_tornado_brc 10:14"]
+
+[[trip]]
+id = "t715"
+route = "Tennessee end -> Big River Crossing -> West Memphis Tornado (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_brc_tn_end 07:50", "wm_tornado_brc 10:24"]
+
+[[trip]]
+id = "t716"
+route = "Tennessee end -> Big River Crossing -> West Memphis Tornado (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_brc_tn_end 08:00", "wm_tornado_brc 10:34"]
+
+[[trip]]
+id = "t717"
+route = "Tennessee end -> Big River Crossing -> West Memphis Tornado (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_brc_tn_end 08:10", "wm_tornado_brc 10:44"]
+
+[[trip]]
+id = "t718"
+route = "Tennessee end -> Big River Crossing -> West Memphis Tornado (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_brc_tn_end 08:20", "wm_tornado_brc 10:54"]
+
+[[trip]]
+id = "t719"
+route = "Tennessee end -> Big River Crossing -> West Memphis Tornado (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_brc_tn_end 08:30", "wm_tornado_brc 11:04"]
+
+[[trip]]
+id = "t720"
+route = "Tennessee end -> Big River Crossing -> West Memphis Tornado (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_brc_tn_end 08:40", "wm_tornado_brc 11:14"]
+
+[[trip]]
+id = "t721"
+route = "Tennessee end -> Big River Crossing -> West Memphis Tornado (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_brc_tn_end 08:50", "wm_tornado_brc 11:24"]
+
+[[trip]]
+id = "t722"
+route = "Tennessee end -> Big River Crossing -> West Memphis Tornado (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_brc_tn_end 09:00", "wm_tornado_brc 11:34"]
+
+[[trip]]
+id = "t723"
+route = "Tennessee end -> Big River Crossing -> West Memphis Tornado (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_brc_tn_end 09:10", "wm_tornado_brc 11:44"]
+
+[[trip]]
+id = "t724"
+route = "Tennessee end -> Big River Crossing -> West Memphis Tornado (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_brc_tn_end 09:20", "wm_tornado_brc 11:54"]
+
+[[trip]]
+id = "t725"
+route = "Tennessee end -> Big River Crossing -> West Memphis Tornado (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_brc_tn_end 09:30", "wm_tornado_brc 12:04"]
+
+[[trip]]
+id = "t726"
+route = "Tennessee end -> Big River Crossing -> West Memphis Tornado (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_brc_tn_end 09:40", "wm_tornado_brc 12:14"]
+
+[[trip]]
+id = "t727"
+route = "Tennessee end -> Big River Crossing -> West Memphis Tornado (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_brc_tn_end 09:50", "wm_tornado_brc 12:24"]
+
+[[trip]]
+id = "t728"
+route = "Tennessee end -> Big River Crossing -> West Memphis Tornado (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_brc_tn_end 10:00", "wm_tornado_brc 12:34"]
+
+[[trip]]
+id = "t729"
+route = "Tennessee end -> Big River Crossing -> West Memphis Tornado (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_brc_tn_end 10:10", "wm_tornado_brc 12:44"]
+
+[[trip]]
+id = "t730"
+route = "Tennessee end -> Big River Crossing -> West Memphis Tornado (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_brc_tn_end 10:20", "wm_tornado_brc 12:54"]
+
+[[trip]]
+id = "t731"
+route = "Tennessee end -> Big River Crossing -> West Memphis Tornado (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_brc_tn_end 10:30", "wm_tornado_brc 13:04"]
+
+[[trip]]
+id = "t732"
+route = "Tennessee end -> Big River Crossing -> West Memphis Tornado (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_brc_tn_end 10:40", "wm_tornado_brc 13:14"]
+
+[[trip]]
+id = "t733"
+route = "Tennessee end -> Big River Crossing -> West Memphis Tornado (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_brc_tn_end 10:50", "wm_tornado_brc 13:24"]
+
+[[trip]]
+id = "t734"
+route = "Tennessee end -> Big River Crossing -> West Memphis Tornado (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_brc_tn_end 11:00", "wm_tornado_brc 13:34"]
+
+[[trip]]
+id = "t735"
+route = "Tennessee end -> Big River Crossing -> West Memphis Tornado (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_brc_tn_end 11:10", "wm_tornado_brc 13:44"]
+
+[[trip]]
+id = "t736"
+route = "Tennessee end -> Big River Crossing -> West Memphis Tornado (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_brc_tn_end 11:20", "wm_tornado_brc 13:54"]
+
+[[trip]]
+id = "t737"
+route = "Tennessee end -> Big River Crossing -> West Memphis Tornado (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_brc_tn_end 11:30", "wm_tornado_brc 14:04"]
+
+[[trip]]
+id = "t738"
+route = "Tennessee end -> Big River Crossing -> West Memphis Tornado (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_brc_tn_end 11:40", "wm_tornado_brc 14:14"]
+
+[[trip]]
+id = "t739"
+route = "Tennessee end -> Big River Crossing -> West Memphis Tornado (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_brc_tn_end 11:50", "wm_tornado_brc 14:24"]
+
+[[trip]]
+id = "t740"
+route = "Tennessee end -> Big River Crossing -> West Memphis Tornado (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_brc_tn_end 12:00", "wm_tornado_brc 14:34"]
+
+[[trip]]
+id = "t741"
+route = "Tennessee end -> Big River Crossing -> West Memphis Tornado (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_brc_tn_end 12:10", "wm_tornado_brc 14:44"]
+
+[[trip]]
+id = "t742"
+route = "Tennessee end -> Big River Crossing -> West Memphis Tornado (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_brc_tn_end 12:20", "wm_tornado_brc 14:54"]
+
+[[trip]]
+id = "t743"
+route = "Tennessee end -> Big River Crossing -> West Memphis Tornado (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_brc_tn_end 12:30", "wm_tornado_brc 15:04"]
+
+[[trip]]
+id = "t744"
+route = "Tennessee end -> Big River Crossing -> West Memphis Tornado (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_brc_tn_end 12:40", "wm_tornado_brc 15:14"]
+
+[[trip]]
+id = "t745"
+route = "Tennessee end -> Big River Crossing -> West Memphis Tornado (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_brc_tn_end 12:50", "wm_tornado_brc 15:24"]
+
+[[trip]]
+id = "t746"
+route = "Tennessee end -> Big River Crossing -> West Memphis Tornado (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_brc_tn_end 13:00", "wm_tornado_brc 15:34"]
+
+[[trip]]
+id = "t747"
+route = "Tennessee end -> Big River Crossing -> West Memphis Tornado (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_brc_tn_end 13:10", "wm_tornado_brc 15:44"]
+
+[[trip]]
+id = "t748"
+route = "Tennessee end -> Big River Crossing -> West Memphis Tornado (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_brc_tn_end 13:20", "wm_tornado_brc 15:54"]
+
+[[trip]]
+id = "t749"
+route = "Tennessee end -> Big River Crossing -> West Memphis Tornado (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_brc_tn_end 13:30", "wm_tornado_brc 16:04"]
+
+[[trip]]
+id = "t750"
+route = "Tennessee end -> Big River Crossing -> West Memphis Tornado (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_brc_tn_end 13:40", "wm_tornado_brc 16:14"]
+
+[[trip]]
+id = "t751"
+route = "Tennessee end -> Big River Crossing -> West Memphis Tornado (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_brc_tn_end 13:50", "wm_tornado_brc 16:24"]
+
+[[trip]]
+id = "t752"
+route = "Tennessee end -> Big River Crossing -> West Memphis Tornado (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_brc_tn_end 14:00", "wm_tornado_brc 16:34"]
+
+[[trip]]
+id = "t753"
+route = "Tennessee end -> Big River Crossing -> West Memphis Tornado (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_brc_tn_end 14:10", "wm_tornado_brc 16:44"]
+
+[[trip]]
+id = "t754"
+route = "Tennessee end -> Big River Crossing -> West Memphis Tornado (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_brc_tn_end 14:20", "wm_tornado_brc 16:54"]
+
+[[trip]]
+id = "t755"
+route = "Tennessee end -> Big River Crossing -> West Memphis Tornado (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_brc_tn_end 14:30", "wm_tornado_brc 17:04"]
+
+[[trip]]
+id = "t756"
+route = "Tennessee end -> Big River Crossing -> West Memphis Tornado (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_brc_tn_end 14:40", "wm_tornado_brc 17:14"]
+
+[[trip]]
+id = "t757"
+route = "Tennessee end -> Big River Crossing -> West Memphis Tornado (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_brc_tn_end 14:50", "wm_tornado_brc 17:24"]
+
+[[trip]]
+id = "t758"
+route = "Tennessee end -> Big River Crossing -> West Memphis Tornado (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_brc_tn_end 15:00", "wm_tornado_brc 17:34"]
+
+[[trip]]
+id = "t759"
+route = "Tennessee end -> Big River Crossing -> West Memphis Tornado (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_brc_tn_end 15:10", "wm_tornado_brc 17:44"]
+
+[[trip]]
+id = "t760"
+route = "Tennessee end -> Big River Crossing -> West Memphis Tornado (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_brc_tn_end 15:20", "wm_tornado_brc 17:54"]
+
+[[trip]]
+id = "t761"
+route = "Tennessee end -> Big River Crossing -> West Memphis Tornado (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_brc_tn_end 15:30", "wm_tornado_brc 18:04"]
+
+[[trip]]
+id = "t762"
+route = "Tennessee end -> Big River Crossing -> West Memphis Tornado (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_brc_tn_end 15:40", "wm_tornado_brc 18:14"]
+
+[[trip]]
+id = "t763"
+route = "Tennessee end -> Big River Crossing -> West Memphis Tornado (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_brc_tn_end 15:50", "wm_tornado_brc 18:24"]
+
+[[trip]]
+id = "t764"
+route = "Tennessee end -> Big River Crossing -> West Memphis Tornado (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_brc_tn_end 16:00", "wm_tornado_brc 18:34"]
+
+[[trip]]
+id = "t765"
+route = "Tennessee end -> Big River Crossing -> West Memphis Tornado (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_brc_tn_end 16:10", "wm_tornado_brc 18:44"]
+
+[[trip]]
+id = "t766"
+route = "Tennessee end -> Big River Crossing -> West Memphis Tornado (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_brc_tn_end 16:20", "wm_tornado_brc 18:54"]
+
+[[trip]]
+id = "t767"
+route = "Tennessee end -> Big River Crossing -> West Memphis Tornado (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_brc_tn_end 16:30", "wm_tornado_brc 19:04"]
+
+[[trip]]
+id = "t768"
+route = "Tennessee end -> Big River Crossing -> West Memphis Tornado (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_brc_tn_end 16:40", "wm_tornado_brc 19:14"]
+
+[[trip]]
+id = "t769"
+route = "Tennessee end -> Big River Crossing -> West Memphis Tornado (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_brc_tn_end 16:50", "wm_tornado_brc 19:24"]
+
+[[trip]]
+id = "t770"
+route = "Tennessee end -> Big River Crossing -> West Memphis Tornado (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_brc_tn_end 17:00", "wm_tornado_brc 19:34"]
+
+[[trip]]
+id = "t771"
+route = "Tennessee end -> Big River Crossing -> West Memphis Tornado (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_brc_tn_end 17:10", "wm_tornado_brc 19:44"]
+
+[[trip]]
+id = "t772"
+route = "Tennessee end -> Big River Crossing -> West Memphis Tornado (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_brc_tn_end 17:20", "wm_tornado_brc 19:54"]
+
+[[trip]]
+id = "t773"
+route = "Tennessee end -> Big River Crossing -> West Memphis Tornado (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_brc_tn_end 17:30", "wm_tornado_brc 20:04"]
+
+[[trip]]
+id = "t774"
+route = "Tennessee end -> Big River Crossing -> West Memphis Tornado (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_brc_tn_end 17:40", "wm_tornado_brc 20:14"]
+
+[[trip]]
+id = "t775"
+route = "Tennessee end -> Big River Crossing -> West Memphis Tornado (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_brc_tn_end 17:50", "wm_tornado_brc 20:24"]
+
+[[trip]]
+id = "t776"
+route = "Tennessee end -> Big River Crossing -> West Memphis Tornado (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_brc_tn_end 18:00", "wm_tornado_brc 20:34"]
+
+[[trip]]
+id = "t777"
+route = "Tennessee end -> Big River Crossing -> West Memphis Tornado (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_brc_tn_end 18:10", "wm_tornado_brc 20:44"]
+
+[[trip]]
+id = "t778"
+route = "Tennessee end -> Big River Crossing -> West Memphis Tornado (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_brc_tn_end 18:20", "wm_tornado_brc 20:54"]
+
+[[trip]]
+id = "t779"
+route = "Tennessee end -> Big River Crossing -> West Memphis Tornado (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_brc_tn_end 18:30", "wm_tornado_brc 21:04"]
+
+[[trip]]
+id = "t780"
+route = "Tennessee end -> Big River Crossing -> West Memphis Tornado (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_brc_tn_end 18:40", "wm_tornado_brc 21:14"]
+
+[[trip]]
+id = "t781"
+route = "Tennessee end -> Big River Crossing -> West Memphis Tornado (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_brc_tn_end 18:50", "wm_tornado_brc 21:24"]
+
+[[trip]]
+id = "t782"
+route = "Tennessee end -> Big River Crossing -> West Memphis Tornado (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_brc_tn_end 19:00", "wm_tornado_brc 21:34"]
+
+[[trip]]
+id = "t783"
+route = "Tennessee end -> Big River Crossing -> West Memphis Tornado (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_brc_tn_end 19:10", "wm_tornado_brc 21:44"]
+
+[[trip]]
+id = "t784"
+route = "Tennessee end -> Big River Crossing -> West Memphis Tornado (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_brc_tn_end 19:20", "wm_tornado_brc 21:54"]
+
+[[trip]]
+id = "t785"
+route = "Tennessee end -> Big River Crossing -> West Memphis Tornado (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_brc_tn_end 19:30", "wm_tornado_brc 22:04"]
+
+[[trip]]
+id = "t786"
+route = "Tennessee end -> Big River Crossing -> West Memphis Tornado (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_brc_tn_end 19:40", "wm_tornado_brc 22:14"]
+
+[[trip]]
+id = "t787"
+route = "Tennessee end -> Big River Crossing -> West Memphis Tornado (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_brc_tn_end 19:50", "wm_tornado_brc 22:24"]
+
+[[trip]]
+id = "t788"
+route = "Tennessee end -> Big River Crossing -> West Memphis Tornado (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_brc_tn_end 20:00", "wm_tornado_brc 22:34"]
+
+[[trip]]
+id = "t789"
+route = "Tennessee end -> Big River Crossing -> West Memphis Tornado (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_brc_tn_end 20:10", "wm_tornado_brc 22:44"]
+
+[[trip]]
+id = "t790"
+route = "Tennessee end -> Big River Crossing -> West Memphis Tornado (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_brc_tn_end 20:20", "wm_tornado_brc 22:54"]
+
+[[trip]]
+id = "t791"
+route = "Tennessee end -> Big River Crossing -> West Memphis Tornado (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_brc_tn_end 20:30", "wm_tornado_brc 23:04"]
+
+[[trip]]
+id = "t792"
+route = "Tennessee end -> Big River Crossing -> West Memphis Tornado (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_brc_tn_end 20:40", "wm_tornado_brc 23:14"]
+
+[[trip]]
+id = "t793"
+route = "Tennessee end -> Big River Crossing -> West Memphis Tornado (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_brc_tn_end 20:50", "wm_tornado_brc 23:24"]
+
+[[trip]]
+id = "t794"
+route = "Tennessee end -> Big River Crossing -> West Memphis Tornado (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_brc_tn_end 21:00", "wm_tornado_brc 23:34"]
+
+[[trip]]
+id = "t795"
+route = "Tennessee end -> Big River Crossing -> West Memphis Tornado (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_brc_tn_end 21:10", "wm_tornado_brc 23:44"]
+
+[[trip]]
+id = "t796"
+route = "Tennessee end -> Big River Crossing -> West Memphis Tornado (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_brc_tn_end 21:20", "wm_tornado_brc 23:54"]
+
+[[trip]]
+id = "t797"
+route = "Tennessee end -> Big River Crossing -> West Memphis Tornado (walk, 2 h 34 min)"
+days = "1111111"
+tz = "America/Chicago"
+stops = ["memphis_brc_tn_end 21:30", "wm_tornado_brc 24:04"]

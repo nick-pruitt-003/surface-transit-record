@@ -319,7 +319,8 @@ def _():
     # collected nothing and X waited a day for a bus. A foot link (one with miles) exists to cross a line, unless its note
     # says 'positioning:' (Oct 13: the 2.5 mi run from the 702 Shuttles stop to Barstow Amtrak for the Chief, a fit-run
     # backup inside California; Oct 15: the 6 mi run down Chapman Road from Virginia Breeze at Rural King, Wytheville, to the
-    # Barons stop at Fort Chiswell; Express Arrow <-> Outrider in Brush, CO, 1.53 km). Those must still resolve, and there must be no more of them than are named here.
+    # Barons stop at Fort Chiswell; Express Arrow <-> Outrider in Brush, CO, 1.53 km; Oct 23: Tornado stop <-> another carrier's stop in the
+    # same town, Nick's Google walks). Those must still resolve, and there must be no more of them than are named here.
     import csv, os
     bad = []; positioning = []
     for r in csv.DictReader(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'data', 'walk_links.csv'), encoding='utf-8')):
@@ -331,7 +332,7 @@ def _():
         if r['note'].startswith('positioning:'): positioning.append(r['to_uid']); continue
         if R.state[a] == R.state[b]: bad.append((R.stop_name[b], R.state_names[R.state[b]]))
     assert not bad, bad
-    assert positioning == ['amtrak:BAR', 'ibus:2404', 'outrider:3453956', 'extra:Nampa ID (Maverik)', 'amtrak:BAR', 'flix:bd02b7ef-402c-4319-b4f0-1a1a510bc750', 'amtrak:KNG', 'amtrak:KNG'], ('positioning foot links changed; review them and update this list', positioning)
+    assert positioning == ['amtrak:BAR', 'ibus:2404', 'outrider:3453956', 'extra:Nampa ID (Maverik)', 'amtrak:BAR', 'flix:bd02b7ef-402c-4319-b4f0-1a1a510bc750', 'amtrak:KNG', 'amtrak:KNG', 'ibus:35', 'amtrak:JOL', 'flix:17bfaec0-6363-4796-82fa-1e8ed8b8c3f1', 'ibus:21', 'flix:c06f6dbc-a18f-4b22-957a-ba3d838f60aa', 'ibus:1996', 'amtrak:RTL', 'flix:8e7198b1-1e4d-449c-b120-a7a77793c5f4', 'amtrak:EFG', 'amtrak:HOP', 'flix:79685b14-530b-47e5-85dc-26ccf93c96cb', 'ibus:2779', 'flix:1a24da03-eee1-497f-a240-ed222380390f', 'ibus:773', 'flix:9e67280f-1256-42f4-9d1d-701cb6fe6ef5', 'ibus:3604', 'amtrak:GNS', 'amtrak:GNS', 'flix:de3e90c2-abad-4730-ad34-376d1b74bcf5', 'ibus:1938', 'amtrak:WLN', 'flix:3d9eca30-6cc0-4c46-b14a-4a3c7f9bc7f3', 'amtrak:JAN', 'flix:87a9cec7-53a2-4aef-b94b-a43b1b1d9ffa', 'ibus:2386'], ('positioning foot links changed; review them and update this list', positioning)
 
 
 @check('the Big River Crossing walk keeps the bridge hours (06:00-22:00): Arkansas by 10:45 from 10:00, not by bridge at 23:00')

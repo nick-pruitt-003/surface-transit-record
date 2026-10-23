@@ -271,6 +271,15 @@ class TimeRouter:
                 city.append(uid in city_uids)
         self.idx = {u: i for i, u in enumerate(self.stop_ids)}
         self.N = len(self.stop_ids)
+        # measured points for feed stops the feed misplaces (data/stop_points.csv uid,lat,lon,note): before the state
+        # lookup and the footpaths, so both use the real point (Albert Lea: Jefferson's stop sat on Greyhound's, Oct 23 2026)
+        sp = os.path.join(DATA_DIR, 'stop_points.csv')
+        if os.path.exists(sp):
+            with open(sp, encoding='utf-8') as fh:
+                for r in csv.DictReader(fh):
+                    i = self.idx.get(r['uid'])
+                    if i is None: print('stop point: unknown stop', r['uid']); continue
+                    self.stop_xy[i] = (float(r['lon']), float(r['lat']))
         hi = os.path.join(DATA_DIR, 'states_500k.geojson')   # Census 1:500k borders; the coarse file misplaces border stops
         states = StateIndex(hi if os.path.exists(hi) else None); self.state_names = states.names
         self.state = states.of_points(self.stop_xy)
@@ -803,6 +812,9 @@ def load_feeds():
         Feed(os.path.join(DATA_DIR, 'flix_gtfs.zip'), 'flix', 'utc', 'dates'),
         Feed(os.path.join(DATA_DIR, 'amtrak_gtfs.zip'), 'amtrak', 'agency', 'dates', max_speed=220, az_summer_offset=True),
         Feed(os.path.join(DATA_DIR, 'intercity_merged_gtfs.zip'), 'ibus', 'infer', 'weekday', skip_agencies=('Greyhound-us', 'FlixBus-us', 'Concord Coach Lines', 'Omnibus Express',
+                                                                                                  # Tornado Bus: every feed trip is a placeholder, stops evenly 30 min apart (Dallas -> El Paso in 3 h);
+                                                                                                  # real Tornado trips are hand-entered in data/manual/tornado_bus.toml (Oct 22 2026)
+                                                                                                  'Tornado Bus',
                                                                                                   # Coach USA carriers: from data/more_gtfs/coachusa.zip, the carrier's own feed (Oct 17 2026)
                                                                                                   'ShortLine Hudson', 'Coach USA Erie', 'Van Galder (Coach USA)', 'Wisconsin Coach Lines',
                                                                                                   # Land to Air Express: from data/more_gtfs/l2a.zip (MnDOT, Oct 17 2026)

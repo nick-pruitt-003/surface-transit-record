@@ -14,13 +14,14 @@ foley_park_vermont_end_of_ledyard_bridge = { name = "Foley Park at the Vermont e
 michigan_line_on_sr_19_on_foot_from_elk = { name = "Michigan line on SR-19 Cassopolis St (on foot from Elkhart Martin's at North Pointe)", lon = -85.9746, lat = 41.7615 }
 
 moorhead_mn_13th_ave_n = { name = "Moorhead MN 13th Ave N at the Red River (on foot from Fargo Jefferson station)", lon = -96.7715, lat = 46.8868 }   # 508 13th Ave N; -96.7745 is on the ND bank
+sd_line_military_rd_bridge = { name = "South Dakota line on the Military Rd bridge (on foot from Sioux City W 19th & Riverside)", lon = -96.4800, lat = 42.5243 }   # Big Sioux River bridge; -96.4797 is still Iowa
 
 [[trip]]
 id = "t50"
 route = "stop definitions for walk links (never runs)"
 days = "0000000"
 tz = "America/Chicago"
-stops = ["wisconsin_line_at_wolff_ln_on_foot_from_ 00:00", "michigan_line_at_michiana_on_foot_from_m 00:00", "michigan_line_on_sr_19_on_foot_from_elk 00:00"]
+stops = ["wisconsin_line_at_wolff_ln_on_foot_from_ 00:00", "michigan_line_at_michiana_on_foot_from_m 00:00", "michigan_line_on_sr_19_on_foot_from_elk 00:00", "sd_line_military_rd_bridge 00:00"]
 
 [[trip]]
 id = "t127"

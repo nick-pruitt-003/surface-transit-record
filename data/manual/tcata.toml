@@ -1,0 +1,579 @@
+agency = "TCATA (Twin Cities Area Transportation Authority)"
+
+# Benton Harbor / St Joseph MI fixed routes, weekdays only. Times from TCATA's own weekday timetables (Remix PDFs,
+# tcata.info, Nick Oct 23 2026). Stop points from TCATA's NTD GTFS export (2025, no stop_times); La Perla is the
+# Tornado stop at 1231 Pipestone Rd. Harbor Towers and Burger King Stevensville are Nick's points (Oct 23 2026). Other stops with no point in that export are left out of the trips (Corewell, MDHHS,
+# Walgreens, Grifols, Kartar, Meeting House, Broadway/Clay, Broadway/Catalpa, Berrien Courthouse, 601 Port St,
+# Papa John's, Burger King, MDOT Park & Ride). Blue: Harbor Towers 58 is one minute before the transit center on the
+# Red timetable, so the transit center arrival is entered at 59 (inferred). Saturday (Nick Oct 23 2026, same stop offsets): Blue hourly 08:00-21:00, Red hourly 08:04-21:04 plus 22:04 to the transit center. TCATA does not run on Sundays (Nick Oct 23 2026).
+
+[stops]
+tcata_transit_center = { name = "TCATA Transit Center Benton Harbor", lon = -86.452118, lat = 42.116382 }
+tcata_michigan_works = { name = "Michigan WORKS Benton Harbor (TCATA)", lon = -86.464474, lat = 42.113967 }
+tcata_post_office = { name = "USPS Post Office Benton Harbor (TCATA)", lon = -86.464091, lat = 42.10895 }
+tcata_river_terrace = { name = "River Terrace Apartments Benton Harbor (TCATA)", lon = -86.460796, lat = 42.110022 }
+tcata_empire_columbus_blue = { name = "Empire and Columbus Ave Benton Harbor (TCATA Blue)", lon = -86.44883, lat = 42.101704 }
+tcata_triangle_park_blue = { name = "Triangle Park at Union and Empire (TCATA Blue)", lon = -86.441342, lat = 42.101562 }
+tcata_intercare_1 = { name = "Intercare Benton Harbor Stop 1 (TCATA)", lon = -86.435753, lat = 42.102393 }
+tcata_save_a_lot = { name = "Save-A-Lot Benton Harbor (TCATA)", lon = -86.436993, lat = 42.088506 }
+tcata_ollies = { name = "Ollie's Benton Harbor (TCATA)", lon = -86.438205, lat = 42.085567 }
+tcata_tj_maxx = { name = "T.J. Maxx Benton Harbor (TCATA)", lon = -86.434141, lat = 42.080918 }
+tcata_dollar_tree = { name = "Dollar Tree / Kohl's Benton Harbor (TCATA)", lon = -86.434067, lat = 42.085622 }
+tcata_meijer_bh = { name = "Meijer Benton Harbor (TCATA)", lon = -86.422126, lat = 42.082606 }
+tcata_burlington = { name = "Burlington Benton Harbor (TCATA)", lon = -86.419267, lat = 42.08152 }
+tcata_walmart = { name = "Walmart Benton Harbor (TCATA)", lon = -86.425206, lat = 42.077941 }
+tcata_la_perla = { name = "La Perla - Pipestone Benton Harbor (TCATA)", lon = -86.4322, lat = 42.0957 }
+tcata_intercare_2 = { name = "Intercare Benton Harbor Stop 2 (TCATA)", lon = -86.43572, lat = 42.102393 }
+tcata_pipestone_plummer = { name = "Pipestone and Plummer Court Benton Harbor (TCATA)", lon = -86.445846, lat = 42.10713 }
+tcata_family_dollar_pipestone = { name = "Family Dollar at Pipestone Benton Harbor (TCATA)", lon = -86.447484, lat = 42.109425 }
+tcata_triangle_park_red = { name = "Triangle Park at Union and Empire (TCATA Red)", lon = -86.441442, lat = 42.102014 }
+tcata_empire_columbus_red = { name = "Empire and Columbus Ave Benton Harbor (TCATA Red)", lon = -86.448806, lat = 42.101709 }
+tcata_whitcomb_towers = { name = "Whitcomb Towers St Joseph (TCATA)", lon = -86.481875, lat = 42.110726 }
+tcata_lakeland_hospital = { name = "Lakeland Hospital St Joseph (TCATA)", lon = -86.478246, lat = 42.088856 }
+tcata_hardings = { name = "Harding's Grocery St Joseph (TCATA)", lon = -86.486217, lat = 42.083614 }
+tcata_martins = { name = "Martin's Grocery St Joseph (TCATA)", lon = -86.493944, lat = 42.078528 }
+tcata_meijer_stevensville = { name = "Meijer Stevensville (TCATA)", lon = -86.516259, lat = 42.026487 }
+tcata_briarwood = { name = "Briarwood Apt at Union Ave Benton Harbor (TCATA)", lon = -86.441447, lat = 42.083336 }
+tcata_union_may = { name = "Union and May Benton Harbor (TCATA)", lon = -86.441527, lat = 42.097735 }
+tcata_harbor_towers = { name = "Harbor Towers Benton Harbor (TCATA)", lon = -86.45209, lat = 42.11578 }   # Nick Oct 23 2026 (point)
+tcata_burger_king_stevensville = { name = "Burger King Stevensville (TCATA)", lon = -86.51493, lat = 42.03338 }   # Nick Oct 23 2026 (point)
+tcata_greyhound_m139 = "=ibus:2985"   # "Greyhound Bus Station, M-139" on the Red timetable; feed point Benton Harbor
+
+[[trip]]
+id = "t525"
+route = "TCATA Blue weekday 06:00 Transit Center -> Pipestone loop -> Transit Center"
+days = "1111100"
+tz = "America/Detroit"
+stops = ["tcata_transit_center 06:00", "tcata_michigan_works 06:04", "tcata_post_office 06:06", "tcata_river_terrace 06:09", "tcata_empire_columbus_blue 06:14", "tcata_triangle_park_blue 06:15", "tcata_intercare_1 06:18", "tcata_save_a_lot 06:23", "tcata_ollies 06:25", "tcata_tj_maxx 06:27", "tcata_dollar_tree 06:31", "tcata_meijer_bh 06:37", "tcata_burlington 06:43", "tcata_walmart 06:48", "tcata_la_perla 06:50", "tcata_intercare_2 06:52", "tcata_pipestone_plummer 06:54", "tcata_family_dollar_pipestone 06:56", "tcata_harbor_towers 06:58", "tcata_transit_center 06:59"]
+
+[[trip]]
+id = "t526"
+route = "TCATA Blue weekday 06:30 Transit Center -> Pipestone loop -> Transit Center"
+days = "1111100"
+tz = "America/Detroit"
+stops = ["tcata_transit_center 06:30", "tcata_michigan_works 06:34", "tcata_post_office 06:36", "tcata_river_terrace 06:39", "tcata_empire_columbus_blue 06:44", "tcata_triangle_park_blue 06:45", "tcata_intercare_1 06:48", "tcata_save_a_lot 06:53", "tcata_ollies 06:55", "tcata_tj_maxx 06:57", "tcata_dollar_tree 07:01", "tcata_meijer_bh 07:07", "tcata_burlington 07:13", "tcata_walmart 07:18", "tcata_la_perla 07:20", "tcata_intercare_2 07:22", "tcata_pipestone_plummer 07:24", "tcata_family_dollar_pipestone 07:26", "tcata_harbor_towers 07:28", "tcata_transit_center 07:29"]
+
+[[trip]]
+id = "t527"
+route = "TCATA Blue weekday 07:00 Transit Center -> Pipestone loop -> Transit Center"
+days = "1111100"
+tz = "America/Detroit"
+stops = ["tcata_transit_center 07:00", "tcata_michigan_works 07:04", "tcata_post_office 07:06", "tcata_river_terrace 07:09", "tcata_empire_columbus_blue 07:14", "tcata_triangle_park_blue 07:15", "tcata_intercare_1 07:18", "tcata_save_a_lot 07:23", "tcata_ollies 07:25", "tcata_tj_maxx 07:27", "tcata_dollar_tree 07:31", "tcata_meijer_bh 07:37", "tcata_burlington 07:43", "tcata_walmart 07:48", "tcata_la_perla 07:50", "tcata_intercare_2 07:52", "tcata_pipestone_plummer 07:54", "tcata_family_dollar_pipestone 07:56", "tcata_harbor_towers 07:58", "tcata_transit_center 07:59"]
+
+[[trip]]
+id = "t528"
+route = "TCATA Blue weekday 07:30 Transit Center -> Pipestone loop -> Transit Center"
+days = "1111100"
+tz = "America/Detroit"
+stops = ["tcata_transit_center 07:30", "tcata_michigan_works 07:34", "tcata_post_office 07:36", "tcata_river_terrace 07:39", "tcata_empire_columbus_blue 07:44", "tcata_triangle_park_blue 07:45", "tcata_intercare_1 07:48", "tcata_save_a_lot 07:53", "tcata_ollies 07:55", "tcata_tj_maxx 07:57", "tcata_dollar_tree 08:01", "tcata_meijer_bh 08:07", "tcata_burlington 08:13", "tcata_walmart 08:18", "tcata_la_perla 08:20", "tcata_intercare_2 08:22", "tcata_pipestone_plummer 08:24", "tcata_family_dollar_pipestone 08:26", "tcata_harbor_towers 08:28", "tcata_transit_center 08:29"]
+
+[[trip]]
+id = "t529"
+route = "TCATA Blue weekday 08:00 Transit Center -> Pipestone loop -> Transit Center"
+days = "1111100"
+tz = "America/Detroit"
+stops = ["tcata_transit_center 08:00", "tcata_michigan_works 08:04", "tcata_post_office 08:06", "tcata_river_terrace 08:09", "tcata_empire_columbus_blue 08:14", "tcata_triangle_park_blue 08:15", "tcata_intercare_1 08:18", "tcata_save_a_lot 08:23", "tcata_ollies 08:25", "tcata_tj_maxx 08:27", "tcata_dollar_tree 08:31", "tcata_meijer_bh 08:37", "tcata_burlington 08:43", "tcata_walmart 08:48", "tcata_la_perla 08:50", "tcata_intercare_2 08:52", "tcata_pipestone_plummer 08:54", "tcata_family_dollar_pipestone 08:56", "tcata_harbor_towers 08:58", "tcata_transit_center 08:59"]
+
+[[trip]]
+id = "t530"
+route = "TCATA Blue weekday 08:30 Transit Center -> Pipestone loop -> Transit Center"
+days = "1111100"
+tz = "America/Detroit"
+stops = ["tcata_transit_center 08:30", "tcata_michigan_works 08:34", "tcata_post_office 08:36", "tcata_river_terrace 08:39", "tcata_empire_columbus_blue 08:44", "tcata_triangle_park_blue 08:45", "tcata_intercare_1 08:48", "tcata_save_a_lot 08:53", "tcata_ollies 08:55", "tcata_tj_maxx 08:57", "tcata_dollar_tree 09:01", "tcata_meijer_bh 09:07", "tcata_burlington 09:13", "tcata_walmart 09:18", "tcata_la_perla 09:20", "tcata_intercare_2 09:22", "tcata_pipestone_plummer 09:24", "tcata_family_dollar_pipestone 09:26", "tcata_harbor_towers 09:28", "tcata_transit_center 09:29"]
+
+[[trip]]
+id = "t531"
+route = "TCATA Blue weekday 09:00 Transit Center -> Pipestone loop -> Transit Center"
+days = "1111100"
+tz = "America/Detroit"
+stops = ["tcata_transit_center 09:00", "tcata_michigan_works 09:04", "tcata_post_office 09:06", "tcata_river_terrace 09:09", "tcata_empire_columbus_blue 09:14", "tcata_triangle_park_blue 09:15", "tcata_intercare_1 09:18", "tcata_save_a_lot 09:23", "tcata_ollies 09:25", "tcata_tj_maxx 09:27", "tcata_dollar_tree 09:31", "tcata_meijer_bh 09:37", "tcata_burlington 09:43", "tcata_walmart 09:48", "tcata_la_perla 09:50", "tcata_intercare_2 09:52", "tcata_pipestone_plummer 09:54", "tcata_family_dollar_pipestone 09:56", "tcata_harbor_towers 09:58", "tcata_transit_center 09:59"]
+
+[[trip]]
+id = "t532"
+route = "TCATA Blue weekday 09:30 Transit Center -> Pipestone loop -> Transit Center"
+days = "1111100"
+tz = "America/Detroit"
+stops = ["tcata_transit_center 09:30", "tcata_michigan_works 09:34", "tcata_post_office 09:36", "tcata_river_terrace 09:39", "tcata_empire_columbus_blue 09:44", "tcata_triangle_park_blue 09:45", "tcata_intercare_1 09:48", "tcata_save_a_lot 09:53", "tcata_ollies 09:55", "tcata_tj_maxx 09:57", "tcata_dollar_tree 10:01", "tcata_meijer_bh 10:07", "tcata_burlington 10:13", "tcata_walmart 10:18", "tcata_la_perla 10:20", "tcata_intercare_2 10:22", "tcata_pipestone_plummer 10:24", "tcata_family_dollar_pipestone 10:26", "tcata_harbor_towers 10:28", "tcata_transit_center 10:29"]
+
+[[trip]]
+id = "t533"
+route = "TCATA Blue weekday 10:00 Transit Center -> Pipestone loop -> Transit Center"
+days = "1111100"
+tz = "America/Detroit"
+stops = ["tcata_transit_center 10:00", "tcata_michigan_works 10:04", "tcata_post_office 10:06", "tcata_river_terrace 10:09", "tcata_empire_columbus_blue 10:14", "tcata_triangle_park_blue 10:15", "tcata_intercare_1 10:18", "tcata_save_a_lot 10:23", "tcata_ollies 10:25", "tcata_tj_maxx 10:27", "tcata_dollar_tree 10:31", "tcata_meijer_bh 10:37", "tcata_burlington 10:43", "tcata_walmart 10:48", "tcata_la_perla 10:50", "tcata_intercare_2 10:52", "tcata_pipestone_plummer 10:54", "tcata_family_dollar_pipestone 10:56", "tcata_harbor_towers 10:58", "tcata_transit_center 10:59"]
+
+[[trip]]
+id = "t534"
+route = "TCATA Blue weekday 10:30 Transit Center -> Pipestone loop -> Transit Center"
+days = "1111100"
+tz = "America/Detroit"
+stops = ["tcata_transit_center 10:30", "tcata_michigan_works 10:34", "tcata_post_office 10:36", "tcata_river_terrace 10:39", "tcata_empire_columbus_blue 10:44", "tcata_triangle_park_blue 10:45", "tcata_intercare_1 10:48", "tcata_save_a_lot 10:53", "tcata_ollies 10:55", "tcata_tj_maxx 10:57", "tcata_dollar_tree 11:01", "tcata_meijer_bh 11:07", "tcata_burlington 11:13", "tcata_walmart 11:18", "tcata_la_perla 11:20", "tcata_intercare_2 11:22", "tcata_pipestone_plummer 11:24", "tcata_family_dollar_pipestone 11:26", "tcata_harbor_towers 11:28", "tcata_transit_center 11:29"]
+
+[[trip]]
+id = "t535"
+route = "TCATA Blue weekday 11:00 Transit Center -> Pipestone loop -> Transit Center"
+days = "1111100"
+tz = "America/Detroit"
+stops = ["tcata_transit_center 11:00", "tcata_michigan_works 11:04", "tcata_post_office 11:06", "tcata_river_terrace 11:09", "tcata_empire_columbus_blue 11:14", "tcata_triangle_park_blue 11:15", "tcata_intercare_1 11:18", "tcata_save_a_lot 11:23", "tcata_ollies 11:25", "tcata_tj_maxx 11:27", "tcata_dollar_tree 11:31", "tcata_meijer_bh 11:37", "tcata_burlington 11:43", "tcata_walmart 11:48", "tcata_la_perla 11:50", "tcata_intercare_2 11:52", "tcata_pipestone_plummer 11:54", "tcata_family_dollar_pipestone 11:56", "tcata_harbor_towers 11:58", "tcata_transit_center 11:59"]
+
+[[trip]]
+id = "t536"
+route = "TCATA Blue weekday 11:30 Transit Center -> Pipestone loop -> Transit Center"
+days = "1111100"
+tz = "America/Detroit"
+stops = ["tcata_transit_center 11:30", "tcata_michigan_works 11:34", "tcata_post_office 11:36", "tcata_river_terrace 11:39", "tcata_empire_columbus_blue 11:44", "tcata_triangle_park_blue 11:45", "tcata_intercare_1 11:48", "tcata_save_a_lot 11:53", "tcata_ollies 11:55", "tcata_tj_maxx 11:57", "tcata_dollar_tree 12:01", "tcata_meijer_bh 12:07", "tcata_burlington 12:13", "tcata_walmart 12:18", "tcata_la_perla 12:20", "tcata_intercare_2 12:22", "tcata_pipestone_plummer 12:24", "tcata_family_dollar_pipestone 12:26", "tcata_harbor_towers 12:28", "tcata_transit_center 12:29"]
+
+[[trip]]
+id = "t537"
+route = "TCATA Blue weekday 12:00 Transit Center -> Pipestone loop -> Transit Center"
+days = "1111100"
+tz = "America/Detroit"
+stops = ["tcata_transit_center 12:00", "tcata_michigan_works 12:04", "tcata_post_office 12:06", "tcata_river_terrace 12:09", "tcata_empire_columbus_blue 12:14", "tcata_triangle_park_blue 12:15", "tcata_intercare_1 12:18", "tcata_save_a_lot 12:23", "tcata_ollies 12:25", "tcata_tj_maxx 12:27", "tcata_dollar_tree 12:31", "tcata_meijer_bh 12:37", "tcata_burlington 12:43", "tcata_walmart 12:48", "tcata_la_perla 12:50", "tcata_intercare_2 12:52", "tcata_pipestone_plummer 12:54", "tcata_family_dollar_pipestone 12:56", "tcata_harbor_towers 12:58", "tcata_transit_center 12:59"]
+
+[[trip]]
+id = "t538"
+route = "TCATA Blue weekday 12:30 Transit Center -> Pipestone loop -> Transit Center"
+days = "1111100"
+tz = "America/Detroit"
+stops = ["tcata_transit_center 12:30", "tcata_michigan_works 12:34", "tcata_post_office 12:36", "tcata_river_terrace 12:39", "tcata_empire_columbus_blue 12:44", "tcata_triangle_park_blue 12:45", "tcata_intercare_1 12:48", "tcata_save_a_lot 12:53", "tcata_ollies 12:55", "tcata_tj_maxx 12:57", "tcata_dollar_tree 13:01", "tcata_meijer_bh 13:07", "tcata_burlington 13:13", "tcata_walmart 13:18", "tcata_la_perla 13:20", "tcata_intercare_2 13:22", "tcata_pipestone_plummer 13:24", "tcata_family_dollar_pipestone 13:26", "tcata_harbor_towers 13:28", "tcata_transit_center 13:29"]
+
+[[trip]]
+id = "t539"
+route = "TCATA Blue weekday 13:00 Transit Center -> Pipestone loop -> Transit Center"
+days = "1111100"
+tz = "America/Detroit"
+stops = ["tcata_transit_center 13:00", "tcata_michigan_works 13:04", "tcata_post_office 13:06", "tcata_river_terrace 13:09", "tcata_empire_columbus_blue 13:14", "tcata_triangle_park_blue 13:15", "tcata_intercare_1 13:18", "tcata_save_a_lot 13:23", "tcata_ollies 13:25", "tcata_tj_maxx 13:27", "tcata_dollar_tree 13:31", "tcata_meijer_bh 13:37", "tcata_burlington 13:43", "tcata_walmart 13:48", "tcata_la_perla 13:50", "tcata_intercare_2 13:52", "tcata_pipestone_plummer 13:54", "tcata_family_dollar_pipestone 13:56", "tcata_harbor_towers 13:58", "tcata_transit_center 13:59"]
+
+[[trip]]
+id = "t540"
+route = "TCATA Blue weekday 13:30 Transit Center -> Pipestone loop -> Transit Center"
+days = "1111100"
+tz = "America/Detroit"
+stops = ["tcata_transit_center 13:30", "tcata_michigan_works 13:34", "tcata_post_office 13:36", "tcata_river_terrace 13:39", "tcata_empire_columbus_blue 13:44", "tcata_triangle_park_blue 13:45", "tcata_intercare_1 13:48", "tcata_save_a_lot 13:53", "tcata_ollies 13:55", "tcata_tj_maxx 13:57", "tcata_dollar_tree 14:01", "tcata_meijer_bh 14:07", "tcata_burlington 14:13", "tcata_walmart 14:18", "tcata_la_perla 14:20", "tcata_intercare_2 14:22", "tcata_pipestone_plummer 14:24", "tcata_family_dollar_pipestone 14:26", "tcata_harbor_towers 14:28", "tcata_transit_center 14:29"]
+
+[[trip]]
+id = "t541"
+route = "TCATA Blue weekday 14:00 Transit Center -> Pipestone loop -> Transit Center"
+days = "1111100"
+tz = "America/Detroit"
+stops = ["tcata_transit_center 14:00", "tcata_michigan_works 14:04", "tcata_post_office 14:06", "tcata_river_terrace 14:09", "tcata_empire_columbus_blue 14:14", "tcata_triangle_park_blue 14:15", "tcata_intercare_1 14:18", "tcata_save_a_lot 14:23", "tcata_ollies 14:25", "tcata_tj_maxx 14:27", "tcata_dollar_tree 14:31", "tcata_meijer_bh 14:37", "tcata_burlington 14:43", "tcata_walmart 14:48", "tcata_la_perla 14:50", "tcata_intercare_2 14:52", "tcata_pipestone_plummer 14:54", "tcata_family_dollar_pipestone 14:56", "tcata_harbor_towers 14:58", "tcata_transit_center 14:59"]
+
+[[trip]]
+id = "t542"
+route = "TCATA Blue weekday 14:30 Transit Center -> Pipestone loop -> Transit Center"
+days = "1111100"
+tz = "America/Detroit"
+stops = ["tcata_transit_center 14:30", "tcata_michigan_works 14:34", "tcata_post_office 14:36", "tcata_river_terrace 14:39", "tcata_empire_columbus_blue 14:44", "tcata_triangle_park_blue 14:45", "tcata_intercare_1 14:48", "tcata_save_a_lot 14:53", "tcata_ollies 14:55", "tcata_tj_maxx 14:57", "tcata_dollar_tree 15:01", "tcata_meijer_bh 15:07", "tcata_burlington 15:13", "tcata_walmart 15:18", "tcata_la_perla 15:20", "tcata_intercare_2 15:22", "tcata_pipestone_plummer 15:24", "tcata_family_dollar_pipestone 15:26", "tcata_harbor_towers 15:28", "tcata_transit_center 15:29"]
+
+[[trip]]
+id = "t543"
+route = "TCATA Blue weekday 15:00 Transit Center -> Pipestone loop -> Transit Center"
+days = "1111100"
+tz = "America/Detroit"
+stops = ["tcata_transit_center 15:00", "tcata_michigan_works 15:04", "tcata_post_office 15:06", "tcata_river_terrace 15:09", "tcata_empire_columbus_blue 15:14", "tcata_triangle_park_blue 15:15", "tcata_intercare_1 15:18", "tcata_save_a_lot 15:23", "tcata_ollies 15:25", "tcata_tj_maxx 15:27", "tcata_dollar_tree 15:31", "tcata_meijer_bh 15:37", "tcata_burlington 15:43", "tcata_walmart 15:48", "tcata_la_perla 15:50", "tcata_intercare_2 15:52", "tcata_pipestone_plummer 15:54", "tcata_family_dollar_pipestone 15:56", "tcata_harbor_towers 15:58", "tcata_transit_center 15:59"]
+
+[[trip]]
+id = "t544"
+route = "TCATA Blue weekday 15:30 Transit Center -> Pipestone loop -> Transit Center"
+days = "1111100"
+tz = "America/Detroit"
+stops = ["tcata_transit_center 15:30", "tcata_michigan_works 15:34", "tcata_post_office 15:36", "tcata_river_terrace 15:39", "tcata_empire_columbus_blue 15:44", "tcata_triangle_park_blue 15:45", "tcata_intercare_1 15:48", "tcata_save_a_lot 15:53", "tcata_ollies 15:55", "tcata_tj_maxx 15:57", "tcata_dollar_tree 16:01", "tcata_meijer_bh 16:07", "tcata_burlington 16:13", "tcata_walmart 16:18", "tcata_la_perla 16:20", "tcata_intercare_2 16:22", "tcata_pipestone_plummer 16:24", "tcata_family_dollar_pipestone 16:26", "tcata_harbor_towers 16:28", "tcata_transit_center 16:29"]
+
+[[trip]]
+id = "t545"
+route = "TCATA Blue weekday 16:00 Transit Center -> Pipestone loop -> Transit Center"
+days = "1111100"
+tz = "America/Detroit"
+stops = ["tcata_transit_center 16:00", "tcata_michigan_works 16:04", "tcata_post_office 16:06", "tcata_river_terrace 16:09", "tcata_empire_columbus_blue 16:14", "tcata_triangle_park_blue 16:15", "tcata_intercare_1 16:18", "tcata_save_a_lot 16:23", "tcata_ollies 16:25", "tcata_tj_maxx 16:27", "tcata_dollar_tree 16:31", "tcata_meijer_bh 16:37", "tcata_burlington 16:43", "tcata_walmart 16:48", "tcata_la_perla 16:50", "tcata_intercare_2 16:52", "tcata_pipestone_plummer 16:54", "tcata_family_dollar_pipestone 16:56", "tcata_harbor_towers 16:58", "tcata_transit_center 16:59"]
+
+[[trip]]
+id = "t546"
+route = "TCATA Blue weekday 16:30 Transit Center -> Pipestone loop -> Transit Center"
+days = "1111100"
+tz = "America/Detroit"
+stops = ["tcata_transit_center 16:30", "tcata_michigan_works 16:34", "tcata_post_office 16:36", "tcata_river_terrace 16:39", "tcata_empire_columbus_blue 16:44", "tcata_triangle_park_blue 16:45", "tcata_intercare_1 16:48", "tcata_save_a_lot 16:53", "tcata_ollies 16:55", "tcata_tj_maxx 16:57", "tcata_dollar_tree 17:01", "tcata_meijer_bh 17:07", "tcata_burlington 17:13", "tcata_walmart 17:18", "tcata_la_perla 17:20", "tcata_intercare_2 17:22", "tcata_pipestone_plummer 17:24", "tcata_family_dollar_pipestone 17:26", "tcata_harbor_towers 17:28", "tcata_transit_center 17:29"]
+
+[[trip]]
+id = "t547"
+route = "TCATA Blue weekday 17:00 Transit Center -> Pipestone loop -> Transit Center"
+days = "1111100"
+tz = "America/Detroit"
+stops = ["tcata_transit_center 17:00", "tcata_michigan_works 17:04", "tcata_post_office 17:06", "tcata_river_terrace 17:09", "tcata_empire_columbus_blue 17:14", "tcata_triangle_park_blue 17:15", "tcata_intercare_1 17:18", "tcata_save_a_lot 17:23", "tcata_ollies 17:25", "tcata_tj_maxx 17:27", "tcata_dollar_tree 17:31", "tcata_meijer_bh 17:37", "tcata_burlington 17:43", "tcata_walmart 17:48", "tcata_la_perla 17:50", "tcata_intercare_2 17:52", "tcata_pipestone_plummer 17:54", "tcata_family_dollar_pipestone 17:56", "tcata_harbor_towers 17:58", "tcata_transit_center 17:59"]
+
+[[trip]]
+id = "t548"
+route = "TCATA Blue weekday 17:30 Transit Center -> Pipestone loop -> Transit Center"
+days = "1111100"
+tz = "America/Detroit"
+stops = ["tcata_transit_center 17:30", "tcata_michigan_works 17:34", "tcata_post_office 17:36", "tcata_river_terrace 17:39", "tcata_empire_columbus_blue 17:44", "tcata_triangle_park_blue 17:45", "tcata_intercare_1 17:48", "tcata_save_a_lot 17:53", "tcata_ollies 17:55", "tcata_tj_maxx 17:57", "tcata_dollar_tree 18:01", "tcata_meijer_bh 18:07", "tcata_burlington 18:13", "tcata_walmart 18:18", "tcata_la_perla 18:20", "tcata_intercare_2 18:22", "tcata_pipestone_plummer 18:24", "tcata_family_dollar_pipestone 18:26", "tcata_harbor_towers 18:28", "tcata_transit_center 18:29"]
+
+[[trip]]
+id = "t549"
+route = "TCATA Blue weekday 18:00 Transit Center -> Pipestone loop -> Transit Center"
+days = "1111100"
+tz = "America/Detroit"
+stops = ["tcata_transit_center 18:00", "tcata_michigan_works 18:04", "tcata_post_office 18:06", "tcata_river_terrace 18:09", "tcata_empire_columbus_blue 18:14", "tcata_triangle_park_blue 18:15", "tcata_intercare_1 18:18", "tcata_save_a_lot 18:23", "tcata_ollies 18:25", "tcata_tj_maxx 18:27", "tcata_dollar_tree 18:31", "tcata_meijer_bh 18:37", "tcata_burlington 18:43", "tcata_walmart 18:48", "tcata_la_perla 18:50", "tcata_intercare_2 18:52", "tcata_pipestone_plummer 18:54", "tcata_family_dollar_pipestone 18:56", "tcata_harbor_towers 18:58", "tcata_transit_center 18:59"]
+
+[[trip]]
+id = "t550"
+route = "TCATA Blue weekday 18:30 Transit Center -> Pipestone loop -> Transit Center"
+days = "1111100"
+tz = "America/Detroit"
+stops = ["tcata_transit_center 18:30", "tcata_michigan_works 18:34", "tcata_post_office 18:36", "tcata_river_terrace 18:39", "tcata_empire_columbus_blue 18:44", "tcata_triangle_park_blue 18:45", "tcata_intercare_1 18:48", "tcata_save_a_lot 18:53", "tcata_ollies 18:55", "tcata_tj_maxx 18:57", "tcata_dollar_tree 19:01", "tcata_meijer_bh 19:07", "tcata_burlington 19:13", "tcata_walmart 19:18", "tcata_la_perla 19:20", "tcata_intercare_2 19:22", "tcata_pipestone_plummer 19:24", "tcata_family_dollar_pipestone 19:26", "tcata_harbor_towers 19:28", "tcata_transit_center 19:29"]
+
+[[trip]]
+id = "t551"
+route = "TCATA Blue weekday 19:00 Transit Center -> Pipestone loop -> Transit Center"
+days = "1111100"
+tz = "America/Detroit"
+stops = ["tcata_transit_center 19:00", "tcata_michigan_works 19:04", "tcata_post_office 19:06", "tcata_river_terrace 19:09", "tcata_empire_columbus_blue 19:14", "tcata_triangle_park_blue 19:15", "tcata_intercare_1 19:18", "tcata_save_a_lot 19:23", "tcata_ollies 19:25", "tcata_tj_maxx 19:27", "tcata_dollar_tree 19:31", "tcata_meijer_bh 19:37", "tcata_burlington 19:43", "tcata_walmart 19:48", "tcata_la_perla 19:50", "tcata_intercare_2 19:52", "tcata_pipestone_plummer 19:54", "tcata_family_dollar_pipestone 19:56", "tcata_harbor_towers 19:58", "tcata_transit_center 19:59"]
+
+[[trip]]
+id = "t552"
+route = "TCATA Blue weekday 19:30 Transit Center -> Pipestone loop -> Transit Center"
+days = "1111100"
+tz = "America/Detroit"
+stops = ["tcata_transit_center 19:30", "tcata_michigan_works 19:34", "tcata_post_office 19:36", "tcata_river_terrace 19:39", "tcata_empire_columbus_blue 19:44", "tcata_triangle_park_blue 19:45", "tcata_intercare_1 19:48", "tcata_save_a_lot 19:53", "tcata_ollies 19:55", "tcata_tj_maxx 19:57", "tcata_dollar_tree 20:01", "tcata_meijer_bh 20:07", "tcata_burlington 20:13", "tcata_walmart 20:18", "tcata_la_perla 20:20", "tcata_intercare_2 20:22", "tcata_pipestone_plummer 20:24", "tcata_family_dollar_pipestone 20:26", "tcata_harbor_towers 20:28", "tcata_transit_center 20:29"]
+
+[[trip]]
+id = "t553"
+route = "TCATA Blue weekday 20:00 Transit Center -> Pipestone loop -> Transit Center"
+days = "1111100"
+tz = "America/Detroit"
+stops = ["tcata_transit_center 20:00", "tcata_michigan_works 20:04", "tcata_post_office 20:06", "tcata_river_terrace 20:09", "tcata_empire_columbus_blue 20:14", "tcata_triangle_park_blue 20:15", "tcata_intercare_1 20:18", "tcata_save_a_lot 20:23", "tcata_ollies 20:25", "tcata_tj_maxx 20:27", "tcata_dollar_tree 20:31", "tcata_meijer_bh 20:37", "tcata_burlington 20:43", "tcata_walmart 20:48", "tcata_la_perla 20:50", "tcata_intercare_2 20:52", "tcata_pipestone_plummer 20:54", "tcata_family_dollar_pipestone 20:56", "tcata_harbor_towers 20:58", "tcata_transit_center 20:59"]
+
+[[trip]]
+id = "t554"
+route = "TCATA Blue weekday 20:30 Transit Center -> Pipestone loop -> Transit Center"
+days = "1111100"
+tz = "America/Detroit"
+stops = ["tcata_transit_center 20:30", "tcata_michigan_works 20:34", "tcata_post_office 20:36", "tcata_river_terrace 20:39", "tcata_empire_columbus_blue 20:44", "tcata_triangle_park_blue 20:45", "tcata_intercare_1 20:48", "tcata_save_a_lot 20:53", "tcata_ollies 20:55", "tcata_tj_maxx 20:57", "tcata_dollar_tree 21:01", "tcata_meijer_bh 21:07", "tcata_burlington 21:13", "tcata_walmart 21:18", "tcata_la_perla 21:20", "tcata_intercare_2 21:22", "tcata_pipestone_plummer 21:24", "tcata_family_dollar_pipestone 21:26", "tcata_harbor_towers 21:28", "tcata_transit_center 21:29"]
+
+[[trip]]
+id = "t555"
+route = "TCATA Blue weekday 21:00 Transit Center -> Pipestone loop -> Transit Center"
+days = "1111100"
+tz = "America/Detroit"
+stops = ["tcata_transit_center 21:00", "tcata_michigan_works 21:04", "tcata_post_office 21:06", "tcata_river_terrace 21:09", "tcata_empire_columbus_blue 21:14", "tcata_triangle_park_blue 21:15", "tcata_intercare_1 21:18", "tcata_save_a_lot 21:23", "tcata_ollies 21:25", "tcata_tj_maxx 21:27", "tcata_dollar_tree 21:31", "tcata_meijer_bh 21:37", "tcata_burlington 21:43", "tcata_walmart 21:48", "tcata_la_perla 21:50", "tcata_intercare_2 21:52", "tcata_pipestone_plummer 21:54", "tcata_family_dollar_pipestone 21:56", "tcata_harbor_towers 21:58", "tcata_transit_center 21:59"]
+
+[[trip]]
+id = "t556"
+route = "TCATA Red weekday 06:04 Triangle Park -> Transit Center -> St Joseph -> Stevensville -> Greyhound M-139 -> Union & May"
+days = "1111100"
+tz = "America/Detroit"
+stops = ["tcata_triangle_park_red 06:04", "tcata_empire_columbus_red 06:06", "tcata_harbor_towers 06:08", "tcata_transit_center 06:09", "tcata_michigan_works 06:15", "tcata_whitcomb_towers 06:20", "tcata_lakeland_hospital 06:30", "tcata_hardings 06:35", "tcata_martins 06:40", "tcata_burger_king_stevensville 06:50", "tcata_meijer_stevensville 06:52", "tcata_greyhound_m139 07:01", "tcata_briarwood 07:02", "tcata_union_may 07:03"]
+
+[[trip]]
+id = "t557"
+route = "TCATA Red weekday 07:04 Triangle Park -> Transit Center -> St Joseph -> Stevensville -> Greyhound M-139 -> Union & May"
+days = "1111100"
+tz = "America/Detroit"
+stops = ["tcata_triangle_park_red 07:04", "tcata_empire_columbus_red 07:06", "tcata_harbor_towers 07:08", "tcata_transit_center 07:09", "tcata_michigan_works 07:15", "tcata_whitcomb_towers 07:20", "tcata_lakeland_hospital 07:30", "tcata_hardings 07:35", "tcata_martins 07:40", "tcata_burger_king_stevensville 07:50", "tcata_meijer_stevensville 07:52", "tcata_greyhound_m139 08:01", "tcata_briarwood 08:02", "tcata_union_may 08:03"]
+
+[[trip]]
+id = "t558"
+route = "TCATA Red weekday 08:04 Triangle Park -> Transit Center -> St Joseph -> Stevensville -> Greyhound M-139 -> Union & May"
+days = "1111100"
+tz = "America/Detroit"
+stops = ["tcata_triangle_park_red 08:04", "tcata_empire_columbus_red 08:06", "tcata_harbor_towers 08:08", "tcata_transit_center 08:09", "tcata_michigan_works 08:15", "tcata_whitcomb_towers 08:20", "tcata_lakeland_hospital 08:30", "tcata_hardings 08:35", "tcata_martins 08:40", "tcata_burger_king_stevensville 08:50", "tcata_meijer_stevensville 08:52", "tcata_greyhound_m139 09:01", "tcata_briarwood 09:02", "tcata_union_may 09:03"]
+
+[[trip]]
+id = "t559"
+route = "TCATA Red weekday 09:04 Triangle Park -> Transit Center -> St Joseph -> Stevensville -> Greyhound M-139 -> Union & May"
+days = "1111100"
+tz = "America/Detroit"
+stops = ["tcata_triangle_park_red 09:04", "tcata_empire_columbus_red 09:06", "tcata_harbor_towers 09:08", "tcata_transit_center 09:09", "tcata_michigan_works 09:15", "tcata_whitcomb_towers 09:20", "tcata_lakeland_hospital 09:30", "tcata_hardings 09:35", "tcata_martins 09:40", "tcata_burger_king_stevensville 09:50", "tcata_meijer_stevensville 09:52", "tcata_greyhound_m139 10:01", "tcata_briarwood 10:02", "tcata_union_may 10:03"]
+
+[[trip]]
+id = "t560"
+route = "TCATA Red weekday 10:04 Triangle Park -> Transit Center -> St Joseph -> Stevensville -> Greyhound M-139 -> Union & May"
+days = "1111100"
+tz = "America/Detroit"
+stops = ["tcata_triangle_park_red 10:04", "tcata_empire_columbus_red 10:06", "tcata_harbor_towers 10:08", "tcata_transit_center 10:09", "tcata_michigan_works 10:15", "tcata_whitcomb_towers 10:20", "tcata_lakeland_hospital 10:30", "tcata_hardings 10:35", "tcata_martins 10:40", "tcata_burger_king_stevensville 10:50", "tcata_meijer_stevensville 10:52", "tcata_greyhound_m139 11:01", "tcata_briarwood 11:02", "tcata_union_may 11:03"]
+
+[[trip]]
+id = "t561"
+route = "TCATA Red weekday 11:04 Triangle Park -> Transit Center -> St Joseph -> Stevensville -> Greyhound M-139 -> Union & May"
+days = "1111100"
+tz = "America/Detroit"
+stops = ["tcata_triangle_park_red 11:04", "tcata_empire_columbus_red 11:06", "tcata_harbor_towers 11:08", "tcata_transit_center 11:09", "tcata_michigan_works 11:15", "tcata_whitcomb_towers 11:20", "tcata_lakeland_hospital 11:30", "tcata_hardings 11:35", "tcata_martins 11:40", "tcata_burger_king_stevensville 11:50", "tcata_meijer_stevensville 11:52", "tcata_greyhound_m139 12:01", "tcata_briarwood 12:02", "tcata_union_may 12:03"]
+
+[[trip]]
+id = "t562"
+route = "TCATA Red weekday 12:04 Triangle Park -> Transit Center -> St Joseph -> Stevensville -> Greyhound M-139 -> Union & May"
+days = "1111100"
+tz = "America/Detroit"
+stops = ["tcata_triangle_park_red 12:04", "tcata_empire_columbus_red 12:06", "tcata_harbor_towers 12:08", "tcata_transit_center 12:09", "tcata_michigan_works 12:15", "tcata_whitcomb_towers 12:20", "tcata_lakeland_hospital 12:30", "tcata_hardings 12:35", "tcata_martins 12:40", "tcata_burger_king_stevensville 12:50", "tcata_meijer_stevensville 12:52", "tcata_greyhound_m139 13:01", "tcata_briarwood 13:02", "tcata_union_may 13:03"]
+
+[[trip]]
+id = "t563"
+route = "TCATA Red weekday 13:04 Triangle Park -> Transit Center -> St Joseph -> Stevensville -> Greyhound M-139 -> Union & May"
+days = "1111100"
+tz = "America/Detroit"
+stops = ["tcata_triangle_park_red 13:04", "tcata_empire_columbus_red 13:06", "tcata_harbor_towers 13:08", "tcata_transit_center 13:09", "tcata_michigan_works 13:15", "tcata_whitcomb_towers 13:20", "tcata_lakeland_hospital 13:30", "tcata_hardings 13:35", "tcata_martins 13:40", "tcata_burger_king_stevensville 13:50", "tcata_meijer_stevensville 13:52", "tcata_greyhound_m139 14:01", "tcata_briarwood 14:02", "tcata_union_may 14:03"]
+
+[[trip]]
+id = "t564"
+route = "TCATA Red weekday 14:04 Triangle Park -> Transit Center -> St Joseph -> Stevensville -> Greyhound M-139 -> Union & May"
+days = "1111100"
+tz = "America/Detroit"
+stops = ["tcata_triangle_park_red 14:04", "tcata_empire_columbus_red 14:06", "tcata_harbor_towers 14:08", "tcata_transit_center 14:09", "tcata_michigan_works 14:15", "tcata_whitcomb_towers 14:20", "tcata_lakeland_hospital 14:30", "tcata_hardings 14:35", "tcata_martins 14:40", "tcata_burger_king_stevensville 14:50", "tcata_meijer_stevensville 14:52", "tcata_greyhound_m139 15:01", "tcata_briarwood 15:02", "tcata_union_may 15:03"]
+
+[[trip]]
+id = "t565"
+route = "TCATA Red weekday 15:04 Triangle Park -> Transit Center -> St Joseph -> Stevensville -> Greyhound M-139 -> Union & May"
+days = "1111100"
+tz = "America/Detroit"
+stops = ["tcata_triangle_park_red 15:04", "tcata_empire_columbus_red 15:06", "tcata_harbor_towers 15:08", "tcata_transit_center 15:09", "tcata_michigan_works 15:15", "tcata_whitcomb_towers 15:20", "tcata_lakeland_hospital 15:30", "tcata_hardings 15:35", "tcata_martins 15:40", "tcata_burger_king_stevensville 15:50", "tcata_meijer_stevensville 15:52", "tcata_greyhound_m139 16:01", "tcata_briarwood 16:02", "tcata_union_may 16:03"]
+
+[[trip]]
+id = "t566"
+route = "TCATA Red weekday 16:04 Triangle Park -> Transit Center -> St Joseph -> Stevensville -> Greyhound M-139 -> Union & May"
+days = "1111100"
+tz = "America/Detroit"
+stops = ["tcata_triangle_park_red 16:04", "tcata_empire_columbus_red 16:06", "tcata_harbor_towers 16:08", "tcata_transit_center 16:09", "tcata_michigan_works 16:15", "tcata_whitcomb_towers 16:20", "tcata_lakeland_hospital 16:30", "tcata_hardings 16:35", "tcata_martins 16:40", "tcata_burger_king_stevensville 16:50", "tcata_meijer_stevensville 16:52", "tcata_greyhound_m139 17:01", "tcata_briarwood 17:02", "tcata_union_may 17:03"]
+
+[[trip]]
+id = "t567"
+route = "TCATA Red weekday 17:04 Triangle Park -> Transit Center -> St Joseph -> Stevensville -> Greyhound M-139 -> Union & May"
+days = "1111100"
+tz = "America/Detroit"
+stops = ["tcata_triangle_park_red 17:04", "tcata_empire_columbus_red 17:06", "tcata_harbor_towers 17:08", "tcata_transit_center 17:09", "tcata_michigan_works 17:15", "tcata_whitcomb_towers 17:20", "tcata_lakeland_hospital 17:30", "tcata_hardings 17:35", "tcata_martins 17:40", "tcata_burger_king_stevensville 17:50", "tcata_meijer_stevensville 17:52", "tcata_greyhound_m139 18:01", "tcata_briarwood 18:02", "tcata_union_may 18:03"]
+
+[[trip]]
+id = "t568"
+route = "TCATA Red weekday 18:04 Triangle Park -> Transit Center -> St Joseph -> Stevensville -> Greyhound M-139 -> Union & May"
+days = "1111100"
+tz = "America/Detroit"
+stops = ["tcata_triangle_park_red 18:04", "tcata_empire_columbus_red 18:06", "tcata_harbor_towers 18:08", "tcata_transit_center 18:09", "tcata_michigan_works 18:15", "tcata_whitcomb_towers 18:20", "tcata_lakeland_hospital 18:30", "tcata_hardings 18:35", "tcata_martins 18:40", "tcata_burger_king_stevensville 18:50", "tcata_meijer_stevensville 18:52", "tcata_greyhound_m139 19:01", "tcata_briarwood 19:02", "tcata_union_may 19:03"]
+
+[[trip]]
+id = "t569"
+route = "TCATA Red weekday 19:04 Triangle Park -> Transit Center -> St Joseph -> Stevensville -> Greyhound M-139 -> Union & May"
+days = "1111100"
+tz = "America/Detroit"
+stops = ["tcata_triangle_park_red 19:04", "tcata_empire_columbus_red 19:06", "tcata_harbor_towers 19:08", "tcata_transit_center 19:09", "tcata_michigan_works 19:15", "tcata_whitcomb_towers 19:20", "tcata_lakeland_hospital 19:30", "tcata_hardings 19:35", "tcata_martins 19:40", "tcata_burger_king_stevensville 19:50", "tcata_meijer_stevensville 19:52", "tcata_greyhound_m139 20:01", "tcata_briarwood 20:02", "tcata_union_may 20:03"]
+
+[[trip]]
+id = "t570"
+route = "TCATA Red weekday 20:04 Triangle Park -> Transit Center -> St Joseph -> Stevensville -> Greyhound M-139 -> Union & May"
+days = "1111100"
+tz = "America/Detroit"
+stops = ["tcata_triangle_park_red 20:04", "tcata_empire_columbus_red 20:06", "tcata_harbor_towers 20:08", "tcata_transit_center 20:09", "tcata_michigan_works 20:15", "tcata_whitcomb_towers 20:20", "tcata_lakeland_hospital 20:30", "tcata_hardings 20:35", "tcata_martins 20:40", "tcata_burger_king_stevensville 20:50", "tcata_meijer_stevensville 20:52", "tcata_greyhound_m139 21:01", "tcata_briarwood 21:02", "tcata_union_may 21:03"]
+
+[[trip]]
+id = "t571"
+route = "TCATA Red weekday 21:04 Triangle Park -> Transit Center -> St Joseph -> Stevensville -> Greyhound M-139 -> Union & May"
+days = "1111100"
+tz = "America/Detroit"
+stops = ["tcata_triangle_park_red 21:04", "tcata_empire_columbus_red 21:06", "tcata_harbor_towers 21:08", "tcata_transit_center 21:09", "tcata_michigan_works 21:15", "tcata_whitcomb_towers 21:20", "tcata_lakeland_hospital 21:30", "tcata_hardings 21:35", "tcata_martins 21:40", "tcata_burger_king_stevensville 21:50", "tcata_meijer_stevensville 21:52", "tcata_greyhound_m139 22:01", "tcata_briarwood 22:02", "tcata_union_may 22:03"]
+
+[[trip]]
+id = "t572"
+route = "TCATA Red weekday 22:04 Triangle Park -> Transit Center (last run ends at the transit center)"
+days = "1111100"
+tz = "America/Detroit"
+stops = ["tcata_triangle_park_red 22:04", "tcata_empire_columbus_red 22:06", "tcata_harbor_towers 22:08", "tcata_transit_center 22:09"]
+
+[[trip]]
+id = "t573"
+route = "TCATA Blue Saturday 08:00 Transit Center -> Pipestone loop -> Transit Center"
+days = "0000010"
+tz = "America/Detroit"
+stops = ["tcata_transit_center 08:00", "tcata_michigan_works 08:04", "tcata_post_office 08:06", "tcata_river_terrace 08:09", "tcata_empire_columbus_blue 08:14", "tcata_triangle_park_blue 08:15", "tcata_intercare_1 08:18", "tcata_save_a_lot 08:23", "tcata_ollies 08:25", "tcata_tj_maxx 08:27", "tcata_dollar_tree 08:31", "tcata_meijer_bh 08:37", "tcata_burlington 08:43", "tcata_walmart 08:48", "tcata_la_perla 08:50", "tcata_intercare_2 08:52", "tcata_pipestone_plummer 08:54", "tcata_family_dollar_pipestone 08:56", "tcata_harbor_towers 08:58", "tcata_transit_center 08:59"]
+
+[[trip]]
+id = "t574"
+route = "TCATA Blue Saturday 09:00 Transit Center -> Pipestone loop -> Transit Center"
+days = "0000010"
+tz = "America/Detroit"
+stops = ["tcata_transit_center 09:00", "tcata_michigan_works 09:04", "tcata_post_office 09:06", "tcata_river_terrace 09:09", "tcata_empire_columbus_blue 09:14", "tcata_triangle_park_blue 09:15", "tcata_intercare_1 09:18", "tcata_save_a_lot 09:23", "tcata_ollies 09:25", "tcata_tj_maxx 09:27", "tcata_dollar_tree 09:31", "tcata_meijer_bh 09:37", "tcata_burlington 09:43", "tcata_walmart 09:48", "tcata_la_perla 09:50", "tcata_intercare_2 09:52", "tcata_pipestone_plummer 09:54", "tcata_family_dollar_pipestone 09:56", "tcata_harbor_towers 09:58", "tcata_transit_center 09:59"]
+
+[[trip]]
+id = "t575"
+route = "TCATA Blue Saturday 10:00 Transit Center -> Pipestone loop -> Transit Center"
+days = "0000010"
+tz = "America/Detroit"
+stops = ["tcata_transit_center 10:00", "tcata_michigan_works 10:04", "tcata_post_office 10:06", "tcata_river_terrace 10:09", "tcata_empire_columbus_blue 10:14", "tcata_triangle_park_blue 10:15", "tcata_intercare_1 10:18", "tcata_save_a_lot 10:23", "tcata_ollies 10:25", "tcata_tj_maxx 10:27", "tcata_dollar_tree 10:31", "tcata_meijer_bh 10:37", "tcata_burlington 10:43", "tcata_walmart 10:48", "tcata_la_perla 10:50", "tcata_intercare_2 10:52", "tcata_pipestone_plummer 10:54", "tcata_family_dollar_pipestone 10:56", "tcata_harbor_towers 10:58", "tcata_transit_center 10:59"]
+
+[[trip]]
+id = "t576"
+route = "TCATA Blue Saturday 11:00 Transit Center -> Pipestone loop -> Transit Center"
+days = "0000010"
+tz = "America/Detroit"
+stops = ["tcata_transit_center 11:00", "tcata_michigan_works 11:04", "tcata_post_office 11:06", "tcata_river_terrace 11:09", "tcata_empire_columbus_blue 11:14", "tcata_triangle_park_blue 11:15", "tcata_intercare_1 11:18", "tcata_save_a_lot 11:23", "tcata_ollies 11:25", "tcata_tj_maxx 11:27", "tcata_dollar_tree 11:31", "tcata_meijer_bh 11:37", "tcata_burlington 11:43", "tcata_walmart 11:48", "tcata_la_perla 11:50", "tcata_intercare_2 11:52", "tcata_pipestone_plummer 11:54", "tcata_family_dollar_pipestone 11:56", "tcata_harbor_towers 11:58", "tcata_transit_center 11:59"]
+
+[[trip]]
+id = "t577"
+route = "TCATA Blue Saturday 12:00 Transit Center -> Pipestone loop -> Transit Center"
+days = "0000010"
+tz = "America/Detroit"
+stops = ["tcata_transit_center 12:00", "tcata_michigan_works 12:04", "tcata_post_office 12:06", "tcata_river_terrace 12:09", "tcata_empire_columbus_blue 12:14", "tcata_triangle_park_blue 12:15", "tcata_intercare_1 12:18", "tcata_save_a_lot 12:23", "tcata_ollies 12:25", "tcata_tj_maxx 12:27", "tcata_dollar_tree 12:31", "tcata_meijer_bh 12:37", "tcata_burlington 12:43", "tcata_walmart 12:48", "tcata_la_perla 12:50", "tcata_intercare_2 12:52", "tcata_pipestone_plummer 12:54", "tcata_family_dollar_pipestone 12:56", "tcata_harbor_towers 12:58", "tcata_transit_center 12:59"]
+
+[[trip]]
+id = "t578"
+route = "TCATA Blue Saturday 13:00 Transit Center -> Pipestone loop -> Transit Center"
+days = "0000010"
+tz = "America/Detroit"
+stops = ["tcata_transit_center 13:00", "tcata_michigan_works 13:04", "tcata_post_office 13:06", "tcata_river_terrace 13:09", "tcata_empire_columbus_blue 13:14", "tcata_triangle_park_blue 13:15", "tcata_intercare_1 13:18", "tcata_save_a_lot 13:23", "tcata_ollies 13:25", "tcata_tj_maxx 13:27", "tcata_dollar_tree 13:31", "tcata_meijer_bh 13:37", "tcata_burlington 13:43", "tcata_walmart 13:48", "tcata_la_perla 13:50", "tcata_intercare_2 13:52", "tcata_pipestone_plummer 13:54", "tcata_family_dollar_pipestone 13:56", "tcata_harbor_towers 13:58", "tcata_transit_center 13:59"]
+
+[[trip]]
+id = "t579"
+route = "TCATA Blue Saturday 14:00 Transit Center -> Pipestone loop -> Transit Center"
+days = "0000010"
+tz = "America/Detroit"
+stops = ["tcata_transit_center 14:00", "tcata_michigan_works 14:04", "tcata_post_office 14:06", "tcata_river_terrace 14:09", "tcata_empire_columbus_blue 14:14", "tcata_triangle_park_blue 14:15", "tcata_intercare_1 14:18", "tcata_save_a_lot 14:23", "tcata_ollies 14:25", "tcata_tj_maxx 14:27", "tcata_dollar_tree 14:31", "tcata_meijer_bh 14:37", "tcata_burlington 14:43", "tcata_walmart 14:48", "tcata_la_perla 14:50", "tcata_intercare_2 14:52", "tcata_pipestone_plummer 14:54", "tcata_family_dollar_pipestone 14:56", "tcata_harbor_towers 14:58", "tcata_transit_center 14:59"]
+
+[[trip]]
+id = "t580"
+route = "TCATA Blue Saturday 15:00 Transit Center -> Pipestone loop -> Transit Center"
+days = "0000010"
+tz = "America/Detroit"
+stops = ["tcata_transit_center 15:00", "tcata_michigan_works 15:04", "tcata_post_office 15:06", "tcata_river_terrace 15:09", "tcata_empire_columbus_blue 15:14", "tcata_triangle_park_blue 15:15", "tcata_intercare_1 15:18", "tcata_save_a_lot 15:23", "tcata_ollies 15:25", "tcata_tj_maxx 15:27", "tcata_dollar_tree 15:31", "tcata_meijer_bh 15:37", "tcata_burlington 15:43", "tcata_walmart 15:48", "tcata_la_perla 15:50", "tcata_intercare_2 15:52", "tcata_pipestone_plummer 15:54", "tcata_family_dollar_pipestone 15:56", "tcata_harbor_towers 15:58", "tcata_transit_center 15:59"]
+
+[[trip]]
+id = "t581"
+route = "TCATA Blue Saturday 16:00 Transit Center -> Pipestone loop -> Transit Center"
+days = "0000010"
+tz = "America/Detroit"
+stops = ["tcata_transit_center 16:00", "tcata_michigan_works 16:04", "tcata_post_office 16:06", "tcata_river_terrace 16:09", "tcata_empire_columbus_blue 16:14", "tcata_triangle_park_blue 16:15", "tcata_intercare_1 16:18", "tcata_save_a_lot 16:23", "tcata_ollies 16:25", "tcata_tj_maxx 16:27", "tcata_dollar_tree 16:31", "tcata_meijer_bh 16:37", "tcata_burlington 16:43", "tcata_walmart 16:48", "tcata_la_perla 16:50", "tcata_intercare_2 16:52", "tcata_pipestone_plummer 16:54", "tcata_family_dollar_pipestone 16:56", "tcata_harbor_towers 16:58", "tcata_transit_center 16:59"]
+
+[[trip]]
+id = "t582"
+route = "TCATA Blue Saturday 17:00 Transit Center -> Pipestone loop -> Transit Center"
+days = "0000010"
+tz = "America/Detroit"
+stops = ["tcata_transit_center 17:00", "tcata_michigan_works 17:04", "tcata_post_office 17:06", "tcata_river_terrace 17:09", "tcata_empire_columbus_blue 17:14", "tcata_triangle_park_blue 17:15", "tcata_intercare_1 17:18", "tcata_save_a_lot 17:23", "tcata_ollies 17:25", "tcata_tj_maxx 17:27", "tcata_dollar_tree 17:31", "tcata_meijer_bh 17:37", "tcata_burlington 17:43", "tcata_walmart 17:48", "tcata_la_perla 17:50", "tcata_intercare_2 17:52", "tcata_pipestone_plummer 17:54", "tcata_family_dollar_pipestone 17:56", "tcata_harbor_towers 17:58", "tcata_transit_center 17:59"]
+
+[[trip]]
+id = "t583"
+route = "TCATA Blue Saturday 18:00 Transit Center -> Pipestone loop -> Transit Center"
+days = "0000010"
+tz = "America/Detroit"
+stops = ["tcata_transit_center 18:00", "tcata_michigan_works 18:04", "tcata_post_office 18:06", "tcata_river_terrace 18:09", "tcata_empire_columbus_blue 18:14", "tcata_triangle_park_blue 18:15", "tcata_intercare_1 18:18", "tcata_save_a_lot 18:23", "tcata_ollies 18:25", "tcata_tj_maxx 18:27", "tcata_dollar_tree 18:31", "tcata_meijer_bh 18:37", "tcata_burlington 18:43", "tcata_walmart 18:48", "tcata_la_perla 18:50", "tcata_intercare_2 18:52", "tcata_pipestone_plummer 18:54", "tcata_family_dollar_pipestone 18:56", "tcata_harbor_towers 18:58", "tcata_transit_center 18:59"]
+
+[[trip]]
+id = "t584"
+route = "TCATA Blue Saturday 19:00 Transit Center -> Pipestone loop -> Transit Center"
+days = "0000010"
+tz = "America/Detroit"
+stops = ["tcata_transit_center 19:00", "tcata_michigan_works 19:04", "tcata_post_office 19:06", "tcata_river_terrace 19:09", "tcata_empire_columbus_blue 19:14", "tcata_triangle_park_blue 19:15", "tcata_intercare_1 19:18", "tcata_save_a_lot 19:23", "tcata_ollies 19:25", "tcata_tj_maxx 19:27", "tcata_dollar_tree 19:31", "tcata_meijer_bh 19:37", "tcata_burlington 19:43", "tcata_walmart 19:48", "tcata_la_perla 19:50", "tcata_intercare_2 19:52", "tcata_pipestone_plummer 19:54", "tcata_family_dollar_pipestone 19:56", "tcata_harbor_towers 19:58", "tcata_transit_center 19:59"]
+
+[[trip]]
+id = "t585"
+route = "TCATA Blue Saturday 20:00 Transit Center -> Pipestone loop -> Transit Center"
+days = "0000010"
+tz = "America/Detroit"
+stops = ["tcata_transit_center 20:00", "tcata_michigan_works 20:04", "tcata_post_office 20:06", "tcata_river_terrace 20:09", "tcata_empire_columbus_blue 20:14", "tcata_triangle_park_blue 20:15", "tcata_intercare_1 20:18", "tcata_save_a_lot 20:23", "tcata_ollies 20:25", "tcata_tj_maxx 20:27", "tcata_dollar_tree 20:31", "tcata_meijer_bh 20:37", "tcata_burlington 20:43", "tcata_walmart 20:48", "tcata_la_perla 20:50", "tcata_intercare_2 20:52", "tcata_pipestone_plummer 20:54", "tcata_family_dollar_pipestone 20:56", "tcata_harbor_towers 20:58", "tcata_transit_center 20:59"]
+
+[[trip]]
+id = "t586"
+route = "TCATA Blue Saturday 21:00 Transit Center -> Pipestone loop -> Transit Center"
+days = "0000010"
+tz = "America/Detroit"
+stops = ["tcata_transit_center 21:00", "tcata_michigan_works 21:04", "tcata_post_office 21:06", "tcata_river_terrace 21:09", "tcata_empire_columbus_blue 21:14", "tcata_triangle_park_blue 21:15", "tcata_intercare_1 21:18", "tcata_save_a_lot 21:23", "tcata_ollies 21:25", "tcata_tj_maxx 21:27", "tcata_dollar_tree 21:31", "tcata_meijer_bh 21:37", "tcata_burlington 21:43", "tcata_walmart 21:48", "tcata_la_perla 21:50", "tcata_intercare_2 21:52", "tcata_pipestone_plummer 21:54", "tcata_family_dollar_pipestone 21:56", "tcata_harbor_towers 21:58", "tcata_transit_center 21:59"]
+
+[[trip]]
+id = "t587"
+route = "TCATA Red Saturday 08:04 Triangle Park -> Transit Center -> St Joseph -> Stevensville -> Greyhound M-139 -> Union & May"
+days = "0000010"
+tz = "America/Detroit"
+stops = ["tcata_triangle_park_red 08:04", "tcata_empire_columbus_red 08:06", "tcata_harbor_towers 08:08", "tcata_transit_center 08:09", "tcata_michigan_works 08:15", "tcata_whitcomb_towers 08:20", "tcata_lakeland_hospital 08:30", "tcata_hardings 08:35", "tcata_martins 08:40", "tcata_burger_king_stevensville 08:50", "tcata_meijer_stevensville 08:52", "tcata_greyhound_m139 09:01", "tcata_briarwood 09:02", "tcata_union_may 09:03"]
+
+[[trip]]
+id = "t588"
+route = "TCATA Red Saturday 09:04 Triangle Park -> Transit Center -> St Joseph -> Stevensville -> Greyhound M-139 -> Union & May"
+days = "0000010"
+tz = "America/Detroit"
+stops = ["tcata_triangle_park_red 09:04", "tcata_empire_columbus_red 09:06", "tcata_harbor_towers 09:08", "tcata_transit_center 09:09", "tcata_michigan_works 09:15", "tcata_whitcomb_towers 09:20", "tcata_lakeland_hospital 09:30", "tcata_hardings 09:35", "tcata_martins 09:40", "tcata_burger_king_stevensville 09:50", "tcata_meijer_stevensville 09:52", "tcata_greyhound_m139 10:01", "tcata_briarwood 10:02", "tcata_union_may 10:03"]
+
+[[trip]]
+id = "t589"
+route = "TCATA Red Saturday 10:04 Triangle Park -> Transit Center -> St Joseph -> Stevensville -> Greyhound M-139 -> Union & May"
+days = "0000010"
+tz = "America/Detroit"
+stops = ["tcata_triangle_park_red 10:04", "tcata_empire_columbus_red 10:06", "tcata_harbor_towers 10:08", "tcata_transit_center 10:09", "tcata_michigan_works 10:15", "tcata_whitcomb_towers 10:20", "tcata_lakeland_hospital 10:30", "tcata_hardings 10:35", "tcata_martins 10:40", "tcata_burger_king_stevensville 10:50", "tcata_meijer_stevensville 10:52", "tcata_greyhound_m139 11:01", "tcata_briarwood 11:02", "tcata_union_may 11:03"]
+
+[[trip]]
+id = "t590"
+route = "TCATA Red Saturday 11:04 Triangle Park -> Transit Center -> St Joseph -> Stevensville -> Greyhound M-139 -> Union & May"
+days = "0000010"
+tz = "America/Detroit"
+stops = ["tcata_triangle_park_red 11:04", "tcata_empire_columbus_red 11:06", "tcata_harbor_towers 11:08", "tcata_transit_center 11:09", "tcata_michigan_works 11:15", "tcata_whitcomb_towers 11:20", "tcata_lakeland_hospital 11:30", "tcata_hardings 11:35", "tcata_martins 11:40", "tcata_burger_king_stevensville 11:50", "tcata_meijer_stevensville 11:52", "tcata_greyhound_m139 12:01", "tcata_briarwood 12:02", "tcata_union_may 12:03"]
+
+[[trip]]
+id = "t591"
+route = "TCATA Red Saturday 12:04 Triangle Park -> Transit Center -> St Joseph -> Stevensville -> Greyhound M-139 -> Union & May"
+days = "0000010"
+tz = "America/Detroit"
+stops = ["tcata_triangle_park_red 12:04", "tcata_empire_columbus_red 12:06", "tcata_harbor_towers 12:08", "tcata_transit_center 12:09", "tcata_michigan_works 12:15", "tcata_whitcomb_towers 12:20", "tcata_lakeland_hospital 12:30", "tcata_hardings 12:35", "tcata_martins 12:40", "tcata_burger_king_stevensville 12:50", "tcata_meijer_stevensville 12:52", "tcata_greyhound_m139 13:01", "tcata_briarwood 13:02", "tcata_union_may 13:03"]
+
+[[trip]]
+id = "t592"
+route = "TCATA Red Saturday 13:04 Triangle Park -> Transit Center -> St Joseph -> Stevensville -> Greyhound M-139 -> Union & May"
+days = "0000010"
+tz = "America/Detroit"
+stops = ["tcata_triangle_park_red 13:04", "tcata_empire_columbus_red 13:06", "tcata_harbor_towers 13:08", "tcata_transit_center 13:09", "tcata_michigan_works 13:15", "tcata_whitcomb_towers 13:20", "tcata_lakeland_hospital 13:30", "tcata_hardings 13:35", "tcata_martins 13:40", "tcata_burger_king_stevensville 13:50", "tcata_meijer_stevensville 13:52", "tcata_greyhound_m139 14:01", "tcata_briarwood 14:02", "tcata_union_may 14:03"]
+
+[[trip]]
+id = "t593"
+route = "TCATA Red Saturday 14:04 Triangle Park -> Transit Center -> St Joseph -> Stevensville -> Greyhound M-139 -> Union & May"
+days = "0000010"
+tz = "America/Detroit"
+stops = ["tcata_triangle_park_red 14:04", "tcata_empire_columbus_red 14:06", "tcata_harbor_towers 14:08", "tcata_transit_center 14:09", "tcata_michigan_works 14:15", "tcata_whitcomb_towers 14:20", "tcata_lakeland_hospital 14:30", "tcata_hardings 14:35", "tcata_martins 14:40", "tcata_burger_king_stevensville 14:50", "tcata_meijer_stevensville 14:52", "tcata_greyhound_m139 15:01", "tcata_briarwood 15:02", "tcata_union_may 15:03"]
+
+[[trip]]
+id = "t594"
+route = "TCATA Red Saturday 15:04 Triangle Park -> Transit Center -> St Joseph -> Stevensville -> Greyhound M-139 -> Union & May"
+days = "0000010"
+tz = "America/Detroit"
+stops = ["tcata_triangle_park_red 15:04", "tcata_empire_columbus_red 15:06", "tcata_harbor_towers 15:08", "tcata_transit_center 15:09", "tcata_michigan_works 15:15", "tcata_whitcomb_towers 15:20", "tcata_lakeland_hospital 15:30", "tcata_hardings 15:35", "tcata_martins 15:40", "tcata_burger_king_stevensville 15:50", "tcata_meijer_stevensville 15:52", "tcata_greyhound_m139 16:01", "tcata_briarwood 16:02", "tcata_union_may 16:03"]
+
+[[trip]]
+id = "t595"
+route = "TCATA Red Saturday 16:04 Triangle Park -> Transit Center -> St Joseph -> Stevensville -> Greyhound M-139 -> Union & May"
+days = "0000010"
+tz = "America/Detroit"
+stops = ["tcata_triangle_park_red 16:04", "tcata_empire_columbus_red 16:06", "tcata_harbor_towers 16:08", "tcata_transit_center 16:09", "tcata_michigan_works 16:15", "tcata_whitcomb_towers 16:20", "tcata_lakeland_hospital 16:30", "tcata_hardings 16:35", "tcata_martins 16:40", "tcata_burger_king_stevensville 16:50", "tcata_meijer_stevensville 16:52", "tcata_greyhound_m139 17:01", "tcata_briarwood 17:02", "tcata_union_may 17:03"]
+
+[[trip]]
+id = "t596"
+route = "TCATA Red Saturday 17:04 Triangle Park -> Transit Center -> St Joseph -> Stevensville -> Greyhound M-139 -> Union & May"
+days = "0000010"
+tz = "America/Detroit"
+stops = ["tcata_triangle_park_red 17:04", "tcata_empire_columbus_red 17:06", "tcata_harbor_towers 17:08", "tcata_transit_center 17:09", "tcata_michigan_works 17:15", "tcata_whitcomb_towers 17:20", "tcata_lakeland_hospital 17:30", "tcata_hardings 17:35", "tcata_martins 17:40", "tcata_burger_king_stevensville 17:50", "tcata_meijer_stevensville 17:52", "tcata_greyhound_m139 18:01", "tcata_briarwood 18:02", "tcata_union_may 18:03"]
+
+[[trip]]
+id = "t597"
+route = "TCATA Red Saturday 18:04 Triangle Park -> Transit Center -> St Joseph -> Stevensville -> Greyhound M-139 -> Union & May"
+days = "0000010"
+tz = "America/Detroit"
+stops = ["tcata_triangle_park_red 18:04", "tcata_empire_columbus_red 18:06", "tcata_harbor_towers 18:08", "tcata_transit_center 18:09", "tcata_michigan_works 18:15", "tcata_whitcomb_towers 18:20", "tcata_lakeland_hospital 18:30", "tcata_hardings 18:35", "tcata_martins 18:40", "tcata_burger_king_stevensville 18:50", "tcata_meijer_stevensville 18:52", "tcata_greyhound_m139 19:01", "tcata_briarwood 19:02", "tcata_union_may 19:03"]
+
+[[trip]]
+id = "t598"
+route = "TCATA Red Saturday 19:04 Triangle Park -> Transit Center -> St Joseph -> Stevensville -> Greyhound M-139 -> Union & May"
+days = "0000010"
+tz = "America/Detroit"
+stops = ["tcata_triangle_park_red 19:04", "tcata_empire_columbus_red 19:06", "tcata_harbor_towers 19:08", "tcata_transit_center 19:09", "tcata_michigan_works 19:15", "tcata_whitcomb_towers 19:20", "tcata_lakeland_hospital 19:30", "tcata_hardings 19:35", "tcata_martins 19:40", "tcata_burger_king_stevensville 19:50", "tcata_meijer_stevensville 19:52", "tcata_greyhound_m139 20:01", "tcata_briarwood 20:02", "tcata_union_may 20:03"]
+
+[[trip]]
+id = "t599"
+route = "TCATA Red Saturday 20:04 Triangle Park -> Transit Center -> St Joseph -> Stevensville -> Greyhound M-139 -> Union & May"
+days = "0000010"
+tz = "America/Detroit"
+stops = ["tcata_triangle_park_red 20:04", "tcata_empire_columbus_red 20:06", "tcata_harbor_towers 20:08", "tcata_transit_center 20:09", "tcata_michigan_works 20:15", "tcata_whitcomb_towers 20:20", "tcata_lakeland_hospital 20:30", "tcata_hardings 20:35", "tcata_martins 20:40", "tcata_burger_king_stevensville 20:50", "tcata_meijer_stevensville 20:52", "tcata_greyhound_m139 21:01", "tcata_briarwood 21:02", "tcata_union_may 21:03"]
+
+[[trip]]
+id = "t600"
+route = "TCATA Red Saturday 21:04 Triangle Park -> Transit Center -> St Joseph -> Stevensville -> Greyhound M-139 -> Union & May"
+days = "0000010"
+tz = "America/Detroit"
+stops = ["tcata_triangle_park_red 21:04", "tcata_empire_columbus_red 21:06", "tcata_harbor_towers 21:08", "tcata_transit_center 21:09", "tcata_michigan_works 21:15", "tcata_whitcomb_towers 21:20", "tcata_lakeland_hospital 21:30", "tcata_hardings 21:35", "tcata_martins 21:40", "tcata_burger_king_stevensville 21:50", "tcata_meijer_stevensville 21:52", "tcata_greyhound_m139 22:01", "tcata_briarwood 22:02", "tcata_union_may 22:03"]
+
+[[trip]]
+id = "t601"
+route = "TCATA Red Saturday 22:04 Triangle Park -> Transit Center (last run ends at the transit center)"
+days = "0000010"
+tz = "America/Detroit"
+stops = ["tcata_triangle_park_red 22:04", "tcata_empire_columbus_red 22:06", "tcata_harbor_towers 22:08", "tcata_transit_center 22:09"]
