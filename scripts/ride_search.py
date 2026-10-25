@@ -212,6 +212,7 @@ def main():
     router_args = ((when.date() if not back else (when - __import__('datetime').timedelta(days=12)).date()), a.days)
     R = cached_router(*router_args)
     ab = lambda x: ABBR[R.state_names[x]] if x >= 0 else '--'
+    owes = lambda got: ','.join(sorted(ABBR[n] for i, n in enumerate(R.state_names) if i not in got and n in ABBR))   # progress lines
     print(f'{a.dir} from {when:%a %Y-%m-%d %H:%M}, limit {a.target} h, {a.states} states required', flush=True)
 
     # connections grouped by trip, in order, so boarding a trip and riding on is one move
@@ -1088,7 +1089,7 @@ def main():
         if len(collected) > deepest[0]:
             deepest[0] = len(collected); deep_path[0] = (spent, list(path), frozenset(collected))
             print(f'  [{time.time() - t_run:5.0f}s] {len(collected)}/{NEED} states, {spent / 3600:6.1f} h spent, '
-                  f'at {R.stop_name[stop][:28]}, {len(path)} rides, {seen_nodes[0]} nodes', flush=True)
+                  f'at {R.stop_name[stop][:28]}, {len(path)} rides, {seen_nodes[0]} nodes; owes {owes(collected)}', flush=True)
         if L is not None:
             if t > L_end[stop]: return                        # the end is no longer reachable from here
             col = L[:, stop]
@@ -1665,7 +1666,7 @@ def main():
                 deepest[0] = len(collected); deep_path[0] = (spent, list(path), frozenset(collected))
                 print(f'  [{time.time() - t_run:5.0f}s] {len(collected)}/{NEED} states, {spent / 3600:6.1f} h spent, '
                       f'at {R.stop_name[stop][:28]}, {len(path)} rides, {seen_nodes[0]} nodes, '
-                      f'{len(q)} in frontier', flush=True)
+                      f'{len(q)} in frontier; owes {owes(collected)}', flush=True)
             # Only the end test here. The owed-state kill dfs runs at pop is already enforced at push:
             # rides_from accepts an alight only when `at <= cap[to]`, and cap is the minimum over owed
             # states of L[y][to] clamped by L_end. L never changes and a queued node never moves, so
