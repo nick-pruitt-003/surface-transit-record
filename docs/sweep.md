@@ -633,6 +633,15 @@ live. A firmer answer needs either the mirrored pair tables for backward or a lo
 day/time around Thu Nov 19 06:00). `verify_path.py` was not run, because there was no route to verify. Chains:
 `out/denver_back.pkl`, `out/primm_fwd.pkl` (logs alongside; out/ is not committed).
 
+**Run 3, the longer forward run (PC, Oct 22):** Run 2's command with `--budget 7200` (`out/primm_fwd2.log`). Primm
+Thu 10:40 is after the Thu 06:02 limit, which is allowed: a later start only leaves the front less time (190.2 h).
+**Nothing found.** 409820 nodes in 4715 s to the last progress line; deepest **36/48 at Indianapolis, 134.5 h**,
+via Cleveland (34/48 at 132.7 h). It still owed CO IA IL KS KY MI MN MO ND NE SD WI (from Nick's notes; the run
+predates the owed-states log line). Budget-bound again: 116572 nodes queued at exit, depth 18-29. **Resuming from
+that Indianapolis chain exhausted its queue** (`out/primm_indy.log`), so that chain cannot finish by Fri 10:00 MT.
+Twelve states, KY and MI among them, in 55.7 h to Denver by way of the KC 23:05 did not fit. Still not a proof
+for the shape; the rest of the frontier was not exhausted.
+
 ## Oct 24-25: sweep 10 by family, endpoint grading, broken families re-timed
 
 - **Sweep 10** (out/sweep10, commit 757c49e data): focused runs on known routes from their own start clocks
