@@ -1,0 +1,498 @@
+route_id,service_id,trip_id,trip_headsign,source_file,source_note
+Northwestern_Stage_Lines_America_Los_Angeles_r,wk1111111,t0,,northwestern_stage_lines.toml,NWL 710 Spokane -> Pasco
+Northwestern_Stage_Lines_America_Los_Angeles_r,wk1111111,t1,,northwestern_stage_lines.toml,NWL Boise Airport 08:15 MT -> Nampa -> Ontario -> Baker City -> La Grande -> Pendleton -> Hermiston -> Pasco 13:10 (daily)
+Northwestern_Stage_Lines_America_Los_Angeles_r,wk1111111,t2,,northwestern_stage_lines.toml,NWL Pasco -> Spokane 15:00
+TARTA_America_New_York_r,wk0000010,t3,,tarta.toml,Route 18 to Meijer Alexis then walk into Michigan
+TARTA_America_New_York_r,wk0000010,t4,,tarta.toml,Route 18 to Meijer Alexis then walk into Michigan
+TARTA_America_New_York_r,wk0000010,t5,,tarta.toml,Route 18 to Meijer Alexis then walk into Michigan
+TARTA_America_New_York_r,wk0000010,t6,,tarta.toml,Walk back from Michigan then Route 18 to Downtown
+TARTA_America_New_York_r,wk0000010,t7,,tarta.toml,Walk back from Michigan then Route 18 to Downtown
+TARTA_America_New_York_r,wk0000010,t8,,tarta.toml,Walk back from Michigan then Route 18 to Downtown
+MBTA_Commuter_Rail_America_New_York_r,wk1111111,t11,,mbta_commuter_rail.toml,Providence Line 885 South Station -> Providence
+MBTA_Commuter_Rail_America_New_York_r,wk1111111,t12,,mbta_commuter_rail.toml,Providence Line Providence -> South Station (arrival assumed)
+MBTA_subway_America_New_York_r,wk1111111,t13,,mbta_subway.toml,North Station -> South Station (Orange + Red Line; times assumed)
+Dartmouth_Coach_America_New_York_r,wk1111111,t14,,dartmouth_coach.toml,Hanover -> Boston South Station 03:00
+Dartmouth_Coach_America_New_York_r,wk1111111,t15,,dartmouth_coach.toml,Hanover -> Boston South Station 04:40
+Dartmouth_Coach_America_New_York_r,wk1111111,t16,,dartmouth_coach.toml,Hanover -> Boston South Station 06:40
+Dartmouth_Coach_America_New_York_r,wk1111111,t17,,dartmouth_coach.toml,Hanover -> Boston South Station 07:40
+Dartmouth_Coach_America_New_York_r,wk1111111,t18,,dartmouth_coach.toml,Hanover -> Boston South Station 08:40
+Dartmouth_Coach_America_New_York_r,wk1111111,t19,,dartmouth_coach.toml,Hanover -> Boston South Station 09:40
+Dartmouth_Coach_America_New_York_r,wk1111111,t20,,dartmouth_coach.toml,Hanover -> Boston South Station 10:40
+Dartmouth_Coach_America_New_York_r,wk1111111,t21,,dartmouth_coach.toml,Hanover -> Boston South Station 11:40
+Dartmouth_Coach_America_New_York_r,wk1111111,t22,,dartmouth_coach.toml,Hanover -> Boston South Station 12:40
+Dartmouth_Coach_America_New_York_r,wk1111111,t23,,dartmouth_coach.toml,Hanover -> Boston South Station 13:40
+Dartmouth_Coach_America_New_York_r,wk1111111,t24,,dartmouth_coach.toml,Hanover -> Boston South Station 14:40
+Dartmouth_Coach_America_New_York_r,wk1111111,t25,,dartmouth_coach.toml,Hanover -> Boston South Station 16:40
+Dartmouth_Coach_America_New_York_r,wk1111111,t26,,dartmouth_coach.toml,Boston South Station -> Hanover 07:30
+Dartmouth_Coach_America_New_York_r,wk1111111,t27,,dartmouth_coach.toml,Boston South Station -> Hanover 09:30
+Dartmouth_Coach_America_New_York_r,wk1111111,t28,,dartmouth_coach.toml,Boston South Station -> Hanover 11:30
+Dartmouth_Coach_America_New_York_r,wk1111111,t29,,dartmouth_coach.toml,Boston South Station -> Hanover 12:30
+Dartmouth_Coach_America_New_York_r,wk1111111,t30,,dartmouth_coach.toml,Boston South Station -> Hanover 13:30
+Dartmouth_Coach_America_New_York_r,wk1111111,t31,,dartmouth_coach.toml,Boston South Station -> Hanover 14:30
+Dartmouth_Coach_America_New_York_r,wk1111111,t32,,dartmouth_coach.toml,Boston South Station -> Hanover 15:30
+Dartmouth_Coach_America_New_York_r,wk1111111,t33,,dartmouth_coach.toml,Boston South Station -> Hanover 16:30
+Dartmouth_Coach_America_New_York_r,wk1111111,t34,,dartmouth_coach.toml,Boston South Station -> Hanover 17:30
+Dartmouth_Coach_America_New_York_r,wk1111111,t35,,dartmouth_coach.toml,Boston South Station -> Hanover 18:30
+Dartmouth_Coach_America_New_York_r,wk1111111,t36,,dartmouth_coach.toml,Boston South Station -> Hanover 19:30
+Dartmouth_Coach_America_New_York_r,wk1111111,t37,,dartmouth_coach.toml,Boston South Station -> Hanover 21:30
+Dartmouth_Coach_America_New_York_r,wk1111111,t38,,dartmouth_coach.toml,Hanover -> New York 06:30
+Dartmouth_Coach_America_New_York_r,wk0000111,t39,,dartmouth_coach.toml,Hanover -> New York 09:30
+Dartmouth_Coach_America_New_York_r,wk1111101,t40,,dartmouth_coach.toml,Hanover -> New York 14:30
+Dartmouth_Coach_America_New_York_r,wk1111110,t41,,dartmouth_coach.toml,New York -> Hanover 08:30
+Dartmouth_Coach_America_New_York_r,wk0000001,t42,,dartmouth_coach.toml,New York -> Hanover 10:30 (Sun)
+Dartmouth_Coach_America_New_York_r,wk1110000,t43,,dartmouth_coach.toml,New York -> Hanover 13:30
+Dartmouth_Coach_America_New_York_r,wk0001100,t44,,dartmouth_coach.toml,New York -> Hanover 13:30 (Thu Fri)
+Dartmouth_Coach_America_New_York_r,wk0000011,t45,,dartmouth_coach.toml,New York -> Hanover 13:30 (Sat Sun)
+Dartmouth_Coach_America_New_York_r,wk0000100,t46,,dartmouth_coach.toml,New York -> Hanover 16:30 (Fri)
+Dartmouth_Coach_America_New_York_r,wk0000001,t47,,dartmouth_coach.toml,New York -> Hanover 16:30 (Sun)
+Barons_Bus_Lines_America_New_York_r,wk1111111,t48,,barons_bus_lines.toml,BSB 33 Huntington -> Columbus (real times; intermediate assumed)
+Barons_Bus_Lines_America_New_York_r,wk1111111,t49,,barons_bus_lines.toml,BSB 33A Columbus -> Detroit (real times; intermediate assumed)
+AE_bus_America_Denver_r,wk1111111,t52,,ae_bus.toml,Las Vegas NM -> Denver (Nick screenshot Sep 23 2026; daily and boards at Las Vegas NM Amtrak per Nick)
+Wandacoach_America_New_York_r,wk1111111,t53,,wandacoach.toml,257 Florence SC -> Jacksonville (Nick screenshot Sep 18 2026; daily assumed; only end stops entered)
+Groome_America_Denver_r,wk1111111,t54,,groome.toml,DEN -> Cheyenne (groometransportation.com/wyoming Sep 18 2026; daily; Cheyenne stop near Warren AFB per Nick; point approximate)
+Groome_America_Denver_r,wk1111111,t55,,groome.toml,DEN -> Cheyenne (groometransportation.com/wyoming Sep 18 2026; daily; Cheyenne stop near Warren AFB per Nick; point approximate)
+Groome_America_Denver_r,wk1111111,t56,,groome.toml,DEN -> Cheyenne (groometransportation.com/wyoming Sep 18 2026; daily; Cheyenne stop near Warren AFB per Nick; point approximate)
+Groome_America_Denver_r,wk1111111,t57,,groome.toml,DEN -> Cheyenne (groometransportation.com/wyoming Sep 18 2026; daily; Cheyenne stop near Warren AFB per Nick; point approximate)
+Groome_America_Denver_r,wk1111111,t58,,groome.toml,DEN -> Cheyenne (groometransportation.com/wyoming Sep 18 2026; daily; Cheyenne stop near Warren AFB per Nick; point approximate)
+Groome_America_Denver_r,wk1111111,t59,,groome.toml,DEN -> Cheyenne (groometransportation.com/wyoming Sep 18 2026; daily; Cheyenne stop near Warren AFB per Nick; point approximate)
+Groome_America_Denver_r,wk1111111,t60,,groome.toml,DEN -> Cheyenne (groometransportation.com/wyoming Sep 18 2026; daily; Cheyenne stop near Warren AFB per Nick; point approximate)
+Groome_America_Denver_r,wk1111111,t61,,groome.toml,DEN -> Cheyenne (groometransportation.com/wyoming Sep 18 2026; daily; Cheyenne stop near Warren AFB per Nick; point approximate)
+Groome_America_Denver_r,wk1111111,t62,,groome.toml,Cheyenne -> DEN (groometransportation.com/wyoming Sep 18 2026; daily; Cheyenne stop near Warren AFB per Nick; point approximate)
+Groome_America_Denver_r,wk1111111,t63,,groome.toml,Cheyenne -> DEN (groometransportation.com/wyoming Sep 18 2026; daily; Cheyenne stop near Warren AFB per Nick; point approximate)
+Groome_America_Denver_r,wk1111111,t64,,groome.toml,Cheyenne -> DEN (groometransportation.com/wyoming Sep 18 2026; daily; Cheyenne stop near Warren AFB per Nick; point approximate)
+Groome_America_Denver_r,wk1111111,t65,,groome.toml,Cheyenne -> DEN (groometransportation.com/wyoming Sep 18 2026; daily; Cheyenne stop near Warren AFB per Nick; point approximate)
+Groome_America_Denver_r,wk1111111,t66,,groome.toml,Cheyenne -> DEN (groometransportation.com/wyoming Sep 18 2026; daily; Cheyenne stop near Warren AFB per Nick; point approximate)
+Groome_America_Denver_r,wk1111111,t67,,groome.toml,Cheyenne -> DEN (groometransportation.com/wyoming Sep 18 2026; daily; Cheyenne stop near Warren AFB per Nick; point approximate)
+Groome_America_Denver_r,wk1111111,t68,,groome.toml,Cheyenne -> DEN (groometransportation.com/wyoming Sep 18 2026; daily; Cheyenne stop near Warren AFB per Nick; point approximate)
+Groome_America_Denver_r,wk1111111,t69,,groome.toml,Cheyenne -> DEN (groometransportation.com/wyoming Sep 18 2026; daily; Cheyenne stop near Warren AFB per Nick; point approximate)
+AE_bus_America_Los_Angeles_r,wk1111111,t70,,ae_bus.toml,Las Vegas NV -> El Paso (Nick screenshot Sep 18 2026; 09/29 departure; daily assumed; stop points approximate; times in Pacific: El Paso 6:29 AM MDT)
+AE_bus_America_Denver_r,wk1111111,t71,,ae_bus.toml,Greeley -> El Paso (Nick screenshot Sep 18 2026; 09/29 departure; daily assumed; stop points approximate)
+Standing_Rock_Public_Transit_America_Chicago_r,wk1111100,t73,,standing_rock_public_transit.toml,SRPT 1 Mobridge -> Fort Yates (schedule at a glance Aug 2026; reservation)
+Standing_Rock_Public_Transit_America_Chicago_r,wk1111100,t74,,standing_rock_public_transit.toml,SRPT 1 Fort Yates -> Mobridge
+Standing_Rock_Public_Transit_America_Chicago_r,wk1111100,t75,,standing_rock_public_transit.toml,SRPT 2 McLaughlin -> Fort Yates
+Standing_Rock_Public_Transit_America_Chicago_r,wk1111100,t76,,standing_rock_public_transit.toml,SRPT 2 Fort Yates -> McLaughlin
+Standing_Rock_Public_Transit_America_Chicago_r,wk1111100,t77,,standing_rock_public_transit.toml,SRPT 4 Mandan -> Fort Yates
+Standing_Rock_Public_Transit_America_Chicago_r,wk1111100,t78,,standing_rock_public_transit.toml,SRPT 4 Fort Yates -> Mandan
+Standing_Rock_Public_Transit_America_Chicago_r,wk1111100,t79,,standing_rock_public_transit.toml,SRPT 5 Fort Yates -> Bismarck
+Standing_Rock_Public_Transit_America_Chicago_r,wk1111100,t80,,standing_rock_public_transit.toml,SRPT 5 Bismarck -> Fort Yates
+Standing_Rock_Public_Transit_America_Chicago_r,wk1111000,t81,,standing_rock_public_transit.toml,SRPT 9 McLaughlin -> Mobridge
+Standing_Rock_Public_Transit_America_Chicago_r,wk1111000,t82,,standing_rock_public_transit.toml,SRPT 9 Mobridge -> McLaughlin
+StarLine_Coach_America_New_York_r,wk1111111,t84,,starline_coach.toml,StarLine NYC -> Florida (checkmybus Oct 2026; daily assumed; I-95 intermediate stops not timed)
+StarLine_Coach_America_New_York_r,wk1111111,t85,,starline_coach.toml,StarLine Florida -> NYC (checkmybus Oct 2026; daily assumed; I-95 intermediate stops not timed)
+Vonlane_premium_coach_America_Chicago_r,wk1111100,t86,,vonlane_premium_coach.toml,Dallas Love Field -> Houston Downtown (Nick screenshot Sep 19 2026; Mon 9/28 shown - weekdays assumed)
+Vonlane_premium_coach_America_Chicago_r,wk1111100,t87,,vonlane_premium_coach.toml,Dallas Love Field -> Houston Downtown (Nick screenshot Sep 19 2026; Mon 9/28 shown - weekdays assumed)
+Vonlane_premium_coach_America_Chicago_r,wk1111100,t88,,vonlane_premium_coach.toml,Dallas Love Field -> Houston Downtown (Nick screenshot Sep 19 2026; Mon 9/28 shown - weekdays assumed)
+Vonlane_premium_coach_America_Chicago_r,wk1111100,t89,,vonlane_premium_coach.toml,Dallas Love Field -> Houston Downtown (Nick screenshot Sep 19 2026; Mon 9/28 shown - weekdays assumed)
+Vonlane_premium_coach_America_Chicago_r,wk1111100,t90,,vonlane_premium_coach.toml,Dallas Love Field -> Houston Downtown (Nick screenshot Sep 19 2026; Mon 9/28 shown - weekdays assumed)
+Vonlane_premium_coach_America_Chicago_r,wk1111100,t91,,vonlane_premium_coach.toml,Dallas Love Field -> Houston Downtown (Nick screenshot Sep 19 2026; Mon 9/28 shown - weekdays assumed)
+Vonlane_premium_coach_America_Chicago_r,wk1111100,t92,,vonlane_premium_coach.toml,Dallas Love Field -> Houston Downtown (Nick screenshot Sep 19 2026; Mon 9/28 shown - weekdays assumed)
+Vonlane_premium_coach_America_Chicago_r,wk1111100,t93,,vonlane_premium_coach.toml,Dallas Love Field -> Houston Downtown (Nick screenshot Sep 19 2026; Mon 9/28 shown - weekdays assumed)
+RedCoach_America_Chicago_r,wk1111111,t94,,redcoach.toml,Dallas -> Houston 12:35 (Nick screenshot Sep 19 2026; only this departure seen; daily assumed)
+Jaguar_Bus_America_New_York_r,wk1111111,t95,,jaguar_bus.toml,Columbus -> Wheeling -> NYC (Nick screenshots Sep 19 2026; daily assumed)
+Wonder_Bus_America_New_York_r,wk1111111,t96,,wonder_bus.toml,I-81 Knoxville -> NYC (Nick screenshots Sep 19 2026; Knoxville 6 PM per Nick - stop location approximate; Chambersburg 2:20 per Nick (site says 2:00); daily assumed; stops between Knoxville and Winchester unknown)
+Weirton_Transit_America_New_York_r,wk1111100,t97,,weirton_transit.toml,Robinson: Weirton -> Ikea Robinson (Nick screenshot Sep 19 2026; weekdays assumed; modified schedule noted)
+Pittsburgh_Regional_Transit_America_New_York_r,wk1111100,t98,,pittsburgh_regional_transit.toml,29 Robinson -> Downtown (Nick screenshot Sep 19 2026; one trip entered; weekdays assumed)
+Jefferson_Lines_America_Denver_r,wk1111111,t104,,jefferson_lines.toml,JL 701 Gillette -> Buffalo -> Sheridan -> Billings (Nick screenshots Sep 22 2026: jeffersonlines.com 09/29 and Google Thu 09/24; feed trip 1902 has Gillette and Buffalo but skips Sheridan; times from it shifted to Mountain as the router does; daily assumed; Sheridan Taco Bell point approximate)
+Jefferson_Lines_America_Chicago_r,wk1111111,t105,,jefferson_lines.toml,"JL 702 Billings 04:30 MT -> Sheridan -> Buffalo -> Gillette -> Rapid City -> Vivian -> Sioux Falls -> Minneapolis 23:40 (Nick screenshots Sep 22 and Oct 6 2026, jeffersonlines.com; replaces feed ibus 1632, 30 min late from Billings; written in Central, Billings to Kadoka are Mountain +1 h; daily assumed; Sheridan Taco Bell point approximate)"
+Ohio_Coach_America_New_York_r,wk1111111,t106,,ohio_coach.toml,OH001 NYC -> Wheeling -> Columbus dep 21:00 (Nick card and site screenshots Sep 26 2026 from 59 Canal St; site shows dep 21:00 with arrivals 03:00 +1 (6h) and 06:00 +1 (9h) and NO destination labels; read as Wheeling then Columbus by distance (NYC-Wheeling ~400 mi vs NYC-Columbus ~535 mi) and by the eastbound Jaguar row's stop set; stop names byte-identical to that row so they reuse its stops rather than duplicating them)
+Ohio_Coach_America_New_York_r,wk1111111,t107,,ohio_coach.toml,OH001 NYC -> Wheeling -> Columbus dep 20:00 (departure printed on the ticket-office card: every day 8pm 9pm 10pm from New York; RUNNING TIMES ASSUMED equal to the 21:00 trip and NOT verified)
+Ohio_Coach_America_New_York_r,wk1111111,t108,,ohio_coach.toml,OH001 NYC -> Wheeling -> Columbus dep 22:00 (departure printed on the ticket-office card; RUNNING TIMES ASSUMED equal to the 21:00 trip and NOT verified)
+702_Shuttles_America_Los_Angeles_r,wk1111111,t109,,702_shuttles.toml,Las Vegas -> Los Angeles (Nick screenshot Sep 28 2026; daily assumed; stop points approximate)
+Limousine_Express_America_Los_Angeles_r,wk1111111,t110,,limousine_express.toml,LXUS 2102 Fontana -> El Paso (Nick screenshot Sep 28 2026; feed's Fontana run leaves 18:51; daily assumed; points approximate; times in Pacific: El Paso 9:30 AM MDT)
+Omnitrans_61_jog_America_Los_Angeles_r,wk1111100,t111,,omnitrans_61_jog.toml,Ontario Mills -> Limo Express Fontana (Nick allows it Sep 28 2026: walk 0.3 mi to 4th St at Franklin; weekday 61 at 18:48 -> Marygold at Juniper 19:13; then 0.5 mi in 7 min to make the 19:20; Google says 19:23; modelled as reaching the Limo stop 19:15 so the router's 5 min boarding margin allows the 19:20)
+Greyhound_America_New_York_r,wk1111111,t112,,greyhound.toml,Knoxville -> Baltimore I-81 (Nick screenshot Sep 29 2026: Knoxville 23:40 -> Wytheville (E) 02:10 non-stop; Wytheville (E) taken as Max Meadows A81 Travel Plaza; daily assumed)
+Greyhound_America_New_York_r,wk1111111,t113,,greyhound.toml,Max Meadows -> Toledo via Charleston Huntington Ashland Columbus (Nick screenshots Sep 29 + Oct 1 2026: 05:15 -> Charleston 08:25 -> Huntington 10:15 -> Ashland 10:45 -> Columbus E Mound St 13:00 -> Findlay 15:50 (not in feed) -> Toledo 16:30; continues to Detroit; daily assumed)
+Greyhound_America_New_York_r,wk1111111,t114,,greyhound.toml,Charleston WV -> Max Meadows I-77 southbound (Nick screenshot Sep 29 2026: 05:15 -> 08:35; daily assumed)
+Greyhound_America_New_York_r,wk1111111,t115,,greyhound.toml,Max Meadows -> Knoxville I-81 southbound (Nick screenshot Sep 29 2026: 14:20 -> 17:45; daily assumed)
+Peter_Pan_America_New_York_r,wk1111111,t116,,peter_pan.toml,BZ 0708B New York -> Williamstown (Nick screenshot Oct 1 2026; all stops; feed has an older 10:15 run; daily assumed)
+Peter_Pan_America_New_York_r,wk1111111,t117,,peter_pan.toml,BZ 0721B Williamstown -> New York (Nick screenshot Oct 1 2026; all stops; feed has an older 16:00 run; daily assumed)
+Peter_Pan_America_New_York_r,wk1111111,t118,,peter_pan.toml,PPB 6723P Boston -> Springfield (Nick screenshot Oct 1 2026 for Fri Oct 2; daily assumed)
+Peter_Pan_America_New_York_r,wk1111111,t119,,peter_pan.toml,BZ 1421B Springfield -> Albany (Nick screenshot Oct 1 2026 for Fri Oct 2; daily assumed)
+Peter_Pan_America_New_York_r,wk1111111,t120,,peter_pan.toml,BZ 1411B Springfield -> Albany (Nick screenshot Oct 1 2026 for Fri Oct 2; daily assumed)
+Peter_Pan_America_New_York_r,wk1111111,t121,,peter_pan.toml,BZ 1410B Albany -> Springfield (Nick screenshot Oct 1 2026 for Fri Oct 2; daily assumed)
+Peter_Pan_America_New_York_r,wk1111111,t122,,peter_pan.toml,BZ 1422B Albany -> Springfield (Nick screenshot Oct 1 2026 for Fri Oct 2; daily assumed)
+Green_Mountain_Express_America_New_York_r,wk1111100,t123,,green_mountain_express.toml,Purple Line Field Park -> Pownal -> Bennington (official weekday timetable greenmountainexpress.com Purple-Line.jpg Nov 2025; the feed starts these return legs past Field Park)
+Green_Mountain_Express_America_New_York_r,wk1111100,t124,,green_mountain_express.toml,Purple Line Field Park -> Pownal -> Bennington (official timetable as above)
+Green_Mountain_Express_America_New_York_r,wk1111100,t125,,green_mountain_express.toml,Purple Line Field Park -> Pownal -> Bennington (official timetable as above)
+Green_Mountain_Express_America_New_York_r,wk1111100,t126,,green_mountain_express.toml,Purple Line Field Park -> Pownal -> Bennington (official timetable as above)
+Salt_Lake_Express_America_Denver_r,wk1111111,t129,,salt_lake_express.toml,SLE SLC Airport 06:45 -> Draper -> Provo Intermodal Hub 07:50 -> Spanish Fork -> Nephi -> Fillmore -> Beaver -> Parowan -> Cedar City -> Washington -> St George (Bluff St) 12:20 (Nick screenshot Oct 15 2026 for Tue Oct 20: the first run of the day; replaces an Oct 1 reading of 06:00 -> 11:30 that ran on to Las Vegas; daily assumed)
+Barons_Bus_Lines_America_New_York_r,wk1111111,t130,,barons_bus_lines.toml,BSB 25 Toledo -> Chicago (Nick screenshot Oct 1 2026; local times; Merrillville Gary Chicago are Central so +1 h in this Eastern row; daily assumed)
+Navajo_Transit_System_America_Denver_r,wk1111000,t131,,navajo_transit_system.toml,NTS 1 Tuba City -> Ft. Defiance (PDF rev 08/27/2026; Mon-Thu; Marathon Jeddito Holbrook Jct omitted; Old Cellone as Cellular One)
+Navajo_Transit_System_America_Denver_r,wk1111000,t132,,navajo_transit_system.toml,NTS 1 Ft. Defiance -> Tuba City (PDF rev 08/27/2026; Mon-Thu; Marathon Jeddito Holbrook Jct omitted; Old Cellone as Cellular One)
+Page_Express_America_Denver_r,wk1111100,t133,,page_express.toml,Express B Page -> Tuba City AM (brochure eff. July 2025; Navajo daylight time assumed (Nick Oct 1); Mon-Fri; TC Super gas 160/264 modelled at Basha's; intermediate stops omitted)
+Page_Express_America_Denver_r,wk1111100,t134,,page_express.toml,Express B Tuba City -> Page AM (brochure eff. July 2025; Navajo daylight time assumed (Nick Oct 1); Mon-Fri; TC Super gas 160/264 modelled at Basha's)
+Page_Express_America_Denver_r,wk1111100,t135,,page_express.toml,Express B Page -> Tuba City PM (brochure eff. July 2025; Navajo daylight time assumed (Nick Oct 1); Mon-Fri)
+Page_Express_America_Denver_r,wk1111100,t136,,page_express.toml,Express B Tuba City -> Page PM (brochure eff. July 2025; Navajo daylight time assumed (Nick Oct 1); Mon-Fri)
+Page_Express_America_Phoenix_r,wk1111100,t137,,page_express.toml,Express G Page -> Wahweap 13:00 (brochure; Mon-Fri; Wahweap Housing on Stateline Dr from OSM about 1 km south of the UT line)
+Page_Express_America_Phoenix_r,wk1111100,t138,,page_express.toml,Express G Wahweap -> Page 13:33
+Page_Express_America_Phoenix_r,wk1111100,t139,,page_express.toml,Express G Page -> Wahweap 14:00
+Page_Express_America_Phoenix_r,wk1111100,t140,,page_express.toml,Express G Wahweap -> Page 14:33
+Las_Vegas_Page_Shuttle_America_Los_Angeles_r,wk1111111,t141,,las_vegas_page_shuttle.toml,LV -> Page shuttle (Nick screenshot Oct 1 2026; summer season 05:15 -> about 10:00 local; Page Arizona time = PDT in summer; daily assumed; one-way)
+Las_Vegas_Page_Shuttle_America_Denver_r,wk1111111,t142,,las_vegas_page_shuttle.toml,Page -> Kanab -> St George -> LV shuttle (Nick screenshots Oct 1 2026; summer; Page 14:30 Arizona = 15:30 here; Kanab 16:45 from its own leg (the Page leg says arr 17:15); St George 19:30 as published; LV 20:00 PDT = 21:00 here; daily assumed)
+RedCoach_America_Chicago_r,wk1111111,t143,,redcoach.toml,Dallas -> Houston 16:25 (Nick screenshot of redcoachusa Oct 1 2026; daily assumed)
+RedCoach_America_Chicago_r,wk1111111,t144,,redcoach.toml,Dallas -> Houston 18:55 (Nick screenshot of redcoachusa Oct 1 2026; daily assumed)
+702_Shuttles_America_Los_Angeles_r,wk1111111,t145,,702_shuttles.toml,"Las Vegas -> Ontario (Nick screenshot Oct 2 2026, Primm 10:50 to Ontario 13:37; Las Vegas and Jean times inferred from the 15:15 run; daily assumed; Ontario stop point approximate)"
+BeeLine_Express_Village_Travel_PRE_schedules_OKC_Wichita_Salina_America_Chicago_r,wk1111111,t146,,pre_okc_salina.toml,PRE 40 Oklahoma City 21:30 -> OKC Amtrak -> Wellington KS -> Wichita -> Newton (Amtrak) 01:30 (Nick screenshot Oct 5 2026: it runs on to Newton for the Chief; daily assumed; confirmed Wed Nov 25 -> Thu Nov 26 01:30 by Amtrak booking screenshot Oct 21)
+BeeLine_Express_Village_Travel_PRE_schedules_OKC_Wichita_Salina_America_Chicago_r,wk1111111,t147,,pre_okc_salina.toml,PRE 6 Wichita 00:50 -> Salina 02:05 (daily assumed)
+BeeLine_Express_Village_Travel_PRE_schedules_OKC_Wichita_Salina_America_Chicago_r,wk1111111,t148,,pre_okc_salina.toml,PRE 1 Salina 04:30 -> Lindsborg -> Hutchinson -> South Hutchinson -> Newton (Amtrak) -> Wichita 07:10 (daily assumed)
+Jefferson_Lines_America_Chicago_r,wk1111111,t336,,jefferson_lines.toml,JL 938 Bismarck 13:05 -> Fargo -> Moorhead -> St. Cloud -> Minneapolis 21:10 (daily assumed; Fargo 16:40 -> Minneapolis 21:10 confirmed on the site Oct 5)
+Jefferson_Lines_America_Chicago_r,wk1111111,t337,,jefferson_lines.toml,"JL 805 Minneapolis 21:45 -> St. Paul -> Albert Lea -> Clear Lake IA -> Ames -> Des Moines 03:15/03:40 -> Bethany MO -> Kansas City 07:15 (Google, Nick Oct 2; daily assumed)"
+Jefferson_Lines_America_Chicago_r,wk1111111,t338,,jefferson_lines.toml,JL Des Moines 03:45 -> Omaha 06:00 (non-stop; inferred from Google 02:45 -> 05:00 plus an hour; daily assumed)
+Four_Winds_Casino_Shuttle_Chinatown_America_Chicago_r,wk1111111,t341,,four_winds_shuttle.toml,Chinatown 07:50 -> Four Winds New Buffalo (daily)
+Four_Winds_Casino_Shuttle_Chinatown_America_Chicago_r,wk0011110,t342,,four_winds_shuttle.toml,"Chinatown 09:50 -> Four Winds New Buffalo (Wed-Sat, from Oct 28 2026)"
+Four_Winds_Casino_Shuttle_Chinatown_America_Chicago_r,wk1111111,t343,,four_winds_shuttle.toml,Chinatown 11:50 -> Four Winds New Buffalo (daily)
+Four_Winds_Casino_Shuttle_Chinatown_America_Chicago_r,wk0011110,t344,,four_winds_shuttle.toml,"Chinatown 13:50 -> Four Winds New Buffalo (Wed-Sat, from Oct 28 2026)"
+Four_Winds_Casino_Shuttle_Chinatown_America_Chicago_r,wk0011110,t345,,four_winds_shuttle.toml,"Chinatown 15:50 -> Four Winds New Buffalo (Wed-Sat, from Oct 28 2026)"
+Four_Winds_Casino_Shuttle_Chinatown_America_Chicago_r,wk0011110,t346,,four_winds_shuttle.toml,"Chinatown 17:50 -> Four Winds New Buffalo (Wed-Sat, from Oct 28 2026)"
+Four_Winds_Casino_Shuttle_Chinatown_America_Chicago_r,wk1111111,t347,,four_winds_shuttle.toml,Four Winds New Buffalo 10:00 -> Chinatown (arrival assumed +1 h 40 min; daily)
+Four_Winds_Casino_Shuttle_Chinatown_America_Chicago_r,wk0011110,t348,,four_winds_shuttle.toml,Four Winds New Buffalo 12:00 -> Chinatown (arrival assumed +1 h 40 min; Wed-Sat)
+Four_Winds_Casino_Shuttle_Chinatown_America_Chicago_r,wk1111111,t349,,four_winds_shuttle.toml,Four Winds New Buffalo 14:00 -> Chinatown (arrival assumed +1 h 40 min; daily)
+Four_Winds_Casino_Shuttle_Chinatown_America_Chicago_r,wk0011110,t350,,four_winds_shuttle.toml,Four Winds New Buffalo 16:00 -> Chinatown (arrival assumed +1 h 40 min; Wed-Sat)
+Four_Winds_Casino_Shuttle_Chinatown_America_Chicago_r,wk1111111,t351,,four_winds_shuttle.toml,Four Winds New Buffalo 18:00 -> Chinatown (arrival assumed +1 h 40 min; daily)
+Four_Winds_Casino_Shuttle_Chinatown_America_Chicago_r,wk0011110,t352,,four_winds_shuttle.toml,Four Winds New Buffalo 20:00 -> Chinatown (arrival assumed +1 h 40 min; Wed-Sat)
+Four_Winds_Casino_Shuttle_Chinatown_America_Chicago_r,wk0011110,t353,,four_winds_shuttle.toml,Four Winds New Buffalo 00:00 -> Chinatown (arrival assumed +1 h 40 min; Wed-Sat)
+Jefferson_Lines_America_Chicago_r,wk1001111,t354,,jefferson_lines.toml,"JL Fargo 14:30 -> Sisseton Jct -> Summit Corner -> Watertown -> Brookings -> Sioux Falls 18:30 (site, Nick Oct 11; Thu-Mon only)"
+Jefferson_Lines_America_Chicago_r,wk1001000,t355,,jefferson_lines.toml,"JL Vivian 15:40 -> Pierre 16:25 (connector; Mon and Thu only, Nick Oct 5)"
+Jefferson_Lines_America_Chicago_r,wk1111111,t356,,jefferson_lines.toml,JL Chicago 21:15 -> Davenport -> Iowa City -> Des Moines -> Omaha 06:00 (daily assumed)
+Jefferson_Lines_America_Chicago_r,wk1001111,t357,,jefferson_lines.toml,"JL Sioux Falls 10:00 -> Brookings -> Watertown -> Summit Corner -> Sisseton Jct -> Fargo 14:05 (Thu-Mon only, Nick Oct 5)"
+Jefferson_Lines_America_Chicago_r,wk1111111,t358,,jefferson_lines.toml,JL Omaha 06:15 -> Sioux City -> Vermillion -> Sioux Falls 09:45 (intermediate times assumed; daily assumed)
+Jefferson_Lines_America_Chicago_r,wk1111111,t360,,jefferson_lines.toml,JL Kansas City 01:30 -> Maryville 03:25 -> Clarinda -> Shenandoah -> Omaha -> Sioux City -> Vermillion -> Sioux Falls 09:45 (daily assumed)
+Jefferson_Lines_America_Chicago_r,wk1111111,t361,,jefferson_lines.toml,JL Sioux Falls 10:25 -> Luverne MN 10:55 (daily assumed)
+UCAP_Community_Transit_Rock_County_MN_booked_dial_a_ride_America_Chicago_r,wk1111100,t362,,ucap_dial_a_ride.toml,UCAP booked ride Luverne -> Sioux Falls (45 min; hours assumed)
+UCAP_Community_Transit_Rock_County_MN_booked_dial_a_ride_America_Chicago_r,wk1111100,t363,,ucap_dial_a_ride.toml,UCAP booked ride Luverne -> Sioux Falls (45 min; hours assumed)
+UCAP_Community_Transit_Rock_County_MN_booked_dial_a_ride_America_Chicago_r,wk1111100,t364,,ucap_dial_a_ride.toml,UCAP booked ride Luverne -> Sioux Falls (45 min; hours assumed)
+UCAP_Community_Transit_Rock_County_MN_booked_dial_a_ride_America_Chicago_r,wk1111100,t365,,ucap_dial_a_ride.toml,UCAP booked ride Luverne -> Sioux Falls (45 min; hours assumed)
+UCAP_Community_Transit_Rock_County_MN_booked_dial_a_ride_America_Chicago_r,wk1111100,t366,,ucap_dial_a_ride.toml,UCAP booked ride Luverne -> Sioux Falls (45 min; hours assumed)
+UCAP_Community_Transit_Rock_County_MN_booked_dial_a_ride_America_Chicago_r,wk1111100,t367,,ucap_dial_a_ride.toml,UCAP booked ride Luverne -> Sioux Falls (45 min; hours assumed)
+UCAP_Community_Transit_Rock_County_MN_booked_dial_a_ride_America_Chicago_r,wk1111100,t368,,ucap_dial_a_ride.toml,UCAP booked ride Luverne -> Sioux Falls (45 min; hours assumed)
+UCAP_Community_Transit_Rock_County_MN_booked_dial_a_ride_America_Chicago_r,wk1111100,t369,,ucap_dial_a_ride.toml,UCAP booked ride Luverne -> Sioux Falls (45 min; hours assumed)
+UCAP_Community_Transit_Rock_County_MN_booked_dial_a_ride_America_Chicago_r,wk1111100,t370,,ucap_dial_a_ride.toml,UCAP booked ride Luverne -> Sioux Falls (45 min; hours assumed)
+UCAP_Community_Transit_Rock_County_MN_booked_dial_a_ride_America_Chicago_r,wk1111100,t371,,ucap_dial_a_ride.toml,UCAP booked ride Luverne -> Sioux Falls (45 min; hours assumed)
+UCAP_Community_Transit_Rock_County_MN_booked_dial_a_ride_America_Chicago_r,wk1111100,t372,,ucap_dial_a_ride.toml,UCAP booked ride Luverne -> Sioux Falls (45 min; hours assumed)
+UCAP_Community_Transit_Rock_County_MN_booked_dial_a_ride_America_Chicago_r,wk1111100,t373,,ucap_dial_a_ride.toml,UCAP booked ride Luverne -> Sioux Falls (45 min; hours assumed)
+UCAP_Community_Transit_Rock_County_MN_booked_dial_a_ride_America_Chicago_r,wk1111100,t374,,ucap_dial_a_ride.toml,UCAP booked ride Luverne -> Sioux Falls (45 min; hours assumed)
+UCAP_Community_Transit_Rock_County_MN_booked_dial_a_ride_America_Chicago_r,wk1111100,t375,,ucap_dial_a_ride.toml,UCAP booked ride Luverne -> Sioux Falls (45 min; hours assumed)
+UCAP_Community_Transit_Rock_County_MN_booked_dial_a_ride_America_Chicago_r,wk1111100,t376,,ucap_dial_a_ride.toml,UCAP booked ride Luverne -> Sioux Falls (45 min; hours assumed)
+UCAP_Community_Transit_Rock_County_MN_booked_dial_a_ride_America_Chicago_r,wk1111100,t377,,ucap_dial_a_ride.toml,UCAP booked ride Luverne -> Sioux Falls (45 min; hours assumed)
+UCAP_Community_Transit_Rock_County_MN_booked_dial_a_ride_America_Chicago_r,wk1111100,t378,,ucap_dial_a_ride.toml,UCAP booked ride Luverne -> Sioux Falls (45 min; hours assumed)
+UCAP_Community_Transit_Rock_County_MN_booked_dial_a_ride_America_Chicago_r,wk1111100,t379,,ucap_dial_a_ride.toml,UCAP booked ride Luverne -> Sioux Falls (45 min; hours assumed)
+UCAP_Community_Transit_Rock_County_MN_booked_dial_a_ride_America_Chicago_r,wk1111100,t380,,ucap_dial_a_ride.toml,UCAP booked ride Luverne -> Sioux Falls (45 min; hours assumed)
+UCAP_Community_Transit_Rock_County_MN_booked_dial_a_ride_America_Chicago_r,wk1111100,t381,,ucap_dial_a_ride.toml,UCAP booked ride Luverne -> Sioux Falls (45 min; hours assumed)
+UCAP_Community_Transit_Rock_County_MN_booked_dial_a_ride_America_Chicago_r,wk1111100,t382,,ucap_dial_a_ride.toml,UCAP booked ride Luverne -> Sioux Falls (45 min; hours assumed)
+UCAP_Community_Transit_Rock_County_MN_booked_dial_a_ride_America_Chicago_r,wk1111100,t383,,ucap_dial_a_ride.toml,UCAP booked ride Luverne -> Sioux Falls (45 min; hours assumed)
+UCAP_Community_Transit_Rock_County_MN_booked_dial_a_ride_America_Chicago_r,wk1111100,t384,,ucap_dial_a_ride.toml,UCAP booked ride Luverne -> Sioux Falls (45 min; hours assumed)
+UCAP_Community_Transit_Rock_County_MN_booked_dial_a_ride_America_Chicago_r,wk1111100,t385,,ucap_dial_a_ride.toml,UCAP booked ride Luverne -> Sioux Falls (45 min; hours assumed)
+UCAP_Community_Transit_Rock_County_MN_booked_dial_a_ride_America_Chicago_r,wk1111100,t386,,ucap_dial_a_ride.toml,UCAP booked ride Luverne -> Sioux Falls (45 min; hours assumed)
+UCAP_Community_Transit_Rock_County_MN_booked_dial_a_ride_America_Chicago_r,wk1111100,t387,,ucap_dial_a_ride.toml,UCAP booked ride Luverne -> Sioux Falls (45 min; hours assumed)
+UCAP_Community_Transit_Rock_County_MN_booked_dial_a_ride_America_Chicago_r,wk1111100,t388,,ucap_dial_a_ride.toml,UCAP booked ride Luverne -> Sioux Falls (45 min; hours assumed)
+UCAP_Community_Transit_Rock_County_MN_booked_dial_a_ride_America_Chicago_r,wk1111100,t389,,ucap_dial_a_ride.toml,UCAP booked ride Luverne -> Sioux Falls (45 min; hours assumed)
+UCAP_Community_Transit_Rock_County_MN_booked_dial_a_ride_America_Chicago_r,wk1111100,t390,,ucap_dial_a_ride.toml,UCAP booked ride Luverne -> Sioux Falls (45 min; hours assumed)
+UCAP_Community_Transit_Rock_County_MN_booked_dial_a_ride_America_Chicago_r,wk1111100,t391,,ucap_dial_a_ride.toml,UCAP booked ride Luverne -> Sioux Falls (45 min; hours assumed)
+UCAP_Community_Transit_Rock_County_MN_booked_dial_a_ride_America_Chicago_r,wk1111100,t392,,ucap_dial_a_ride.toml,UCAP booked ride Luverne -> Sioux Falls (45 min; hours assumed)
+UCAP_Community_Transit_Rock_County_MN_booked_dial_a_ride_America_Chicago_r,wk1111100,t393,,ucap_dial_a_ride.toml,UCAP booked ride Luverne -> Sioux Falls (45 min; hours assumed)
+UCAP_Community_Transit_Rock_County_MN_booked_dial_a_ride_America_Chicago_r,wk1111100,t394,,ucap_dial_a_ride.toml,UCAP booked ride Luverne -> Sioux Falls (45 min; hours assumed)
+UCAP_Community_Transit_Rock_County_MN_booked_dial_a_ride_America_Chicago_r,wk1111100,t395,,ucap_dial_a_ride.toml,UCAP booked ride Luverne -> Sioux Falls (45 min; hours assumed)
+UCAP_Community_Transit_Rock_County_MN_booked_dial_a_ride_America_Chicago_r,wk1111100,t396,,ucap_dial_a_ride.toml,UCAP booked ride Luverne -> Sioux Falls (45 min; hours assumed)
+UCAP_Community_Transit_Rock_County_MN_booked_dial_a_ride_America_Chicago_r,wk1111100,t397,,ucap_dial_a_ride.toml,UCAP booked ride Luverne -> Sioux Falls (45 min; hours assumed)
+UCAP_Community_Transit_Rock_County_MN_booked_dial_a_ride_America_Chicago_r,wk1111100,t398,,ucap_dial_a_ride.toml,UCAP booked ride Luverne -> Sioux Falls (45 min; hours assumed)
+UCAP_Community_Transit_Rock_County_MN_booked_dial_a_ride_America_Chicago_r,wk1111100,t399,,ucap_dial_a_ride.toml,UCAP booked ride Luverne -> Sioux Falls (45 min; hours assumed)
+UCAP_Community_Transit_Rock_County_MN_booked_dial_a_ride_America_Chicago_r,wk1111100,t400,,ucap_dial_a_ride.toml,UCAP booked ride Luverne -> Sioux Falls (45 min; hours assumed)
+UCAP_Community_Transit_Rock_County_MN_booked_dial_a_ride_America_Chicago_r,wk1111100,t401,,ucap_dial_a_ride.toml,UCAP booked ride Luverne -> Sioux Falls (45 min; hours assumed)
+UCAP_Community_Transit_Rock_County_MN_booked_dial_a_ride_America_Chicago_r,wk1111100,t402,,ucap_dial_a_ride.toml,UCAP booked ride Luverne -> Sioux Falls (45 min; hours assumed)
+Jefferson_Lines_America_Chicago_r,wk1111111,t403,,jefferson_lines.toml,JL 1202 Omaha 21:05 -> Des Moines -> Iowa City -> Davenport (Hillandale) -> Chicago 05:45 (daily assumed)
+Jefferson_Lines_America_Indiana_Indianapolis_r,wk1111111,t404,,jefferson_lines.toml,JL Indianapolis 06:40 -> Champaign -> Peoria -> Moline -> Davenport -> Iowa City -> Cedar Rapids -> Des Moines 17:10 (daily assumed)
+Jefferson_Lines_America_Chicago_r,wk1111111,t405,,jefferson_lines.toml,JL Des Moines 08:30 -> Cedar Rapids -> Iowa City -> Davenport -> Moline -> Peoria -> Champaign -> Indianapolis 19:50 (daily assumed)
+Express_Arrow_America_Denver_r,wk1111111,t406,,express_arrow.toml,Express Arrow Denver 09:25 -> Brush -> Ogallala -> North Platte -> Kearney -> Grand Island -> Lincoln -> Omaha 20:40 (daily assumed)
+Express_Arrow_America_Chicago_r,wk1111111,t407,,express_arrow.toml,Express Arrow Omaha 06:40 -> Lincoln -> Grand Island -> Kearney -> North Platte -> Ogallala -> Brush -> Denver 15:50 (daily assumed)
+Greyhound_America_Chicago_r,wk1111111,t408,,greyhound.toml,Greyhound Des Moines 08:05 -> Ottumwa -> Burlington IA -> Galesburg -> Bloomington -> Champaign -> Indianapolis 18:45 (daily assumed)
+Greyhound_America_Indiana_Indianapolis_r,wk1111111,t409,,greyhound.toml,Greyhound Indianapolis 13:10 -> Champaign -> Bloomington -> Galesburg -> Burlington IA -> Ottumwa -> Des Moines 22:05 (daily assumed)
+Greyhound_America_Chicago_r,wk1111111,t410,,greyhound.toml,Greyhound Chicago 06:10 -> Dixon -> Moline -> Davenport -> Iowa City -> Grinnell -> Des Moines 14:35 (daily assumed)
+Greyhound_America_Chicago_r,wk1111111,t411,,greyhound.toml,Greyhound Chicago 08:50 -> Rockford -> Moline -> Iowa City -> Cedar Rapids -> Waterloo -> Ames -> Des Moines 18:45 (daily assumed)
+Greyhound_America_Chicago_r,wk1111111,t412,,greyhound.toml,Greyhound Chicago 12:25 -> Des Moines 18:55 -> Omaha 21:50 -> Lincoln -> North Platte -> Denver 09:00 (daily assumed)
+Jefferson_Lines_America_Chicago_r,wk1111111,t413,,jefferson_lines.toml,JL Chicago 12:00 -> Dubuque 15:30 -> Waterloo (Love's) 17:00 (daily assumed)
+Jefferson_Lines_America_Chicago_r,wk1111111,t414,,jefferson_lines.toml,JL Waterloo (Love's) 17:25 -> Clear Lake 18:55 -> Minneapolis 21:00 (daily assumed)
+Greyhound_America_Denver_r,wk1111111,t416,,greyhound.toml,Greyhound Denver 18:55 -> North Platte -> Lincoln -> Omaha 05:55 -> Des Moines 08:55 -> Chicago 16:25 (daily assumed)
+Greyhound_America_Chicago_r,wk1111111,t417,,greyhound.toml,Greyhound Des Moines 05:30 -> Grinnell -> Iowa City -> Davenport -> Moline -> Dixon -> Naperville -> Chicago 13:35 (daily assumed)
+Greyhound_America_Chicago_r,wk1111111,t418,,greyhound.toml,Greyhound Des Moines 09:45 -> Ames -> Marshalltown -> Waterloo -> Cedar Rapids -> Iowa City -> Davenport -> Rockford -> Chicago 19:45 (daily assumed)
+Jefferson_Lines_America_Chicago_r,wk1111111,t419,,jefferson_lines.toml,"JL Tulsa 14:20 -> Kansas City 19:20/20:05 -> Bethany -> Des Moines 23:30/00:01 -> Ames -> Albert Lea -> Minneapolis 04:30 (site, Nick Oct 5; daily assumed)"
+Greyhound_America_Chicago_r,wk1111111,t420,,greyhound.toml,Greyhound Kansas City 20:35 -> Bethany -> Des Moines 23:45 (Nick screenshot Oct 5 2026; daily assumed)
+Barons_Bus_Lines_America_New_York_r,wk1111111,t423,,barons_bus_lines.toml,"Barons Columbus (E Mound St) 06:10 -> Dayton -> Fort Wayne -> Michigan City -> Chicago 13:25 CT (Nick screenshot Oct 5 2026, Thu Oct 22; local times, La Porte Michigan City Gary Chicago are Central so +1 h in this Eastern row; replaces feed ibus 3069, 10 min later; daily assumed)"
+Barons_Bus_Lines_America_New_York_r,wk1111111,t424,,barons_bus_lines.toml,"Barons Charlotte 17:20 -> Winston-Salem -> Wytheville -> Beckley -> Charleston -> Huntington 00:45 -> Columbus (E Mound St) 04:15 (Nick screenshot Oct 5 2026; replaces feed ibus 2897, 25 min late from Charlotte; daily assumed)"
+Greyhound_America_New_York_r,wk1111111,t425,,greyhound.toml,Greyhound Charlotte 02:50 -> Max Meadows -> Bluefield -> Charleston -> Huntington 10:10 -> Columbus -> Toledo -> Detroit 18:00 (Nick screenshot Oct 5 2026; the feed's ibus 3152 has 06:50 -> 21:45; Findlay stop omitted; daily assumed)
+Amtrak_Thruway_America_Los_Angeles_r,wk1111111,t426,,amtrak_thruway.toml,"Amtrak Thruway 5619 (Alvand) Bakersfield 16:50 -> Mojave -> Barstow 19:10 -> Las Vegas 22:30 (amtrak.com, Nov 18; the feed has this corridor westbound only; daily assumed)"
+Express_Arrow_America_Denver_r,wk0111100,t427,,express_arrow.toml,Express Arrow Buffalo WY 07:20 -> Casper -> Douglas -> Wheatland -> Cheyenne -> Greeley -> Denver 15:15 (Tue-Fri)
+Vonlane_America_Chicago_r,wk1101110,t428,,vonlane.toml,"Vonlane Nashville Omni 10:00 -> Memphis Hilton 13:15 (Mon Tue Thu Fri Sat; not Wednesday, Nick Oct 21)"
+Vonlane_America_Chicago_r,wk1111110,t429,,vonlane.toml,"Vonlane Nashville Omni 14:00 -> Memphis Hilton 17:15 (Mon-Sat; Wed, Thu, Fri, Sat seen, Nick Oct 21)"
+Vonlane_America_New_York_r,wk1111100,t430,,vonlane.toml,"Vonlane Atlanta Grand Hyatt Buckhead 15:00 ET -> Nashville Omni 18:00 CT (weekdays, Nick: schedule consistent)"
+Vonlane_America_Chicago_r,wk1111100,t431,,vonlane.toml,"Vonlane Oklahoma City Omni 10:15 -> Dallas DoubleTree Love Field 13:30 (weekdays, Nick: schedule consistent)"
+Vonlane_America_Chicago_r,wk1111100,t432,,vonlane.toml,"Vonlane Oklahoma City Omni 14:15 -> Dallas DoubleTree Love Field 17:30 (weekdays, Nick: schedule consistent)"
+Vonlane_America_Chicago_r,wk1111100,t433,,vonlane.toml,"Vonlane Nashville Omni 14:00 CT -> Atlanta Grand Hyatt Buckhead 19:00 ET (weekdays, Nick: schedule consistent)"
+Vonlane_America_Chicago_r,wk1111100,t434,,vonlane.toml,"Vonlane Dallas DoubleTree Love Field 06:00 -> Houston Hyatt Regency (weekdays, Nick: schedule consistent)"
+Vonlane_America_Chicago_r,wk1111100,t435,,vonlane.toml,"Vonlane Dallas DoubleTree Love Field 07:00 -> Houston Hyatt Regency (weekdays, Nick: schedule consistent)"
+Vonlane_America_Chicago_r,wk1111100,t436,,vonlane.toml,"Vonlane Dallas DoubleTree Love Field 10:30 -> Houston Hyatt Regency (weekdays, Nick: schedule consistent)"
+Vonlane_America_Chicago_r,wk1111100,t437,,vonlane.toml,"Vonlane Dallas DoubleTree Love Field 11:30 -> Houston Hyatt Regency (weekdays, Nick: schedule consistent)"
+Vonlane_America_Chicago_r,wk1111100,t438,,vonlane.toml,"Vonlane Dallas DoubleTree Love Field 15:00 -> Houston Hyatt Regency (weekdays, Nick: schedule consistent)"
+Vonlane_America_Chicago_r,wk1111100,t439,,vonlane.toml,"Vonlane Dallas DoubleTree Love Field 16:00 -> Houston Hyatt Regency (weekdays, Nick: schedule consistent)"
+Vonlane_America_Chicago_r,wk1111100,t440,,vonlane.toml,"Vonlane Dallas DoubleTree Love Field 19:30 -> Houston Hyatt Regency (weekdays, Nick: schedule consistent)"
+Vonlane_America_Chicago_r,wk1111100,t441,,vonlane.toml,"Vonlane Dallas DoubleTree Love Field 20:30 -> Houston Hyatt Regency (weekdays, Nick: schedule consistent)"
+Vonlane_America_Chicago_r,wk1111100,t442,,vonlane.toml,Vonlane Memphis Hilton 10:00 -> Nashville Omni 13:15 (weekdays)
+Vonlane_America_Chicago_r,wk1111100,t443,,vonlane.toml,Vonlane Memphis Hilton 16:00 -> Nashville Omni 19:15 (weekdays)
+Jefferson_Lines_America_Chicago_r,wk1111111,t444,,jefferson_lines.toml,JL Minneapolis 11:20 -> St Cloud -> Brainerd -> Bemidji -> Crookston -> Grand Forks 19:30 (daily assumed)
+Jefferson_Lines_America_Chicago_r,wk1111111,t445,,jefferson_lines.toml,JL Minneapolis 10:45 -> Rochester -> La Crosse -> Madison -> Milwaukee 19:30 (daily assumed)
+Jefferson_Lines_America_Chicago_r,wk1111111,t446,,jefferson_lines.toml,JL Minneapolis 13:15 -> Mason City -> Waterloo -> Dubuque -> Chicago 22:15 (daily assumed)
+Jefferson_Lines_America_Chicago_r,wk1111111,t447,,jefferson_lines.toml,JL Minneapolis 12:50 -> Mason City -> Ames -> Des Moines -> Kansas City 22:10 (daily assumed)
+Jefferson_Lines_America_Chicago_r,wk1111111,t448,,jefferson_lines.toml,JL Minneapolis 18:30 -> Ames -> Des Moines -> Kansas City 03:30/05:20 -> Iola -> Chanute -> Tulsa 10:15 (daily assumed)
+Greyhound_America_Chicago_r,wk1111111,t449,,greyhound.toml,Greyhound Minneapolis 23:55 -> St Paul -> Albert Lea -> Ames -> Des Moines -> Bethany -> Kansas City 08:40 (daily assumed)
+Jefferson_Lines_America_Chicago_r,wk1111111,t450,,jefferson_lines.toml,JL Kansas City 08:35 -> Des Moines -> Ames -> Mason City -> Albert Lea -> Minneapolis 17:50 (daily assumed)
+Greyhound_America_Chicago_r,wk1111111,t451,,greyhound.toml,Greyhound Kansas City 20:35 -> Des Moines -> Ames -> Albert Lea -> Minneapolis 04:20 (daily assumed)
+Jefferson_Lines_America_Chicago_r,wk1111111,t452,,jefferson_lines.toml,JL Kansas City 23:25 -> Des Moines 03:20/04:05 -> Ames -> Albert Lea -> St Paul -> Minneapolis 09:50 (daily assumed)
+Jefferson_Lines_America_Chicago_r,wk1111111,t453,,jefferson_lines.toml,JL Sioux Falls 19:00 -> Sioux City -> Omaha -> Maryville 01:15/01:35 -> Kansas City 03:15 (daily assumed)
+Omnibus_Express_America_Chicago_r,wk1111111,t454,,omnibus_express.toml,"Omnibus Express Kansas City 13:01 -> Wichita -> Liberal -> Guymon -> Dalhart -> Tucumcari -> El Paso 06:28 (daily per the booking engine, Nov 9-22)"
+Omnibus_Express_America_Denver_r,wk1111111,t455,,omnibus_express.toml,"Omnibus Express El Paso 19:03 -> Tucumcari -> Dalhart -> Guymon -> Liberal -> Wichita -> Kansas City 14:00 (daily per the booking engine, Nov 9-22)"
+Omnibus_Express_America_Denver_r,wk0100111,t456,,omnibus_express.toml,"Omnibus Express Caldwell ID 08:00 -> Burley -> Salt Lake City -> Provo -> Albuquerque -> Hatch NM 04:15 -> El Paso 05:33 (Hatch + 78 min) (Tue Fri Sat Sun per the booking engine, Nov 9-22)"
+Omnibus_Express_America_Chicago_r,wk1111111,t457,,omnibus_express.toml,"Omnibus Express Oklahoma City 18:00 -> Amarillo -> Clovis -> Roswell -> El Paso 04:28 (daily per the booking engine, Nov 9-22)"
+Omnibus_Express_America_Denver_r,wk1111111,t458,,omnibus_express.toml,"Omnibus Express El Paso 19:02 -> Roswell -> Clovis -> Amarillo -> Oklahoma City 09:00 (daily per the booking engine, Nov 9-22)"
+Omnibus_Express_America_Chicago_r,wk1111111,t459,,omnibus_express.toml,"Omnibus Express Houston 19:30 -> Lafayette -> Baton Rouge -> Slidell -> Mobile -> Pensacola -> Tallahassee -> Lake City 11:00 (daily per the booking engine, Nov 9-22)"
+Omnibus_Express_America_Denver_r,wk0011101,t460,,omnibus_express.toml,"Omnibus Express El Paso 19:02 -> Hatch -> Albuquerque -> Provo -> Salt Lake City -> Burley -> Caldwell ID 16:00 (Wed Thu Fri Sun per the booking engine, Nov 9-22)"
+Northwestern_Stage_Lines_America_Los_Angeles_r,wk1111111,t461,,northwestern_stage_lines.toml,NWL Pasco 15:00 -> Boise Airport 21:10 MT (daily assumed)
+Salt_Lake_Express_America_Denver_r,wk1111111,t462,,salt_lake_express.toml,Salt Lake Express Boise Airport 21:15 -> Pocatello 01:05 (daily assumed)
+702_Shuttles_America_Los_Angeles_r,wk1111111,t463,,702_shuttles.toml,702 Shuttles Las Vegas Blue Diamond 18:15 -> Primm -> Barstow 20:27 -> Los Angeles 22:50 (daily assumed)
+Amtrak_Thruway_America_Phoenix_r,wk0101001,t465,,amtrak_thruway.toml,"Amtrak Thruway 8901 (Stagecoach Express) Maricopa 22:15 -> Tempe -> Sky Harbor -> Phoenix North 23:45, meets Sunset Limited #1 (amtrak.com, Nick screenshot Oct 15: Sun Nov 1 22:15 -> 23:45). The feed writes it as 1:15 on the service day, a day early (a wrapped 25:15); its trips are in drop_trips.csv"
+St_George_Shuttle_America_Los_Angeles_r,wk1111111,t466,,st_george_shuttle.toml,St George Shuttle Las Vegas Airport 06:00 -> St George 09:10
+St_George_Shuttle_America_Los_Angeles_r,wk1111111,t467,,st_george_shuttle.toml,St George Shuttle Las Vegas Airport 08:00 -> St George 11:10
+St_George_Shuttle_America_Los_Angeles_r,wk1111111,t468,,st_george_shuttle.toml,St George Shuttle Las Vegas Airport 11:50 -> St George 15:00
+St_George_Shuttle_America_Los_Angeles_r,wk1111111,t469,,st_george_shuttle.toml,St George Shuttle Las Vegas Airport 13:50 -> St George 17:00
+St_George_Shuttle_America_Denver_r,wk1111111,t470,,st_george_shuttle.toml,St George Shuttle St George 09:30 -> SLC Airport 14:40
+St_George_Shuttle_America_Denver_r,wk1111111,t471,,st_george_shuttle.toml,St George Shuttle St George 12:15 -> SLC Airport 17:25
+St_George_Shuttle_America_Denver_r,wk1111111,t472,,st_george_shuttle.toml,St George Shuttle St George 15:40 -> SLC Airport 20:50
+St_George_Shuttle_America_Denver_r,wk1111111,t473,,st_george_shuttle.toml,St George Shuttle St George 18:15 -> SLC Airport 23:25
+St_George_Shuttle_America_Denver_r,wk1111111,t474,,st_george_shuttle.toml,St George Shuttle SLC Airport 06:00 -> St George 11:30/12:00 -> Las Vegas Airport 13:10 (Oct 1 reading; Nick Oct 15: a 6 am St George Shuttle from the airport)
+Greyhound_America_Chicago_r,wk1111111,t475,,greyhound.toml,"Greyhound Dallas 13:35 -> Fort Worth -> Wichita Falls -> Lubbock -> Amarillo 22:25/01:05 -> Springfield CO -> Lamar 04:00 -> Pueblo -> Colorado Springs -> Denver 09:15 (greyhound.com, Nick Oct 16 2026; replaces feed US1144-7308-1935*)"
+Froggy_Transportation_America_New_York_r,wk1111110,t476,,froggy_transportation.toml,Froggy Toledo 08:45/09:00 -> DTW McNamara 09:50 -> Evans 10:04 (Mon-Sat)
+Froggy_Transportation_America_New_York_r,wk1111110,t477,,froggy_transportation.toml,Froggy Toledo 11:45/12:00 -> DTW McNamara 12:50 -> Evans 13:04 (Mon-Sat)
+Froggy_Transportation_America_New_York_r,wk1111110,t478,,froggy_transportation.toml,Froggy Toledo 14:45/15:00 -> DTW McNamara 15:50 -> Evans 16:04 (Mon-Sat)
+Froggy_Transportation_America_New_York_r,wk0000001,t479,,froggy_transportation.toml,Froggy Toledo 07:45/08:00 -> DTW McNamara 08:50 -> Evans 09:04 (Sun)
+Froggy_Transportation_America_New_York_r,wk0000001,t480,,froggy_transportation.toml,Froggy Toledo 13:45/14:00 -> DTW McNamara 14:50 -> Evans 15:04 (Sun)
+Froggy_Transportation_America_Detroit_r,wk1111110,t481,,froggy_transportation.toml,Froggy DTW McNamara 09:57 -> Evans 10:11 -> Toledo Franklin Park 11:05 (Mon-Sat)
+Froggy_Transportation_America_Detroit_r,wk1111110,t482,,froggy_transportation.toml,Froggy DTW McNamara 12:57 -> Evans 13:11 -> Toledo Franklin Park 14:05 (Mon-Sat)
+Froggy_Transportation_America_Detroit_r,wk1111110,t483,,froggy_transportation.toml,Froggy DTW McNamara 15:57 -> Evans 16:11 -> Toledo Franklin Park 17:05 (Mon-Sat)
+Froggy_Transportation_America_Detroit_r,wk0000001,t484,,froggy_transportation.toml,Froggy DTW McNamara 08:57 -> Evans 09:11 -> Toledo Franklin Park 10:05 (Sun)
+Froggy_Transportation_America_Detroit_r,wk0000001,t485,,froggy_transportation.toml,Froggy DTW McNamara 14:57 -> Evans 15:11 -> Toledo Franklin Park 16:05 (Sun)
+Coach_USA_Van_Galder_America_Chicago_r,wk1111111,t486,,van_galder.toml,Van Galder Janesville 10:00 -> Madison 10:45/11:15 -> Platteville -> Dubuque 13:40 (daily assumed)
+Coach_USA_Van_Galder_America_Chicago_r,wk1111111,t487,,van_galder.toml,Van Galder Dubuque 14:40 -> Platteville -> Madison 17:15/17:30 -> Dutch Mill -> Janesville 18:30 (daily assumed)
+Lamers_Connect_America_Chicago_r,wk1111111,t488,,lamers.toml,Lamers Wausau 07:45 -> Appleton -> Oshkosh -> Milwaukee 12:50 -> MKE 13:20 (daily)
+Lamers_Connect_America_Chicago_r,wk1111111,t489,,lamers.toml,Lamers MKE 14:30 -> Milwaukee 15:00 -> Oshkosh -> Appleton -> Wausau 19:55 (daily)
+Lamers_Connect_America_Chicago_r,wk1111111,t490,,lamers.toml,Lamers Green Bay 07:20 -> Appleton -> Stevens Point -> Tomah -> La Crosse 12:35 -> UWL 12:55 (daily)
+Lamers_Connect_America_Chicago_r,wk1111111,t491,,lamers.toml,Lamers UWL 14:30 -> La Crosse 14:50 -> Tomah -> Stevens Point -> Appleton -> Green Bay 20:05 (daily)
+Jefferson_Lines_America_Chicago_r,wk1111111,t492,,jefferson_lines.toml,JL Milwaukee 08:55 -> Madison -> La Crosse -> Rochester -> Minneapolis 17:45 (daily assumed)
+Jefferson_Lines_America_Chicago_r,wk1111111,t493,,jefferson_lines.toml,JL_907 Mall of America 17:35 -> Minneapolis -> St Paul -> Duluth 21:35 (daily assumed)
+Jefferson_Lines_America_Chicago_r,wk1111111,t494,,jefferson_lines.toml,JL_906 Duluth 21:40 -> Blaine -> U of MN -> Minneapolis 00:10 (daily assumed)
+Jefferson_Lines_America_Chicago_r,wk1111111,t495,,jefferson_lines.toml,JL MSP 11:25 -> Minneapolis -> St Cloud -> Marshall -> Sioux Falls 18:25 (daily assumed)
+Jefferson_Lines_America_Chicago_r,wk1111111,t496,,jefferson_lines.toml,JL Sioux Falls 10:25 -> Marshall -> Willmar -> St Cloud -> Minneapolis -> MSP 17:50 (daily assumed)
+Jefferson_Lines_America_Chicago_r,wk1001000,t497,,jefferson_lines.toml,"JL_691 Mobridge 11:30 -> Selby -> Gettysburg -> Onida -> Pierre 13:30 (Mon, Thu)"
+Jefferson_Lines_America_Chicago_r,wk1001000,t498,,jefferson_lines.toml,"JL Pierre 16:45 -> Mobridge -> McLaughlin -> Fort Yates -> Bismarck 22:25 (Mon, Thu)"
+Jefferson_Lines_America_Chicago_r,wk1001000,t499,,jefferson_lines.toml,"JL_689 Mobridge 19:15 -> Selby -> Gettysburg -> Onida -> Pierre 21:15 (Mon, Thu)"
+Vonlane_America_Chicago_r,wk0010000,t500,,vonlane.toml,"Vonlane Nashville Omni 12:00 -> Memphis Hilton 15:15 (Wednesday, in place of the 10:00; Nick screenshot Wed Nov 18)"
+RedCoach_America_Chicago_r,wk1111111,t501,,redcoach.toml,"Houston -> Dallas 12:00 (Nick screenshot of redcoachusa Oct 21 2026, Wed Nov 25; daily assumed)"
+El_Expreso_America_New_York_r,wk0101010,t517,,el_expreso.toml,"Manassas VA 03:00 -> Fredericksburg 04:00 -> Richmond 05:00 -> Adriana's Mini Market (Petersburg) 05:40 -> Raleigh 07:40, connecting to the 08:30 Raleigh -> Charlotte -> Atlanta -> Dallas bus (tornadobus.com, Nick Oct 22 2026; southbound Tue/Thu/Sat per Nick; northbound is t518, Raleigh 22:00 Mon/Wed/Fri; stop points are the feed's city points)"
+El_Expreso_America_New_York_r,wk1010100,t518,,el_expreso.toml,"Raleigh 22:00 -> Oxford NC 23:00 -> Henderson 23:20 -> Little Mexico VA 00:20 -> Adriana's 01:20 -> Richmond 01:50 -> Fredericksburg 02:50 -> Manassas VA 03:50 (tornadobus.com, Nick Oct 22 2026; MON/WED/FRI). Oxford, Henderson and Little Mexico have no location in the data, omitted"
+TCATA_Twin_Cities_Area_Transportation_Authority_America_Detroit_r,wk1111100,t525,,tcata.toml,TCATA Blue weekday 06:00 Transit Center -> Pipestone loop -> Transit Center
+TCATA_Twin_Cities_Area_Transportation_Authority_America_Detroit_r,wk1111100,t526,,tcata.toml,TCATA Blue weekday 06:30 Transit Center -> Pipestone loop -> Transit Center
+TCATA_Twin_Cities_Area_Transportation_Authority_America_Detroit_r,wk1111100,t527,,tcata.toml,TCATA Blue weekday 07:00 Transit Center -> Pipestone loop -> Transit Center
+TCATA_Twin_Cities_Area_Transportation_Authority_America_Detroit_r,wk1111100,t528,,tcata.toml,TCATA Blue weekday 07:30 Transit Center -> Pipestone loop -> Transit Center
+TCATA_Twin_Cities_Area_Transportation_Authority_America_Detroit_r,wk1111100,t529,,tcata.toml,TCATA Blue weekday 08:00 Transit Center -> Pipestone loop -> Transit Center
+TCATA_Twin_Cities_Area_Transportation_Authority_America_Detroit_r,wk1111100,t530,,tcata.toml,TCATA Blue weekday 08:30 Transit Center -> Pipestone loop -> Transit Center
+TCATA_Twin_Cities_Area_Transportation_Authority_America_Detroit_r,wk1111100,t531,,tcata.toml,TCATA Blue weekday 09:00 Transit Center -> Pipestone loop -> Transit Center
+TCATA_Twin_Cities_Area_Transportation_Authority_America_Detroit_r,wk1111100,t532,,tcata.toml,TCATA Blue weekday 09:30 Transit Center -> Pipestone loop -> Transit Center
+TCATA_Twin_Cities_Area_Transportation_Authority_America_Detroit_r,wk1111100,t533,,tcata.toml,TCATA Blue weekday 10:00 Transit Center -> Pipestone loop -> Transit Center
+TCATA_Twin_Cities_Area_Transportation_Authority_America_Detroit_r,wk1111100,t534,,tcata.toml,TCATA Blue weekday 10:30 Transit Center -> Pipestone loop -> Transit Center
+TCATA_Twin_Cities_Area_Transportation_Authority_America_Detroit_r,wk1111100,t535,,tcata.toml,TCATA Blue weekday 11:00 Transit Center -> Pipestone loop -> Transit Center
+TCATA_Twin_Cities_Area_Transportation_Authority_America_Detroit_r,wk1111100,t536,,tcata.toml,TCATA Blue weekday 11:30 Transit Center -> Pipestone loop -> Transit Center
+TCATA_Twin_Cities_Area_Transportation_Authority_America_Detroit_r,wk1111100,t537,,tcata.toml,TCATA Blue weekday 12:00 Transit Center -> Pipestone loop -> Transit Center
+TCATA_Twin_Cities_Area_Transportation_Authority_America_Detroit_r,wk1111100,t538,,tcata.toml,TCATA Blue weekday 12:30 Transit Center -> Pipestone loop -> Transit Center
+TCATA_Twin_Cities_Area_Transportation_Authority_America_Detroit_r,wk1111100,t539,,tcata.toml,TCATA Blue weekday 13:00 Transit Center -> Pipestone loop -> Transit Center
+TCATA_Twin_Cities_Area_Transportation_Authority_America_Detroit_r,wk1111100,t540,,tcata.toml,TCATA Blue weekday 13:30 Transit Center -> Pipestone loop -> Transit Center
+TCATA_Twin_Cities_Area_Transportation_Authority_America_Detroit_r,wk1111100,t541,,tcata.toml,TCATA Blue weekday 14:00 Transit Center -> Pipestone loop -> Transit Center
+TCATA_Twin_Cities_Area_Transportation_Authority_America_Detroit_r,wk1111100,t542,,tcata.toml,TCATA Blue weekday 14:30 Transit Center -> Pipestone loop -> Transit Center
+TCATA_Twin_Cities_Area_Transportation_Authority_America_Detroit_r,wk1111100,t543,,tcata.toml,TCATA Blue weekday 15:00 Transit Center -> Pipestone loop -> Transit Center
+TCATA_Twin_Cities_Area_Transportation_Authority_America_Detroit_r,wk1111100,t544,,tcata.toml,TCATA Blue weekday 15:30 Transit Center -> Pipestone loop -> Transit Center
+TCATA_Twin_Cities_Area_Transportation_Authority_America_Detroit_r,wk1111100,t545,,tcata.toml,TCATA Blue weekday 16:00 Transit Center -> Pipestone loop -> Transit Center
+TCATA_Twin_Cities_Area_Transportation_Authority_America_Detroit_r,wk1111100,t546,,tcata.toml,TCATA Blue weekday 16:30 Transit Center -> Pipestone loop -> Transit Center
+TCATA_Twin_Cities_Area_Transportation_Authority_America_Detroit_r,wk1111100,t547,,tcata.toml,TCATA Blue weekday 17:00 Transit Center -> Pipestone loop -> Transit Center
+TCATA_Twin_Cities_Area_Transportation_Authority_America_Detroit_r,wk1111100,t548,,tcata.toml,TCATA Blue weekday 17:30 Transit Center -> Pipestone loop -> Transit Center
+TCATA_Twin_Cities_Area_Transportation_Authority_America_Detroit_r,wk1111100,t549,,tcata.toml,TCATA Blue weekday 18:00 Transit Center -> Pipestone loop -> Transit Center
+TCATA_Twin_Cities_Area_Transportation_Authority_America_Detroit_r,wk1111100,t550,,tcata.toml,TCATA Blue weekday 18:30 Transit Center -> Pipestone loop -> Transit Center
+TCATA_Twin_Cities_Area_Transportation_Authority_America_Detroit_r,wk1111100,t551,,tcata.toml,TCATA Blue weekday 19:00 Transit Center -> Pipestone loop -> Transit Center
+TCATA_Twin_Cities_Area_Transportation_Authority_America_Detroit_r,wk1111100,t552,,tcata.toml,TCATA Blue weekday 19:30 Transit Center -> Pipestone loop -> Transit Center
+TCATA_Twin_Cities_Area_Transportation_Authority_America_Detroit_r,wk1111100,t553,,tcata.toml,TCATA Blue weekday 20:00 Transit Center -> Pipestone loop -> Transit Center
+TCATA_Twin_Cities_Area_Transportation_Authority_America_Detroit_r,wk1111100,t554,,tcata.toml,TCATA Blue weekday 20:30 Transit Center -> Pipestone loop -> Transit Center
+TCATA_Twin_Cities_Area_Transportation_Authority_America_Detroit_r,wk1111100,t555,,tcata.toml,TCATA Blue weekday 21:00 Transit Center -> Pipestone loop -> Transit Center
+TCATA_Twin_Cities_Area_Transportation_Authority_America_Detroit_r,wk1111100,t556,,tcata.toml,TCATA Red weekday 06:04 Triangle Park -> Transit Center -> St Joseph -> Stevensville -> Greyhound M-139 -> Union & May
+TCATA_Twin_Cities_Area_Transportation_Authority_America_Detroit_r,wk1111100,t557,,tcata.toml,TCATA Red weekday 07:04 Triangle Park -> Transit Center -> St Joseph -> Stevensville -> Greyhound M-139 -> Union & May
+TCATA_Twin_Cities_Area_Transportation_Authority_America_Detroit_r,wk1111100,t558,,tcata.toml,TCATA Red weekday 08:04 Triangle Park -> Transit Center -> St Joseph -> Stevensville -> Greyhound M-139 -> Union & May
+TCATA_Twin_Cities_Area_Transportation_Authority_America_Detroit_r,wk1111100,t559,,tcata.toml,TCATA Red weekday 09:04 Triangle Park -> Transit Center -> St Joseph -> Stevensville -> Greyhound M-139 -> Union & May
+TCATA_Twin_Cities_Area_Transportation_Authority_America_Detroit_r,wk1111100,t560,,tcata.toml,TCATA Red weekday 10:04 Triangle Park -> Transit Center -> St Joseph -> Stevensville -> Greyhound M-139 -> Union & May
+TCATA_Twin_Cities_Area_Transportation_Authority_America_Detroit_r,wk1111100,t561,,tcata.toml,TCATA Red weekday 11:04 Triangle Park -> Transit Center -> St Joseph -> Stevensville -> Greyhound M-139 -> Union & May
+TCATA_Twin_Cities_Area_Transportation_Authority_America_Detroit_r,wk1111100,t562,,tcata.toml,TCATA Red weekday 12:04 Triangle Park -> Transit Center -> St Joseph -> Stevensville -> Greyhound M-139 -> Union & May
+TCATA_Twin_Cities_Area_Transportation_Authority_America_Detroit_r,wk1111100,t563,,tcata.toml,TCATA Red weekday 13:04 Triangle Park -> Transit Center -> St Joseph -> Stevensville -> Greyhound M-139 -> Union & May
+TCATA_Twin_Cities_Area_Transportation_Authority_America_Detroit_r,wk1111100,t564,,tcata.toml,TCATA Red weekday 14:04 Triangle Park -> Transit Center -> St Joseph -> Stevensville -> Greyhound M-139 -> Union & May
+TCATA_Twin_Cities_Area_Transportation_Authority_America_Detroit_r,wk1111100,t565,,tcata.toml,TCATA Red weekday 15:04 Triangle Park -> Transit Center -> St Joseph -> Stevensville -> Greyhound M-139 -> Union & May
+TCATA_Twin_Cities_Area_Transportation_Authority_America_Detroit_r,wk1111100,t566,,tcata.toml,TCATA Red weekday 16:04 Triangle Park -> Transit Center -> St Joseph -> Stevensville -> Greyhound M-139 -> Union & May
+TCATA_Twin_Cities_Area_Transportation_Authority_America_Detroit_r,wk1111100,t567,,tcata.toml,TCATA Red weekday 17:04 Triangle Park -> Transit Center -> St Joseph -> Stevensville -> Greyhound M-139 -> Union & May
+TCATA_Twin_Cities_Area_Transportation_Authority_America_Detroit_r,wk1111100,t568,,tcata.toml,TCATA Red weekday 18:04 Triangle Park -> Transit Center -> St Joseph -> Stevensville -> Greyhound M-139 -> Union & May
+TCATA_Twin_Cities_Area_Transportation_Authority_America_Detroit_r,wk1111100,t569,,tcata.toml,TCATA Red weekday 19:04 Triangle Park -> Transit Center -> St Joseph -> Stevensville -> Greyhound M-139 -> Union & May
+TCATA_Twin_Cities_Area_Transportation_Authority_America_Detroit_r,wk1111100,t570,,tcata.toml,TCATA Red weekday 20:04 Triangle Park -> Transit Center -> St Joseph -> Stevensville -> Greyhound M-139 -> Union & May
+TCATA_Twin_Cities_Area_Transportation_Authority_America_Detroit_r,wk1111100,t571,,tcata.toml,TCATA Red weekday 21:04 Triangle Park -> Transit Center -> St Joseph -> Stevensville -> Greyhound M-139 -> Union & May
+TCATA_Twin_Cities_Area_Transportation_Authority_America_Detroit_r,wk1111100,t572,,tcata.toml,TCATA Red weekday 22:04 Triangle Park -> Transit Center (last run ends at the transit center)
+TCATA_Twin_Cities_Area_Transportation_Authority_America_Detroit_r,wk0000010,t573,,tcata.toml,TCATA Blue Saturday 08:00 Transit Center -> Pipestone loop -> Transit Center
+TCATA_Twin_Cities_Area_Transportation_Authority_America_Detroit_r,wk0000010,t574,,tcata.toml,TCATA Blue Saturday 09:00 Transit Center -> Pipestone loop -> Transit Center
+TCATA_Twin_Cities_Area_Transportation_Authority_America_Detroit_r,wk0000010,t575,,tcata.toml,TCATA Blue Saturday 10:00 Transit Center -> Pipestone loop -> Transit Center
+TCATA_Twin_Cities_Area_Transportation_Authority_America_Detroit_r,wk0000010,t576,,tcata.toml,TCATA Blue Saturday 11:00 Transit Center -> Pipestone loop -> Transit Center
+TCATA_Twin_Cities_Area_Transportation_Authority_America_Detroit_r,wk0000010,t577,,tcata.toml,TCATA Blue Saturday 12:00 Transit Center -> Pipestone loop -> Transit Center
+TCATA_Twin_Cities_Area_Transportation_Authority_America_Detroit_r,wk0000010,t578,,tcata.toml,TCATA Blue Saturday 13:00 Transit Center -> Pipestone loop -> Transit Center
+TCATA_Twin_Cities_Area_Transportation_Authority_America_Detroit_r,wk0000010,t579,,tcata.toml,TCATA Blue Saturday 14:00 Transit Center -> Pipestone loop -> Transit Center
+TCATA_Twin_Cities_Area_Transportation_Authority_America_Detroit_r,wk0000010,t580,,tcata.toml,TCATA Blue Saturday 15:00 Transit Center -> Pipestone loop -> Transit Center
+TCATA_Twin_Cities_Area_Transportation_Authority_America_Detroit_r,wk0000010,t581,,tcata.toml,TCATA Blue Saturday 16:00 Transit Center -> Pipestone loop -> Transit Center
+TCATA_Twin_Cities_Area_Transportation_Authority_America_Detroit_r,wk0000010,t582,,tcata.toml,TCATA Blue Saturday 17:00 Transit Center -> Pipestone loop -> Transit Center
+TCATA_Twin_Cities_Area_Transportation_Authority_America_Detroit_r,wk0000010,t583,,tcata.toml,TCATA Blue Saturday 18:00 Transit Center -> Pipestone loop -> Transit Center
+TCATA_Twin_Cities_Area_Transportation_Authority_America_Detroit_r,wk0000010,t584,,tcata.toml,TCATA Blue Saturday 19:00 Transit Center -> Pipestone loop -> Transit Center
+TCATA_Twin_Cities_Area_Transportation_Authority_America_Detroit_r,wk0000010,t585,,tcata.toml,TCATA Blue Saturday 20:00 Transit Center -> Pipestone loop -> Transit Center
+TCATA_Twin_Cities_Area_Transportation_Authority_America_Detroit_r,wk0000010,t586,,tcata.toml,TCATA Blue Saturday 21:00 Transit Center -> Pipestone loop -> Transit Center
+TCATA_Twin_Cities_Area_Transportation_Authority_America_Detroit_r,wk0000010,t587,,tcata.toml,TCATA Red Saturday 08:04 Triangle Park -> Transit Center -> St Joseph -> Stevensville -> Greyhound M-139 -> Union & May
+TCATA_Twin_Cities_Area_Transportation_Authority_America_Detroit_r,wk0000010,t588,,tcata.toml,TCATA Red Saturday 09:04 Triangle Park -> Transit Center -> St Joseph -> Stevensville -> Greyhound M-139 -> Union & May
+TCATA_Twin_Cities_Area_Transportation_Authority_America_Detroit_r,wk0000010,t589,,tcata.toml,TCATA Red Saturday 10:04 Triangle Park -> Transit Center -> St Joseph -> Stevensville -> Greyhound M-139 -> Union & May
+TCATA_Twin_Cities_Area_Transportation_Authority_America_Detroit_r,wk0000010,t590,,tcata.toml,TCATA Red Saturday 11:04 Triangle Park -> Transit Center -> St Joseph -> Stevensville -> Greyhound M-139 -> Union & May
+TCATA_Twin_Cities_Area_Transportation_Authority_America_Detroit_r,wk0000010,t591,,tcata.toml,TCATA Red Saturday 12:04 Triangle Park -> Transit Center -> St Joseph -> Stevensville -> Greyhound M-139 -> Union & May
+TCATA_Twin_Cities_Area_Transportation_Authority_America_Detroit_r,wk0000010,t592,,tcata.toml,TCATA Red Saturday 13:04 Triangle Park -> Transit Center -> St Joseph -> Stevensville -> Greyhound M-139 -> Union & May
+TCATA_Twin_Cities_Area_Transportation_Authority_America_Detroit_r,wk0000010,t593,,tcata.toml,TCATA Red Saturday 14:04 Triangle Park -> Transit Center -> St Joseph -> Stevensville -> Greyhound M-139 -> Union & May
+TCATA_Twin_Cities_Area_Transportation_Authority_America_Detroit_r,wk0000010,t594,,tcata.toml,TCATA Red Saturday 15:04 Triangle Park -> Transit Center -> St Joseph -> Stevensville -> Greyhound M-139 -> Union & May
+TCATA_Twin_Cities_Area_Transportation_Authority_America_Detroit_r,wk0000010,t595,,tcata.toml,TCATA Red Saturday 16:04 Triangle Park -> Transit Center -> St Joseph -> Stevensville -> Greyhound M-139 -> Union & May
+TCATA_Twin_Cities_Area_Transportation_Authority_America_Detroit_r,wk0000010,t596,,tcata.toml,TCATA Red Saturday 17:04 Triangle Park -> Transit Center -> St Joseph -> Stevensville -> Greyhound M-139 -> Union & May
+TCATA_Twin_Cities_Area_Transportation_Authority_America_Detroit_r,wk0000010,t597,,tcata.toml,TCATA Red Saturday 18:04 Triangle Park -> Transit Center -> St Joseph -> Stevensville -> Greyhound M-139 -> Union & May
+TCATA_Twin_Cities_Area_Transportation_Authority_America_Detroit_r,wk0000010,t598,,tcata.toml,TCATA Red Saturday 19:04 Triangle Park -> Transit Center -> St Joseph -> Stevensville -> Greyhound M-139 -> Union & May
+TCATA_Twin_Cities_Area_Transportation_Authority_America_Detroit_r,wk0000010,t599,,tcata.toml,TCATA Red Saturday 20:04 Triangle Park -> Transit Center -> St Joseph -> Stevensville -> Greyhound M-139 -> Union & May
+TCATA_Twin_Cities_Area_Transportation_Authority_America_Detroit_r,wk0000010,t600,,tcata.toml,TCATA Red Saturday 21:04 Triangle Park -> Transit Center -> St Joseph -> Stevensville -> Greyhound M-139 -> Union & May
+TCATA_Twin_Cities_Area_Transportation_Authority_America_Detroit_r,wk0000010,t601,,tcata.toml,TCATA Red Saturday 22:04 Triangle Park -> Transit Center (last run ends at the transit center)
+ETrax_CEFS_Effingham_IL_deviated_route_America_Chicago_r,wk1111100,t602,,etrax.toml,ETrax loop 08:00 HSHS Health Center -> TA Travel Center -> Walmart -> TA -> Save-a-Lot -> Kirby's IGA -> County Building -> HSHS Memorial Hospital
+ETrax_CEFS_Effingham_IL_deviated_route_America_Chicago_r,wk1111100,t603,,etrax.toml,ETrax loop 09:00 HSHS Health Center -> TA Travel Center -> Walmart -> TA -> Save-a-Lot -> Kirby's IGA -> County Building -> HSHS Memorial Hospital
+ETrax_CEFS_Effingham_IL_deviated_route_America_Chicago_r,wk1111100,t604,,etrax.toml,ETrax loop 10:00 HSHS Health Center -> TA Travel Center -> Walmart -> TA -> Save-a-Lot -> Kirby's IGA -> County Building -> HSHS Memorial Hospital
+ETrax_CEFS_Effingham_IL_deviated_route_America_Chicago_r,wk1111100,t605,,etrax.toml,ETrax loop 11:00 HSHS Health Center -> TA Travel Center -> Walmart -> TA -> Save-a-Lot -> Kirby's IGA -> County Building -> HSHS Memorial Hospital
+ETrax_CEFS_Effingham_IL_deviated_route_America_Chicago_r,wk1111100,t606,,etrax.toml,ETrax loop 12:00 HSHS Health Center -> TA Travel Center -> Walmart -> TA -> Save-a-Lot -> Kirby's IGA -> County Building -> HSHS Memorial Hospital
+ETrax_CEFS_Effingham_IL_deviated_route_America_Chicago_r,wk1111100,t607,,etrax.toml,ETrax loop 13:00 HSHS Health Center -> TA Travel Center -> Walmart -> TA -> Save-a-Lot -> Kirby's IGA -> County Building -> HSHS Memorial Hospital
+ETrax_CEFS_Effingham_IL_deviated_route_America_Chicago_r,wk1111100,t608,,etrax.toml,ETrax loop 14:00 HSHS Health Center -> TA Travel Center -> Walmart -> TA -> Save-a-Lot -> Kirby's IGA -> County Building -> HSHS Memorial Hospital
+ETrax_CEFS_Effingham_IL_deviated_route_America_Chicago_r,wk1111100,t609,,etrax.toml,ETrax loop 15:00 HSHS Health Center -> TA Travel Center -> Walmart -> TA -> Save-a-Lot -> Kirby's IGA -> County Building -> HSHS Memorial Hospital
+CoachRun_America_Chicago_r,wk1111111,coachrun:0,,coachrun.toml,CHR02042 Nashville -> New York
+FlixBus_America_Los_Angeles_r,wk1111111,flixbus:0,,flixbus.toml,"FlixBus Las Vegas Strip (Las Vegas Blvd) 15:30 -> Barstow Station 17:55, operated by Elite Executive Charter"
+Greyhound_America_Denver_r,wk1111111,greyhound:4,,greyhound.toml,Seattle-Boise-SLC-Denver beyond Salt Lake City: SLC Intermodal 02:30/02:40 -> Provo Intermodal Hub 03:30 (Nick screenshot Oct 5 2026 for Fri Nov 13: Boise 20:45 -> Ogden 01:40 -> SLC 02:30 (10 min) -> Provo 03:30; the feed stops the trip at SLC; daily assumed)
+Jefferson_Lines_America_Chicago_r,wk1001000,jefferson_lines:2,,jefferson_lines.toml,JL_688 Pierre 09:15 -> Mobridge 11:15/12:10 -> McLaughlin -> Fort Yates 13:00 -> Bismarck 14:30
+Limousine_Express_America_Los_Angeles_r,wk1111111,limousine_express:1,,limousine_express.toml,LXUS 2101 Los Angeles -> El Paso
+Limousine_Express_America_Los_Angeles_r,wk1111111,limousine_express:2,,limousine_express.toml,Limo Express Los Angeles 19:30 -> El Paso
+Salt_Lake_Express_America_Phoenix_r,wk1111111,salt_lake_express:1,,salt_lake_express.toml,SLE 8035 Saint George (Bluff St Office) 10:30 -> Las Vegas (Airport) 11:40
+Salt_Lake_Express_America_Phoenix_r,wk1111111,salt_lake_express:2,,salt_lake_express.toml,SLE 8040 Saint George (Bluff St Office) 12:40 -> Las Vegas (Airport) 13:50
+Salt_Lake_Express_America_Denver_r,wk1111111,salt_lake_express:3,,salt_lake_express.toml,SLE Butte 05:30 -> Helena 06:55 -> Great Falls Transit Center 08:30
+Salt_Lake_Express_America_Denver_r,wk1111111,salt_lake_express:4,,salt_lake_express.toml,SLE Great Falls Transit Center 21:15 -> Helena 23:00 -> Butte 00:15
+Standing_Rock_Public_Transit_America_Chicago_r,wk1001000,standing_rock_public_transit:11,,standing_rock_public_transit.toml,SRPT 12 Eagle Butte 09:30 MT -> Mobridge (Grand River Casino) -> Fort Yates -> Bismarck 14:50
+Standing_Rock_Public_Transit_America_Chicago_r,wk1001000,standing_rock_public_transit:12,,standing_rock_public_transit.toml,SRPT 12 Bismarck 14:15 -> Fort Yates -> Mobridge (Grand River Casino) -> Eagle Butte 18:30 MT
+Tornado_Bus_America_Chicago_r,wk1111111,ta0,,tornado_api.toml,"Tornado 100: Houston, (TX - TBC Lockwood) -> Brownsville, (TX - TBC BRW), dep 08:00 (API)"
+Tornado_Bus_America_Chicago_r,wk1111111,ta1,,tornado_api.toml,"Tornado 100A: Houston, (TX - TBC Lockwood) -> Dallas, (TX - TBC I-30), dep 13:30 (API)"
+Tornado_Bus_America_Chicago_r,wk1111111,ta2,,tornado_api.toml,"Tornado 101: Brownsville, (TX - TBC BRW) -> Houston, (TX - TBC Lockwood), dep 09:00 (API)"
+Tornado_Bus_America_Chicago_r,wk1111111,ta3,,tornado_api.toml,"Tornado 105: Brownsville, (TX - TBC BRW) -> Houston, (TX - TBC Lockwood), dep 11:30 (API)"
+Tornado_Bus_America_Chicago_r,wk1111111,ta4,,tornado_api.toml,"Tornado 106: Houston, (TX - TBC Lockwood) -> Brownsville, (TX - TBC BRW), dep 21:15 (API)"
+Tornado_Bus_America_Chicago_r,wk1111111,ta5,,tornado_api.toml,"Tornado 107: Brownsville, (TX - TBC BRW) -> Houston, (TX - TBC Lockwood), dep 22:00 (API)"
+Tornado_Bus_America_Chicago_r,wk1111111,ta6,,tornado_api.toml,"Tornado 110: McAllen, (TX - TBC McAllen) -> Dallas, (TX - TBC I-30), dep 22:30 (API)"
+Tornado_Bus_America_Chicago_r,wk1111111,ta7,,tornado_api.toml,"Tornado 110A: Dallas, (TX - TBC I-30) -> Laredo, (TX - TBC LRD), dep 08:15 (API)"
+Tornado_Bus_America_Chicago_r,wk1111111,ta8,,tornado_api.toml,"Tornado 111: Dallas, (TX - TBC I-30) -> McAllen, (TX - TBC McAllen), dep 19:00 (API)"
+Tornado_Bus_America_Chicago_r,wk1111111,ta9,,tornado_api.toml,"Tornado 112: Houston, (TX - TBC Lockwood) -> Brownsville, (TX - TBC BRW), dep 09:00 (API)"
+Tornado_Bus_America_Chicago_r,wk1111111,ta10,,tornado_api.toml,"Tornado 114: Houston, (TX - TBC Lockwood) -> McAllen, (TX - TBC McAllen), dep 21:25 (API)"
+Tornado_Bus_America_Chicago_r,wk1111111,ta11,,tornado_api.toml,"Tornado 114A: Dallas, (TX - TBC I-30) -> Houston, (TX - TBC Lockwood), dep 07:45 (API)"
+Tornado_Bus_America_Chicago_r,wk1111111,ta12,,tornado_api.toml,"Tornado 115: McAllen, (TX - TBC McAllen) -> Houston, (TX - TBC Lockwood), dep 22:00 (API)"
+Tornado_Bus_America_Chicago_r,wk1111111,ta13,,tornado_api.toml,"Tornado 116: Houston, (TX - TBC Lockwood) -> McAllen, (TX - TBC McAllen), dep 09:45 (API)"
+Tornado_Bus_America_Chicago_r,wk1111111,ta14,,tornado_api.toml,"Tornado 116A: Dallas, (TX - TBC I-30) -> Brownsville, (TX - TBC BRW), dep 19:15 (API)"
+Tornado_Bus_America_Chicago_r,wk1111111,ta15,,tornado_api.toml,"Tornado 117: McAllen, (TX - TBC McAllen) -> Houston, (TX - TBC Lockwood), dep 12:15 (API)"
+Tornado_Bus_America_Chicago_r,wk1111111,ta16,,tornado_api.toml,"Tornado 1210A: San Antonio, (TX - TBC San Antonio) -> Dallas, (TX - TBC I-30), dep 11:54 (API)"
+Tornado_Bus_America_Chicago_r,wk1111111,ta17,,tornado_api.toml,"Tornado 121A: Dallas, (TX - TBC I-30) -> Laredo, (TX - TBC LRD), dep 15:00 (API)"
+Tornado_Bus_America_Chicago_r,wk0100000,ta18,,tornado_api.toml,"Tornado 129B: Dallas, (TX - TBC I-30) -> Detroit, (MI - Maria International Travel, Detroit MI), dep 19:15 (API)"
+Tornado_Bus_America_Chicago_r,wk1001010,ta19,,tornado_api.toml,"Tornado 129B(C): Dallas, (TX - TBC I-30) -> Detroit, (MI - Maria International Travel, Detroit MI), dep 19:15 (API)"
+Tornado_Bus_America_Chicago_r,wk0010101,ta20,,tornado_api.toml,"Tornado 129B(I): Dallas, (TX - TBC I-30) -> Detroit, (MI - Maria International Travel, Detroit MI), dep 19:15 (API)"
+Tornado_Bus_America_Chicago_r,wk1111111,ta21,,tornado_api.toml,"Tornado 12A: Laredo, (TX - TBC LRD) -> Dallas, (TX - TBC I-30), dep 23:45 (API)"
+Tornado_Bus_America_Chicago_r,wk1111111,ta22,,tornado_api.toml,"Tornado 1300A: Laredo, (TX - TBC LRD) -> Dallas, (TX - TBC I-30), dep 07:30 (API)"
+Tornado_Bus_America_Chicago_r,wk1111111,ta23,,tornado_api.toml,"Tornado 130B: Dallas, (TX - TBC I-30) -> Eagle Pass(Pilot Travel Center), (TX - EEX Eagle Pass), dep 16:30 (API)"
+Tornado_Bus_America_Chicago_r,wk1111111,ta24,,tornado_api.toml,"Tornado 1310A: San Antonio, (TX - TBC San Antonio) -> Houston, (TX - TBC Lockwood), dep 11:00 (API)"
+Tornado_Bus_America_Chicago_r,wk1111111,ta25,,tornado_api.toml,"Tornado 131B: Eagle Pass(Pilot Travel Center), (TX - EEX Eagle Pass) -> Dallas, (TX - TBC I-30), dep 08:15 (API)"
+Tornado_Bus_America_Chicago_r,wk1111111,ta26,,tornado_api.toml,"Tornado 135A1: Houston, (TX - TBC Lockwood) -> Laredo, (TX - TBC LRD), dep 09:15 (API)"
+Tornado_Bus_America_New_York_r,wk1111111,ta27,,tornado_api.toml,"Tornado 13B: Homestead, (FL - TBC Homestead) -> Houston, (TX - TBC Lockwood), dep 08:00 (API)"
+Tornado_Bus_America_Chicago_r,wk1111111,ta28,,tornado_api.toml,"Tornado 14A: Laredo, (TX - TBC LRD) -> Dallas, (TX - TBC I-30), dep 08:35 (API)"
+Tornado_Bus_America_Chicago_r,wk1111111,ta29,,tornado_api.toml,"Tornado 151B: Dallas, (TX - TBC I-30) -> San Antonio, (TX - TBC San Antonio), dep 17:00 (API)"
+Tornado_Bus_America_Chicago_r,wk1111111,ta30,,tornado_api.toml,"Tornado 156B: Dallas, (TX - TBC Jefferson Blvd) -> Dallas, (TX - TBC I-30), dep 09:40 (API)"
+Tornado_Bus_America_Chicago_r,wk1111111,ta31,,tornado_api.toml,"Tornado 160A: Laredo, (TX - TBC LRD) -> Dallas, (TX - TBC I-30), dep 08:30 (API)"
+Tornado_Bus_America_Chicago_r,wk1111111,ta32,,tornado_api.toml,"Tornado 161A: Dallas, (TX - TBC I-30) -> Laredo, (TX - TBC LRD), dep 08:00 (API)"
+Tornado_Bus_America_Chicago_r,wk1111111,ta33,,tornado_api.toml,"Tornado 16A: Dallas, (TX - TBC I-30) -> Dallas, (TX - TBC Jefferson Blvd), dep 17:45 (API)"
+Tornado_Bus_America_Chicago_r,wk1111111,ta34,,tornado_api.toml,"Tornado 1700A2: Laredo, (TX - TBC LRD) -> Dallas, (TX - TBC I-30), dep 07:50 (API)"
+Tornado_Bus_America_Chicago_r,wk1111111,ta35,,tornado_api.toml,"Tornado 17A: Dallas, (TX - TBC I-30) -> Laredo, (TX - TBC LRD), dep 08:00 (API)"
+Tornado_Bus_America_Chicago_r,wk1111111,ta36,,tornado_api.toml,"Tornado 1800A: Laredo, (TX - TBC LRD) -> Dallas, (TX - TBC I-30), dep 07:50 (API)"
+Tornado_Bus_America_Chicago_r,wk1111111,ta37,,tornado_api.toml,"Tornado 1801D: Dallas, (TX - TBC Jefferson Blvd) -> Grand Rapids, (MI - Arias Supermarket), dep 17:36 (API)"
+Tornado_Bus_America_Chicago_r,wk0001000,ta38,,tornado_api.toml,"Tornado 1810BD: Dallas, (TX - TBC I-30) -> South Sioux City, (NE - L.A. Fashion - Sioux City), dep 19:30 (API)"
+Tornado_Bus_America_Chicago_r,wk0100000,ta39,,tornado_api.toml,"Tornado 1811BD: Dallas, (TX - TBC I-30) -> South Sioux City, (NE - L.A. Fashion - Sioux City), dep 19:30 (API)"
+Tornado_Bus_America_Chicago_r,wk1111111,ta40,,tornado_api.toml,"Tornado 186B: Houston, (TX - TBC Lockwood) -> Wilson, (NC - La Mexicana-Wilson), dep 19:30 (API)"
+Tornado_Bus_America_Chicago_r,wk1111111,ta41,,tornado_api.toml,"Tornado 187B: Houston, (TX - TBC Lockwood) -> Homestead, (FL - TBC Homestead), dep 19:30 (API)"
+Tornado_Bus_America_Chicago_r,wk1111111,ta42,,tornado_api.toml,"Tornado 18B: Dallas, (TX - TBC I-30) -> Milwaukee, (WI - Milwaukee( Agencia De Viajes Mexico)), dep 19:15 (API)"
+Tornado_Bus_America_Chicago_r,wk1111111,ta43,,tornado_api.toml,"Tornado 19A: Dallas, (TX - TBC I-30) -> Laredo, (TX - TBC LRD), dep 18:00 (API)"
+Tornado_Bus_America_Chicago_r,wk1111111,ta44,,tornado_api.toml,"Tornado 204A: Brownsville, (TX - TBC BRW) -> Dallas, (TX - TBC I-30), dep 21:00 (API)"
+Tornado_Bus_America_Detroit_r,wk0001000,ta45,,tornado_api.toml,"Tornado 208B: Detroit, (MI - Maria International Travel, Detroit MI) -> Dallas, (TX - TBC I-30), dep 06:30 (API)"
+Tornado_Bus_America_Detroit_r,wk1010010,ta46,,tornado_api.toml,"Tornado 208B(C): Detroit, (MI - Maria International Travel, Detroit MI) -> Dallas, (TX - TBC I-30), dep 06:30 (API)"
+Tornado_Bus_America_Detroit_r,wk0100101,ta47,,tornado_api.toml,"Tornado 208B(I): Detroit, (MI - Maria International Travel, Detroit MI) -> Dallas, (TX - TBC I-30), dep 06:30 (API)"
+Tornado_Bus_America_Chicago_r,wk1111111,ta48,,tornado_api.toml,"Tornado 20A: Dallas, (TX - TBC I-30) -> Brownsville, (TX - TBC BRW), dep 07:30 (API)"
+Tornado_Bus_America_Chicago_r,wk1111111,ta49,,tornado_api.toml,"Tornado 20A(EE): Dallas, (TX - TBC I-30) -> McAllen, (TX - TBC McAllen), dep 07:30 (API)"
+Tornado_Bus_America_Chicago_r,wk1111111,ta50,,tornado_api.toml,"Tornado 211B: Milwaukee, (WI - Milwaukee( Agencia De Viajes Mexico)) -> Dallas, (TX - TBC I-30), dep 09:30 (API)"
+Tornado_Bus_America_New_York_r,wk1111111,ta51,,tornado_api.toml,"Tornado 214B: Raleigh, (NC - TBC Raleigh) -> Dallas, (TX - TBC I-30), dep 08:30 (API)"
+Tornado_Bus_America_Chicago_r,wk1111111,ta52,,tornado_api.toml,"Tornado 215B: Dallas, (TX - TBC I-30) -> Raleigh, (NC - TBC Raleigh), dep 19:15 (API)"
+Tornado_Bus_America_Chicago_r,wk1111111,ta53,,tornado_api.toml,"Tornado 217A: Houston, (TX - TBC Lockwood) -> San Antonio, (TX - TBC San Antonio), dep 18:15 (API)"
+Tornado_Bus_America_Detroit_r,wk1111000,ta54,,tornado_api.toml,"Tornado 218D(n): Grand Rapids, (MI - Arias Supermarket) -> San Marcos, (TX - Restaurant Mazatlan), dep 08:30 (API)"
+Tornado_Bus_America_New_York_r,wk1111111,ta55,,tornado_api.toml,"Tornado 21B: Wilson, (NC - La Mexicana-Wilson) -> Houston, (TX - TBC Lockwood), dep 07:30 (API)"
+Tornado_Bus_America_Chicago_r,wk1111111,ta56,,tornado_api.toml,"Tornado 21US: Houston, (TX - EEX Houston  Southwest) -> Houston, (TX - TBC Lockwood), dep 12:00 (API)"
+Tornado_Bus_America_Chicago_r,wk1111111,ta57,,tornado_api.toml,"Tornado 221A: Laredo, (TX - TBC LRD) -> Houston, (TX - TBC Lockwood), dep 08:20 (API)"
+Tornado_Bus_America_Chicago_r,wk1111111,ta58,,tornado_api.toml,"Tornado 223B: Victoria, (TX - Conoco Gas Station) -> Houston, (TX - TBC Lockwood), dep 04:20 (API)"
+Tornado_Bus_America_Chicago_r,wk1111111,ta59,,tornado_api.toml,"Tornado 226A: Houston, (TX - TBC Lockwood) -> Laredo, (TX - TBC LRD), dep 10:00 (API)"
+Tornado_Bus_America_Chicago_r,wk0010000,ta60,,tornado_api.toml,"Tornado 28BD: South Sioux City, (NE - L.A. Fashion - Sioux City) -> Dallas, (TX - TBC I-30), dep 16:30 (API)"
+Tornado_Bus_America_Chicago_r,wk0000100,ta61,,tornado_api.toml,"Tornado 29BD: South Sioux City, (NE - L.A. Fashion - Sioux City) -> Dallas, (TX - TBC I-30), dep 16:00 (API)"
+Tornado_Bus_America_Denver_r,wk1111111,ta62,,tornado_api.toml,"Tornado 305B: El Paso, (TX - TBC El Paso) -> Dallas, (TX - TBC I-30), dep 19:00 (API)"
+Tornado_Bus_America_Chicago_r,wk1111111,ta63,,tornado_api.toml,"Tornado 307B: Dallas, (TX - TBC I-30) -> El Paso, (TX - TBC El Paso), dep 19:30 (API)"
+Tornado_Bus_America_Chicago_r,wk1111111,ta64,,tornado_api.toml,"Tornado 310A1: Port Arthur, (TX - La Vaquita-Port Arthur) -> Laredo, (TX - TBC LRD), dep 06:30 (API)"
+Tornado_Bus_America_Chicago_r,wk1111111,ta65,,tornado_api.toml,"Tornado 311A: Laredo, (TX - TBC LRD) -> Houston, (TX - TBC Lockwood), dep 07:50 (API)"
+Tornado_Bus_America_Chicago_r,wk1111111,ta66,,tornado_api.toml,"Tornado 35E1 AM: Dallas, (TX - TBC I-30) -> Fort Worth, (TX - TBC Fort Worth), dep 07:00 (API)"
+Tornado_Bus_America_Chicago_r,wk1111111,ta67,,tornado_api.toml,"Tornado 35E1 PM: Dallas, (TX - TBC I-30) -> Fort Worth, (TX - TBC Fort Worth), dep 14:30 (API)"
+Tornado_Bus_America_Chicago_r,wk1111111,ta68,,tornado_api.toml,"Tornado 35W PM: Fort Worth, (TX - TBC Fort Worth) -> Dallas, (TX - TBC I-30), dep 16:00 (API)"
+Tornado_Bus_America_Chicago_r,wk1111111,ta69,,tornado_api.toml,"Tornado 35W2 AM: Fort Worth, (TX - TBC Fort Worth) -> Dallas, (TX - TBC I-30), dep 09:15 (API)"
+Tornado_Bus_America_Chicago_r,wk1111111,ta70,,tornado_api.toml,"Tornado 35W2 PM: Fort Worth, (TX - TBC Fort Worth) -> Dallas, (TX - TBC I-30), dep 18:30 (API)"
+Tornado_Bus_America_Chicago_r,wk1111111,ta71,,tornado_api.toml,"Tornado 400: Houston, (TX - TBC Lockwood) -> Dallas, (TX - TBC I-30), dep 08:30 (API)"
+Tornado_Bus_America_Chicago_r,wk1111111,ta72,,tornado_api.toml,"Tornado 401: Dallas, (TX - TBC I-30) -> Houston, (TX - TBC Lockwood), dep 13:45 (API)"
+Tornado_Bus_America_Chicago_r,wk1111111,ta73,,tornado_api.toml,"Tornado 600EXR: Houston, (TX - TBC Lockwood) -> Raleigh, (NC - TBC Raleigh), dep 19:30 (API)"
+Tornado_Bus_America_New_York_r,wk1111111,ta74,,tornado_api.toml,"Tornado 601EXR: Raleigh, (NC - TBC Raleigh) -> Houston, (TX - TBC Lockwood), dep 09:30 (API)"
+Tornado_Bus_America_Chicago_r,wk1111111,ta75,,tornado_api.toml,"Tornado 66B: Dallas, (TX - TBC I-30) -> Waite Park, Minnesota, United States, (MN - Waite Park (El Torito Mexican Market)), dep 19:15 (API)"
+Tornado_Bus_America_Chicago_r,wk1111111,ta76,,tornado_api.toml,"Tornado 67B: Waite Park, Minnesota, United States, (MN - Waite Park (El Torito Mexican Market)) -> Dallas, (TX - TBC I-30), dep 08:15 (API)"
+Tornado_Bus_America_Chicago_r,wk0001000,ta77,,tornado_api.toml,"Tornado 67BS: Kansas City, (KS - TBC KS) -> Dallas, (TX - TBC I-30), dep 20:00 (API)"
+Tornado_Bus_America_Denver_r,wk1111111,ta78,,tornado_api.toml,"Tornado 800(TBC): El Paso, (TX - TBC El Paso) -> Houston, (TX - TBC Lockwood), dep 19:30 (API)"
+Tornado_Bus_America_Chicago_r,wk1111111,ta79,,tornado_api.toml,"Tornado 801(TBC): Houston, (TX - TBC Lockwood) -> El Paso, (TX - TBC El Paso), dep 20:00 (API)"
+Tornado_Bus_America_Chicago_r,wk1111111,ta80,,tornado_api.toml,"Tornado 815A: Brownsville, (TX - TBC BRW) -> Dallas, (TX - TBC I-30), dep 08:00 (API)"
+Tornado_Bus_America_Chicago_r,wk1111111,ta81,,tornado_api.toml,"Tornado 815A1(EE): McAllen, (TX - TBC McAllen) -> Dallas, (TX - TBC I-30), dep 09:10 (API)"
+Tornado_Bus_America_Chicago_r,wk1111111,ta82,,tornado_api.toml,"Tornado 81D: Dallas, (TX - TBC I-30) -> Laredo, (TX - TBC LRD), dep 20:00 (API)"
+Tornado_Bus_America_Chicago_r,wk1111111,ta83,,tornado_api.toml,"Tornado 82A: Laredo, (TX - TBC LRD) -> Dallas, (TX - TBC I-30), dep 00:30 (API)"
+Tornado_Bus_America_Chicago_r,wk1111111,ta84,,tornado_api.toml,"Tornado 86D: Houston, (TX - TBC Lockwood) -> Laredo, (TX - TBC LRD), dep 19:15 (API)"
+Tornado_Bus_America_Chicago_r,wk1111111,ta85,,tornado_api.toml,"Tornado 87A: Laredo, (TX - TBC LRD) -> Houston, (TX - TBC Lockwood), dep 01:45 (API)"
+Tornado_Bus_America_Chicago_r,wk1111111,ta86,,tornado_api.toml,"Tornado 88D: Houston, (TX - TBC Lockwood) -> Laredo, (TX - TBC LRD), dep 09:30 (API)"
+Tornado_Bus_America_Chicago_r,wk1111111,ta87,,tornado_api.toml,"Tornado 89D: Laredo, (TX - TBC LRD) -> Houston, (TX - TBC Lockwood), dep 11:00 (API)"
+Tornado_Bus_America_Chicago_r,wk1111111,ta88,,tornado_api.toml,"Tornado 90B: Houston, (TX - TBC Lockwood) -> Katy, (TX - TBC Katy), dep 20:30 (API)"
+Tornado_Bus_America_Chicago_r,wk1111111,ta89,,tornado_api.toml,"Tornado 91B: Katy, (TX - TBC Katy) -> Houston, (TX - TBC Lockwood), dep 06:00 (API)"
+Tornado_Bus_America_Chicago_r,wk1111111,ta90,,tornado_api.toml,"Tornado 930A: San Antonio, (TX - TBC San Antonio) -> Houston, (TX - TBC Lockwood), dep 09:55 (API)"
+Tornado_Bus_America_Chicago_r,wk0110000,ta91,,tornado_api.toml,"Tornado 94B: Dallas, (TX - TBC I-30) -> Waco, (TX - TBC Waco), dep 19:00 (API)"
+Tornado_Bus_America_Chicago_r,wk1111111,ta92,,tornado_api.toml,"Tornado 95B: Waco, (TX - TBC Waco) -> Dallas, (TX - TBC I-30), dep 04:40 (API)"
+Tornado_Bus_America_Chicago_r,wk1111111,ta93,,tornado_api.toml,"Tornado COT1 : Houston, (TX - TBC Lockwood) -> Port Arthur, (TX - La Vaquita-Port Arthur), dep 17:00 (API)"
+Tornado_Bus_America_Chicago_r,wk1111111,ta94,,tornado_api.toml,"Tornado HRR: Houston Harrisburg , (TX - TBC Harrisburg) -> Houston, (TX - TBC Lockwood), dep 21:00 (API)"
+Tornado_Bus_America_Chicago_r,wk1111111,ta95,,tornado_api.toml,"Tornado HRR1: Houston, (TX - TBC Lockwood) -> Houston Harrisburg , (TX - TBC Harrisburg), dep 19:45 (API)"
+Tornado_Bus_America_Chicago_r,wk1111111,ta96,,tornado_api.toml,"Tornado IL1: West Chicago, (IL - Rapid Net Cafe Internet) -> Chicago, IL, (IL - TBC Chicago), dep 10:00 (API)"
+Tornado_Bus_America_Chicago_r,wk1111111,ta97,,tornado_api.toml,"Tornado IL2: Rockford, (IL - EL Carrusel) -> Chicago, IL, (IL - TBC Chicago), dep 09:30 (API)"
+Tornado_Bus_America_Chicago_r,wk1111111,ta98,,tornado_api.toml,"Tornado ILR1: Chicago, IL, (IL - TBC Chicago) -> West Chicago, (IL - Rapid Net Cafe Internet), dep 13:30 (API)"
+Tornado_Bus_America_Chicago_r,wk1111111,ta99,,tornado_api.toml,"Tornado ILR2: Chicago, IL, (IL - TBC Chicago) -> Rockford, (IL - EL Carrusel), dep 13:00 (API)"
+Utah_Trailways_Wendover_Fun_Bus_America_Denver_r,wk0111111,utah_trailways_wendover:0,,utah_trailways_wendover.toml,Wendover Fun Bus: Salt Lake City 08:20 -> West Wendover 10:30
+Utah_Trailways_Wendover_Fun_Bus_America_Denver_r,wk0111111,utah_trailways_wendover:1,,utah_trailways_wendover.toml,Wendover Fun Bus: West Wendover 16:30 -> Salt Lake City about 18:30
+Wonder_Bus_America_Chicago_r,wk1111111,wonder_bus:1,,wonder_bus.toml,Nashville -> I-81 -> NYC

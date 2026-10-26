@@ -1,0 +1,7 @@
+kind,description,days_mon_sun,timezone,from,to,minutes,first_leave,last_leave,every_min,source_file
+"On foot (Big River Crossing, open 06:00-22:00)",Arkansas line on Big River Crossing -> Memphis Amtrak (walk),1111111,America/Chicago,Arkansas line on Big River Crossing (on foot from Memphis Amtrak),Memphis,33,06:10,21:40,10,big_river_crossing.toml
+"On foot (Big River Crossing, open 06:00-22:00)",Memphis Amtrak -> Arkansas line on Big River Crossing (walk),1111111,America/Chicago,Memphis,Arkansas line on Big River Crossing (on foot from Memphis Amtrak),33,05:45,20:55,10,big_river_crossing.toml
+"On foot (Big River Crossing, open 06:00-22:00)","Tennessee end -> Big River Crossing -> West Memphis Tornado (walk, 2 h 34 min)",1111111,America/Chicago,Big River Crossing Tennessee end (on foot),West Memphis Tornado 2304 N Service Rd (on foot to Big River Crossing),154,06:00,21:30,10,big_river_crossing.toml
+"On foot (Big River Crossing, open 06:00-22:00)","West Memphis Tornado -> Big River Crossing -> Tennessee end (walk, 2 h 34 min)",1111111,America/Chicago,West Memphis Tornado 2304 N Service Rd (on foot to Big River Crossing),Big River Crossing Tennessee end (on foot),154,03:50,19:20,10,big_river_crossing.toml
+On foot (jog),Hanover Inn -> Vermont end of Ledyard Bridge,1111111,America/New_York,Hanover (Hanover Inn),Ledyard Bridge Vermont end,11,13:16,13:16,,on_foot_jog.toml
+On foot (jog),Vermont end of Ledyard Bridge -> Hanover Inn,1111111,America/New_York,Ledyard Bridge Vermont end,Hanover (Hanover Inn),11,13:28,13:28,,on_foot_jog.toml

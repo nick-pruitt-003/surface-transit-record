@@ -1,0 +1,64 @@
+from_stop_id,to_stop_id,transfer_type,min_transfer_time
+ibus:2793,extra:Wisconsin line at Wolff Ln (on foot from Dubuque via East Dubuque),2,5280
+ibus:3250,extra:Wisconsin line at Wolff Ln (on foot from Dubuque via East Dubuque),2,5280
+ibus:2385,extra:Denver Int'l Airport (Groome/A Line),2,3000
+amtrak:DEN,extra:Denver Int'l Airport (Groome/A Line),2,3000
+ibus:375,extra:Denver Int'l Airport (Groome/A Line),2,4200
+zz_nictd:s17,extra:Michigan line at Michiana (on foot from Michigan City Carroll Ave),2,5100
+zz_mct:1_28,extra:Michigan line at Michiana (on foot from Michigan City Carroll Ave),2,3060
+ibus:153,extra:Vermont line on US-7 (on foot from Williamstown),2,2220
+gmx:4258626,extra:Vermont line on US-7 (on foot from Williamstown),2,1980
+brta:794954,extra:Vermont line on West Rd (on foot from North Adams Hospital),2,3300
+ibus:339,extra:Nebraska bank at South Sioux City 1st Ave (on foot from Sioux City),2,1800
+ibus:1266,extra:South Carolina bank at North Augusta Landing Dr (on foot from Augusta Greyhound),2,1260
+ibus:900,extra:Foley Park at the Vermont end of Ledyard Bridge (on foot to the Hanover Inn),2,960
+ibus:2162,extra:Moorhead MN 13th Ave N at the Red River (on foot from Fargo Jefferson station),2,4980
+extra:Barstow East Main St 1611 (702 Shuttles),amtrak:BAR,2,3360
+ibus:1728,ibus:2404,2,7200
+ibus:3352,outrider:3453956,2,1440
+vrt:CN058,extra:Nampa ID (Maverik),2,1200
+flix:73ea7cfa-31a9-400c-80f0-a0bf859823b9,amtrak:BAR,2,3720
+mata:0:AIRHO1SN,flix:bd02b7ef-402c-4319-b4f0-1a1a510bc750,2,4620
+flix:bd7bc652-cc67-4592-8034-d6fcd696c80a,amtrak:KNG,2,1320
+flix:ebac7201-9500-49ce-b7b8-4f6bc906de72,amtrak:KNG,2,1320
+interurban:151618,extra:Michigan line on SR-19 Cassopolis St (on foot from Elkhart Martin's at North Pointe),2,1800
+siouxcity:2430578,extra:South Dakota line on the Military Rd bridge (on foot from Sioux City W 19th & Riverside),2,1020
+siouxcity:2430599,extra:South Dakota line on the Military Rd bridge (on foot from Sioux City W 19th & Riverside),2,1020
+extra:Casey's Gas Station-Osceola (Tornado),ibus:35,2,3300
+extra:El Vaquero (Tornado),amtrak:JOL,2,1680
+extra:TBC Plant City (Tornado),flix:17bfaec0-6363-4796-82fa-1e8ed8b8c3f1,2,1740
+extra:TBC Plant City (Tornado),ibus:21,2,1740
+extra:Shell Gas Station-Opelika (Tornado),flix:c06f6dbc-a18f-4b22-957a-ba3d838f60aa,2,1440
+extra:Shell Gas Station-Opelika (Tornado),ibus:1996,2,1440
+extra:Walmart-Rantoul (Tornado),amtrak:RTL,2,1740
+extra:Flying J Travel Center-Effingham (Tornado),flix:8e7198b1-1e4d-449c-b120-a7a77793c5f4,2,2040
+extra:Flying J Travel Center-Effingham (Tornado),amtrak:EFG,2,2880
+extra:Exxon Gas Station-Hope (Tornado),amtrak:HOP,2,1800
+extra:TBC Waco (Tornado),flix:79685b14-530b-47e5-85dc-26ccf93c96cb,2,1680
+extra:TBC Waco (Tornado),ibus:2779,2,1680
+extra:Mezcal de Jalisco Mexican Restaurant (Tornado),flix:1a24da03-eee1-497f-a240-ed222380390f,2,1620
+extra:Mezcal de Jalisco Mexican Restaurant (Tornado),ibus:773,2,1620
+extra:TBC Katy (Tornado),flix:9e67280f-1256-42f4-9d1d-701cb6fe6ef5,2,2220
+extra:TBC Katy (Tornado),ibus:3604,2,2220
+extra:BBWireless (Tornado),amtrak:GNS,2,1920
+extra:BB Wireless(desactivada) (Tornado),amtrak:GNS,2,1920
+extra:La Mexicana-Wilson (Tornado),flix:de3e90c2-abad-4730-ad34-376d1b74bcf5,2,1800
+extra:La Mexicana-Wilson (Tornado),ibus:1938,2,1800
+extra:La Mexicana-Wilson (Tornado),amtrak:WLN,2,1800
+extra:Albert Lea (Tienda Mexicana Talamantes) (Tornado),flix:3d9eca30-6cc0-4c46-b14a-4a3c7f9bc7f3,2,2400
+"extra:Jackson, MS(Flying J Travel center) (Tornado)",amtrak:JAN,2,4380
+"extra:Jackson, MS(Flying J Travel center) (Tornado)",flix:87a9cec7-53a2-4aef-b94b-a43b1b1d9ffa,2,4380
+"extra:Jackson, MS(Flying J Travel center) (Tornado)",ibus:2386,2,4380
+extra:El Potro-Lake City (Tornado),flix:38dd6257-00e6-4546-8022-c77c92e1c755,2,3480
+extra:El Potro-Lake City (Tornado),ibus:1035,2,3480
+extra:Busy Bee-Live Oak (Tornado),flix:a11b3733-35d7-4842-9874-94a35cf8acd1,2,4260
+extra:Busy Bee-Live Oak (Tornado),ibus:338,2,4260
+extra:Loves Travel Center-Biloxi (Tornado),ms_cta:4.385 - AUTOMALL @ TIMBER GROVE_4.385 - AUTOMALL @ TIMBER GROVE_30.441061_-88.900001,2,4020
+extra:Servicios Zapata(R) (Tornado),ibus:2342,2,1680
+extra:Pilot Traver Center-Meridian (Tornado),amtrak:MEI,2,4020
+extra:Pilot Traver Center-Meridian (Tornado),flix:7aa2a4ad-52f3-4560-97d4-aa69edfe58b7,2,4020
+extra:Pilot Traver Center-Meridian (Tornado),ibus:1027,2,4020
+extra:Petro Gas Station-Hammond (Tornado),amtrak:HMD,2,3000
+extra:TA Travel Center-Slidell (Tornado),amtrak:SDL,2,3120
+extra:TA Travel Center-Slidell (Tornado),flix:2adabb11-c8d8-4a4d-b862-3d9f2831f7e9,2,2760
+extra:TA Travel Center-Slidell (Tornado),ibus:2158,2,2760

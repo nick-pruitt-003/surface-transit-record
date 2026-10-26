@@ -1,0 +1,2 @@
+feed_publisher_name,feed_publisher_url,feed_lang,feed_start_date,feed_end_date,feed_version
+"bus48 (Nick Pruitt), hand-collected",https://www.google.com/search?q=48+state+bus+record,en,20261101,20261231,2026-10-26
