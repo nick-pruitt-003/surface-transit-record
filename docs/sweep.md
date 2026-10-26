@@ -632,3 +632,32 @@ search is slow (under 1 node/s) and has no pair key, and the forward cross-check
 live. A firmer answer needs either the mirrored pair tables for backward or a longer forward run (2 h+, free start
 day/time around Thu Nov 19 06:00). `verify_path.py` was not run, because there was no route to verify. Chains:
 `out/denver_back.pkl`, `out/primm_fwd.pkl` (logs alongside; out/ is not committed).
+
+## Oct 24-25: sweep 10 by family, endpoint grading, broken families re-timed
+
+- **Sweep 10** (out/sweep10, commit 757c49e data): focused runs on known routes from their own start clocks
+  (`--fixed-start`; off their day their pruned orders miss states) plus 24 random seeds starting in Nick's families
+  (Sioux City triangle, Hanover/WRJ/Portland, Sheridan, Moorhead, Primm as a CA start, West Virginia, Pensacola end).
+  Nothing under X. X, Control, Record held (232.1, 237.5, 238.8). **Moorhead found an Arkansas finish: 232.97 h from
+  the first bus** (Fargo Mon 14:30 ... Chicago -> City of New Orleans -> Memphis 06:42 -> walk over the Big River
+  Crossing, AR line 07:28 Thu), about 234.4 h counting the Moorhead -> Fargo walk before the first bus; the old
+  Moorhead route's 235.76 h is counted the same way (~237.1 h with the walk). Random family seeds started 250-290 h
+  and 13 min did not close the gap: best ND 246.3 (the same Plains -> AR shape), IA 250.7, ME 251.2.
+- **Endpoint grading** (scripts/endpoint_grade.py): dropping a state from a good route saves ~0 h almost everywhere
+  (anchors absorb it); moving each state to the end costs 5+ h for every route except near-ties (Moorhead -> AR 0.4 h,
+  which the sweep then found). Best ends by median: MN, ND, then WI/IL/IA. It only tests ends near each route's shape.
+- **X + Tornado hybrid** (ride_search from Dallas Mon 11:10 with X's West kept): nothing under X. Taking MS on the
+  Tornado (Lafayette -> Biloxi -> Lake City -> Meteor) reaches Jacksonville as early as X but skips the Memphis section
+  that also gives TN/AR; re-timing X with MS on the Tornado gives 232.30 h, identical, because both catch the Memphis
+  17:45 Greyhound.
+- **Broken families, re-timed on the Nov 9 window:** Huntington Meteor 237.5 (its stored start day was Nov 5).
+  Wheeling 260.2 missing KY (it took KY on the City of New Orleans, now two hours later); KY right after OH gives
+  **241.0 h**, focused search found nothing better. **RX (Vegas/Primm) cannot reach the record from its first half**:
+  the Fargo -> Sioux Falls Jefferson is now 14:30 Thu-Mon (was a daily 15:50), RX reaches Fargo 14:55, and its Four
+  Winds MI detour keeps it in Chicago past the afternoon Empire Builder. ride_search from RX's Louisville arrival
+  (Wed 06:45, 31 states) exhausted at both 236 h and 238.8 h.
+- **Primm <-> Evanston** (Nick's idea: Southwest Chief for CA/AZ/NM, Evanston -> SLC -> Boise -> OR -> Pasco ->
+  Spokane chain for the West): Primm -> Evanston 256.5 h, Evanston -> Primm 278.6 h. The finish block (KC Sat 01:30 ->
+  Omaha -> Sioux Falls -> Fargo -> Billings -> Spokane -> Pasco -> SLC -> Evanston Mon 09:20, 9 states in 56 h) is
+  sound and reusable; the front leaves the route in Kansas City at 38 h with 7 states and the whole East and South to
+  do. ride_search from that KC arrival to the record deadline reached 33 states at 153.5 h (X has ~39 by then).
