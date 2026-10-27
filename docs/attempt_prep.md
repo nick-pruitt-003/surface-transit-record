@@ -35,7 +35,7 @@ it. Details in `routes.md` under RX.
 
 ## HT (230.10 h on Oct 1 data; superseded)
 
-The route to ride is X, 232.30 h, booked for Thu Nov 12 (`docs/x_itinerary_nov12.xlsx`, HANDOFF 30). HT
+The route to ride is X, 232.30 h, planned and priced (not booked) for Thu Nov 12 (`docs/x_itinerary_nov12.xlsx`, HANDOFF 30). HT
 re-searches to 244.2 h on the corrected Plains data. Kept for its on-foot notes.
 
 Everything leg by leg is in `docs/ht_itinerary.xlsx` (built by `scripts/attic/ht_itinerary.py`): the itinerary, the start

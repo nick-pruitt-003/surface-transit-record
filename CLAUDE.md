@@ -45,7 +45,7 @@
 Where the history below says 237, res_starttest.pkl or September dates, read the bullets above.
 
 Find a scheduled surface route through all 48 contiguous states faster than the timetabled record of
-238.83 h. Fastest route: **X, 232.30 h** (Sheridan WY to Moorhead MN), booked for a Thu Nov 12 2026 start
+238.83 h. Fastest route: **X, 232.30 h** (Sheridan WY to Moorhead MN), planned and priced (not booked) for a Thu Nov 12 2026 start
 (HANDOFF 30). The 237 h Huntington to Vermont-line route is the search **control** below, not the best result.
 `docs/HANDOFF.md` has the routes, the rules, and everything tested and ruled out. Read it before proposing anything.
 

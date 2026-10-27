@@ -1608,9 +1608,9 @@ Follow-ups the same night:
   (WV start, West, Plains, South, SC, Atlanta) needs 214.8 h against the 196.5 h that would beat 234.24, about 260 h
   total. South Carolina before Atlanta is the cost. Dead, as Nick expected.
 
-## 30. Oct 5: route X (Sheridan -> Moorhead, 232.30 h) booked for a Thu Nov 12 start
+## 30. Oct 5: route X (Sheridan -> Moorhead, 232.30 h) priced for a Thu Nov 12 start (not booked)
 
-`docs/x_itinerary_nov12.xlsx` is the booked version ($1,566.09, all 31 ticketed segments priced);
+`docs/x_itinerary_nov12.xlsx` is the priced version, nothing booked ($1,566.09, all 31 ticketed segments priced);
 `docs/x_itinerary_route_x.xlsx` is the copy to share (no names, no "If you miss a leg" / "Start day" tabs).
 
 - **Start date.** Oct 15 lost the Silver Meteor (cancelled Tue Oct 20) and Oct 22 / 29 lost Acela 2152, which is not
@@ -1626,7 +1626,7 @@ Follow-ups the same night:
 - **Chicago, Sat**: Flix to 95th/Dan Ryan 05:10, Metra UP-N to Kenosha and back in the morning, Four Winds shuttle
   11:50 out and the 17:30 (site time, Central; 18:30 ET at the casino) back, so you are not reboarding the bus you
   came on. Jefferson 21:15.
-- **Reproduces** on the merged data (the other machine's Four Winds, Jefferson Chicago -> Fargo and Moorhead walk): 231.87 h, every leg as booked except the router's shorter Fargo finish (Amtrak station to the state line) against the measured 83 min walk to Moorhead; 232.30 stays the figure. Without Jefferson 21:15 Chicago -> Omaha and the 06:15 Omaha -> Sioux Falls it is 256.37 h: that pair is what makes the Moorhead finish, and no sweep before 5cda41e had it. "If you miss a leg" is rebuilt from the booked legs by `scripts/x_miss.py`.
+- **Reproduces** on the merged data (the other machine's Four Winds, Jefferson Chicago -> Fargo and Moorhead walk): 231.87 h, every leg as priced except the router's shorter Fargo finish (Amtrak station to the state line) against the measured 83 min walk to Moorhead; 232.30 stays the figure. Without Jefferson 21:15 Chicago -> Omaha and the 06:15 Omaha -> Sioux Falls it is 256.37 h: that pair is what makes the Moorhead finish, and no sweep before 5cda41e had it. "If you miss a leg" is rebuilt from the priced legs by `scripts/x_miss.py`.
 - **timezonefinder must be installed.** Without it, local-clock manual trips are read as UTC and the router is
   silently wrong. It is now installed on this Mac.
 
