@@ -39,6 +39,13 @@
   given the pass-through states, came back at 256.3 h. It now says when its time disagrees. `verify_path.py <pkl>`
   is the real check: the router's own scan per leg, states recounted from the connections ridden; it rejects a 30 min
   early arrival and a dropped walk-in (both tested). A path pickle only verifies against the router it was found on.
+- **Nothing is booked (Oct 27).** X is priced for Nov 12, and the attempt date is open. Timetables change before any
+  real date, so **`scripts/retime_routes.py --at <date>` is the first check after any feed update or window change.**
+  It re-times the best routes (baselines in `docs/route_baselines.json`, tracked) on that window from the current
+  feeds, best of 7 start days, and reports per route the hours against the baseline, missing states, and which legs
+  moved, vanished, or now wait 20+ h (a missed daily departure). `--save` re-records the baselines from the result
+  pickles listed in its ROUTES. Reports: `docs/retime_<date>.md`. It evaluates, it does not search: follow a broken
+  route with a focused search.
 - **Expired local feeds replay their last covered week** (`Feed.replay`, local `more_gtfs` only; the router prints
   which). JTA, TANK and Open Plains have no newer release yet.
 
