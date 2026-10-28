@@ -3,6 +3,9 @@ agency = "RedCoach"
 [stops]
 dallas_1376_marilla_st_redcoach = { name = "Dallas 1376 Marilla St (RedCoach)", lon = -96.7975, lat = 32.7760 }
 houston_808_jefferson_st_redcoach = { name = "Houston 808 Jefferson St (RedCoach)", lon = -95.3640, lat = 29.7510 }
+the_colony_5293_sh121_redcoach = { name = "The Colony 5293 SH 121 Mobil (RedCoach Frisco)", lon = -96.87743, lat = 33.07213 }
+norman_lloyd_noble_center_redcoach = { name = "Norman OU Lloyd Noble Center lot (RedCoach)", lon = -97.444544, lat = 35.188904 }
+okc_400_e_sheridan_ave_redcoach = { name = "Oklahoma City 400 E Sheridan Ave (RedCoach)", lon = -97.505557, lat = 35.466407 }
 
 [[trip]]
 id = "t94"
@@ -31,3 +34,15 @@ route = "Houston -> Dallas 12:00 (Nick screenshot of redcoachusa Oct 21 2026, We
 days = "1111111"
 tz = "America/Chicago"
 stops = ["houston_808_jefferson_st_redcoach 12:00", "dallas_1376_marilla_st_redcoach 15:55"]
+
+[[trip]]
+route = "Dallas -> Frisco -> Norman -> Oklahoma City 08:30 (Nick screenshot of redcoachusa Oct 28 2026: Wednesdays only; stop coordinates from the site's /api/v2/stops)"
+days = "0010000"
+tz = "America/Chicago"
+stops = ["dallas_1376_marilla_st_redcoach 08:30", "the_colony_5293_sh121_redcoach 09:15", "norman_lloyd_noble_center_redcoach 12:15", "okc_400_e_sheridan_ave_redcoach 12:50"]
+
+[[trip]]
+route = "Oklahoma City -> Norman -> Frisco -> Dallas 15:40 (Nick screenshot of redcoachusa Oct 28 2026: Wednesdays only)"
+days = "0010000"
+tz = "America/Chicago"
+stops = ["okc_400_e_sheridan_ave_redcoach 15:40", "norman_lloyd_noble_center_redcoach 16:25", "the_colony_5293_sh121_redcoach 19:25", "dallas_1376_marilla_st_redcoach 20:25"]
