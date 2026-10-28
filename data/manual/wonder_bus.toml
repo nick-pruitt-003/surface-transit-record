@@ -13,13 +13,23 @@ nashville_murfreesboro_pike = { name = "Nashville 2615 Murfreesboro Pike (Wonder
 [[trip]]
 id = "t96"
 route = "I-81 Knoxville -> NYC (Nick screenshots Sep 19 2026; Knoxville 6 PM per Nick - stop location approximate; Chambersburg 2:20 per Nick (site says 2:00); daily assumed; stops between Knoxville and Winchester unknown)"
-days = "1111111"
+note = "iLIKEBUS crawl Oct 28 2026 (Nov 9-22): this run starts Memphis 09:45 and runs Tue/Fri/Sun only, not daily"
+days = "0100101"
 tz = "America/New_York"
 stops = ["knoxville_wonder_approx 18:00", "winchester_992_millwood_pike_wonder 25:00", "martinsburg_14634_apple_harvest_dr_wonde 25:30", "hagerstown_1729_massey_blvd_wonder 25:50", "chambersburg_1080_wayne_ave_wonder 26:20", "new_york_120_e_broadway_wonder 31:00"]
 
 # Local clocks per stop (no tz line): Nashville is Central, everything from Knoxville on Eastern.
 [[trip]]
 route = "Nashville -> I-81 -> NYC"
-note = "Nick screenshot of Wonder Bus Oct 1 2026: Nashville 13:15 Charlotte Pike / 14:00 Murfreesboro Pike -> NYC 120 E Broadway 07:00 +1 day. Assumed the same bus as the Knoxville 18:00 run (same 07:00 arrival; 14:00 CT -> 18:00 ET is the 3 h drive), so the I-81 stops are that row's; daily assumed"
-days = "1111111"
+note = "Nick screenshot of Wonder Bus Oct 1 2026: Nashville 13:15 Charlotte Pike / 14:00 Murfreesboro Pike -> NYC 120 E Broadway 07:00 +1 day. Assumed the same bus as the Knoxville 18:00 run (same 07:00 arrival; 14:00 CT -> 18:00 ET is the 3 h drive), so the I-81 stops are that row's. iLIKEBUS crawl Oct 28 2026 (Nov 9-22): the run starts Memphis 09:45 (Memphis stop location unknown, not added) and runs Tue/Fri/Sun only"
+days = "0100101"
 stops = ["nashville_charlotte_pike 13:15", "nashville_murfreesboro_pike 14:00", "knoxville_wonder_approx 18:00", "winchester_992_millwood_pike_wonder 01:00", "martinsburg_14634_apple_harvest_dr_wonde 01:30", "hagerstown_1729_massey_blvd_wonder 01:50", "chambersburg_1080_wayne_ave_wonder 02:20", "new_york_120_e_broadway_wonder 07:00"]
+
+# Westbound, iLIKEBUS crawl Oct 28 2026 (Nov 9-22): NYC 17:00 -> Martinsburg WV 20:45 -> ... -> Memphis 11:15 +1 day,
+# Mon/Thu/Sat. Only the NYC -> Martinsburg piece is entered: the other stops' times and the Memphis stop are unknown.
+# Assumed to use the same NYC and Martinsburg stops as the eastbound run.
+[[trip]]
+route = "NYC -> I-81 -> Memphis (westbound, Martinsburg piece only)"
+days = "1001010"
+tz = "America/New_York"
+stops = ["new_york_120_e_broadway_wonder 17:00", "martinsburg_14634_apple_harvest_dr_wonde 20:45"]
