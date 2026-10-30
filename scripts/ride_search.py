@@ -182,6 +182,18 @@ def main():
     ap.add_argument('--depth-bias', type=float, default=0.0,
                     help="--frontier depth: extra pops per turn for deeper layers (deepest gets 1 + this, the "
                     "shallowest 1). 0 is plain round-robin.")
+    ap.add_argument('--split-at', help="forward, meet in the middle (Oct 30): a popped node whose clock has reached "
+                    "this time (same --tz) is not expanded but written to --harvest as a label (stop, time, states "
+                    "held). Every pruning test still runs first, so with the menu uncapped and the queue emptied the "
+                    "harvest is every head that can still finish. The join with a backward half is mitm_join.py.")
+    ap.add_argument('--harvest', help='with --split-at: pickle of the labels, default <--out>.harvest')
+    ap.add_argument('--tour', type=float, default=0.0,
+                    help="weight of the tour shortfall (Oct 30, tour_est.py): at pop, a node's riding-only tour "
+                         "through every owed state into the end state, minus its time to the deadline. A node that "
+                         "cannot finish on riding alone goes back into the frontier this many times its shortfall "
+                         "later. Only ever adds, so scoring at pop is exact (A*'s lazy re-key). Ranks, never prunes: "
+                         "the tour is a beam, an overestimate of the riding floor. Needs --end and --by. 0 = off.")
+    ap.add_argument('--tour-width', type=int, default=20, help='--tour: beam width (3 was noisy, +15 h vs 20)')
     ap.add_argument('--hop-slots', type=int, default=0, help='--city-hop: also keep the best this many hops ranked '
                     'below --width, so city positioning is never cut entirely (Chicago to O''Hare for the Kenosha bus '
                     'is 625 of 780 under --goal)')
@@ -209,6 +221,9 @@ def main():
     if (a.skip or a.end_stop) and not back: sys.exit('--skip and --end-stop are backward only')
     when = datetime.fromisoformat(a.by if back else a.at).replace(tzinfo=ZoneInfo(a.tz))
     T0 = when.timestamp()
+    if a.split_at and back: sys.exit('--split-at is forward only for now')
+    SPLIT = datetime.fromisoformat(a.split_at).replace(tzinfo=ZoneInfo(a.tz)).timestamp() if a.split_at else None
+    harvest = []
     router_args = ((when.date() if not back else (when - __import__('datetime').timedelta(days=12)).date()), a.days)
     R = cached_router(*router_args)
     ab = lambda x: ABBR[R.state_names[x]] if x >= 0 else '--'
@@ -461,6 +476,12 @@ def main():
         from pair_tables import PairTables
         PT = PairTables(R, D, a.span, L_end=L_end, L=L, router_args=router_args)
     pair_kills = [0]; triple_kills = [0]
+    TE = None; tour_scored = set(); tour_moved = [0]
+    if a.tour > 0:
+        if L is None: sys.exit('--tour needs the deadline: --end and --by')
+        from tour_est import TourEst
+        t_te = time.time(); TE = TourEst(R, END_ST, width=a.tour_width)
+        print(f'  tour estimate (width {a.tour_width}, weight {a.tour}) ready in {time.time() - t_te:.0f} s', flush=True)
     TT = None
     if a.triples != 'off':
         if PT is None or a.key != 'pair' or a.pairs != 'push':
@@ -1635,7 +1656,17 @@ def main():
         while q:
             last_q[0] = q
             if time.time() - t_run > a.budget or seen_nodes[0] > a.nodes: break
-            _f, spent, _, stop, t, collected, aboard, path = qpop()
+            it_ = qpop()
+            _f, spent, sq_, stop, t, collected, aboard, path = it_
+            if TE is not None and sq_ not in tour_scored and NEED - len(collected) >= 2:
+                # Score once, at pop. The shortfall only ever raises a key, so a node whose shortfall is zero was
+                # already in its right place and goes on; one that has to move goes back and is scored no more.
+                tour_scored.add(sq_)
+                short_ = TE.estimate(int(stop), (y for y in range(N_STATES) if y not in collected)) - (D - t)
+                if short_ > 0:
+                    tour_moved[0] += 1
+                    qpush((_f + a.tour * min(short_, 1e7),) + it_[1:])
+                    continue
             seen_nodes[0] += 1
             heartbeat(len(q))
             if spent > limit[0]: continue
@@ -1677,6 +1708,11 @@ def main():
             mk = bits(collected)
             if dominated(stop, mk, spent): continue
             remember(stop, mk, spent)
+            if SPLIT is not None and t >= SPLIT:
+                # A label, not a node: the head ends here and a backward half picks up. Recorded after the
+                # dominance test, so for one (stop, states) only the earliest arrival is kept.
+                harvest.append((int(stop), float(t), int(mk), path))
+                continue
             goal = goal_first(stop, t, collected)
             if CM is not None:
                 opts = menu_c(stop, t, aboard, collected, goal)
@@ -1930,6 +1966,16 @@ def main():
     if a.mode == 'best': best_first(START, t_first, frozenset(start_states))
     else: dfs(START, T0, frozenset(start_states), None, [])
     el = time.time() - t_run
+    if SPLIT is not None:
+        hp = a.harvest or ((a.out or '../out/mitm') + '.harvest')
+        emptied = last_q[0] is not None and len(last_q[0]) == 0
+        pickle.dump({'split': SPLIT, 'T0': T0, 'start': START, 'by': a.by, 'complete': emptied,
+                     'labels': harvest}, open(hp, 'wb'))
+        by_n = defaultdict(int)
+        for _s, _t, m_, _p in harvest: by_n[bin(m_).count('1')] += 1
+        print(f'\nharvest: {len(harvest)} labels at {len(set(h[0] for h in harvest))} stops -> {hp}; queue '
+              f'{"EMPTIED, the harvest is complete" if emptied else "NOT emptied, the harvest is partial"}')
+        print('  labels by states held: ' + ' '.join(f'{k}:{v}' for k, v in sorted(by_n.items())))
     print(f'\n{seen_nodes[0]} nodes in {el:.0f} s ({seen_nodes[0] / max(el, 1):.0f}/s), {sum(len(v) for v in dom_stop.values())} kept '
           f'(stop, states); deepest {deepest[0]}/{NEED} states')
     if a.goal:
@@ -2017,6 +2063,9 @@ def main():
         print('pair table built, prune switched off (--pairs report); the census below is the measurement'
               if a.pairs == 'report' else
               f'pair prune at {a.pairs}: {pair_kills[0]} nodes killed for owing an uncollectable pair')
+    if TE is not None:
+        print(f'tour shortfall: {len(tour_scored)} nodes scored at pop, {tour_moved[0]} moved back; '
+              f'{TE.calls} tour estimates, {TE.tree_builds} shortest-path trees', flush=True)
     if TT is not None:
         print(f'triple prune at push: {triple_kills[0]} nodes killed for owing an uncollectable triple; '
               f'{len(TT.T)} triples, {TT.scans} scans this run ({TT.scan_s:.0f} s)', flush=True)
