@@ -60,6 +60,10 @@ LOCAL_PROXY_ALL = os.environ.get('BUS48_LOCAL_PROXY', 'intercity') == 'all'
 HOP_FEED_KM = float(os.environ.get('BUS48_HOP_FEED_KM', 0))
 CHAIN_WALKIN = os.environ.get('BUS48_CHAIN_WALKIN', '1') == '1'   # walk-in + further walk as one footpath (Oct 16)
 STOP_TZ_LOCAL = os.environ.get('BUS48_STOP_TZ') == '1'
+# A second drop list for one experiment, same columns as data/drop_trips.csv (BUS48_DROP_EXTRA=../out/no_us0550.csv: the
+# proof slice that never rides the Seattle-Boise-SLC-Denver Greyhound, Oct 30). Feed 'manual' drops a hand-entered trip
+# by its id, or stem:index when it has none.
+DROP_EXTRA = os.environ.get('BUS48_DROP_EXTRA', '')
 N_STATES = 48
 STATE_TZ = {'AL':'America/Chicago','AZ':'America/Phoenix','AR':'America/Chicago','CA':'America/Los_Angeles','CO':'America/Denver','CT':'America/New_York','DE':'America/New_York','FL':'America/New_York','GA':'America/New_York','ID':'America/Boise','IL':'America/Chicago','IN':'America/Indiana/Indianapolis','IA':'America/Chicago','KS':'America/Chicago','KY':'America/New_York','LA':'America/Chicago','ME':'America/New_York','MD':'America/New_York','MA':'America/New_York','MI':'America/Detroit','MN':'America/Chicago','MS':'America/Chicago','MO':'America/Chicago','MT':'America/Denver','NE':'America/Chicago','NV':'America/Los_Angeles','NH':'America/New_York','NJ':'America/New_York','NM':'America/Denver','NY':'America/New_York','NC':'America/New_York','ND':'America/Chicago','OH':'America/New_York','OK':'America/Chicago','OR':'America/Los_Angeles','PA':'America/New_York','RI':'America/New_York','SC':'America/New_York','SD':'America/Chicago','TN':'America/Chicago','TX':'America/Chicago','UT':'America/Denver','VT':'America/New_York','VA':'America/New_York','WA':'America/Los_Angeles','WV':'America/New_York','WI':'America/Chicago','WY':'America/Denver'}
 
@@ -88,9 +92,10 @@ def _drop_trips():
     trip. data/drop_trips.csv: feed,trip_id,note. Read once."""
     global _DROP
     if _DROP is None:
-        p = os.path.join(DATA_DIR, 'drop_trips.csv'); _DROP = set()
-        if os.path.exists(p):
-            with open(p, encoding='utf-8') as fh: _DROP = {(r['feed'], r['trip_id']) for r in csv.DictReader(fh)}
+        _DROP = set()
+        for p in (os.path.join(DATA_DIR, 'drop_trips.csv'), DROP_EXTRA):
+            if p and os.path.exists(p):
+                with open(p, encoding='utf-8') as fh: _DROP |= {(r['feed'], r['trip_id']) for r in csv.DictReader(fh)}
     return _DROP
 
 
@@ -797,8 +802,8 @@ class ExtraFeed:
                 found.append((int(tid[1:]) if tid[0] == 't' and tid[1:].isdigit() else 10 ** 9, stem, n, tid, doc.get('agency', stem), tr, hits))
         ref = date(2026, 11, 5)   # rollover offsets taken on one date: right while the window has no DST change (US: Nov 1)
         for _, stem, n, tid, agency, tr, hits in sorted(found, key=lambda x: x[:3]):
-            if tr.get('disabled'): continue
-            fixed = ZoneInfo(tr['tz']) if tr.get('tz') else None
+            if tr.get('disabled') or _dropped('manual', tid): continue
+            fixed =ZoneInfo(tr['tz']) if tr.get('tz') else None
             seq = []; zones = {}; prev = None; roll = 0
             for i, item in enumerate(tr['stops']):
                 key, tm = item.rsplit(' ', 1); h = hits.get(key)
@@ -939,6 +944,7 @@ def cached_router(date, days, cache_dir=None, verbose=True):
     # would see; it is a plausible number from a different universe, which is this project's whole problem.
     sig.append(('cfg', WALKIN_KM, MIN_TRANSFER, SCAN_SLACK, LOCAL_MAX_KM, LOCAL_PROXY_ALL, STOP_TZ_LOCAL,
                 WALK_MAX_KM, WALK_SPEED, RUN_MPH, NO_WALK_LINKS, NO_WALKIN_STATES, SKIP_MANUAL, HOP_FEED_KM, CHAIN_WALKIN))
+    if DROP_EXTRA: sig.append(('drop_extra', hashlib.sha1(open(DROP_EXTRA, 'rb').read()).hexdigest()))
     key = hashlib.sha1(repr(sig).encode()).hexdigest()[:16]
     path = os.path.join(cache_dir, f'router_{key}.pkl')
     if os.path.exists(path):
