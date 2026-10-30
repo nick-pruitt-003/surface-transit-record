@@ -354,6 +354,18 @@ def _():
     assert all(6 <= datetime.fromtimestamp(x, CT).hour < 22 for x in at_mid), ('on the bridge while closed', legs)
 
 
+@check('no walk-in between New York and New Jersey: Manhattan stops do not step into the Hudson (Oct 29 2026)')
+def _():
+    # The Wonder Bus finish from 120 E Broadway "walked into NJ" from 14 St, to a point mid-Hudson: NY-NJ was not a
+    # river border, so 120 such walk-ins existed (97 in the river or harbour). Nick: nobody walks into NY or NJ.
+    m14 = [i for i in R.stops_matching('14 St') if R.abbr[i] == 'NY']
+    assert m14, 'no 14 St stop in New York: this check would pass by having nothing to test'
+    ny_nj = [R.stop_ids[v] for v in range(R.first_virtual, R.N)
+             if {R.abbr[v], R.abbr[R.idx[R.stop_ids[v].split(':', 1)[1].rsplit(':', 1)[0]]]} == {'NY', 'NJ'}]
+    assert not ny_nj, (len(ny_nj), ny_nj[:3])
+    assert R.first_virtual < R.N, 'no walk-ins at all: the rule would be vacuous'
+
+
 print()
 for name, ok, info in results: print(('PASS ' if ok else 'FAIL ') + name + ('' if ok else '\n     ' + info))
 print(f'\n{sum(ok for _, ok, _ in results)}/{len(results)} passed')
