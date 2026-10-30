@@ -47,7 +47,7 @@
   pickles listed in its ROUTES. Reports: `docs/retime_<date>.md`. It evaluates, it does not search: follow a broken
   route with a focused search.
 - **Expired local feeds replay their last covered week** (`Feed.replay`, local `more_gtfs` only; the router prints
-  which). JTA, TANK and Open Plains have no newer release yet.
+  which). JTA and Open Plains have no newer release yet; TANK was refreshed Oct 30 (Nov 7 2026 - Mar 19 2027).
 
 Where the history below says 237, res_starttest.pkl or September dates, read the bullets above.
 
