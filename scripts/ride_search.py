@@ -205,6 +205,15 @@ def main():
                     help="hours: only test nodes whose pair margin is under this. A cost gate, not a correctness "
                     "rule: the bound is exact, so where it runs cannot prune a live chain")
     ap.add_argument('--triple-tries', type=int, default=3, help="triples tested per node")
+    ap.add_argument('--quads', choices=('off', 'push'), default='off',
+                    help="exact quad bound at push, after the triple test (pair_tables.QuadTables). Needs --triples "
+                    "and the complete triple table (build_triples.py)")
+    ap.add_argument('--quad-gate', type=float, default=24.0, help="hours: only test nodes whose pair margin is "
+                    "under this (a cost gate, as --triple-gate)")
+    ap.add_argument('--quad-k', type=int, default=4, help="tightest owed triples a node extends to quads "
+                    "(quad_probe.py measured 4)")
+    ap.add_argument('--quad-workers', type=int, default=4, help="processes building new quads off the hot path "
+                    "(each holds a router, ~8 GB)")
     ap.add_argument('--pair-k', type=int, default=1, help="with --key pair: rank by the mean of the k tightest owed "
                     "pair margins instead of the tightest alone (1). Ranking only; the prune is still the tightest.")
     ap.add_argument('--days', type=int, default=20); ap.add_argument('--out')
@@ -475,7 +484,7 @@ def main():
             sys.exit('--pairs needs the deadline tables, which need --end and --by')
         from pair_tables import PairTables
         PT = PairTables(R, D, a.span, L_end=L_end, L=L, router_args=router_args)
-    pair_kills = [0]; triple_kills = [0]
+    pair_kills = [0]; triple_kills = [0]; quad_kills = [0]
     TE = None; tour_scored = set(); tour_moved = [0]
     if a.tour > 0:
         if L is None: sys.exit('--tour needs the deadline: --end and --by')
@@ -488,6 +497,11 @@ def main():
             sys.exit('--triples needs --key pair --pairs push (it is tested where the pair margin is computed)')
         from pair_tables import TripleTables
         TT = TripleTables(PT, tries=a.triple_tries)
+    QT = None
+    if a.quads != 'off':
+        if TT is None: sys.exit('--quads needs --triples push')
+        from pair_tables import QuadTables
+        QT = QuadTables(TT, router_args, k=a.quad_k, workers=a.quad_workers)
 
     # menu.c: the same menu as rides_from + sort_opts, top --width only. Flat arrays built once, here, from the
     # same board_at / trip_conns / conn_pos / walkin the Python path reads, so both see one index.
@@ -1342,7 +1356,8 @@ def main():
             if _l[0] == 'walk' and R.walk_collects(_l[2]):
                 by_walk.setdefault(_l[1], set()).add(int(R.state[_l[2]]))
         lost = 0
-        tightest = [np.inf, '', np.inf]
+        tightest = [np.inf, '', np.inf, np.inf]
+        lowest = [np.inf, np.inf, np.inf]   # pair, triple, quad: every margin, dead or not
         # The result-writing path has no gate of its own, and that is how be64aa9 shipped: a `far` field
         # added to the legs the search pushes but not to the ones it writes, so every `--out` raised
         # ValueError, with regress green and --track green. The replay is already walking real legs through
@@ -1525,6 +1540,7 @@ def main():
                 owed_ = [y for y in range(N_STATES) if y not in collected]
                 if len(owed_) >= 2:
                     m_, y_, z_ = PT.worst(int(stop), float(t), owed_)
+                    lowest[0] = min(lowest[0], m_)
                     if m_ < 0:
                         print(f'         PAIR-DEAD after this leg: {ab(y_)} & {ab(z_)} miss by '
                               f'{-m_ / 3600:.1f} h', flush=True)
@@ -1534,11 +1550,20 @@ def main():
                     # Ungated here on purpose: the search only tests under --triple-gate, the gate tests every node.
                     if TT is not None and len(owed_) >= 3:
                         tm_ = TT.margin(int(stop), float(t), owed_)
+                        lowest[1] = min(lowest[1], tm_)
                         if tm_ < 0:
                             print(f'         TRIPLE-DEAD after this leg: misses by {-tm_ / 3600:.1f} h', flush=True)
                             triple_kills[0] += 1
                         elif tm_ < tightest[2]:
                             tightest[2] = tm_
+                    if QT is not None and len(owed_) >= 4:
+                        qm_ = QT.margin(int(stop), float(t), owed_, wait=True)
+                        lowest[2] = min(lowest[2], qm_)
+                        if qm_ < 0:
+                            print(f'         QUAD-DEAD after this leg: misses by {-qm_ / 3600:.1f} h', flush=True)
+                            quad_kills[0] += 1
+                        elif qm_ < tightest[3]:
+                            tightest[3] = qm_
         if PT is not None:
             print(f'\npair test against the control: {pair_kills[0]} of its {len(rides)} nodes killed; '
                   f'tightest margin {tightest[0] / 3600:+.2f} h ({tightest[1]})', flush=True)
@@ -1546,8 +1571,18 @@ def main():
                 print(f'triple test against the control: {triple_kills[0]} killed; tightest margin '
                       f'{tightest[2] / 3600:+.2f} h; {TT.scans} scans', flush=True)
                 TT.save()
-            if pair_kills[0] or triple_kills[0]:
-                print('FAIL: the pair/triple prune kills the control. It is not a prune, it is a bug.', flush=True)
+            if QT is not None:
+                print(f'quad test against the control: {quad_kills[0]} killed; tightest margin '
+                      f'{tightest[3] / 3600:+.2f} h; {QT.scans} scans', flush=True)
+                QT.close()
+            # No kill is allowed, at any deadline. Do not relax this where the control misses the deadline: a margin
+            # is how late the node is against the latest departure that still finishes, not how late the finish is,
+            # and on a timetable a one minute miss becomes a whole service interval (Oct 31, X at 14:27 against its
+            # own 14:28: every bound put Memphis at -23.8 h, the next day's connection, and all three were right).
+            # So gate at a deadline the control meets, and run a proof with --by just above it and --target below.
+            floor_ = 0.0
+            if min(lowest) < floor_:
+                print('FAIL: the pair/triple/quad prune kills the control. It is not a prune, it is a bug.', flush=True)
                 sys.exit(1)
         if rec_path:
             rec = route_record(rec_path, rec_path[-1][4] - rec_path[0][3], rec_got, False)
@@ -1756,6 +1791,9 @@ def main():
                     if (TT is not None and mg_ < a.triple_gate * 3600 and N_STATES - len(new) >= 3
                             and TT.dead(to, at, [y for y in range(N_STATES) if y not in new])):
                         triple_kills[0] += 1; continue
+                    if (QT is not None and mg_ < a.quad_gate * 3600 and N_STATES - len(new) >= 4
+                            and QT.dead(to, at, [y for y in range(N_STATES) if y not in new])):
+                        quad_kills[0] += 1; continue
                 elif a.pairs == 'push' and pair_dead(to, at, new): continue
                 queued[k2] = sp_new
                 seq[0] += 1
@@ -2070,6 +2108,10 @@ def main():
         print(f'triple prune at push: {triple_kills[0]} nodes killed for owing an uncollectable triple; '
               f'{len(TT.T)} triples, {TT.scans} scans this run ({TT.scan_s:.0f} s)', flush=True)
         TT.save()
+    if QT is not None:
+        print(f'quad prune at push: {quad_kills[0]} nodes killed for owing an uncollectable quad; '
+              f'{len(QT.Q)} quads, {QT.scans} scans this run ({QT.scan_s:.0f} s)', flush=True)
+        QT.close()
     census(last_q[0] or [])
     if best[0] is None:
         print(f'nothing reached {NEED} states under {a.target} h in the budget')

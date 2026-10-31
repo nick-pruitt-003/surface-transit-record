@@ -145,3 +145,29 @@ already has (deadline, pairs, triples), and they are exact only for small sets. 
 bound over larger sets: either wider tables (quadruples cost about 48/4 times the triples, ~10 GB and a day) or a
 cheap timetable-aware relaxation, e.g. charging each owed state its earliest reachable arrival from the branch's
 clock rather than its riding distance. Until then, "nothing beats X" is a finding of the searches, not a proof.
+
+## Quadruples kill proofB's branches (Oct 31)
+
+proofB built triples lazily and tried 3 per node. With the full triple table (`build_triples.py`, 158 min on Windows)
+and quads built on top of it (`scripts/quad_probe.py`: the 4 tightest owed triples at a branch, each extended by every
+other owed state, four reverse scans per quad), on proofB's logged branches:
+
+| from | branches | dead by pair | by full triples | by tested quads | median quad margin |
+|---|---|---|---|---|---|
+| 19/48 down | 16 | 0 | 10 | **16** | -19.6 h |
+| 5/48 down | 31 | 1 | 19 | **29** | -23.9 h |
+
+The chain is dead by quads from 7/48 (Grand Junction, -11.9 h): heading east from Colorado without Washington leaves
+Nevada/New Mexico + Florida + Maine + Washington uncollectable. Only Elko (+17.4 h) and Truckee (+4.6 h) survive.
+proofB's branches are on the pre-refresh router and the tables on current feeds, but margins this wide hold.
+
+So the bound the proof needs is time-dependent quads, not a riding bound. The full quad table is 194580 rows (~46 GB,
+~37 h), but owed sets overlap so much that most branches needed no new scans. `QuadTables` (`pair_tables.py`,
+`ride_search --quads push`) builds them lazily off the hot path: a node tests the candidate quads already built,
+queues the missing ones on a worker pool and moves on. Each quad is its own file, so a killed run loses nothing.
+
+**Gate deadline.** The replay at 14:27 (one minute under X's 14:28) failed, correctly: pair, triple and quad all put
+Memphis at -23.8 h. A margin is how late a node is against the latest departure that still finishes, and on a timetable
+a one minute miss is a whole service interval (the next day's connection). So the tables are built at **14:30**, where X
+fits and the replay must show no kill at all, and the proof runs with `--by 2026-11-22T14:30 --target 326.45` (finish by
+14:27). Tables three minutes looser only prune less.

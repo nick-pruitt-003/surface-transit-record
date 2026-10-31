@@ -277,7 +277,11 @@ class TripleTables:
         if os.path.exists(fp) and os.path.exists(dp):
             self.full = np.load(fp, mmap_mode='r'); self.full_done = np.load(dp)
             self.full_complete = bool(self.full_done.all())
-            _, self.idx3 = triple_index()
+            self.T3, self.idx3 = triple_index()
+            # stop-major copy in RAM (4.1 GB, ~20 s): a node reads all 17296 triples at its stop as one row,
+            # where the triple-major file would cost a page per triple
+            self.by_stop = (np.ascontiguousarray(np.asarray(self.full).T) if self.full_complete else None)
+            self._rows_key = None
             if verbose: print(f'triple tables: precomputed {int(self.full_done.sum())}/{len(self.full_done)} '
                               f'({os.path.basename(fp)})', flush=True)
         if os.path.exists(self.path):
@@ -297,6 +301,7 @@ class TripleTables:
         return self.first[k]
 
     def table(self, x, y, z):
+        if len({int(x), int(y), int(z)}) != 3: raise ValueError(f'triple with a repeated state: {(x, y, z)}')
         if self.full is not None:
             i = int(self.idx3[x, y, z])
             if self.full_done[i]: return self.full[i]
@@ -308,10 +313,22 @@ class TripleTables:
             for k1 in ((a, b, c), (b, a, c), (c, a, b)): self.first.pop(k1, None)   # unique to this triple
         return self.T[k]
 
+    def owed_rows(self, owed):
+        """rows of the full table whose three states are all owed (complete table only), memoized per owed set"""
+        key = tuple(owed)
+        if self._rows_key != key:
+            m = np.zeros(N_STATES, bool); m[list(owed)] = True
+            self._rows_key, self._rows = key, np.flatnonzero(m[self.T3].all(axis=1))
+        return self._rows
+
     def margin(self, stop, t, owed):
-        """smallest triple margin (seconds) over the triples this node's tightest pair points at"""
+        """smallest triple margin (seconds): over every owed triple when the table is complete (one row read),
+        else over the triples this node's tightest pair points at"""
         o = np.asarray(owed, dtype=np.int64)
         if len(o) < 3: return np.inf
+        if self.full_complete:
+            rows = self.owed_rows(owed)
+            return float(self.by_stop[stop][rows].min() - np.float32(t - self.PT.D))
         PT = self.PT
         blk = np.asarray(PT.P[stop])
         sub = blk[np.ix_(o, o)]
@@ -331,6 +348,136 @@ class TripleTables:
         np.savez(tmp, **{'_'.join(map(str, k)): v for k, v in self.T.items()})
         os.replace(tmp, self.path); self.dirty = False
         if self.verbose: print(f'triple tables: {len(self.T)} cached to {os.path.basename(self.path)}', flush=True)
+
+
+QUADS_VERSION = 'v1'   # in the quads cache name
+
+
+def _quad_init_spawn(router_args, D, span, tri_path, st_stops):
+    from time_router import cached_router
+    R = cached_router(*router_args, verbose=False)
+    _, idx3 = triple_index()
+    _W.update(F=B.RevFast(R), D=D, span=span, T3=np.load(tri_path, mmap_mode='r'), idx3=idx3,
+              st_stops=st_stops, N=R.N)
+
+
+def _quad_first(item):
+    """w first, then the triple: the latest at every stop, relative to D (quad_probe.py's scan)"""
+    w, (a, b, c) = item
+    F, D, span, T3, st_stops = _W['F'], _W['D'], _W['span'], _W['T3'], _W['st_stops']
+    row = T3[int(_W['idx3'][a, b, c])]
+    nxt = {s: D + float(row[s]) for s in st_stops[w] if np.isfinite(row[s])}
+    if not nxt: return item, np.full(_W['N'], -np.inf, dtype=np.float32)
+    return item, (_latest_from(F, D, span, nxt) - D).astype(np.float32)
+
+
+class QuadTables:
+    """Exact quadruple bound, one step past the triples (quad_probe.py, Oct 31).
+
+    Q[w, x, y, z][stop] is the max over which of the four is collected first of one reverse scan seeded from that
+    state's stops with the full triple table of the other three. A node past it is dead, exactly. The full table is
+    194580 rows (~46 GB, ~37 h), so quads are built lazily, chosen as quad_probe.py chose them: the --quad-k
+    tightest owed triples at the node, each extended by every other owed state. Measured on proofB's logged
+    branches (Oct 31) with k = 4: pairs killed 0 of 16 from 19/48 down, full triples 10, these quads all 16
+    (median margin -19.6 h), and from 7/48 down 29 of 31.
+
+    Built off the hot path: a node tests the candidate quads already built, queues the missing ones (closest to
+    binding first) on a worker pool and moves on; it is not killed by a quad still building, which only lets it
+    live, never prunes a live one. Each finished quad is its own .npy file, written atomically and read back
+    memory-mapped, so a run killed by hand loses nothing and RAM is the OS page cache, not this process.
+    Needs the complete triple table (build_triples.py)."""
+
+    def __init__(self, TT, router_args, k=4, workers=4, inflight=None, verbose=True):
+        if not TT.full_complete:
+            raise SystemExit('--quads needs the complete triple table for this deadline: run build_triples.py')
+        PT = TT.PT
+        self.TT, self.PT, self.k, self.verbose = TT, PT, k, verbose
+        # named by both versions: every quad is built from the triple table
+        self.dir = os.path.join(PT.cache_dir, f'quads_{QUADS_VERSION}_{TRIPLES_VERSION}_{PT.key}')
+        os.makedirs(self.dir, exist_ok=True)
+        self.have = {tuple(int(v) for v in f[:-4].split('_')) for f in os.listdir(self.dir)
+                     if f.endswith('.npy') and '.tmp' not in f}
+        self.Q = {}                   # quad -> memmap row, opened on first use
+        self.scans = 0; self.built = 0; self.errors = []
+        self.pending = {}             # quad -> the four (w, triple) items it waits on
+        self.got = {}                 # (w, triple) -> row, filled by the pool's result thread
+        self.inflight = inflight or 2 * workers
+        if verbose: print(f'quad tables: {len(self.have)} on disk ({os.path.basename(self.dir)})', flush=True)
+        # started on the first new quad: each spawned worker holds its own router (~8 GB)
+        self.pool = None; self.workers, self.router_args = workers, router_args
+
+    def _row(self, q):
+        r = self.Q.get(q)
+        if r is None:
+            r = self.Q[q] = np.load(os.path.join(self.dir, '_'.join(map(str, q)) + '.npy'), mmap_mode='r')
+        return r
+
+    def _submit(self, q):
+        if self.pool is None:
+            import multiprocessing as mp
+            PT = self.PT; tri_path, _ = full_paths(PT.cache_dir, PT.key)
+            self.pool = mp.get_context('spawn').Pool(self.workers, initializer=_quad_init_spawn,
+                                                     initargs=(self.router_args, PT.D, PT.span, tri_path, PT.st_stops))
+        items = [(w, tuple(sorted(set(q) - {w}))) for w in q]
+        self.pending[q] = items
+        for it in items:
+            self.pool.apply_async(_quad_first, (it,), callback=lambda r: self.got.__setitem__(r[0], r[1]),
+                                  error_callback=self.errors.append)
+        self.scans += len(items)
+
+    def _harvest(self, wait=False):
+        """finish every quad whose four scans are back (all pending ones, with wait)"""
+        while True:
+            if self.errors: raise RuntimeError(f'quad worker failed: {self.errors[0]!r}')
+            for q, items in list(self.pending.items()):
+                if all(it in self.got for it in items):
+                    row = np.maximum.reduce([self.got.pop(it) for it in items])
+                    f = os.path.join(self.dir, '_'.join(map(str, q)) + '.npy')
+                    tmp = f + f'.{os.getpid()}.tmp.npy'
+                    np.save(tmp, row); os.replace(tmp, f)
+                    del self.pending[q]; self.have.add(q); self.built += 1
+            if not wait or not self.pending: return
+            time.sleep(0.05)
+
+    def margin(self, stop, t, owed, wait=False):
+        """smallest margin (seconds) over the built quads among this node's candidates. Missing ones are queued;
+        with wait (the --track gate) they are built first, so the gate tests every candidate."""
+        if len(owed) < 4: return np.inf
+        TT = self.TT
+        if self.pending: self._harvest()
+        rel = np.float32(t - self.PT.D)
+        row = TT.by_stop[stop]
+        rows = TT.owed_rows(owed)
+        top = rows[np.argsort(row[rows])[:self.k]]
+        cand = {}                     # quad -> closeness: its tightest triple at this stop, for build order
+        for r in top:
+            tri = [int(v) for v in TT.T3[r]]
+            for w in owed:
+                if w in tri: continue
+                q = tuple(sorted(tri + [int(w)]))
+                if q not in cand:
+                    cand[q] = min(float(row[TT.idx3[q[i], q[j], q[l]]])
+                                  for i, j, l in ((0, 1, 2), (0, 1, 3), (0, 2, 3), (1, 2, 3)))
+        best = np.inf
+        for q in cand:
+            if q in self.have:
+                best = min(best, float(self._row(q)[stop] - rel))
+                if best < 0: return best
+        miss = sorted((q for q in cand if q not in self.have and q not in self.pending), key=cand.get)
+        room = len(miss) if wait else max(0, self.inflight - len(self.pending))
+        for q in miss[:room]: self._submit(q)
+        if wait and self.pending:
+            self._harvest(wait=True)
+            best = min([best] + [float(self._row(q)[stop] - rel) for q in miss])
+        return best
+
+    def dead(self, stop, t, owed):
+        return self.margin(stop, t, owed) < 0
+
+    def close(self):
+        """let queued quads finish (each is saved as it lands), then stop the pool"""
+        if self.pool is not None:
+            self._harvest(wait=True); self.pool.close(); self.pool.join(); self.pool = None
 
 
 def resolve_stop(R, name):
