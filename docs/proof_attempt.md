@@ -111,7 +111,37 @@ below as much as the full search does.
 Skeleton-pinned proofs (fix the Chief day, the Northwest crossing, the Fargo finish) were set aside: they
 would finish, but only prove X is the best of its own shape, which the searches already show.
 
+## A riding-only bound cannot prove these branches dead (Oct 31)
+
+`scripts/tour_bound.py` pins the true riding floor of each proofB branch between a feasible tour and valid lower
+bounds. The floor is a generalised TSP path over "entry stops" (the 3363 heads of edges crossing into a state):
+any sequence of one entry stop per owed state, joined by shortest paths, collects them all, and no route rides
+less. The feasible tour (`ub`) fixes the entry stops optimally for an order (a min-plus pass) and improves the
+order by moves and reversals.
+
+| branch | owed | hours left | lb (single state) | lb (state matrix) | ub (feasible) | 20-wide beam |
+|---|---|---|---|---|---|---|
+| 19/48 Washington | 28 | 142.8 | 71.2 | 71.2 | 133.4 | 171.6 |
+| 23/48 Newark | 24 | 99.5 | 37.2 | 37.2 | **79.5** | 103.6 |
+| 28/48 Boston | 19 | 92.3 | 41.8 | 41.8 | 75.8 | 100.8 |
+| 32/48 Savannah | 15 | 79.6 | 29.2 | 29.2 | 66.8 | 84.1 |
+| 34/48 Jacksonville | 13 | 76.9 | 29.5 | 29.5 | 55.5 | 59.9 |
+
+Two results, both decisive:
+
+1. **The beam's "kills" were the beam overshooting.** On every branch with 30 or fewer owed states the feasible
+   tour comes in 4-38 h under the beam, and under the hours left. Newark (the example above) needs at most 79.5 h
+   of riding against 99.5 h left. So the true riding floor is below the time left on all of them, and **no
+   riding-only bound, however exact, kills any of them.** What makes them hopeless is waiting, not riding. The
+   earlier "28 of 34" in this file is withdrawn.
+2. **The state-matrix bound equals the single-state bound** on almost every row, as CLAUDE.md's first lesson
+   predicts: a matrix of minimum distances between states lets the tour cross a state for free.
+
 ## Where this leaves the proof
 
-On hold. Needed before trying again: a valid whole-tour bound within a few percent of the riding floor at
-under ~10 ms a node. Until then, "nothing beats X" is a finding of the searches, not a proof.
+Option 1 as posed (a whole-tour riding bound) is closed: the gap between these branches and death is timetable
+waiting, which a clock-free bound cannot see. The bounds that do see it are the time-dependent ones the search
+already has (deadline, pairs, triples), and they are exact only for small sets. A proof needs a time-dependent
+bound over larger sets: either wider tables (quadruples cost about 48/4 times the triples, ~10 GB and a day) or a
+cheap timetable-aware relaxation, e.g. charging each owed state its earliest reachable arrival from the branch's
+clock rather than its riding distance. Until then, "nothing beats X" is a finding of the searches, not a proof.
