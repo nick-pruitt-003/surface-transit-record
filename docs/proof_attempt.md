@@ -84,6 +84,33 @@ budget):
 The ranking is better (the open frontier sits deeper) but the per-node cost is not paid back. It stays
 opt-in; it may earn its keep on a new shape where the pair key ranks worse than it does on X.
 
+## Meet in the middle: the forward half (Oct 30-31)
+
+`ride_search --split-at TIME` stops each node at TIME and saves it as a label (stop, arrival, states held);
+a complete harvest (queue emptied) plus a backward half and a join would make a proof. Forward half from
+X's start, proofB's deadline, uncapped, split at Tue Nov 17 18:00 MT (X's midpoint).
+
+Run 1 (pair key, `--goal`, 3 h): queue 353k at 1 h, 765k at 2.8 h, growth falling (+81, +50, +7 per s),
+13221 labels when the budget ran out.
+
+Run 2, overnight (ranking-only options dropped: no `--goal`, `--pair-k 1`, no depth bias; frontier ordered
+earliest-first so dominance prunes more): ~360 nodes/s throughout, 4-5x run 1.
+
+| search time | queue | labels |
+|---|---|---|
+| 3.4 h | 2.42M | 214k |
+| 5.9 h | 2.88M | 334k |
+| 7.4 h | 3.56M (peak) | 400k |
+| 9.0 h | 3.51M | 475k |
+
+It peaked and turned, but shrank ~10 a second: ~100 h more to empty, with the deepest node still at 19/48.
+Stopped at 9 h. Halving the depth does not make the space finishable; the branching is in which states a
+route holds by mid-week, and pairs and triples cannot cut it. Meet in the middle needs the stronger bound
+below as much as the full search does.
+
+Skeleton-pinned proofs (fix the Chief day, the Northwest crossing, the Fargo finish) were set aside: they
+would finish, but only prove X is the best of its own shape, which the searches already show.
+
 ## Where this leaves the proof
 
 On hold. Needed before trying again: a valid whole-tour bound within a few percent of the riding floor at
