@@ -22,6 +22,7 @@ disk under a key of every array the scans read, so a changed router or deadline 
 """
 import hashlib, os, time
 import numpy as np
+from collections import OrderedDict
 from time_router import N_STATES
 import backward as B
 
@@ -350,6 +351,7 @@ class TripleTables:
         if self.verbose: print(f'triple tables: {len(self.T)} cached to {os.path.basename(self.path)}', flush=True)
 
 
+QUADS_OPEN_MAX = 2048
 QUADS_VERSION = 'v1'   # in the quads cache name
 
 
@@ -397,7 +399,7 @@ class QuadTables:
         os.makedirs(self.dir, exist_ok=True)
         self.have = {tuple(int(v) for v in f[:-4].split('_')) for f in os.listdir(self.dir)
                      if f.endswith('.npy') and '.tmp' not in f}
-        self.Q = {}                   # quad -> memmap row, opened on first use
+        self.Q = OrderedDict()        # quad -> memmap row, opened on first use; LRU, since each holds a file open
         self.scans = 0; self.built = 0; self.errors = []
         self.pending = {}             # quad -> the four (w, triple) items it waits on
         self.got = {}                 # (w, triple) -> row, filled by the pool's result thread
@@ -410,14 +412,24 @@ class QuadTables:
         r = self.Q.get(q)
         if r is None:
             r = self.Q[q] = np.load(os.path.join(self.dir, '_'.join(map(str, q)) + '.npy'), mmap_mode='r')
+            if len(self.Q) > QUADS_OPEN_MAX:   # proofQ died at ~10k open quads on Linux's 10240-file limit (Oct 31)
+                self.Q.popitem(last=False)
+        else:
+            self.Q.move_to_end(q)
         return r
 
     def _submit(self, q):
         if self.pool is None:
             import multiprocessing as mp
             PT = self.PT; tri_path, _ = full_paths(PT.cache_dir, PT.key)
-            self.pool = mp.get_context('spawn').Pool(self.workers, initializer=_quad_init_spawn,
-                                                     initargs=(self.router_args, PT.D, PT.span, tri_path, PT.st_stops))
+            if 'fork' in mp.get_all_start_methods():     # Linux/WSL: workers share this process's router
+                _W.update(F=PT.F, D=PT.D, span=PT.span, T3=np.load(tri_path, mmap_mode='r'), idx3=self.TT.idx3,
+                          st_stops=PT.st_stops, N=PT.R.N)
+                self.pool = mp.get_context('fork').Pool(self.workers)
+            else:                                        # Windows: each spawned worker loads its own (~8 GB)
+                self.pool = mp.get_context('spawn').Pool(self.workers, initializer=_quad_init_spawn,
+                                                         initargs=(self.router_args, PT.D, PT.span, tri_path,
+                                                                   PT.st_stops))
         items = [(w, tuple(sorted(set(q) - {w}))) for w in q]
         self.pending[q] = items
         for it in items:

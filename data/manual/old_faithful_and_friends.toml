@@ -1,0 +1,25 @@
+agency = "Old Faithful and Friends"
+
+# Nick screenshot (Nov 14 2025 timetable, confirmed Oct 31 2026: fixed shuttle, runs year round; daily assumed).
+# Bozeman Airport 13:30 -> Gardiner Visitor Center 15:00 -> Mammoth Hot Springs Visitor Center 15:30; back Mammoth 15:50
+# -> Gardiner 16:10 -> Bozeman Airport 18:10. "Estimated" times on the operator's table. $135 Gardiner, $145 Mammoth.
+# Mammoth Hot Springs is in Wyoming (about 5 mi south of the Montana line at Gardiner), so this is Wyoming as an
+# out-and-back from Bozeman. Stop points approximate: BZN terminal, Gardiner on Park St, Albright Visitor Center.
+[stops]
+bzn_airport = { name = "Bozeman Yellowstone Intl Airport (Old Faithful and Friends)", lon = -111.1527, lat = 45.7772 }
+gardiner_vc = { name = "Gardiner Visitor Center (Old Faithful and Friends)", lon = -110.7090, lat = 45.0330 }
+mammoth_vc = { name = "Mammoth Hot Springs Visitor Center (Old Faithful and Friends)", lon = -110.6990, lat = 44.9760 }
+
+[[trip]]
+id = "offs1"
+route = "Old Faithful and Friends Bozeman Airport 13:30 -> Gardiner 15:00 -> Mammoth Hot Springs 15:30 (daily assumed)"
+days = "1111111"
+tz = "America/Denver"
+stops = ["bzn_airport 13:30", "gardiner_vc 15:00", "mammoth_vc 15:30"]
+
+[[trip]]
+id = "offs2"
+route = "Old Faithful and Friends Mammoth Hot Springs 15:50 -> Gardiner 16:10 -> Bozeman Airport 18:10 (daily assumed)"
+days = "1111111"
+tz = "America/Denver"
+stops = ["mammoth_vc 15:50", "gardiner_vc 16:10", "bzn_airport 18:10"]
