@@ -352,6 +352,13 @@ class TripleTables:
 
 
 QUADS_OPEN_MAX = 2048
+try:   # Linux/WSL: lift the soft open-file limit to the hard one (10240 -> 1048576 here), so far more quad rows stay
+    import resource   # open; at 41k quads on disk a 2048 cap was reopening rows, 4% of a proof run (Nov 1)
+    _soft, _hard = resource.getrlimit(resource.RLIMIT_NOFILE)
+    if _soft < _hard: resource.setrlimit(resource.RLIMIT_NOFILE, (_hard, _hard)); _soft = _hard
+    QUADS_OPEN_MAX = max(QUADS_OPEN_MAX, min(60000, _soft // 4))
+except (ImportError, ValueError, OSError):
+    pass
 QUADS_VERSION = 'v1'   # in the quads cache name
 
 
@@ -450,6 +457,36 @@ class QuadTables:
                     del self.pending[q]; self.have.add(q); self.built += 1
             if not wait or not self.pending: return
             time.sleep(0.05)
+
+    def margin_ro(self, stop, t, owed):
+        """For a forked --jobs worker: (smallest margin over the built quads, candidates not built). Builds nothing;
+        the main process gets the misses and queues them (want). A quad built after the fork is found on disk."""
+        if len(owed) < 4: return np.inf, []
+        TT = self.TT
+        rel = np.float32(t - self.PT.D)
+        row = TT.by_stop[stop]
+        rows = TT.owed_rows(owed)
+        top = rows[np.argsort(row[rows])[:self.k]]
+        best, miss = np.inf, []
+        for r in top:
+            tri = [int(v) for v in TT.T3[r]]
+            for w in owed:
+                if w in tri: continue
+                q = tuple(sorted(tri + [int(w)]))
+                if q not in self.have:
+                    if not os.path.exists(os.path.join(self.dir, '_'.join(map(str, q)) + '.npy')):
+                        miss.append(q); continue
+                    self.have.add(q)
+                best = min(best, float(self._row(q)[stop] - rel))
+                if best < 0: return best, []
+        return best, miss
+
+    def want(self, qs):
+        """Main process, --jobs: collect finished builds, then queue wanted quads up to the in-flight cap."""
+        if self.pending: self._harvest()
+        room = max(0, self.inflight - len(self.pending))
+        for q in [q for q in qs if q not in self.have and q not in self.pending][:room]:
+            self._submit(q)
 
     def margin(self, stop, t, owed, wait=False):
         """smallest margin (seconds) over the built quads among this node's candidates. Missing ones are queued;

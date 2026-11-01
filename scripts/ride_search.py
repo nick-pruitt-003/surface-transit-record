@@ -74,6 +74,21 @@ def final_stop(legs):
     return None
 
 
+UNCAPPED = 10000   # --width at or above this is a proof run: every option is pushed
+CEIL_CACHE_MAX = [4096]   # ceiling() rows kept per process; --jobs workers keep fewer
+# --jobs: the node expansion runs in forked workers. The closure is parked here before the fork so a worker
+# can call it without pickling it; IN_WORKER tells the quad test not to start builds of its own.
+_EXPAND = [None]; IN_WORKER = [False]
+
+
+def _worker_init(ceil_max):
+    IN_WORKER[0] = True; CEIL_CACHE_MAX[0] = ceil_max
+
+
+def _expand_job(args):
+    return _EXPAND[0](*args)
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--start'); ap.add_argument('--at')
@@ -152,6 +167,19 @@ def main():
                     'hours per state, which is the thing being minimised.')
     ap.add_argument('--span', type=float, default=260, help='hours the deadline tables scan back over')
     ap.add_argument('--budget', type=float, default=900); ap.add_argument('--nodes', type=int, default=2000000)
+    ap.add_argument('--extend', type=float, default=0, help='hours a run may run past --budget while its frontier '
+                    'keeps falling (checked once per --extend-step); 0 = stop at --budget')
+    ap.add_argument('--extend-step', type=float, default=1800, help='seconds per extension, and the window over '
+                    'which the frontier must have fallen')
+    ap.add_argument('--save-queue', help='best-first: write the frontier and run state here every --checkpoint '
+                    'seconds and when the run stops with nodes still queued, so --resume-queue can carry on')
+    ap.add_argument('--checkpoint', type=float, default=3600, help='seconds between --save-queue writes')
+    ap.add_argument('--jobs', type=int, default=1, help='best-first: expand nodes in this many forked workers '
+                    '(Linux/WSL only). Main pops a batch, workers build menus and run the table tests, main does '
+                    'dominance and the queue. Changes expansion order, not what is pruned')
+    ap.add_argument('--batch', type=int, default=16, help='--jobs: nodes popped per worker per round')
+    ap.add_argument('--resume-queue', help='best-first: start from a --save-queue file instead of the start stop. '
+                    'The search flags and the pair key must match the run that wrote it')
     ap.add_argument('--track', help='reference route pickle: replay its rides through this search and report, '
                     'leg by leg, whether the menu offers them and where they rank. 237 is a control: the test '
                     'is that it reproduces, not that it is beaten.')
@@ -657,8 +685,11 @@ def main():
             capl_ = cap.tolist()
             city_hops(stop, t, aboard, collected, cap, capl_, _endl_list(),
                       lambda w_, t_, k_, g_, wk_=None, sg_=(), lg_=(): out.append(Opt(w_, t_, k_, frozenset(g_), wk_, sg_, lg_)))
-            sort_opts(out, collected, lambda o_: len(o_[3] - collected), t, goal=goal)
-            out[c_['W']:] = [o_ for o_ in out[c_['W']:] if o_.legs][:a.hop_slots]   # --hop-slots
+            # Uncapped (a proof run): every option is pushed whatever its rank, so the sort only sets push order and
+            # was 10% of the run (Nov 1). Capped runs and --menu check sort exactly as before.
+            if a.width < UNCAPPED or goal:
+                sort_opts(out, collected, lambda o_: len(o_[3] - collected), t, goal=goal)
+                out[c_['W']:] = [o_ for o_ in out[c_['W']:] if o_.legs][:a.hop_slots]   # --hop-slots
         return out
 
     def pair_dead(stop, t, collected):
@@ -690,9 +721,18 @@ def main():
         once per ride: one node offered 1674890 candidate alights, and at up to 48 checks each that was tens
         of millions of comparisons per node, which took the search from 103 nodes/s to 2. numpy takes the
         column-wise minimum over the owed rows in about a millisecond and the answer is identical."""
+        c_ = ceil_cache.get(collected)
+        if c_ is not None: return c_
         owed = [y for y in range(N_STATES) if y not in collected]
         if not owed: return L_end
-        return np.minimum(L[owed].min(axis=0), L_end)
+        c_ = np.minimum(L[owed].min(axis=0), L_end)
+        c_.flags.writeable = False      # shared by every node with this set; nothing may write into it
+        if len(ceil_cache) >= CEIL_CACHE_MAX[0]: ceil_cache.pop(next(iter(ceil_cache)))
+        ceil_cache[collected] = c_
+        return c_
+    # Nodes in one layer share collected sets heavily, and the owed-row min was 10% of a proof run's time
+    # (py-spy on proofQ, Nov 1). 4096 rows of 59283 float64 is about 2 GB, oldest out first.
+    ceil_cache = {}
 
     class Menu:
         """The option list, deduplicated as it is built rather than afterwards.
@@ -1072,6 +1112,24 @@ def main():
     # dead time the chain is already spending. Keeping only completed routes threw that away.
     deep_path = [None]
     beat = [time.time()]
+    budget = [a.budget]; qhist = []     # qhist: (time, frontier) per heartbeat, for --extend
+
+    def over_budget():
+        """Out of time or nodes. With --extend, a run whose frontier is still falling at the budget gets another
+        --extend-step seconds, up to --extend hours in all: proofQ's queue turned at 7.7 h and was falling 53/s
+        when its fixed 12 h ran out, and the run could not be saved (Nov 1). Falling means smaller than it was
+        --extend-step seconds before; a flat or growing frontier stops as before."""
+        if seen_nodes[0] > a.nodes: return True
+        el = time.time() - t_run
+        if el <= budget[0]: return False
+        if a.extend and budget[0] + a.extend_step <= a.budget + a.extend * 3600 and qhist:
+            old = [f for t_, f in qhist if t_ <= el - a.extend_step]
+            if old and qhist[-1][1] < old[-1]:
+                budget[0] += a.extend_step
+                print(f'  [{el:5.0f}s] frontier {old[-1]} -> {qhist[-1][1]} over the last {a.extend_step:.0f} s: '
+                      f'budget extended to {budget[0]:.0f} s', flush=True)
+                return False
+        return True
 
     def heartbeat(n_front):
         """Print every 30 s regardless of progress. Reporting only on new depth makes a search that is
@@ -1079,6 +1137,7 @@ def main():
         now = time.time()
         if now - beat[0] < 30: return
         beat[0] = now
+        qhist.append((now - t_run, n_front))
         print(f'  [{now - t_run:5.0f}s] still {deepest[0]}/{NEED}, {seen_nodes[0]} nodes '
               f'({seen_nodes[0] / max(now - t_run, 1):.0f}/s), {n_front} in frontier, {sum(len(v) for v in dom_stop.values())} kept',
               flush=True)
@@ -1112,7 +1171,7 @@ def main():
     NEED = a.states
 
     def dfs(stop, t, collected, aboard, path):
-        if time.time() - t_run > a.budget or seen_nodes[0] > a.nodes: return
+        if over_budget(): return
         seen_nodes[0] += 1
         spent = (t - T0) if not back else (T0 - t)
         if spent > limit[0]: return
@@ -1252,7 +1311,7 @@ def main():
             seq[0] += 1
         while q:
             last_q[0] = q
-            if time.time() - t_run > a.budget or seen_nodes[0] > a.nodes: break
+            if over_budget(): break
             _f, spent, _, stop, t, collected, aboard, path = heapq.heappop(q)
             seen_nodes[0] += 1
             heartbeat(len(q))
@@ -1686,12 +1745,45 @@ def main():
             print('  the start is already jointly dead, which is a statement about the deadline, not the '
                   'search', flush=True)
             return
-        qpush((pri(t_start - T0, len(start_collected), start_stop, t_start, start_collected), t_start - T0, 0, start_stop, t_start,
-               start_collected, None, ()))
-        while q:
-            last_q[0] = q
-            if time.time() - t_run > a.budget or seen_nodes[0] > a.nodes: break
-            it_ = qpop()
+        # The flags that decide what the frontier holds and how it is ordered. Run length, output and worker counts
+        # can change between a run and its resume; anything else would mix two different searches in one queue.
+        free_ = {'budget', 'nodes', 'extend', 'extend_step', 'save_queue', 'checkpoint', 'resume_queue', 'out',
+                 'quad_workers', 'harvest', 'jobs', 'batch'}
+        sig_ = ({k: v for k, v in sorted(vars(a).items()) if k not in free_}, PT.key if PT is not None else None)
+        prev_el = 0.0
+        if a.resume_queue:
+            ck_ = pickle.load(open(a.resume_queue, 'rb'))
+            if ck_['sig'] != sig_:
+                diff_ = sorted(k for k in set(ck_['sig'][0]) | set(sig_[0]) if ck_['sig'][0].get(k) != sig_[0].get(k))
+                sys.exit(f'--resume-queue {a.resume_queue}: written by a different search '
+                         f'({", ".join(diff_) or "pair key / data"} differ); refusing to mix them')
+            for it in ck_['q']: qpush(it)
+            if layered: q.cur = ck_['cur']
+            seq[0] = ck_['seq']; dom_stop.update(ck_['dom']); seen_nodes[0] = ck_['nodes']
+            deepest[0], best[0], limit[0], deep_path[0] = ck_['deepest'], ck_['best'], ck_['limit'], ck_['deep_path']
+            prev_el = ck_['elapsed']
+            print(f'  resumed {len(q)} queued nodes from {a.resume_queue} ({prev_el / 3600:.1f} h of search before, '
+                  f'{seen_nodes[0]} nodes, deepest {deepest[0]}/{NEED})', flush=True)
+        else:
+            qpush((pri(t_start - T0, len(start_collected), start_stop, t_start, start_collected), t_start - T0, 0, start_stop, t_start,
+                   start_collected, None, ()))
+
+        def save_queue(why):
+            """Write the frontier and everything a resume needs, atomically (tmp then rename), so a kill mid-write
+            leaves the previous checkpoint intact."""
+            if not a.save_queue: return
+            t0_ = time.time()
+            ck_ = {'sig': sig_, 'q': list(q), 'cur': q.cur if layered else None, 'seq': seq[0],
+                   'dom': dict(dom_stop), 'nodes': seen_nodes[0], 'deepest': deepest[0], 'best': best[0],
+                   'limit': limit[0], 'deep_path': deep_path[0], 'elapsed': prev_el + time.time() - t_run}
+            tmp_ = a.save_queue + '.tmp'
+            with open(tmp_, 'wb') as f_: pickle.dump(ck_, f_, protocol=pickle.HIGHEST_PROTOCOL)
+            os.replace(tmp_, a.save_queue)
+            print(f'  [{time.time() - t_run:5.0f}s] queue saved ({why}): {len(ck_["q"])} nodes -> {a.save_queue} '
+                  f'in {time.time() - t0_:.0f} s', flush=True)
+        def pop_ok(it_):
+            """The pop-side half of a node: finish tests, depth record, deadline and dominance. True when the node
+            is to be expanded. Runs in the main process only (it reads and writes the shared run state)."""
             _f, spent, sq_, stop, t, collected, aboard, path = it_
             if TE is not None and sq_ not in tour_scored and NEED - len(collected) >= 2:
                 # Score once, at pop. The shortfall only ever raises a key, so a node whose shortfall is zero was
@@ -1701,10 +1793,10 @@ def main():
                 if short_ > 0:
                     tour_moved[0] += 1
                     qpush((_f + a.tour * min(short_, 1e7),) + it_[1:])
-                    continue
+                    return False
             seen_nodes[0] += 1
             heartbeat(len(q))
-            if spent > limit[0]: continue
+            if spent > limit[0]: return False
             # Collecting every state is not the same as finishing. With an end given, the deadline tables
             # prune the whole way on the assumption the chain still has to reach it, so accepting a chain
             # that is standing somewhere else contradicts the pruning that got it there.
@@ -1712,7 +1804,7 @@ def main():
                 limit[0] = spent; best[0] = (spent, list(path), frozenset(collected))
                 print(f'  [{time.time() - t_run:5.0f}s] FOUND {spent / 3600:.2f} h, {len(collected)} states, '
                       f'{len(path)} rides', flush=True)
-                continue
+                return False
             # Finishing on foot over the end state's line, one way (Oct 20). A walk-in is modelled out and back to
             # the stop, so a chain whose last state is the end state collected it but never stood in it, and the
             # test above could not fire: every route ending like X (Fargo, walk to the Moorhead line) was
@@ -1738,16 +1830,25 @@ def main():
             # states of L[y][to] clamped by L_end. L never changes and a queued node never moves, so
             # anything that passed at push passes at pop. That was worth measuring rather than assuming, and
             # the counter said 0 of 13404 pops: the check was redundant and is gone.
-            if L is not None and t > L_end[stop]: continue
-            if a.pairs == 'pop' and pair_dead(stop, t, collected): continue
+            if L is not None and t > L_end[stop]: return False
+            if a.pairs == 'pop' and pair_dead(stop, t, collected): return False
             mk = bits(collected)
-            if dominated(stop, mk, spent): continue
+            if dominated(stop, mk, spent): return False
             remember(stop, mk, spent)
             if SPLIT is not None and t >= SPLIT:
                 # A label, not a node: the head ends here and a backward half picks up. Recorded after the
                 # dominance test, so for one (stop, states) only the earliest arrival is kept.
                 harvest.append((int(stop), float(t), int(mk), path))
-                continue
+                return False
+            return True
+
+        def expand(stop, t, aboard, collected, prefilter=None):
+            """The menu out of a node and the table tests on each move: (children, stats). Reads only tables and the
+            router, so --jobs runs it in forked workers. prefilter(to, new, trip, sp) -> False drops a move before its
+            table tests (the serial path passes the push-side dominance check; main re-checks either way).
+            Each child is (to, at, trip, new, legs, key room); stats are (pair, triple, quad kills, dead end, quads
+            this node wanted but no worker has built yet)."""
+            dead_ = False; pk_ = tk_ = qk_ = 0; want_ = []
             goal = goal_first(stop, t, collected)
             if CM is not None:
                 opts = menu_c(stop, t, aboard, collected, goal)
@@ -1767,38 +1868,87 @@ def main():
             if not opts:
                 # Nothing out of here survives the deadline tables: a kill spot. Where chains run out of moves is
                 # the question the exit census cannot answer, since it only lists what is still alive.
-                de = dead_end[stop]; de[0] += 1; de[1] += len(collected) >= 25; de[2] = max(de[2], len(collected))
+                dead_ = True
+            kids = []
             for o in opts[:a.width] + [o_ for o_ in opts[a.width:] if o_.legs][:a.hop_slots]:
                 to, at, trip, got, walk, seg = o[:6]
                 new = collected | got
-                # Dominance when queuing, not only when popped. Many queued nodes share a stop, a set of
-                # states and a boarded trip, and only the earliest of those can ever matter; checking at push
-                # keeps the duplicates out of the frontier instead of carrying them until they surface.
-                k2 = (to, new, trip); sp_new = at - T0
-                pv = dom.get(k2); qv = queued.get(k2)
-                if pv is not None and pv <= sp_new: continue
-                if qv is not None and qv <= sp_new: continue
-                # Tested before it goes on the frontier, so a jointly dead chain is never counted as depth.
-                # That is the point of the push site and the reason the two are not interchangeable: at pop
-                # the node has already been popped, already raised `deepest`, and already sat in the queue
-                # that the exit census reads.
+                if prefilter is not None and not prefilter(to, new, trip, at - T0): continue
                 rm_ = None
                 if a.key == 'pair' and PT is not None and a.pairs == 'push':
-                    # One PT.worst serves as both the push-side kill and the key: dead iff the margin is negative.
                     mg_, rm_ = room2(to, at, new)
                     if mg_ < 0 and N_STATES - len(new) >= 2:
-                        pair_kills[0] += 1; continue
+                        pk_ += 1; continue
                     if (TT is not None and mg_ < a.triple_gate * 3600 and N_STATES - len(new) >= 3
                             and TT.dead(to, at, [y for y in range(N_STATES) if y not in new])):
-                        triple_kills[0] += 1; continue
-                    if (QT is not None and mg_ < a.quad_gate * 3600 and N_STATES - len(new) >= 4
-                            and QT.dead(to, at, [y for y in range(N_STATES) if y not in new])):
-                        quad_kills[0] += 1; continue
+                        tk_ += 1; continue
+                    if QT is not None and mg_ < a.quad_gate * 3600 and N_STATES - len(new) >= 4:
+                        ow_ = [y for y in range(N_STATES) if y not in new]
+                        if IN_WORKER[0]:
+                            m_, miss_ = QT.margin_ro(to, at, ow_); want_ += miss_
+                        else:
+                            m_ = QT.margin(to, at, ow_)
+                        if m_ < 0:
+                            qk_ += 1; continue
                 elif a.pairs == 'push' and pair_dead(to, at, new): continue
-                queued[k2] = sp_new
+                kids.append((to, at, trip, new, o.legs or ((trip, stop, to, t, at, walk, seg),), rm_))
+            return kids, (pk_, tk_, qk_, dead_, want_)
+
+        def prefilter(to, new, trip, sp_new):
+            k2 = (to, new, trip)
+            pv = dom.get(k2); qv = queued.get(k2)
+            return not ((pv is not None and pv <= sp_new) or (qv is not None and qv <= sp_new))
+
+        def take(it_, kids, st_):
+            """Main process: count, then push each child that is not dominated by now. Dominance when queuing, not
+            only when popped: many queued nodes share a stop, a set of states and a boarded trip, and only the
+            earliest of those can ever matter."""
+            _f, spent, sq_, stop, t, collected, aboard, path = it_
+            pair_kills[0] += st_[0]; triple_kills[0] += st_[1]; quad_kills[0] += st_[2]
+            if st_[3]:
+                # Nothing out of here survives the deadline tables: a kill spot. Where chains run out of moves is
+                # the question the exit census cannot answer, since it only lists what is still alive.
+                de = dead_end[stop]; de[0] += 1; de[1] += len(collected) >= 25; de[2] = max(de[2], len(collected))
+            for to, at, trip, new, legs, rm_ in kids:
+                sp_new = at - T0
+                if not prefilter(to, new, trip, sp_new): continue
+                queued[(to, new, trip)] = sp_new
                 seq[0] += 1
-                qpush((pri(at - T0, len(new), to, at, new, rm_), at - T0, seq[0], to, at, new, trip,
-                       path + (o.legs or ((trip, stop, to, t, at, walk, seg),))))
+                qpush((pri(at - T0, len(new), to, at, new, rm_), at - T0, seq[0], to, at, new, trip, path + legs))
+
+        last_ck = [time.time()]
+        pool_ = None
+        if a.jobs > 1:
+            import gc, multiprocessing as mp
+            if 'fork' not in mp.get_all_start_methods(): sys.exit('--jobs needs fork (Linux/WSL)')
+            if a.menu == 'check' or TE is not None: sys.exit('--jobs: not with --menu check or --tour')
+            _EXPAND[0] = expand
+            gc.collect(); gc.freeze()       # keep the router's objects out of the workers' copy-on-write
+            pool_ = mp.get_context('fork').Pool(a.jobs, initializer=_worker_init, initargs=(512,))
+            print(f'  --jobs {a.jobs}: expansion in forked workers, {a.jobs * a.batch} nodes a round', flush=True)
+        while q:
+            last_q[0] = q
+            if over_budget(): break
+            if a.save_queue and time.time() - last_ck[0] > a.checkpoint:
+                save_queue('checkpoint'); last_ck[0] = time.time()
+            if pool_ is not None:
+                batch_ = []
+                while q and len(batch_) < a.jobs * a.batch:
+                    it_ = qpop()
+                    if pop_ok(it_): batch_.append(it_)
+                if batch_:
+                    res_ = pool_.map(_expand_job, [(it[3], it[4], it[6], it[5]) for it in batch_],
+                                     chunksize=max(1, len(batch_) // (4 * a.jobs)))
+                    want_ = set()
+                    for it_, (kids, st_) in zip(batch_, res_):
+                        take(it_, kids, st_); want_.update(st_[4])
+                    if QT is not None: QT.want(want_)
+            else:
+                it_ = qpop()
+                if not pop_ok(it_): continue
+                _f, spent, sq_, stop, t, collected, aboard, path = it_
+                kids, st_ = expand(stop, t, aboard, collected, prefilter)
+                take(it_, kids, st_)
             if len(q) > a.queue:
                 # Drop only what is provably dead: a node whose clock has passed the limit, or passed the
                 # latest it could still collect something it owes. Both are facts. The old rule kept the best
@@ -1839,6 +1989,8 @@ def main():
                     print(f'  frontier is {len(q)} and all of it is still live; raise --queue rather than '
                           f'guess which to discard', flush=True)
                     break
+        if pool_ is not None: pool_.terminate()
+        if len(q): save_queue('stopped with nodes queued')
 
     sys.setrecursionlimit(20000)
 
@@ -2110,7 +2262,7 @@ def main():
         TT.save()
     if QT is not None:
         print(f'quad prune at push: {quad_kills[0]} nodes killed for owing an uncollectable quad; '
-              f'{len(QT.Q)} quads, {QT.scans} scans this run ({QT.scan_s:.0f} s)', flush=True)
+              f'{len(QT.Q)} quads, {QT.scans} scans this run (built {QT.built})', flush=True)
         QT.close()
     census(last_q[0] or [])
     if best[0] is None:
