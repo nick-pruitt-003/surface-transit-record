@@ -1148,21 +1148,27 @@ def main():
     # chain is that another one at the same stop, no later, holds AT LEAST its states, because anything the
     # weaker chain can still do the stronger one can do too. States live in a 48-bit int here so the
     # superset test is one AND.
-    dom_stop = defaultdict(list)   # stop -> [(states bitmask, elapsed)]
+    dom_stop = defaultdict(list)   # stop -> [(states bitmask, elapsed, aboard)]
 
     def bits(cs):
         m = 0
         for y in cs: m |= 1 << y
         return m
 
-    def dominated(stop, mask, spent):
-        for m, sp in dom_stop[stop]:
-            if sp <= spent and (m & mask) == mask: return True
+    # A node at the same stop with a superset of the states, there no later, dominates, but not when the beaten
+    # node is still aboard a trip the survivor is not: staying on needs no transfer, boarding fresh needs
+    # MIN_TRANSFER, so the survivor must have been there that much earlier (the --dedupe seam, closed Nov 1).
+    def _beats(m, sp, ab, mask, spent, aboard):
+        return (m & mask) == mask and sp <= spent and (ab == aboard or aboard is None or sp + MIN_TRANSFER <= spent)
+
+    def dominated(stop, mask, spent, aboard):
+        for m, sp, ab in dom_stop[stop]:
+            if _beats(m, sp, ab, mask, spent, aboard): return True
         return False
 
-    def remember(stop, mask, spent):
-        lst = [(m, sp) for m, sp in dom_stop[stop] if not ((mask & m) == m and spent <= sp)]
-        lst.append((mask, spent)); dom_stop[stop] = lst
+    def remember(stop, mask, spent, aboard):
+        lst = [e for e in dom_stop[stop] if not _beats(mask, spent, aboard, *e)]
+        lst.append((mask, spent, aboard)); dom_stop[stop] = lst
 
     dom = {}       # (stop, collected, aboard) -> best time EXPANDED, read when popping
     queued = {}    # the same key -> best time already SITTING in the frontier, read only when pushing.
@@ -1327,8 +1333,8 @@ def main():
                       f'at {R.stop_name[stop][:28]}, {len(path)} rides, {seen_nodes[0]} nodes, '
                       f'{len(q)} in frontier', flush=True)
             mk = bits(collected)
-            if dominated(stop, mk, spent): continue
-            remember(stop, mk, spent)
+            if dominated(stop, mk, spent, aboard): continue
+            remember(stop, mk, spent, aboard)
             owed = [y for y in range(N_STATES) if y not in collected]
             if not still_collectable(stop, t, owed, NEED - len(collected)): continue
             opts = rides_into(stop, t, aboard, collected)
@@ -1759,7 +1765,9 @@ def main():
                          f'({", ".join(diff_) or "pair key / data"} differ); refusing to mix them')
             for it in ck_['q']: qpush(it)
             if layered: q.cur = ck_['cur']
-            seq[0] = ck_['seq']; dom_stop.update(ck_['dom']); seen_nodes[0] = ck_['nodes']
+            seq[0] = ck_['seq']
+            for s_, l_ in ck_['dom'].items(): dom_stop[s_] = [e if len(e) == 3 else (*e, None) for e in l_]
+            seen_nodes[0] = ck_['nodes']
             deepest[0], best[0], limit[0], deep_path[0] = ck_['deepest'], ck_['best'], ck_['limit'], ck_['deep_path']
             prev_el = ck_['elapsed']
             print(f'  resumed {len(q)} queued nodes from {a.resume_queue} ({prev_el / 3600:.1f} h of search before, '
@@ -1833,8 +1841,8 @@ def main():
             if L is not None and t > L_end[stop]: return False
             if a.pairs == 'pop' and pair_dead(stop, t, collected): return False
             mk = bits(collected)
-            if dominated(stop, mk, spent): return False
-            remember(stop, mk, spent)
+            if dominated(stop, mk, spent, aboard): return False
+            remember(stop, mk, spent, aboard)
             if SPLIT is not None and t >= SPLIT:
                 # A label, not a node: the head ends here and a backward half picks up. Recorded after the
                 # dominance test, so for one (stop, states) only the earliest arrival is kept.
