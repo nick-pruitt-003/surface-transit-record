@@ -171,3 +171,41 @@ Memphis at -23.8 h. A margin is how late a node is against the latest departure 
 a one minute miss is a whole service interval (the next day's connection). So the tables are built at **14:30**, where X
 fits and the replay must show no kill at all, and the proof runs with `--by 2026-11-22T14:30 --target 326.45` (finish by
 14:27). Tables three minutes looser only prune less.
+
+## The proof from X's start finished (Nov 1)
+
+**No route that leaves Sheridan WY at Thu Nov 12 22:10 reaches Minnesota by Sun Nov 22 14:27; X arrives 14:28.** On the
+current feeds (`6ea9328`, data `496b0bf`), under the model's rules (5 min transfers, 1.4 km walk-ins, the feed set), the
+search queue emptied with nothing under the target.
+
+Run (`proofR`, WSL, `--jobs 16`): `--start "Sheridan WY Taco Bell 1655 Coffeen Ave (Jefferson)" --at 2026-11-09T00:00
+--resume-at 2026-11-12T22:10 --end MN --days 22 --by 2026-11-22T14:30 --target 326.45 --key pair --pairs push --triples
+push --quads push --frontier depth --slack-weight 3 --depth-bias 8 --city-hop --hop-slots 4 --width 100000`, with the
+full triple table built at the 14:30 deadline (119 min, 20 forked workers). No `--goal`, `--pair-k 1`: ranking-only
+options cost per node and change no prune.
+
+| | |
+|---|---|
+| gate first | X replay at 14:30: 0 of 48 killed by pair, triple or quad; tightest margins +0.25 / +0.25 / +0.37 h |
+| search | **4.0 h** (12:45-16:49), 6.21M nodes at 430/s, within the 12 h budget |
+| queue | ~610k peak at 1.5 h, 469k at 2.9 h, 179k at 3.7 h, empty at 4.0 h |
+| killed at push | 87.1M by pairs, 83.0M by triples, 70.6M by quads (15062 new quads, 60312 scans) |
+| deepest | 47/48 at Fargo, X's west and a Louisville - Nashville - Chicago - Omaha middle, which cannot make the Moorhead walk in time |
+
+What made it finish where proofB (8.2 h, queue still growing) did not: full triples tested at every node instead of 3
+lazy ones, quads, and ~13x the node rate (step 1: drop the ranking scan and the uncapped sort, ~2.2x; step 2: forked
+expansion, `--jobs 16`, ~6x on top; 20 min benchmark on the old data: 39 -> 64 -> 521 nodes/s).
+
+**Scope.** This proves X is the fastest route **from its own start** (stop, departure, Minnesota end). It says nothing
+about other start stops, other days, or other end states.
+
+**Open caveat: node dominance and staying aboard.** `dominated()` drops a node when another at the same stop holds a
+superset of its states and arrived no later. The key ignores `aboard`, so a node that could stay on its bus can be
+dropped for one that arrived up to MIN_TRANSFER earlier and cannot board that bus fresh (the same seam as `--dedupe`,
+CLAUDE.md). Closing it: require `sp + MIN_TRANSFER <= spent` unless the aboard trips match, and rerun (~4 h).
+
+**Where to point it next.** Not X's other start days: X does not run every day, and its finish hangs on a once-a-day
+Fargo departure, so a variant of X beats it only by saving ~24 h. The productive use is the near-miss shapes whose
+finish has frequent options (a state-line walk, a corridor with several departures), where an hour saved early can
+actually land at the end: pin each one's start, build its end's tables at X's time, and either find a route under X
+or prove none exists from there.
