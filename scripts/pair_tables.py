@@ -82,6 +82,7 @@ def fingerprint(R, F, D, span, L_end, L):
     for arr in (L_end, L):
         h.update(np.ascontiguousarray(np.asarray(arr, dtype=np.float64)).tobytes())
     h.update(repr((float(D), float(span), N_STATES, BUILD_VERSION)).encode())
+    if getattr(F, 'tag', None): h.update(F.tag.encode())   # the mirror scan; absent on RevFast, so old keys hold
     # backward.py and csa.c are the scan; this file's source is not hashed, so a fix to the validation below
     # does not throw away ten minutes of tables. Bump BUILD_VERSION when _row or the P layout changes.
     for src in ('backward.py', 'csa.c'):
@@ -91,9 +92,10 @@ def fingerprint(R, F, D, span, L_end, L):
 
 
 class PairTables:
-    def __init__(self, R, D, span=260, L_end=None, L=None, cache_dir=None, workers=None, verbose=True, router_args=None):
+    def __init__(self, R, D, span=260, L_end=None, L=None, cache_dir=None, workers=None, verbose=True, router_args=None,
+                 F=None):
         self.R, self.D = R, float(D)
-        F = B.RevFast(R)
+        F = F if F is not None else B.RevFast(R)   # rev_tables.FwdNeg for the backward search's mirror tables
         st_stops = [[] for _ in range(N_STATES)]
         for s in range(R.N):
             if R.state[s] >= 0: st_stops[int(R.state[s])].append(s)
@@ -123,6 +125,7 @@ class PairTables:
         if 'fork' in mp.get_all_start_methods():
             pool = mp.get_context('fork').Pool(n)
         elif router_args is not None:
+            if type(F) is not B.RevFast: raise SystemExit('mirror tables (FwdNeg) need fork: build them on Linux/WSL')
             n = min(n, 12)   # each spawned worker holds its own router
             pool = mp.get_context('spawn').Pool(n, initializer=_spawn_init,
                                                 initargs=(router_args, float(D), span, L, st_stops))
@@ -234,6 +237,7 @@ def build_full_triples(PT, router_args=None, workers=None, verbose=True):
         pool = mp.get_context('fork').Pool(n)
     else:
         if router_args is None: raise ValueError('spawn workers need router_args to load the router')
+        if type(PT.F) is not B.RevFast: raise SystemExit('mirror tables (FwdNeg) need fork: build them on Linux/WSL')
         n = min(n, 12)
         pool = mp.get_context('spawn').Pool(n, initializer=_tri_init_spawn,
                                             initargs=(router_args, PT.D, PT.span, pairs_path, PT.st_stops))
@@ -434,6 +438,7 @@ class QuadTables:
                           st_stops=PT.st_stops, N=PT.R.N)
                 self.pool = mp.get_context('fork').Pool(self.workers)
             else:                                        # Windows: each spawned worker loads its own (~8 GB)
+                if type(PT.F) is not B.RevFast: raise SystemExit('mirror quads (FwdNeg) need fork: run on Linux/WSL')
                 self.pool = mp.get_context('spawn').Pool(self.workers, initializer=_quad_init_spawn,
                                                          initargs=(self.router_args, PT.D, PT.span, tri_path,
                                                                    PT.st_stops))

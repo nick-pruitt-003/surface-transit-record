@@ -261,7 +261,9 @@ def main():
     if a.split_at and back: sys.exit('--split-at is forward only for now')
     SPLIT = datetime.fromisoformat(a.split_at).replace(tzinfo=ZoneInfo(a.tz)).timestamp() if a.split_at else None
     harvest = []
-    router_args = ((when.date() if not back else (when - __import__('datetime').timedelta(days=12)).date()), a.days)
+    # backward: the window ends a little after --by unless --at names its first day (then it is the forward router)
+    router_args = ((when.date() if not back else datetime.fromisoformat(a.at).date() if a.at
+                    else (when - __import__('datetime').timedelta(days=12)).date()), a.days)
     R = cached_router(*router_args)
     ab = lambda x: ABBR[R.state_names[x]] if x >= 0 else '--'
     owes = lambda got: ','.join(sorted(ABBR[n] for i, n in enumerate(R.state_names) if i not in got and n in ABBR))   # progress lines
@@ -511,7 +513,18 @@ def main():
         if L is None:
             sys.exit('--pairs needs the deadline tables, which need --end and --by')
         from pair_tables import PairTables
-        PT = PairTables(R, D, a.span, L_end=L_end, L=L, router_args=router_args)
+        if back:
+            # The mirror (rev_tables.py): earliest you can be at a stop having collected a set, starting anywhere at
+            # or after T_min. Negated, so the same classes and the same `t > table` test work with -t.
+            from rev_tables import FwdNeg, single_tables
+            T_min_ = D - a.target * 3600
+            Fm = FwdNeg(R, D)
+            t_m = time.time(); Lm_end, Lm = single_tables(R, Fm, T_min_, st_stops)
+            print(f'  mirror single-state tables in {time.time() - t_m:.0f} s (start floor '
+                  f'{datetime.fromtimestamp(T_min_, ZoneInfo(a.tz)):%a %Y-%m-%d %H:%M})', flush=True)
+            PT = PairTables(R, -T_min_, a.span, L_end=Lm_end, L=Lm, router_args=router_args, F=Fm)
+        else:
+            PT = PairTables(R, D, a.span, L_end=L_end, L=L, router_args=router_args)
     pair_kills = [0]; triple_kills = [0]; quad_kills = [0]
     TE = None; tour_scored = set(); tour_moved = [0]
     if a.tour > 0:
@@ -1349,6 +1362,12 @@ def main():
                 pv = dom.get(k2); qv = queued.get(k2)
                 if pv is not None and pv <= sp2: continue
                 if qv is not None and qv <= sp2: continue
+                if PT is not None and NEED == N_STATES and len(new) < NEED:
+                    # mirror tables: could the owed states all have been collected before standing at frm at bt?
+                    owed_ = [y for y in range(N_STATES) if y not in new]
+                    if PT.dead(frm, -bt, owed_): pair_kills[0] += 1; continue
+                    if TT is not None and TT.dead(frm, -bt, owed_): triple_kills[0] += 1; continue
+                    if QT is not None and QT.dead(frm, -bt, owed_): quad_kills[0] += 1; continue
                 queued[k2] = sp2
                 seq[0] += 1
                 heapq.heappush(q, (sp2 - a.credit * 3600 * len(new), sp2, seq[0], frm, bt, new, trip,
