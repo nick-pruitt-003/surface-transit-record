@@ -507,7 +507,7 @@ def main():
     # y's stops with L[z] instead of L_end, so nothing here is estimated either. It matters because the
     # per-state test is structurally unable to see a chain that owes CA and WA from Springfield MA: each is
     # individually reachable, neither after the other.
-    PT = None
+    PT = None; Lm = None
     if a.key == 'pair' and not a.pairs: sys.exit('--key pair needs --pairs (push, so the margin doubles as the prune)')
     if a.pairs:
         if L is None:
@@ -1324,54 +1324,148 @@ def main():
         if a.skip: print(f'  not owed (--skip): {a.skip}; {N_STATES - len(start_c)} states to collect', flush=True)
         seeds = [(int(x), D) for x in ends]
         q = []; seq = [0]
-        for st0_, t0_ in seeds:
-            heapq.heappush(q, (-(D - t0_) + a.credit * 3600 * len(start_c), D - t0_, seq[0], st0_, t0_,
-                               frozenset(start_c), None, ()))
-            seq[0] += 1
-        while q:
-            last_q[0] = q
-            if over_budget(): break
-            _f, spent, _, stop, t, collected, aboard, path = heapq.heappop(q)
+        # Same split as best_first (Nov 5): pop-side tests in the main process, the menu and the table tests in
+        # expand_b, which --jobs runs in forked workers; --save-queue / --resume-queue / --extend as forward.
+        free_ = {'budget', 'nodes', 'extend', 'extend_step', 'save_queue', 'checkpoint', 'resume_queue', 'out',
+                 'quad_workers', 'harvest', 'jobs', 'batch'}
+        sig_ = ({k: v for k, v in sorted(vars(a).items()) if k not in free_}, PT.key if PT is not None else None)
+        prev_el = 0.0
+        if a.resume_queue:
+            ck_ = pickle.load(open(a.resume_queue, 'rb'))
+            if ck_['sig'] != sig_:
+                diff_ = sorted(k for k in set(ck_['sig'][0]) | set(sig_[0]) if ck_['sig'][0].get(k) != sig_[0].get(k))
+                sys.exit(f'--resume-queue {a.resume_queue}: written by a different search '
+                         f'({", ".join(diff_) or "pair key / data"} differ); refusing to mix them')
+            q = list(ck_['q']); heapq.heapify(q); seq[0] = ck_['seq']
+            for s_, l_ in ck_['dom'].items(): dom_stop[s_] = list(l_)
+            seen_nodes[0] = ck_['nodes']
+            deepest[0], best[0], limit[0], deep_path[0] = ck_['deepest'], ck_['best'], ck_['limit'], ck_['deep_path']
+            prev_el = ck_['elapsed']
+            print(f'  resumed {len(q)} queued nodes from {a.resume_queue} ({prev_el / 3600:.1f} h of search before, '
+                  f'{seen_nodes[0]} nodes, deepest {deepest[0]}/{NEED})', flush=True)
+        else:
+            for st0_, t0_ in seeds:
+                heapq.heappush(q, (-(D - t0_) + a.credit * 3600 * len(start_c), D - t0_, seq[0], st0_, t0_,
+                                   frozenset(start_c), None, ()))
+                seq[0] += 1
+
+        def save_queue(why):
+            if not a.save_queue: return
+            t0_ = time.time()
+            ck_ = {'sig': sig_, 'q': list(q), 'seq': seq[0], 'dom': dict(dom_stop), 'nodes': seen_nodes[0],
+                   'deepest': deepest[0], 'best': best[0], 'limit': limit[0], 'deep_path': deep_path[0],
+                   'elapsed': prev_el + time.time() - t_run}
+            tmp_ = a.save_queue + '.tmp'
+            with open(tmp_, 'wb') as f_: pickle.dump(ck_, f_, protocol=pickle.HIGHEST_PROTOCOL)
+            os.replace(tmp_, a.save_queue)
+            print(f'  [{time.time() - t_run:5.0f}s] queue saved ({why}): {len(ck_["q"])} nodes -> {a.save_queue} '
+                  f'in {time.time() - t0_:.0f} s', flush=True)
+
+        def pop_ok_b(it_):
+            """Main process: finish test, depth record, limit and dominance. True when the node is to be expanded."""
+            _f, spent, _, stop, t, collected, aboard, path = it_
             seen_nodes[0] += 1
             heartbeat(len(q))
-            if spent > limit[0]: continue
+            if spent > limit[0]: return False
             if len(collected) >= NEED:
                 limit[0] = spent; best[0] = (spent, list(path), frozenset(collected))
                 print(f'  [{time.time() - t_run:5.0f}s] FOUND {spent / 3600:.2f} h back to '
                       f'{R.stop_name[stop][:30]}, {len(collected)} states, {len(path)} rides', flush=True)
-                continue
+                return False
             if len(collected) > deepest[0]:
                 deepest[0] = len(collected); deep_path[0] = (spent, list(path), frozenset(collected))
                 print(f'  [{time.time() - t_run:5.0f}s] {len(collected)}/{NEED} states, {spent / 3600:6.1f} h back, '
                       f'at {R.stop_name[stop][:28]}, {len(path)} rides, {seen_nodes[0]} nodes, '
                       f'{len(q)} in frontier', flush=True)
             mk = bits(collected)
-            if dominated(stop, mk, spent, aboard): continue
+            if dominated(stop, mk, spent, aboard): return False
             remember(stop, mk, spent, aboard)
-            owed = [y for y in range(N_STATES) if y not in collected]
-            if not still_collectable(stop, t, owed, NEED - len(collected)): continue
+            return True
+
+        mirror = PT is not None and NEED == N_STATES
+
+        def expand_b(stop, t, aboard, collected, prefilter=None):
+            """The rides into a node and the mirror-table tests on each: (children, stats), as expand forward.
+            With the mirror tables the per-node still_collectable scan is not needed: a child owing one state is
+            tested on the single-state mirror table, and two or more owed are covered by the pair table, whose
+            entries are never looser than either state's own."""
+            pk_ = tk_ = qk_ = 0; want_ = []
+            if not mirror:
+                owed = [y for y in range(N_STATES) if y not in collected]
+                if not still_collectable(stop, t, owed, NEED - len(collected)):
+                    return [], (0, 0, 0, False, [])
             opts = rides_into(stop, t, aboard, collected)
-            n_new = lambda o: len(o[3] - collected)
-            sort_opts(opts, collected, n_new, t, back=True)
+            if a.width < UNCAPPED:
+                sort_opts(opts, collected, lambda o: len(o[3] - collected), t, back=True)
+            kids = []
             for o in opts[:a.width]:
                 frm, bt, trip, got, walk, seg = o[:6]
                 new = collected | got
-                sp2 = D - bt
-                if sp2 > limit[0]: continue
-                k2 = (frm, new, trip)
-                pv = dom.get(k2); qv = queued.get(k2)
-                if pv is not None and pv <= sp2: continue
-                if qv is not None and qv <= sp2: continue
-                if PT is not None and NEED == N_STATES and len(new) < NEED:
-                    # mirror tables: could the owed states all have been collected before standing at frm at bt?
+                if prefilter is not None and not prefilter(frm, new, trip, D - bt): continue
+                if mirror and len(new) < NEED:
+                    # could the owed states all have been collected before standing at frm at bt?
                     owed_ = [y for y in range(N_STATES) if y not in new]
-                    if PT.dead(frm, -bt, owed_): pair_kills[0] += 1; continue
-                    if TT is not None and TT.dead(frm, -bt, owed_): triple_kills[0] += 1; continue
-                    if QT is not None and QT.dead(frm, -bt, owed_): quad_kills[0] += 1; continue
-                queued[k2] = sp2
+                    if len(owed_) == 1:
+                        if -bt > Lm[owed_[0], frm]: pk_ += 1; continue
+                    elif PT.dead(frm, -bt, owed_): pk_ += 1; continue
+                    elif TT is not None and len(owed_) >= 3 and TT.dead(frm, -bt, owed_): tk_ += 1; continue
+                    elif QT is not None and len(owed_) >= 4:
+                        if IN_WORKER[0]:
+                            m_, miss_ = QT.margin_ro(frm, -bt, owed_); want_ += miss_
+                        else:
+                            m_ = QT.margin(frm, -bt, owed_)
+                        if m_ < 0: qk_ += 1; continue
+                kids.append((frm, bt, trip, new, (trip, frm, stop, bt, t, walk, seg)))
+            return kids, (pk_, tk_, qk_, not opts, want_)
+
+        def prefilter(to, new, trip, sp_new):
+            k2 = (to, new, trip)
+            pv = dom.get(k2); qv = queued.get(k2)
+            return not ((pv is not None and pv <= sp_new) or (qv is not None and qv <= sp_new))
+
+        def take_b(it_, kids, st_):
+            path = it_[7]
+            pair_kills[0] += st_[0]; triple_kills[0] += st_[1]; quad_kills[0] += st_[2]
+            for frm, bt, trip, new, leg in kids:
+                sp2 = D - bt
+                if sp2 > limit[0] or not prefilter(frm, new, trip, sp2): continue
+                queued[(frm, new, trip)] = sp2
                 seq[0] += 1
-                heapq.heappush(q, (sp2 - a.credit * 3600 * len(new), sp2, seq[0], frm, bt, new, trip,
-                                   path + ((trip, frm, stop, bt, t, walk, seg),)))
+                heapq.heappush(q, (sp2 - a.credit * 3600 * len(new), sp2, seq[0], frm, bt, new, trip, path + (leg,)))
+
+        last_ck = [time.time()]
+        pool_ = None
+        if a.jobs > 1:
+            import gc, multiprocessing as mp
+            if 'fork' not in mp.get_all_start_methods(): sys.exit('--jobs needs fork (Linux/WSL)')
+            _EXPAND[0] = expand_b
+            gc.collect(); gc.freeze()
+            pool_ = mp.get_context('fork').Pool(a.jobs, initializer=_worker_init, initargs=(512,))
+            print(f'  --jobs {a.jobs}: backward expansion in forked workers, {a.jobs * a.batch} nodes a round', flush=True)
+        while q:
+            last_q[0] = q
+            if over_budget(): break
+            if a.save_queue and time.time() - last_ck[0] > a.checkpoint:
+                save_queue('checkpoint'); last_ck[0] = time.time()
+            if pool_ is not None:
+                batch_ = []
+                while q and len(batch_) < a.jobs * a.batch:
+                    it_ = heapq.heappop(q)
+                    if pop_ok_b(it_): batch_.append(it_)
+                if batch_:
+                    res_ = pool_.map(_expand_job, [(it[3], it[4], it[6], it[5]) for it in batch_],
+                                     chunksize=max(1, len(batch_) // (4 * a.jobs)))
+                    want_ = set()
+                    for it_, (kids, st_) in zip(batch_, res_):
+                        take_b(it_, kids, st_); want_.update(st_[4])
+                    if QT is not None: QT.want(want_)
+            else:
+                it_ = heapq.heappop(q)
+                if not pop_ok_b(it_): continue
+                kids, st_ = expand_b(it_[3], it_[4], it_[6], it_[5], prefilter)
+                take_b(it_, kids, st_)
+        if pool_ is not None: pool_.terminate()
+        if len(q): save_queue('stopped with nodes queued')
 
     def route_record(path_, spent_, collected_, complete_, back_=False):
         """A chain in the shape everything downstream already reads.
@@ -2142,10 +2236,11 @@ def main():
         print(f'\n{seen_nodes[0]} nodes in {el2:.0f} s ({seen_nodes[0] / max(el2, 1):.0f}/s); '
               f'deepest {deepest[0]}/{NEED} states')
         if PT is not None:
-            # The backward search has no pair site wired, so this reads 0 and says so rather than implying
-            # the prune ran. Wiring it needs the mirrored table (collect y then z going backwards is not the
-            # same question), which is its own measurement.
-            print(f'pair prune is not wired into the backward search; {pair_kills[0]} kills')
+            print(f'mirror prune at push: {pair_kills[0]} killed by a single or a pair, {triple_kills[0]} by a triple, '
+                  f'{quad_kills[0]} by a quad' + ('' if NEED == N_STATES else ' (off: --states below 48)'))
+        if QT is not None:
+            print(f'mirror quads: {len(QT.have)} on disk, {QT.scans} scans this run (built {QT.built})', flush=True)
+            QT.close()
         census(last_q[0] or [])
         if best[0] is None:
             print(f'nothing reached {NEED} states under {a.target} h in the budget')
