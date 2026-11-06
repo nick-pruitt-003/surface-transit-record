@@ -279,8 +279,9 @@ def main():
     R = cached_router(*router_args)
     if FLIGHTS:
         ABBR.update({n_: n_ for n_ in R.state_names})       # ISO codes name themselves
-        _arr_at = {}
-        for k_, key_ in enumerate(R.ctrip): _arr_at[(key_, int(R.cto[k_]))] = float(R.arr[k_])
+        # every arrival of a trip at a stop (a set: a merged turnaround chain can visit a stop twice)
+        _arr_at = defaultdict(set)
+        for k_, key_ in enumerate(R.ctrip): _arr_at[(key_, int(R.cto[k_]))].add(float(R.arr[k_]))
     ab = lambda x: ABBR[R.state_names[x]] if x >= 0 else '--'
     owes = lambda got: ','.join(sorted(ABBR[n] for i, n in enumerate(R.state_names) if i not in got and n in ABBR))   # progress lines
     print(f'{a.dir} from {when:%a %Y-%m-%d %H:%M}, limit {a.target} h, {a.states} states required', flush=True)
@@ -1069,7 +1070,7 @@ def main():
         # walkable and what needs local transit; deciding again here only throws its answer away.
         if FLIGHTS:
             # landside: the node is a claim alight (CLAIM_EXTRA after the landing); ground: landside or off a drive
-            landside = aboard is not None and abs(_arr_at.get((aboard, s), -1e18) - (t - CLAIM_EXTRA)) < 1
+            landside = aboard is not None and (float(t) - CLAIM_EXTRA) in _arr_at.get((aboard, s), ())
             ground = landside or aboard is None or aboard in R.is_drive
         for j, w in [(s, 0)] + list(R.foot.get(s, ())):
             t_ok = t + w + (0 if j == s else 0)
@@ -1560,7 +1561,10 @@ def main():
         t0_ = legs_[0][3] if legs_ else T0
         return dict(path=legs_, spent=spent_, collected=sorted(collected_), complete=complete_,
                     start=R.stop_name[st0_], t0=float(t0_), order=order_,
-                    service_date=str(R.d0) if hasattr(R, 'd0') else None)
+                    service_date=str(R.d0) if hasattr(R, 'd0') else None,
+                    # which router the indices in `path` refer to: a result only verifies against its own
+                    router=((os.environ.get('BUS48_ROUTER'), os.path.getmtime(os.environ['BUS48_ROUTER']))
+                            if os.environ.get('BUS48_ROUTER') else None))
 
     if a.track:
         import pickle as _pk
