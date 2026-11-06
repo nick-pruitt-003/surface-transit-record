@@ -1163,6 +1163,20 @@ def main():
         return menu.list() if menu is not None else out
 
     best = [None]; limit = [a.target * 3600]; seen_nodes = [0]; t_run = time.time(); deepest = [0]
+
+    def _save_deep():
+        # the deepest chain, saved as it improves, so a run that stalls can be stopped without losing it (Nov 6: a
+        # search stuck at 153/197 had to be left running for hours only to write this at the end)
+        if not a.out:
+            return
+        try:
+            sp_, pa_, co_ = deep_path[0]
+            tmp_ = a.out + '.deepest.tmp'
+            with open(tmp_, 'wb') as fh_:
+                pickle.dump(route_record(pa_, sp_, co_, False, back), fh_)
+            os.replace(tmp_, a.out + '.deepest')
+        except Exception as e_:
+            print(f'  (deepest chain not saved: {e_})', flush=True)
     last_q = [None]      # the frontier as the budget ran out, for the exit census
     # The deepest chain, win or not. A run that stalls at 31 of 48 is the interesting input for
     # repair_probe: the question it answers is how many of the twenty it still owes are sitting in
@@ -1244,7 +1258,7 @@ def main():
                   f'{len(path)} rides', flush=True)
             return
         if len(collected) > deepest[0]:
-            deepest[0] = len(collected); deep_path[0] = (spent, list(path), frozenset(collected))
+            deepest[0] = len(collected); deep_path[0] = (spent, list(path), frozenset(collected)); _save_deep()
             print(f'  [{time.time() - t_run:5.0f}s] {len(collected)}/{NEED} states, {spent / 3600:6.1f} h spent, '
                   f'at {R.stop_name[stop][:28]}, {len(path)} rides, {seen_nodes[0]} nodes; owes {owes(collected)}', flush=True)
         if L is not None:
@@ -1419,7 +1433,7 @@ def main():
                       f'{R.stop_name[stop][:30]}, {len(collected)} states, {len(path)} rides', flush=True)
                 return False
             if len(collected) > deepest[0]:
-                deepest[0] = len(collected); deep_path[0] = (spent, list(path), frozenset(collected))
+                deepest[0] = len(collected); deep_path[0] = (spent, list(path), frozenset(collected)); _save_deep()
                 print(f'  [{time.time() - t_run:5.0f}s] {len(collected)}/{NEED} states, {spent / 3600:6.1f} h back, '
                       f'at {R.stop_name[stop][:28]}, {len(path)} rides, {seen_nodes[0]} nodes, '
                       f'{len(q)} in frontier', flush=True)
@@ -2012,7 +2026,7 @@ def main():
                               f'{len(path)} rides + the walk over the {ab(END_ST)} line from {R.stop_name[stop][:28]}',
                               flush=True)
             if len(collected) > deepest[0]:
-                deepest[0] = len(collected); deep_path[0] = (spent, list(path), frozenset(collected))
+                deepest[0] = len(collected); deep_path[0] = (spent, list(path), frozenset(collected)); _save_deep()
                 print(f'  [{time.time() - t_run:5.0f}s] {len(collected)}/{NEED} states, {spent / 3600:6.1f} h spent, '
                       f'at {R.stop_name[stop][:28]}, {len(path)} rides, {seen_nodes[0]} nodes, '
                       f'{len(q)} in frontier; owes {owes(collected)}', flush=True)
