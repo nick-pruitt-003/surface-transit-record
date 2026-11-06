@@ -1084,6 +1084,10 @@ def main():
                 if a.city_hop and key in city_trip_key: continue     # offered whole, by city_hops below
                 if FLIGHTS:
                     drive_ = key in R.is_drive
+                    if drive_:
+                        # a drive departs every few minutes; only the first one after t can matter (a later one
+                        # arrives later with the same countries), so each drive chain is offered once
+                        if key[1].split('|')[0] in seen: continue
                     same_ac = j == s and (key == aboard or key == R.next_plane.get((aboard, s)))
                     if same_ac and (not landside or R.same_plane[s]): pass      # aboard, or the clause
                     elif drive_ and ground: pass                                # on the ground already
@@ -1091,7 +1095,7 @@ def main():
                 # staying aboard is free only on the same trip at the same stop; if this came from a stop
                 # walked to, the chain got off and walked, so it pays the transfer like anything else
                 elif not (key == aboard and j == s) and R.dep[k] < t_ok + MIN_TRANSFER: continue
-                seen.add(key)
+                seen.add(key[1].split('|')[0] if FLIGHTS and key in R.is_drive else key)
                 cs = trip_conns[key]
                 p = int(conn_pos[k])
                 got = set()
@@ -1677,6 +1681,10 @@ def main():
                      and o[1] <= at + (2 * max((w for y_, w in walkin.get(al, ()) if y_ in _hw), default=0) if _hw else 0))
                     if hop_n else
                     (lambda o: o[0] == al and o[2] == trip and o.walk is None and not o.legs))
+            if FLIGHTS and trip in R.is_drive:
+                _blk = trip[1].split('|')[0]
+                same = (lambda o, _b=_blk: o[0] == al and o[2] in R.is_drive and o[2][1].split('|')[0] == _b
+                        and o[1] <= at)
             if FLIGHTS and d.get('claims') and trip not in R.is_drive:
                 # a flight leg is matched with the same choice the run made there: claim, or connect airside
                 _want = {R.state_names.index(c_) for c_ in d['claims'][n - 1]} - set(collected)
