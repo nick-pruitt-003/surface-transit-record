@@ -25,6 +25,13 @@ import numpy as np
 from time_router import TimeRouter, load_feeds, cached_router, MIN_TRANSFER, N_STATES, WALK_MAX_KM
 import backward as B
 from common import ABBR
+# BUS48_FLIGHTS=1: the every-country rules (hfcyttec/flight_router.py builds the router). A flight claims only the
+# country you get off in; claiming means going landside, so the option is ready CLAIM_EXTRA after landing and a
+# flight after it needs MIN_TRANSFER more (the rules' 60 min claim connection), while a drive can start at once;
+# re-boarding the same aircraft after a claim (the same-plane clause) only at airports R.same_plane allows.
+# Drives are trips and credit every country they stop in, as a bus does. Off, nothing below changes.
+FLIGHTS = os.environ.get('BUS48_FLIGHTS') == '1'
+CLAIM_EXTRA = int(os.environ.get('BUS48_CLAIM_EXTRA', 30)) * 60   # minutes on the ground a claim adds (rules: 60 - 30)
 
 
 class Opt(NamedTuple):
@@ -125,6 +132,11 @@ def main():
                     'default until a replay says otherwise: a ranking change that reproduces fewer of the '
                     'control\'s legs is a worse ranking however good its reasoning sounds.')
     ap.add_argument('--width', type=int, default=12, help='rides tried per node')
+    ap.add_argument('--board-stops', choices=('useful', 'all'), default='useful',
+                    help='--dir backward: where a city trip may be boarded. useful (the default) mirrors the forward '
+                         'alight rule: an intercity stop or a footpath to one, a walk-in, a stop two city routes share, '
+                         'or a stop in another state than where the ride ends. all boards at every stop, which at a '
+                         'big city system is thousands of options a node and ran the Nov 6 gate out of memory')
     ap.add_argument('--city-stops', choices=('useful', 'all'), default='all',
                     help="where a city-transit ride may be left. 'all': at every stop it calls at, the old behaviour. "
                          "'useful' (Oct 19): only where getting off can matter: an intercity stop or one the router "
@@ -265,6 +277,10 @@ def main():
     router_args = ((when.date() if not back else datetime.fromisoformat(a.at).date() if a.at
                     else (when - __import__('datetime').timedelta(days=12)).date()), a.days)
     R = cached_router(*router_args)
+    if FLIGHTS:
+        ABBR.update({n_: n_ for n_ in R.state_names})       # ISO codes name themselves
+        _arr_at = {}
+        for k_, key_ in enumerate(R.ctrip): _arr_at[(key_, int(R.cto[k_]))] = float(R.arr[k_])
     ab = lambda x: ABBR[R.state_names[x]] if x >= 0 else '--'
     owes = lambda got: ','.join(sorted(ABBR[n] for i, n in enumerate(R.state_names) if i not in got and n in ABBR))   # progress lines
     print(f'{a.dir} from {when:%a %Y-%m-%d %H:%M}, limit {a.target} h, {a.states} states required', flush=True)
@@ -292,6 +308,7 @@ def main():
     START = (int(a.start[1:]) if a.start and a.start.startswith('#') else      # '#N': router stop index
              R.stops_matching(a.start)[0] if a.start else None)
     inv = {v: k for k, v in ABBR.items()}
+    if FLIGHTS: inv = {n_: n_ for n_ in R.state_names}   # ISO codes; some are also US abbreviations (IN, GA)
 
     # A state is collected by a ride OR by a border walk-in (Nick's rule 1 and 4). Counting only the states a
     # ride's stops sit in misses every state taken on foot, and the reference route takes Mississippi that way:
@@ -334,6 +351,7 @@ def main():
         rts = set()
         for j in nb: rts |= city_routes.get(j, set())
         if len(rts) >= 2: useful_stop[s_] = True
+    board_l = useful_stop.tolist() if a.board_stops == 'useful' else [True] * R.N   # before --city-stops all
     if a.city_stops == 'all': useful_stop[:] = True
     useful_l = useful_stop.tolist(); hop_target_l = hop_target.tolist()
     if a.city_hop:
@@ -548,7 +566,7 @@ def main():
     # same board_at / trip_conns / conn_pos / walkin the Python path reads, so both see one index.
     CM = None
     if (a.menu != 'py' and L is not None and a.order == 'slack' and not a.dedupe
-            and not (PT is not None and a.rerank) and N_STATES <= 64):
+            and not (PT is not None and a.rerank) and N_STATES <= 64 and not FLIGHTS):
         import ctypes, subprocess
         here = os.path.dirname(os.path.abspath(__file__)); src = os.path.join(here, 'menu.c')
         # named by the source's hash: Windows cannot overwrite a DLL another running search has loaded
@@ -1049,6 +1067,10 @@ def main():
         # losing the Memphis one cost it Mississippi, after which alight_ok correctly refused every stop from
         # Kansas onward because Mississippi could no longer be collected. time_router already decides what is
         # walkable and what needs local transit; deciding again here only throws its answer away.
+        if FLIGHTS:
+            # landside: the node is a claim alight (CLAIM_EXTRA after the landing); ground: landside or off a drive
+            landside = aboard is not None and abs(_arr_at.get((aboard, s), -1e18) - (t - CLAIM_EXTRA)) < 1
+            ground = landside or aboard is None or aboard in R.is_drive
         for j, w in [(s, 0)] + list(R.foot.get(s, ())):
             t_ok = t + w + (0 if j == s else 0)
             times = dep_times.get(j)
@@ -1060,17 +1082,27 @@ def main():
                 key = R.ctrip[k]
                 if key in seen: continue
                 if a.city_hop and key in city_trip_key: continue     # offered whole, by city_hops below
+                if FLIGHTS:
+                    drive_ = key in R.is_drive
+                    same_ac = j == s and (key == aboard or key == R.next_plane.get((aboard, s)))
+                    if same_ac and (not landside or R.same_plane[s]): pass      # aboard, or the clause
+                    elif drive_ and ground: pass                                # on the ground already
+                    elif R.dep[k] < t_ok + MIN_TRANSFER: continue
                 # staying aboard is free only on the same trip at the same stop; if this came from a stop
                 # walked to, the chain got off and walked, so it pays the transfer like anything else
-                if not (key == aboard and j == s) and R.dep[k] < t_ok + MIN_TRANSFER: continue
+                elif not (key == aboard and j == s) and R.dep[k] < t_ok + MIN_TRANSFER: continue
                 seen.add(key)
                 cs = trip_conns[key]
                 p = int(conn_pos[k])
                 got = set()
                 fresh = False        # has this ride collected anything the chain did not already hold?
+                fl_ = FLIGHTS and key not in R.is_drive
                 for kk in cs[p:]:
                     to = int(R.cto[kk]); st = int(R.state[to])
-                    if st >= 0:
+                    if fl_:
+                        got = {st} if st >= 0 else set()       # a flight claims only where you get off
+                        fresh = st >= 0 and st not in collected
+                    elif st >= 0:
                         got.add(st)
                         if st not in collected: fresh = True
                     at = float(R.arr[kk])
@@ -1097,7 +1129,14 @@ def main():
                         continue
                     # --city-stops useful: ride through city-transit stops where getting off cannot matter
                     if not useful_l[to] and key in city_trip_key and R.state[to] == R.state[j]: continue
-                    push(to, at, key, got, None, (k, kk))
+                    if fl_ and fresh:
+                        # two ways off a flight in a country not yet held: claim it (landside, ready CLAIM_EXTRA
+                        # later) or connect airside without claiming (the run lands in Istanbul and Nairobi and
+                        # connects in 50 min, claiming them on a later visit)
+                        push(to, at + CLAIM_EXTRA, key, got, None, (k, kk))
+                        push(to, at, key, set(), None, (k, kk))
+                    else:
+                        push(to, at, key, got, None, (k, kk))
                     # Stepping over the line on foot is how the route takes Mississippi, but it is a move, not
                     # a freebie: you get off, walk out, and walk back, and only then carry on. Crediting it at
                     # every stop a ride passes, for nothing, let the search collect states it never visited in
@@ -1304,6 +1343,8 @@ def main():
                         if st_ >= 0: got.add(st_)
                         bt = float(R.dep[kk])
                         if bt < T_min: break
+                        # the forward alight rule, mirrored: a city trip is boarded where something can happen
+                        if not board_l[frm] and key in city_trip_key and st_ == R.state[j]: continue
                         push(frm, bt, key, got, None, (cs[n], k))
                         for y2, w2 in walkin.get(frm, ()):
                             if y2 in got or y2 in collected: continue
@@ -1416,7 +1457,9 @@ def main():
                             m_ = QT.margin(frm, -bt, owed_)
                         if m_ < 0: qk_ += 1; continue
                 kids.append((frm, bt, trip, new, (trip, frm, stop, bt, t, walk, seg)))
-            return kids, (pk_, tk_, qk_, not opts, want_)
+            # one request per quad, not one per child that missed it: thousands of children a node ask for the
+            # same few, and the duplicates were all pickled back to the main process
+            return kids, (pk_, tk_, qk_, not opts, list(set(want_)))
 
         def prefilter(to, new, trip, sp_new):
             k2 = (to, new, trip)
@@ -1433,7 +1476,7 @@ def main():
                 seq[0] += 1
                 heapq.heappush(q, (sp2 - a.credit * 3600 * len(new), sp2, seq[0], frm, bt, new, trip, path + (leg,)))
 
-        last_ck = [time.time()]
+        last_ck = [time.time()]; rounds_b = [0]
         pool_ = None
         if a.jobs > 1:
             import gc, multiprocessing as mp
@@ -1456,6 +1499,11 @@ def main():
                     res_ = pool_.map(_expand_job, [(it[3], it[4], it[6], it[5]) for it in batch_],
                                      chunksize=max(1, len(batch_) // (4 * a.jobs)))
                     want_ = set()
+                    if rounds_b[0] < 5:
+                        rounds_b[0] += 1
+                        print(f'  round {rounds_b[0]}: {len(batch_)} nodes, {sum(len(k_) for k_, _ in res_)} children, '
+                              f'{sum(len(s_[4]) for _, s_ in res_)} quad requests, '
+                              f'{sum(len(it_[5]) for it_ in batch_) / max(1, len(batch_)):.1f} states held', flush=True)
                     for it_, (kids, st_) in zip(batch_, res_):
                         take_b(it_, kids, st_); want_.update(st_[4])
                     if QT is not None: QT.want(want_)
@@ -1516,9 +1564,12 @@ def main():
         from time_search import Search
         d = _pk.load(open(a.track, 'rb'))
         st0 = R.stop_name.index(d['start'])
-        S = Search(R, st0, d['t0'], [], 1)
-        ts.bind(R, st0, d['t0'], S)
-        _, legs = S.evaluate(d['order'])
+        if d.get('legs'):        # a control given as its rides (hfcyttec: the run's own flights and drives)
+            legs = d['legs']
+        else:
+            S = Search(R, st0, d['t0'], [], 1)
+            ts.bind(R, st0, d['t0'], S)
+            _, legs = S.evaluate(d['order'])
         rides = [l for l in legs if l[0] == 'ride']
         print(f'\nreplaying {len(rides)} rides of {a.track} through this search '
               f'(order {a.order}, width {a.width})\n', flush=True)
@@ -1626,6 +1677,11 @@ def main():
                      and o[1] <= at + (2 * max((w for y_, w in walkin.get(al, ()) if y_ in _hw), default=0) if _hw else 0))
                     if hop_n else
                     (lambda o: o[0] == al and o[2] == trip and o.walk is None and not o.legs))
+            if FLIGHTS and d.get('claims') and trip not in R.is_drive:
+                # a flight leg is matched with the same choice the run made there: claim, or connect airside
+                _want = {R.state_names.index(c_) for c_ in d['claims'][n - 1]} - set(collected)
+                _base = same
+                same = lambda o, _b=_base, _w=_want: _b(o) and (bool(set(o[3]) - set(collected)) == bool(_w))
             rank = next((i + 1 for i, o in enumerate(opts) if same(o)), None)
             got = next((o[3] for o in opts if same(o)), frozenset())
             info = R.trip_info.get(trip, ('', ''))
@@ -1709,6 +1765,8 @@ def main():
                 else: rec_path.append((o_[2], stop, o_[0], t, o_[1], o_.walk, o_.seg))
                 rec_got |= set(o_[3]) | ({o_.walk} if o_.walk is not None else set())
             collected = collected | got | frozenset(by_walk.get(al, ()))
+            # flights: the node's time is the option's (a claim alight is ready CLAIM_EXTRA after landing)
+            if FLIGHTS and rank is not None: at = float(opts[rank - 1][1])
             stop, t, aboard = al, at, trip
             # The prune has to be gated by the control like everything else in the search, and the search
             # sites live in best_first, which --track never reaches. So test the control's own nodes here: a

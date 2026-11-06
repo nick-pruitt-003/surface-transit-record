@@ -64,7 +64,7 @@ STOP_TZ_LOCAL = os.environ.get('BUS48_STOP_TZ') == '1'
 # proof slice that never rides the Seattle-Boise-SLC-Denver Greyhound, Oct 30). Feed 'manual' drops a hand-entered trip
 # by its id, or stem:index when it has none.
 DROP_EXTRA = os.environ.get('BUS48_DROP_EXTRA', '')
-N_STATES = 48
+N_STATES = int(os.environ.get('BUS48_N_STATES', 48))   # 197 for the every-country router (hfcyttec)
 STATE_TZ = {'AL':'America/Chicago','AZ':'America/Phoenix','AR':'America/Chicago','CA':'America/Los_Angeles','CO':'America/Denver','CT':'America/New_York','DE':'America/New_York','FL':'America/New_York','GA':'America/New_York','ID':'America/Boise','IL':'America/Chicago','IN':'America/Indiana/Indianapolis','IA':'America/Chicago','KS':'America/Chicago','KY':'America/New_York','LA':'America/Chicago','ME':'America/New_York','MD':'America/New_York','MA':'America/New_York','MI':'America/Detroit','MN':'America/Chicago','MS':'America/Chicago','MO':'America/Chicago','MT':'America/Denver','NE':'America/Chicago','NV':'America/Los_Angeles','NH':'America/New_York','NJ':'America/New_York','NM':'America/Denver','NY':'America/New_York','NC':'America/New_York','ND':'America/Chicago','OH':'America/New_York','OK':'America/Chicago','OR':'America/Los_Angeles','PA':'America/New_York','RI':'America/New_York','SC':'America/New_York','SD':'America/Chicago','TN':'America/Chicago','TX':'America/Chicago','UT':'America/Denver','VT':'America/New_York','VA':'America/New_York','WA':'America/Los_Angeles','WV':'America/New_York','WI':'America/Chicago','WY':'America/Denver'}
 
 
@@ -926,6 +926,13 @@ def cached_router(date, days, cache_dir=None, verbose=True):
     to the feeds or to this file produces a different key and a rebuild rather than a hit.
     """
     import hashlib, pickle, glob
+    # A router built elsewhere (hfcyttec/flight_router.py: airports, countries, flights and drives in this class's
+    # shape), loaded as it is. The dates are the pickle's own; the caller's are not checked against it.
+    if os.environ.get('BUS48_ROUTER'):
+        with open(os.environ['BUS48_ROUTER'], 'rb') as fh: R = pickle.load(fh)
+        R._init_fast()
+        if verbose: print(f"router from {os.environ['BUS48_ROUTER']}: {R.N} stops, {len(R.dep)} connections", flush=True)
+        return R
     here = os.path.dirname(os.path.abspath(__file__))
     cache_dir = cache_dir or os.path.join(here, '..', 'out')
     files = sorted(glob.glob(os.path.join(here, '..', 'data', '**', '*'), recursive=True))
