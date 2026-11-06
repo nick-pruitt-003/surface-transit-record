@@ -203,9 +203,56 @@ about other start stops, other days, or other end states.
 superset of its states and arrived no later. The key ignores `aboard`, so a node that could stay on its bus can be
 dropped for one that arrived up to MIN_TRANSFER earlier and cannot board that bus fresh (the same seam as `--dedupe`,
 CLAUDE.md). Closing it: require `sp + MIN_TRANSFER <= spent` unless the aboard trips match, and rerun (~4 h).
+**Closed in `a4db915` (Nov 1 18:39)**, and hand-applied to the WSL copy at 18:34, so every proof below ran with it.
+This X proof did not; it was not rerun (Nick, Nov 5: beating X from its own start needs ~24 h of savings, because
+the Sioux Falls - Fargo bus runs once a day), and the reverse search below covers X's finish with the fix.
 
 **Where to point it next.** Not X's other start days: X does not run every day, and its finish hangs on a once-a-day
 Fargo departure, so a variant of X beats it only by saving ~24 h. The productive use is the near-miss shapes whose
 finish has frequent options (a state-line walk, a corridor with several departures), where an hour saved early can
 actually land at the end: pin each one's start, build its end's tables at X's time, and either find a route under X
 or prove none exists from there.
+
+## Proofs from the near-miss starts (Nov 1-6)
+
+Each pins a near-miss route's own start (stop and time) and asks whether **anything** reaches its end state within X's
+232.13 h from there. Queue empty means no: not that route, nor any other order from that start. Same machinery as
+the X proof (`--key pair --pairs push --triples push --quads push`, full triple table built at the deadline), all on
+WSL at code `6ea9328` plus the dominance fix (identical to `a4db915`, applied by hand Nov 1 18:34), data `496b0bf`,
+under the model's rules (5 min transfers, 1.4 km walk-ins, the feed set).
+
+| start (pinned) | end | deadline | result | search | nodes | killed: pairs / triples / quads | deepest |
+|---|---|---|---|---|---|---|---|
+| Fargo, Mon Nov 9 11:34 (the Moorhead AR route, 235.73 h) | AR | Thu Nov 19 03:55 | **queue empty, nothing** | 71 min, 8 jobs | 1.37M | 3.6M / 25.7M / 19.1M | 24/48 |
+| Huntington, Thu Nov 12 00:34 (the Control, 237.5 h) | VT | Sat Nov 21 16:55 | **queue empty, nothing** | 10.4 h (9.0 h at 8 jobs, then 1.4 h at 16) | 10.0M | 10.8M / 15.4M / 26.2M | 21/48 at 187 h |
+| Wheeling, Wed Nov 11 20:54 (241.17 h) | VT | Sat Nov 21 13:15 | **queue empty, nothing** | 4.3 h (4.0 h, a WSL crash, then 15 min resumed) | 6.10M | 2.0M / 5.6M / 6.7M (resumed part) | 19/48 |
+| Fulton Amtrak, Mon Nov 9 03:45 (Fulton Meteor, 241.61 h) | MI | Wed Nov 18 20:05 | **queue empty, nothing** | 4.7 h, 16 jobs | 4.83M | 4.7M / 68.7M / 107.6M | 21/48 |
+
+Notes:
+
+- **Restarts lose almost nothing.** `--save-queue` writes the queue hourly; the Control was resumed at 16 jobs from its 8
+  job save, and Wheeling from its 15:45 save after WSL went down at 15:52 (Windows stayed up). The resumed Wheeling ran
+  at ~6600 nodes/s against 354/s before, because its quads were already on disk.
+- **Pace depends on the quads already built**, not the start: a proof is slow (150-350 nodes/s) while it builds the
+  quads it needs and fast once they exist. The queue rises, holds flat for an hour or more, then falls.
+- **Scope**, as for X: each is a statement about its pinned start and end state, under this feed set. Tornado Greeley
+  (239.88 h) was not run (Nick: its question is the start time, not the middle). The Record shape (238.83 h) has no
+  proof of its own.
+
+## The reverse search from X's finish (queued Nov 6)
+
+The forward proofs pin a start; X's question is the other way round, because its end is fixed by a once-a-day bus
+(Sioux Falls 10:00 - Fargo 14:05, Thu-Mon) and its start is free. `--dir backward` stands at Fargo at a day's 14:05 with
+MN held as collected (`--skip MN`: the 83 min walk over the Red River) and asks whether any start no earlier than the
+deadline minus the target reaches it holding the other 47. Mirror tables (`rev_tables.py`, `build_triples.py --back`)
+prune it the way the forward tables prune forward.
+
+First launch (Nov 6 02:48) did not search: the chain script omitted `--key pair`, which `--triples` requires, and its
+`search()` returned `tail`'s exit code, so the refusal was logged as "gate exited 0, found nothing". Both fixed; gate
+relaunched Nov 6 08:40. (`--key` does not order the backward search; the flag only satisfies the check.)
+
+`~/bus48/out/reverseX.sh` (WSL, unattended, resumable) runs after Fulton: update the WSL copy to `pipeline`, then a
+**gate** on Sun Nov 22 at 230.80 h to Fargo, which X fits (230.75 h), and which must find something or the chain
+stops; then one **proof** per finish day at 230.74 h, just under X: Nov 22, 21, 23, 20, 19. Finish days before Nov 22
+start before Nov 12 and cross the Northeast Corridor before the Portal Bridge cutover ends (Nov 16), so those proofs
+hold for that broken week only.
