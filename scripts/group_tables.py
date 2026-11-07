@@ -110,3 +110,21 @@ class GroupTables:
             v = float(self.T[gi][m, stop] - rel)
             if v < best: best, which = v, gi
         return best, which
+
+    def burn(self, stop, t, collected, to, new):
+        """Hinge slack a move burns beyond its own travel time, in seconds: the largest drop, over groups still owed,
+        in the latest time the group can be cleared from where you stand, T[owed][stop] - T[owed'][to] (owed' after
+        the move's own collections, so collecting a member lowers the burn). Both margins move with the deadline by
+        the same amount, so the difference does not: it sees the Pacific even when the deadline is loose. Positive
+        means the move leaves you later than you could afford for that group; a move within the region burns ~0."""
+        best = -np.inf
+        for gi, g in enumerate(self.groups):
+            m0 = m1 = 0
+            for b, y in enumerate(g):
+                if y not in collected: m0 |= 1 << b
+                if y not in new: m1 |= 1 << b
+            if m1 == 0 or m0 & (m0 - 1) == 0: continue    # group finished, or under two owed before the move
+            a, z = float(self.T[gi][m0, stop]), float(self.T[gi][m1, to])
+            if not (np.isfinite(a) and np.isfinite(z)): continue
+            if a - z > best: best = a - z
+        return max(best, 0.0)

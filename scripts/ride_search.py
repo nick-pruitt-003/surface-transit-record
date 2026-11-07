@@ -132,11 +132,16 @@ def main():
                     'default until a replay says otherwise: a ranking change that reproduces fewer of the '
                     'control\'s legs is a worse ranking however good its reasoning sounds.')
     ap.add_argument('--width', type=int, default=12, help='rides tried per node')
-    ap.add_argument('--board-stops', choices=('useful', 'all'), default='useful',
+    ap.add_argument('--board-stops', choices=('hub', 'useful', 'all'), default='hub',
                     help='--dir backward: where a city trip may be boarded. useful (the default) mirrors the forward '
                          'alight rule: an intercity stop or a footpath to one, a walk-in, a stop two city routes share, '
                          'or a stop in another state than where the ride ends. all boards at every stop, which at a '
-                         'big city system is thousands of options a node and ran the Nov 6 gate out of memory')
+                         'big city system is thousands of options a node and ran the Nov 6 gate out of memory. '
+                         'hub (Nov 6, the default): a city trip is boarded at an intercity stop, a walk-in or over '
+                         'a state line; at an interchange only as the second half of a two-ride city journey from '
+                         'one of those (wait at most --city-horizon), joined into one move, so subway interchanges '
+                         'never become nodes. Under useful, half the Nov 6 gate queue sat at 1565 New York stops '
+                         'holding only 543 state sets: the same chain parked at ~400 stations.')
     ap.add_argument('--city-stops', choices=('useful', 'all'), default='all',
                     help="where a city-transit ride may be left. 'all': at every stop it calls at, the old behaviour. "
                          "'useful' (Oct 19): only where getting off can matter: an intercity stop or one the router "
@@ -243,6 +248,11 @@ def main():
                     help='hinge groups (JSON lists of state names): with --key pair, the margin and the key also take '
                          'the tightest owed group as a whole (group_tables.py), so a chain that leaves a region of '
                          'sparse services before clearing it dies, or ranks low, although every pair of it is in reach')
+    ap.add_argument('--burn', type=float, default=0, metavar='W',
+                    help='with --groups: rank a move down by W x the hinge slack it burns beyond its travel time (the '
+                         'drop in the tightest owed group's latest-clearing time from here to there). Deadline-'
+                         'independent, so it sees a region left early even when every margin is still large. Ranking '
+                         'only: the prune stays on the exact margins.')
     ap.add_argument('--triples', choices=('off', 'push'), default='off',
                     help="exact triple bound at push, after the pair test (pair_tables.TripleTables). Needs --pairs.")
     ap.add_argument('--triple-gate', type=float, default=24.0,
@@ -796,7 +806,7 @@ def main():
         def __init__(self, back=False):
             self.front = defaultdict(list); self.back = back
 
-        def add(self, where, when_, trip, got, walk=None, seg=()):
+        def add(self, where, when_, trip, got, walk=None, seg=(), legs=()):
             fr = self.front[where]
             for g, w, _ in fr:
                 if (w - MIN_TRANSFER >= when_ if self.back else w + MIN_TRANSFER <= when_) and got <= g:
@@ -805,7 +815,7 @@ def main():
             fr[:] = [e for e in fr
                      if not ((when_ - MIN_TRANSFER >= e[1] if self.back else when_ + MIN_TRANSFER <= e[1])
                              and e[0] <= keep)]
-            fr.append((keep, when_, Opt(where, when_, trip, keep, walk, seg)))
+            fr.append((keep, when_, Opt(where, when_, trip, keep, walk, seg, legs)))
 
         def list(self):
             return [e[2] for fr in self.front.values() for e in fr]
@@ -1347,6 +1357,40 @@ def main():
                     if cnt >= need_more: return True
             return False
 
+        HUB = a.board_stops == 'hub'
+
+        def transfer_in(x, bt2, key2, got2, seg2, leg2, collected, push):
+            """--board-stops hub: city rides into interchange x by bt2 - MIN_TRANSFER, boarded at a hub (an
+            intercity stop, a walk-in, or over a state line), each joined with the ride out of x into one move.
+            The move's trip and seg are the FIRST ride's, the one a further step back may stay aboard; its legs
+            are both rides, later one first, as the backward path stores them."""
+            t_x = bt2 - MIN_TRANSFER
+            times = arr_times.get(x)
+            if not times: return
+            i = bisect.bisect_right(times, t_x) - 1
+            seen = set()
+            while i >= 0 and times[i] >= t_x - a.city_horizon * 3600:
+                k = arr_at[x][i]; i -= 1
+                key = R.ctrip[k]
+                if key in seen or key == key2 or key not in city_trip_key: continue
+                seen.add(key)
+                cs = trip_conns[key]
+                got = set(got2)
+                for n in range(int(conn_pos[k]), -1, -1):
+                    kk = cs[n]
+                    frm = int(R.cfrom[kk]); st_ = int(R.state[frm])
+                    if st_ >= 0: got.add(st_)
+                    bt = float(R.dep[kk])
+                    if bt < T_min: break
+                    if not hop_target_l[frm] and st_ == R.state[x]: continue
+                    legs = (leg2, (key, frm, x, bt, bt2, None, (cs[n], k)))
+                    push(frm, bt, key, got, None, (cs[n], k), legs)
+                    for y2, w2 in walkin.get(frm, ()):
+                        if y2 in got or y2 in collected: continue
+                        if bt - 2 * w2 < T_min: continue
+                        push(frm, bt - 2 * w2, key, got | {y2}, y2, (cs[n], k),
+                             (leg2, (key, frm, x, bt - 2 * w2, bt2, y2, (cs[n], k))))
+
         def rides_into(s_, t, aboard, collected):
             """Rides that could have dropped you here by t: (board stop, board time, trip, states collected)."""
             menu = Menu(back=True) if a.dedupe else None
@@ -1376,7 +1420,13 @@ def main():
                         bt = float(R.dep[kk])
                         if bt < T_min: break
                         # the forward alight rule, mirrored: a city trip is boarded where something can happen
-                        if not board_l[frm] and key in city_trip_key and st_ == R.state[j]: continue
+                        if key in city_trip_key and st_ == R.state[j]:
+                            if not board_l[frm]: continue
+                            if HUB and not hop_target_l[frm]:
+                                # an interchange: only as the second ride of a city journey from a hub
+                                transfer_in(frm, bt, key, got, (cs[n], k), (key, frm, s_, bt, t, None, (cs[n], k)),
+                                            collected, push)
+                                continue
                         push(frm, bt, key, got, None, (cs[n], k))
                         for y2, w2 in walkin.get(frm, ()):
                             if y2 in got or y2 in collected: continue
@@ -1488,7 +1538,7 @@ def main():
                         else:
                             m_ = QT.margin(frm, -bt, owed_)
                         if m_ < 0: qk_ += 1; continue
-                kids.append((frm, bt, trip, new, (trip, frm, stop, bt, t, walk, seg)))
+                kids.append((frm, bt, trip, new, o.legs or ((trip, frm, stop, bt, t, walk, seg),)))
             # one request per quad, not one per child that missed it: thousands of children a node ask for the
             # same few, and the duplicates were all pickled back to the main process
             return kids, (pk_, tk_, qk_, not opts, list(set(want_)))
@@ -1501,12 +1551,12 @@ def main():
         def take_b(it_, kids, st_):
             path = it_[7]
             pair_kills[0] += st_[0]; triple_kills[0] += st_[1]; quad_kills[0] += st_[2]
-            for frm, bt, trip, new, leg in kids:
+            for frm, bt, trip, new, legs in kids:
                 sp2 = D - bt
                 if sp2 > limit[0] or not prefilter(frm, new, trip, sp2): continue
                 queued[(frm, new, trip)] = sp2
                 seq[0] += 1
-                heapq.heappush(q, (sp2 - a.credit * 3600 * len(new), sp2, seq[0], frm, bt, new, trip, path + (leg,)))
+                heapq.heappush(q, (sp2 - a.credit * 3600 * len(new), sp2, seq[0], frm, bt, new, trip, path + legs))
 
         last_ck = [time.time()]; rounds_b = [0]
         pool_ = None
@@ -2100,6 +2150,8 @@ def main():
                 rm_ = None
                 if a.key == 'pair' and PT is not None and a.pairs == 'push':
                     mg_, rm_ = room2(to, at, new)
+                    if GT is not None and a.burn:
+                        rm_ = rm_ - a.burn * GT.burn(int(stop), float(t), collected, int(to), new)
                     if mg_ < 0 and N_STATES - len(new) >= 2:
                         pk_ += 1; continue
                     if (TT is not None and mg_ < a.triple_gate * 3600 and N_STATES - len(new) >= 3
