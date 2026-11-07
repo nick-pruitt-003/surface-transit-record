@@ -239,6 +239,10 @@ def main():
                     'is 625 of 780 under --goal)')
     ap.add_argument('--city-horizon', type=float, default=4.0, help='hours a --city-hop journey may take')
     ap.add_argument('--city-rounds', type=int, default=4, help='city rides a --city-hop journey may chain')
+    ap.add_argument('--groups', default=None, metavar='FILE',
+                    help='hinge groups (JSON lists of state names): with --key pair, the margin and the key also take '
+                         'the tightest owed group as a whole (group_tables.py), so a chain that leaves a region of '
+                         'sparse services before clearing it dies, or ranks low, although every pair of it is in reach')
     ap.add_argument('--triples', choices=('off', 'push'), default='off',
                     help="exact triple bound at push, after the pair test (pair_tables.TripleTables). Needs --pairs.")
     ap.add_argument('--triple-gate', type=float, default=24.0,
@@ -551,6 +555,15 @@ def main():
         from tour_est import TourEst
         t_te = time.time(); TE = TourEst(R, END_ST, width=a.tour_width)
         print(f'  tour estimate (width {a.tour_width}, weight {a.tour}) ready in {time.time() - t_te:.0f} s', flush=True)
+    GT = None
+    if a.groups:
+        if PT is None or a.key != 'pair': sys.exit('--groups needs --key pair (it is combined with the pair margin)')
+        import json as _json
+        from group_tables import GroupTables
+        _ix = {n_: i_ for i_, n_ in enumerate(R.state_names)}
+        _gs = [[_ix[n_] for n_ in g_ if n_ in _ix] for g_ in _json.load(open(a.groups))]
+        GT = GroupTables(PT, L, _gs, router_args=router_args)
+        print(f'  hinge groups: {len(GT.groups)} ({sum(map(len, GT.groups))} states) from {a.groups}', flush=True)
     TT = None
     if a.triples != 'off':
         if PT is None or a.key != 'pair' or a.pairs != 'push':
@@ -1929,8 +1942,13 @@ def main():
                 ow_ = [y for y in range(N_STATES) if y not in col_]
                 if len(ow_) >= 2:
                     if a.pair_k <= 1:
-                        m_ = PT.worst(int(stop_), float(t_), ow_)[0]; return m_, m_
-                    return PT.worst_and_mean(int(stop_), float(t_), ow_, a.pair_k)
+                        m_ = PT.worst(int(stop_), float(t_), ow_)[0]; k_ = m_
+                    else:
+                        m_, k_ = PT.worst_and_mean(int(stop_), float(t_), ow_, a.pair_k)
+                    if GT is not None:            # the tightest owed hinge group, as a whole: prunes and ranks
+                        g_ = GT.margin(int(stop_), float(t_), col_)[0]
+                        m_, k_ = min(m_, g_), min(k_, g_)
+                    return m_, k_
             s_ = node_slack(stop_, t_, col_); return s_, s_
         def room(stop_, t_, col_):
             return room2(stop_, t_, col_)[1]
