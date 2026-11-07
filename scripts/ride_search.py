@@ -132,16 +132,19 @@ def main():
                     'default until a replay says otherwise: a ranking change that reproduces fewer of the '
                     'control\'s legs is a worse ranking however good its reasoning sounds.')
     ap.add_argument('--width', type=int, default=12, help='rides tried per node')
-    ap.add_argument('--board-stops', choices=('hub', 'useful', 'all'), default='hub',
+    ap.add_argument('--board-stops', choices=('hub', 'useful', 'all'), default='useful',
                     help='--dir backward: where a city trip may be boarded. useful (the default) mirrors the forward '
                          'alight rule: an intercity stop or a footpath to one, a walk-in, a stop two city routes share, '
                          'or a stop in another state than where the ride ends. all boards at every stop, which at a '
                          'big city system is thousands of options a node and ran the Nov 6 gate out of memory. '
-                         'hub (Nov 6, the default): a city trip is boarded at an intercity stop, a walk-in or over '
+                         'hub (Nov 6, opt-in): a city trip is boarded at an intercity stop, a walk-in or over '
                          'a state line; at an interchange only as the second half of a two-ride city journey from '
                          'one of those (wait at most --city-horizon), joined into one move, so subway interchanges '
                          'never become nodes. Under useful, half the Nov 6 gate queue sat at 1565 New York stops '
-                         'holding only 543 state sets: the same chain parked at ~400 stations.')
+                         'holding only 543 state sets: the same chain parked at ~400 stations. Measured, hub does not fix that: '
+                         'in New York all 790 queued stops are hubs (347 served by Coach USA, ibus, Flix or Amtrak, the '
+                         'rest a footpath from one), the NY share fell only 50%% -> 38%%, and nodes cost ~5x. Density, '
+                         'not a boarding rule; the fix would be merging stops a footpath apart.')
     ap.add_argument('--city-stops', choices=('useful', 'all'), default='all',
                     help="where a city-transit ride may be left. 'all': at every stop it calls at, the old behaviour. "
                          "'useful' (Oct 19): only where getting off can matter: an intercity stop or one the router "
@@ -250,7 +253,7 @@ def main():
                          'sparse services before clearing it dies, or ranks low, although every pair of it is in reach')
     ap.add_argument('--burn', type=float, default=0, metavar='W',
                     help='with --groups: rank a move down by W x the hinge slack it burns beyond its travel time (the '
-                         'drop in the tightest owed group's latest-clearing time from here to there). Deadline-'
+                         'drop in the tightest owed group\'s latest-clearing time from here to there). Deadline-'
                          'independent, so it sees a region left early even when every margin is still large. Ranking '
                          'only: the prune stays on the exact margins.')
     ap.add_argument('--triples', choices=('off', 'push'), default='off',
@@ -1397,6 +1400,7 @@ def main():
             out = []
             push = menu.add if menu is not None else (
                 lambda w_, t_, k_, g_, wk_=None, sg_=(), lg_=(): out.append(Opt(w_, t_, k_, frozenset(g_), wk_, sg_, lg_)))
+            pending = defaultdict(list)   # --board-stops hub: interchange -> rides out of it, joined after the loop
             for j, w in [(s_, 0)] + list(R.foot.get(s_, ())):
                 t_ok = t - w
                 times = arr_times.get(j)
@@ -1424,14 +1428,23 @@ def main():
                             if not board_l[frm]: continue
                             if HUB and not hop_target_l[frm]:
                                 # an interchange: only as the second ride of a city journey from a hub
-                                transfer_in(frm, bt, key, got, (cs[n], k), (key, frm, s_, bt, t, None, (cs[n], k)),
-                                            collected, push)
+                                pending[frm].append((bt, key, frozenset(got), (cs[n], k),
+                                                     (key, frm, s_, bt, t, None, (cs[n], k))))
                                 continue
                         push(frm, bt, key, got, None, (cs[n], k))
                         for y2, w2 in walkin.get(frm, ()):
                             if y2 in got or y2 in collected: continue
                             if bt - 2 * w2 < T_min: continue
                             push(frm, bt - 2 * w2, key, got | {y2}, y2, (cs[n], k))
+            # One transfer scan per interchange, latest ride out first. An earlier ride out of the same x whose
+            # states are a subset of one already joined adds nothing: every first ride it could join is one the
+            # later scan joined too, with the same boarding stop, time and trip, so only the path would differ.
+            for x, reqs in pending.items():
+                reqs.sort(key=lambda r_: -r_[0]); done_ = []
+                for bt2, key2, got2, seg2, leg2 in reqs:
+                    if any(got2 <= g_ for g_ in done_): continue
+                    done_.append(got2)
+                    transfer_in(x, bt2, key2, got2, seg2, leg2, collected, push)
             return menu.list() if menu is not None else out
 
         start_c = set()

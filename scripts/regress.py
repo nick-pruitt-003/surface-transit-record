@@ -40,6 +40,16 @@ t237 = datetime(2026, 11, 5, 0, 30, tzinfo=ET).timestamp()
 hun = R.stops_matching('Huntington Bus Stop')[0]
 
 
+@check('every script in scripts/ compiles (Nov 6: a broken help string in ride_search.py passed 16/16, since no check imports it)')
+def _():
+    import glob
+    bad = []
+    for f in sorted(glob.glob('*.py')):
+        try: compile(open(f, encoding='utf8').read(), f, 'exec')
+        except SyntaxError as e: bad.append(f'{f}:{e.lineno}: {e.msg}')
+    assert not bad, '; '.join(bad)
+
+
 @check('defaults match the search settings (5 min transfers, 1.4 km walk-ins, 24 h slack)')
 def _():
     assert (tr.MIN_TRANSFER, tr.WALKIN_KM, tr.SCAN_SLACK) == (300, 1.4, 86400), (tr.MIN_TRANSFER, tr.WALKIN_KM, tr.SCAN_SLACK)

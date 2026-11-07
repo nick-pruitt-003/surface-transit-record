@@ -256,3 +256,28 @@ relaunched Nov 6 08:40. (`--key` does not order the backward search; the flag on
 stops; then one **proof** per finish day at 230.74 h, just under X: Nov 22, 21, 23, 20, 19. Finish days before Nov 22
 start before Nov 12 and cross the Northeast Corridor before the Portal Bridge cutover ends (Nov 16), so those proofs
 hold for that broken week only.
+
+### What happened, and where it was left (Nov 6)
+
+- **Out of memory at 2,687 nodes** (08:56): every trip arriving at a node within 24 h was offered from every earlier
+  stop on it, ~7,000 children a node, and the main process reached 92 GB. Fixed by `--dedupe` in backward mode (safe
+  there: a node is beaten only by one boarding the same stop at least MIN_TRANSFER later with a superset; the aboard
+  case that keeps it opt-in forward does not arise) and a city-boarding rule mirroring the forward alight rule
+  (`--board-stops useful`). Children per node fell ~37x; a 15 min test ran 336k nodes at 372/s, memory flat at 24 GB.
+- **The gate ran 11 h and did not converge** (10:19-19:50, one WSL restart resumed from its hourly save): 11.1M nodes,
+  deepest 26/48, the queue flat at 380-490k for its last four hours. Per-day proofs other than Nov 22 were cancelled
+  (Nick); the gate at 230.80 h, if it empties with X as its best, is itself the Nov 22 proof.
+- **Why it would not empty** (`out/qprobe.py` on the 19:13 queue, 460k nodes): no queued chain holds any Western state
+  (CO NM MT UT AZ ID CA WA NV WY OR: 0%), and **half the queue (231k) is at 1,565 New York stops holding only 543 state
+  sets**, the same chain parked at ~400 stations. The quad bounds cannot see that the whole West plus the rest of the
+  South and New England does not fit, so every eastern order lives until it reaches the West.
+- **`--board-stops hub` (opt-in) does not fix New York**: a city ride boarded at an interchange only as half of a
+  two-ride journey from a hub. All 790 queued NY stops of its test are hubs (347 served by Coach USA, ibus, Flix or
+  Amtrak, the rest a footpath from one), the NY share fell only 50% -> 38%, and nodes cost ~5x. It is density, not a
+  boarding rule.
+
+Stopped there on purpose. The gate's 19:13 save (`~/bus48/out/rev_gate_22.queue`) is kept but will not resume as is:
+flags added since (`--groups`, `--burn`) change the resume signature. What would make the reverse proof tractable:
+(1) merge stops a footpath apart into one place for dominance, so a chain at two Manhattan stations counts once;
+(2) a West-as-a-block mirror table (the latest you can stand anywhere and still collect all eleven Western states
+before the start cutoff), which kills the eastern orders the quads cannot.
