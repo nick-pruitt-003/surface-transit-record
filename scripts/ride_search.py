@@ -256,6 +256,12 @@ def main():
                          'drop in the tightest owed group\'s latest-clearing time from here to there). Deadline-'
                          'independent, so it sees a region left early even when every margin is still large. Ranking '
                          'only: the prune stays on the exact margins.')
+    ap.add_argument('--owed-cost', type=float, default=0, metavar='W',
+                    help='--frontier slack/depth: add W x the summed expected wait to get into every owed state '
+                         '(owed_wait.py, from the router own connections) to the priority of a node. Inside a layer '
+                         'every chain has the same state count, so without it a chain that skipped the weekly-flight '
+                         'states always looks cheaper than one that cleared them (46 d run, Nov 7: the search left '
+                         'Fiji for Asia at its second move). Ranking only, never prunes.')
     ap.add_argument('--triples', choices=('off', 'push'), default='off',
                     help="exact triple bound at push, after the pair test (pair_tables.TripleTables). Needs --pairs.")
     ap.add_argument('--triple-gate', type=float, default=24.0,
@@ -577,6 +583,14 @@ def main():
         _gs = [[_ix[n_] for n_ in g_ if n_ in _ix] for g_ in _json.load(open(a.groups))]
         GT = GroupTables(PT, L, _gs, router_args=router_args)
         print(f'  hinge groups: {len(GT.groups)} ({sum(map(len, GT.groups))} states) from {a.groups}', flush=True)
+    OW = None
+    if a.owed_cost:
+        from owed_wait import owed_wait
+        OW = owed_wait(R, N_STATES) * 3600.0          # seconds, like spent
+        OW_TOT = float(OW.sum())
+        _top = sorted(range(N_STATES), key=lambda i_: -OW[i_])[:8]
+        print(f'  owed-cost weight {a.owed_cost}: hardest ways in ' +
+              ', '.join(f'{R.state_names[i_]} {OW[i_] / 3600:.0f} h' for i_ in _top), flush=True)
     TT = None
     if a.triples != 'off':
         if PT is None or a.key != 'pair' or a.pairs != 'push':
@@ -2020,6 +2034,8 @@ def main():
             p_ = spent - (0 if layered else a.credit * 3600 * n)
             if a.frontier in ('slack', 'depth') and L is not None and stop_ is not None:
                 p_ -= a.slack_weight * (room_ if room_ is not None else room(stop_, t_, col_))
+            if OW is not None and col_ is not None:
+                p_ += a.owed_cost * (OW_TOT - sum(OW[c_] for c_ in col_))
             return p_
         pri_fn[0] = pri
         # The root goes through the same test as every other push. It will not be dead, but "every node in
