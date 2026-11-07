@@ -203,6 +203,14 @@ def main():
     ap.add_argument('--track', help='reference route pickle: replay its rides through this search and report, '
                     'leg by leg, whether the menu offers them and where they rank. 237 is a control: the test '
                     'is that it reproduces, not that it is beaten.')
+    ap.add_argument('--foot-dom', action='store_true',
+                    help='--dir backward (Nov 7): also drop a popped node when a node already expanded at a footpath '
+                         'neighbour holds a superset of its states and is later by the walk plus MIN_TRANSFER, and '
+                         'every stop the first looks at on foot the second also looks at no earlier. Then every ride '
+                         'that could reach the first reaches the second in time, so nothing is lost, and if the second '
+                         'is dead under a bound so is the first. 39%% of the Nov 6 gate queue was such a copy (one '
+                         'station under two stop ids, Penn Station vs Port Authority). A node next to a border '
+                         'walk-in point whose state it does not hold is never dropped this way.')
     ap.add_argument('--dedupe', action='store_true', help='drop options another option can already do '
                     'everything of, which is most of them: the control\'s forty legs hold 3868010 options '
                     'and 71693 survivors. Still opt-in, because making it the default changes what every '
@@ -1260,6 +1268,7 @@ def main():
     # weaker chain can still do the stronger one can do too. States live in a 48-bit int here so the
     # superset test is one AND.
     dom_stop = defaultdict(list)   # stop -> [(states bitmask, elapsed, aboard)]
+    foot_drops = [0]               # --foot-dom: popped nodes covered by a later copy a footpath away
 
     def bits(cs):
         m = 0
@@ -1545,8 +1554,48 @@ def main():
                       f'{len(q)} in frontier', flush=True)
             mk = bits(collected)
             if dominated(stop, mk, spent, aboard): return False
+            if a.foot_dom and foot_dominated(stop, mk, spent):
+                foot_drops[0] += 1; return False
             remember(stop, mk, spent, aboard)
             return True
+
+        _fw = {}; _fdelta = {}
+
+        def _foot(s):
+            d = _fw.get(s)
+            if d is None: d = _fw[s] = {int(j): float(w) for j, w in R.foot.get(s, ())}
+            return d
+
+        def _delta(s1, s2, w12):
+            """How much later than s1's node a node at s2 must be to cover it: the walk over plus MIN_TRANSFER for
+            s1 itself (also covers staying aboard there), and for each stop s1 looks at on foot, s2's walk to it
+            less s1's. inf when s2 does not reach one of them, or s1 sits next to a border point (handled apart)."""
+            k = (s1, s2)
+            v = _fdelta.get(k)
+            if v is None:
+                f1, f2 = _foot(s1), _foot(s2); v = w12 + MIN_TRANSFER
+                for j, w1 in f1.items():
+                    if j == s2: continue
+                    w2 = f2.get(j)
+                    if w2 is None: v = float('inf'); break
+                    if w2 - w1 > v: v = w2 - w1
+                _fdelta[k] = v
+            return v
+
+        def foot_dominated(stop, mask, spent):
+            f1 = _foot(stop)
+            for v_ in f1:     # a through-walk over a line it does not hold yet: a superset copy would not offer it
+                if R.walk_collects(v_) and not (mask >> int(R.state[v_])) & 1: return False
+            for s2, w12 in f1.items():
+                ents = dom_stop.get(s2)
+                if not ents: continue
+                dl = None
+                for m2, sp2, _ in ents:
+                    if (m2 & mask) != mask: continue
+                    if dl is None: dl = _delta(stop, s2, w12)
+                    if dl == float('inf'): break
+                    if sp2 + dl <= spent: return True
+            return False
 
         mirror = PT is not None and NEED == N_STATES
 
@@ -2501,6 +2550,7 @@ def main():
         el2 = time.time() - t_run
         print(f'\n{seen_nodes[0]} nodes in {el2:.0f} s ({seen_nodes[0] / max(el2, 1):.0f}/s); '
               f'deepest {deepest[0]}/{NEED} states')
+        if a.foot_dom: print(f'--foot-dom: {foot_drops[0]} popped nodes covered by a later copy a footpath away')
         if PT is not None:
             print(f'mirror prune at push: {pair_kills[0]} killed by a single or a pair, {triple_kills[0]} by a triple, '
                   f'{quad_kills[0]} by a quad' + ('' if NEED == N_STATES else ' (off: --states below 48)'))

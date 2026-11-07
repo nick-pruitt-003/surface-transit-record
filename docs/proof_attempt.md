@@ -305,3 +305,8 @@ later copy at a footpath neighbour when the copy holds a superset, is later by t
 stop the first looks at on foot the copy also looks at no earlier. 39% of the 460k queued nodes are covered (NY 47%,
 IL 49%, MA 46%). Many are one station under two stop ids (Nevins St -> Nevins St, 0 min), which same-stop dominance
 never merges. Not yet built into the search.
+
+**`--foot-dom`** (opt-in, backward): the rule above, applied when a node is popped, against nodes already expanded at
+its footpath neighbours. A/B over 15 min, 8 jobs, both bug fixes in: without it 262k nodes (290/s), queue 125k,
+deepest 26/48; with it 441k nodes (489/s), queue 102k, deepest 31/48. The backward --track does not exercise it (it
+follows X's own path), so the end-to-end check is a gate with it on finding X.
