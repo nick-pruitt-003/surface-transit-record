@@ -281,3 +281,27 @@ flags added since (`--groups`, `--burn`) change the resume signature. What would
 (1) merge stops a footpath apart into one place for dominance, so a chain at two Manhattan stations counts once;
 (2) a West-as-a-block mirror table (the latest you can stand anywhere and still collect all eleven Western states
 before the start cutoff), which kills the eastern orders the quads cannot.
+
+### Why the Nov 6 gate could never have passed (Nov 7, backward `--track`)
+
+`ride_search.py --dir backward ... --track ../out/res_x.pkl` now replays a control backward from the end: per ride,
+whether `rides_into` offers it (or a later option at the same stop that covers it, which `--dedupe` keeps instead) and
+each mirror bound's margin on the child. Exit 5 when a ride is lost. On X (Fargo Sun Nov 22 14:05, 230.80 h):
+
+- **The bounds were never the problem.** No pair, triple or quad test killed any of X's 48 rides; the tightest
+  margin is +0.33 h (quad, at Dallas). The mirror tables are sound on X.
+- **Bug 1, the finish paid a transfer.** The seed at Fargo at the deadline required a ride to arrive MIN_TRANSFER
+  before it, so the Sioux Falls bus arriving at exactly 14:05 was refused. The finish boards nothing after, so it
+  now accepts an arrival at the deadline.
+- **Bug 2, no one-way walk over a state line.** X takes Mississippi on foot from Holmes at Loch Lomond to Holmes at
+  Millbranch via the MS line, two footpaths through a virtual border point. Backward only offered the out-and-back
+  walk-in at the boarding stop, so X's Mississippi was unreachable. `rides_into` now also takes rides arriving a
+  footpath beyond a border point next to the node, crediting the state.
+- With both fixed, X replays 48/48 with nothing lost (5 rides replaced by a later departure from the same stop).
+  The 11 h gate ran with both bugs, so "nothing found" there said nothing about X.
+
+**The queue's redundancy, measured exactly** (`out/footdom_exact.py` on the 19:13 queue): a node is covered by a
+later copy at a footpath neighbour when the copy holds a superset, is later by the walk plus MIN_TRANSFER, and every
+stop the first looks at on foot the copy also looks at no earlier. 39% of the 460k queued nodes are covered (NY 47%,
+IL 49%, MA 46%). Many are one station under two stop ids (Nevins St -> Nevins St, 0 min), which same-stop dominance
+never merges. Not yet built into the search.

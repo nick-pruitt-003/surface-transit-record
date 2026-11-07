@@ -1415,7 +1415,22 @@ def main():
             push = menu.add if menu is not None else (
                 lambda w_, t_, k_, g_, wk_=None, sg_=(), lg_=(): out.append(Opt(w_, t_, k_, frozenset(g_), wk_, sg_, lg_)))
             pending = defaultdict(list)   # --board-stops hub: interchange -> rides out of it, joined after the loop
-            for j, w in [(s_, 0)] + list(R.foot.get(s_, ())):
+            # The finish (a seed, standing at the end at the deadline) boards nothing afterwards, so the ride that
+            # ends the route needs no transfer: arriving at D is on time. Without this X's 14:05 Fargo arrival was
+            # refused at a 14:05 deadline and the Nov 6 gate could never have found X (backward --track, Nov 7).
+            mt_ = 0 if t >= D else MIN_TRANSFER
+            # Where a ride may have dropped you: here, a footpath away, or (Nov 7) a footpath away on the far side
+            # of a border walk-in point, the state taken on foot on the way. Forward walks Holmes at Loch Lomond ->
+            # MS line -> Holmes at Millbranch as one chain; backward only had the out-and-back walk-in at the
+            # boarding stop, so the backward --track of X lost Mississippi there and X could not be reached.
+            walks_ = [(s_, 0, -1)] + [(j, w, -1) for j, w in R.foot.get(s_, ())]
+            for v, w1 in R.foot.get(s_, ()):
+                if not R.walk_collects(v): continue
+                yv = int(R.state[v])
+                if yv in collected: continue
+                for j, w2 in R.foot.get(v, ()):
+                    if j != s_ and j < R.first_virtual: walks_.append((j, w1 + w2, yv))
+            for j, w, yw in walks_:
                 t_ok = t - w
                 times = arr_times.get(j)
                 if not times: continue
@@ -1426,11 +1441,12 @@ def main():
                     key = R.ctrip[k]
                     if key in seen: continue
                     # same trip and same stop, or it pays the transfer (see the forward side)
-                    if not (key == aboard and j == s_) and R.arr[k] > t_ok - MIN_TRANSFER: continue
+                    if not (key == aboard and j == s_) and R.arr[k] > t_ok - mt_: continue
                     seen.add(key)
                     cs = trip_conns[key]
                     pos = int(conn_pos[k])
                     got ={int(R.state[j])} if R.state[j] >= 0 else set()
+                    if yw >= 0: got.add(yw)
                     for n in range(pos, -1, -1):
                         kk = cs[n]
                         frm = int(R.cfrom[kk]); st_ = int(R.state[frm])
@@ -1585,6 +1601,73 @@ def main():
                 seq[0] += 1
                 heapq.heappush(q, (sp2 - a.credit * 3600 * len(new), sp2, seq[0], frm, bt, new, trip, path + legs))
 
+        if a.track:
+            # --track, backward (Nov 7): walk the control's rides back from the end and say, per ride, whether
+            # rides_into offers it and how each mirror bound scores the child. The gate only ever asked "found
+            # or not"; this asks where the control would be lost, the way the forward --track does.
+            import time_search as ts
+            from time_search import Search
+            d_ = pickle.load(open(a.track, 'rb'))
+            st0_ = R.stop_name.index(d_['start'])
+            if d_.get('legs'): legs_ = d_['legs']
+            else:
+                S_ = Search(R, st0_, d_['t0'], [], 1); ts.bind(R, st0_, d_['t0'], S_)
+                _, legs_ = S_.evaluate(d_['order'])
+            rides_ = [l for l in legs_ if l[0] == 'ride']
+            print(f'\nreplaying {len(rides_)} rides of {a.track} backward from {R.stop_name[ends[0]]} at '
+                  f'{R.fmt_time(D, ends[0])}; no start before {R.fmt_time(T_min, ends[0])}\n', flush=True)
+            hr = lambda s: f'{s / 3600:+7.2f} h'
+            stop_, t_, aboard_, coll_ = ends[0], D, None, frozenset(start_c)
+            lost = 0
+            for n_, r_ in enumerate(reversed(rides_)):
+                _, trip_, b_, dep_, al_, arr_ = r_[:6]
+                opts_ = rides_into(stop_, t_, aboard_, coll_)
+                cand = [o for o in opts_ if o.trip == trip_ and int(o.stop) == int(b_)]
+                tag = f'{len(rides_) - n_:2d} {R.stop_name[b_][:28]:28s} -> {R.stop_name[al_][:24]:24s}'
+                if not cand:
+                    near = [o for o in opts_ if o.trip == trip_]
+                    # X's own got along the ride, to ask whether a later option at the same stop covers it
+                    xg_ = set()
+                    for kk in trip_conns.get(trip_, []):
+                        if R.dep[kk] >= dep_ - 1 and R.arr[kk] <= arr_ + 1:
+                            for s__ in (int(R.cfrom[kk]), int(R.cto[kk])):
+                                if R.state[s__] >= 0: xg_.add(int(R.state[s__]))
+                    dom_ = [o for o in opts_ if int(o.stop) == int(b_) and o.time >= dep_ and xg_ <= set(o.got)]
+                    why_ = (f'dominated at its stop by a later option, {R.fmt_time(max(o.time for o in dom_), b_)}'
+                            if dom_ else 'nothing at its stop covers it')
+                    print(f'  {tag}  NOT OFFERED, {why_} ({len(opts_)} options; this trip offered at '
+                          f'{len(near)} other boarding stops; node at {R.stop_name[stop_]} {R.fmt_time(t_, stop_)})')
+                    lost += not dom_
+                    got_ = set(); cs_ = trip_conns.get(trip_, [])
+                    for kk in cs_:
+                        if R.dep[kk] >= dep_ - 1 and R.arr[kk] <= arr_ + 1:
+                            for s__ in (int(R.cfrom[kk]), int(R.cto[kk])):
+                                if R.state[s__] >= 0: got_.add(int(R.state[s__]))
+                    stop_, t_, aboard_, coll_ = int(b_), float(dep_), trip_, coll_ | frozenset(got_)
+                    continue
+                # follow the control itself: the option at its own departure (a walk-in variant moves the clock
+                # back by the walk, and then the control's earlier rides no longer fit), else the latest plain one
+                ex_ = [o for o in cand if abs(float(o.time) - float(dep_)) < 90]
+                o_ = (max(ex_, key=lambda o: len(o.got)) if ex_ else
+                      max(cand, key=lambda o: (o.walk is None, o.time)))
+                new_ = coll_ | o_.got; bt_ = float(o_.time); frm_ = int(o_.stop)
+                owed_ = [y for y in range(N_STATES) if y not in new_]
+                ms = []
+                if len(owed_) == 1: ms.append(('single', float(Lm[owed_[0], frm_]) + bt_))
+                elif len(owed_) >= 2:
+                    ms.append(('pair', PT.worst(frm_, -bt_, owed_)[0]))
+                    if TT is not None and len(owed_) >= 3: ms.append(('triple', TT.margin(frm_, -bt_, owed_)))
+                    if QT is not None and len(owed_) >= 4: ms.append(('quad', QT.margin(frm_, -bt_, owed_)))
+                killed = [k for k, m in ms if m < 0]
+                lost += bool(killed)
+                print(f'  {tag}  rank {opts_.index(o_) + 1:5d}/{len(opts_):5d}  {len(new_):2d}/48  '
+                      + '  '.join(f'{k} {hr(m)}' for k, m in ms) + ('   KILLED by ' + ','.join(killed) if killed else ''),
+                      flush=True)
+                stop_, t_, aboard_, coll_ = frm_, bt_, o_.trip, new_
+            print(f'\nat the start: {len(coll_)}/48 held, {R.stop_name[stop_]} {R.fmt_time(t_, stop_)} '
+                  f'(cutoff {R.fmt_time(T_min, stop_)}); {lost} ride(s) not offered or killed')
+            sys.exit(5 if lost else 0)
+
         last_ck = [time.time()]; rounds_b = [0]
         pool_ = None
         if a.jobs > 1:
@@ -1670,7 +1753,7 @@ def main():
                     router=((os.environ.get('BUS48_ROUTER'), os.path.getmtime(os.environ['BUS48_ROUTER']))
                             if os.environ.get('BUS48_ROUTER') else None))
 
-    if a.track:
+    if a.track and not back:   # backward replays inside backward_search
         import pickle as _pk
         import time_search as ts
         from time_search import Search
