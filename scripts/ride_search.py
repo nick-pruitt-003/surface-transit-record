@@ -1810,6 +1810,16 @@ def main():
         st0 = R.stop_name.index(d['start'])
         if d.get('legs'):        # a control given as its rides (hfcyttec: the run's own flights and drives)
             legs = d['legs']
+        elif d.get('path') and FLIGHTS:
+            # A search result: replay its own path. Falling to the order evaluator replayed a different route,
+            # a greedy re-evaluation of the state order (audit, Nov 7: cag_wide's leg 4 came back as another
+            # flight). Claims are read off the node time: a flight left landside arrives at arr + 30 min.
+            legs, d['claims'] = [], []
+            for trip_, frm_, to_, t_node_, at_, walk_, seg_ in d['path']:
+                kb_, ka_ = seg_
+                legs.append(('ride', trip_, int(frm_), float(R.dep[kb_]), int(to_), float(at_)))
+                landside_ = trip_ not in R.is_drive and abs(at_ - (float(R.arr[ka_]) + 1800)) < 1
+                d['claims'].append([R.state_names[int(R.state[to_])]] if landside_ and R.state[to_] >= 0 else [])
         else:
             S = Search(R, st0, d['t0'], [], 1)
             ts.bind(R, st0, d['t0'], S)
@@ -1817,10 +1827,15 @@ def main():
         rides = [l for l in legs if l[0] == 'ride']
         print(f'\nreplaying {len(rides)} rides of {a.track} through this search '
               f'(order {a.order}, width {a.width})\n', flush=True)
+        # Honour --resume-at and --have as the search does: a block replay started with only the start stop's
+        # state held, owed all 197, and alight_ok then rejected stops for far-away states (audit, Nov 7).
+        if a.resume_at: d['t0'] = datetime.fromisoformat(a.resume_at).replace(tzinfo=ZoneInfo(a.tz)).timestamp()
         stop, t, aboard = st0, d['t0'], None
         gone = 0
         _ss = set()
         if R.state[st0] >= 0: _ss.add(int(R.state[st0]))
+        _held_have = {R.state_names.index(inv[ab_.strip()]) for ab_ in (a.have or '').split(',') if ab_.strip()}
+        _ss |= _held_have
         collected = frozenset(_ss)
         # the reference takes some states on foot (Mississippi at Holmes, Vermont at Hanover); those are walk
         # legs, and this replay follows rides, so read them off the route's own legs
@@ -2070,7 +2085,7 @@ def main():
                 sys.exit(1)
         if rec_path:
             rec = route_record(rec_path, rec_path[-1][4] - rec_path[0][3], rec_got, False)
-            miss = sorted(set(rec_got) - set(rec['order'])); extra = sorted(set(rec['order']) - set(rec_got))
+            miss = sorted(set(rec_got) - set(rec['order']) - _held_have); extra = sorted(set(rec['order']) - set(rec_got))
             print(f'\nrecord round-trip over {len(rec_path)} real legs: collected {len(rec_got)} | '
                   f'order {len(rec["order"])}'
                   + ('  MATCH' if not miss and not extra else
