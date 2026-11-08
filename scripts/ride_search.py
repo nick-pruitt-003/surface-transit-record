@@ -107,7 +107,7 @@ def main():
     ap.add_argument('--horizon', type=float, default=24, help='hours ahead to look for a departure')
     ap.add_argument('--hub', type=int, default=6, help='fallback alight rule when no deadline is given: the stop '
                     'has at least this many services. With --end/--by the deadline tables decide instead.')
-    ap.add_argument('--order', default='slack', choices=('rate', 'states', 'early', 'slack'),
+    ap.add_argument('--order', default=None, choices=('rate', 'states', 'early', 'slack'),
                     help="which ride to try first: 'rate' hours per new state, 'states' most new states, "
                          "'early' earliest arrival, 'slack' how much room the move leaves against the "
                          "deadline tables. 'slack' is the default because it is measured better: 25 states "
@@ -297,6 +297,13 @@ def main():
     ap.add_argument('--end-stop', help='backward only: seed at the stops of --end with exactly this name (else those '
                     'containing it), not at every stop of the state, for a front that must meet one departure')
     a = ap.parse_args()
+    # Default order: 'slack' for buses (X's control is calibrated on it), 'states' for flights (BUS48_FLIGHTS=1):
+    # replaying Nick's hand chains for HFCYTTEC segments 2-4 (hfcyttec/docs/ranking_analysis_nov8.md), 'states' put
+    # the worst hand leg at rank 38 against 52 and never cost a leg more than two places.
+    if a.order is None: a.order = 'states' if FLIGHTS else 'slack'
+    if FLIGHTS and a.width < 40:
+        print(f'  note: --width {a.width} is under 40; a hand-checked flight leg has ranked as low as 38 '
+              '(hfcyttec/docs/ranking_analysis_nov8.md)', flush=True)
     back = a.dir == 'backward'
     if (a.skip or a.end_stop) and not back: sys.exit('--skip and --end-stop are backward only')
     when = datetime.fromisoformat(a.by if back else a.at).replace(tzinfo=ZoneInfo(a.tz))
