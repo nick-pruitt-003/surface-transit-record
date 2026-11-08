@@ -2506,6 +2506,29 @@ def main():
         rides_ = [x for x in path_ if x[0] is not None]
         if not rides_: return None
         st0_ = rides_[0][1]; t0_ = rides_[0][3]
+        # Flight routers (hfcyttec): the greedy order evaluator below cannot read flight trip keys and raised on
+        # every result, so complete=False meant nothing (audit, Nov 7). hfcyttec/verify_flights.py replays the
+        # path leg by leg under the flight rules; it is the second witness there.
+        if os.environ.get('BUS48_FLIGHTS') == '1' and os.environ.get('BUS48_ROUTER'):
+            try:
+                import tempfile
+                import verify_flights as vf_
+                rec_ = route_record(path_, path_[-1][4] - path_[0][3], set(), False)
+                fd_, tmp_ = tempfile.mkstemp(suffix='.pkl'); os.close(fd_)
+                try:
+                    pickle.dump(rec_, open(tmp_, 'wb'))
+                    h_, _, errs_, RV_, got_ = vf_.verify(tmp_, os.environ['BUS48_ROUTER'])
+                finally:
+                    os.remove(tmp_)
+                if errs_: return (f'verify_flights: {len(errs_)} rule errors, first: {errs_[0]}', h_)
+                held_ = {i for i, n in enumerate(RV_.state_names) if n in set((a.have or '').split(','))}
+                held_.add(int(RV_.state[st0_])) if RV_.state[st0_] >= 0 else None
+                need_ = {i for i in range(len(RV_.state_names))} - held_
+                miss_ = sorted(RV_.state_names[i] for i in need_ - got_)
+                if miss_: return ('verify_flights: never claims ' + ' '.join(miss_), h_)
+                return ('router confirms', h_)
+            except Exception as e:
+                return (f'could not be checked by verify_flights ({type(e).__name__}: {e})', None)
         # The order the router follows has to hold every state the chain is in, including the ones a ride only
         # passes through (Oct 20: X's West Virginia, on the Harrisburg -> Indianapolis bus). Built from boarding
         # and alighting stops alone it dropped WV, the router picked a bus that skips it, and a real route
