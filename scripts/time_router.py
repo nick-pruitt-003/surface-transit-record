@@ -537,7 +537,7 @@ class TimeRouter:
         """Load csa.so and point it at the flat arrays. Cheap, and the only part a pickle cannot carry."""
         import ctypes, subprocess
         self._fast = None
-        here = os.path.dirname(os.path.abspath(__file__)); so = os.path.join(here, 'csa.so'); src = os.path.join(here, 'csa.c')
+        here = os.path.dirname(os.path.abspath(__file__)); so = os.path.join(here, 'csa.so' if os.name == 'nt' else 'csa_linux.so'); src = os.path.join(here, 'csa.c')
         try:
             if not os.path.exists(so) or os.path.getmtime(so) < os.path.getmtime(src):
                 subprocess.run(['cc', '-O3', '-shared', '-fPIC', src, '-o', so], check=True)
@@ -554,7 +554,7 @@ class TimeRouter:
         """Flat arrays + compiled scan (csa.c) for finish(); falls back to Python when no compiler."""
         import ctypes, subprocess
         self._fast = None
-        here = os.path.dirname(os.path.abspath(__file__)); so = os.path.join(here, 'csa.so'); src = os.path.join(here, 'csa.c')
+        here = os.path.dirname(os.path.abspath(__file__)); so = os.path.join(here, 'csa.so' if os.name == 'nt' else 'csa_linux.so'); src = os.path.join(here, 'csa.c')
         try:
             if not os.path.exists(so) or os.path.getmtime(so) < os.path.getmtime(src):
                 subprocess.run(['cc', '-O3', '-shared', '-fPIC', src, '-o', so], check=True)
