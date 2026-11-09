@@ -1301,6 +1301,10 @@ def main():
     queued = {}    # the same key -> best time already SITTING in the frontier, read only when pushing.
                    # These have to stay apart. Writing a pushed node's own time into dom would make it fail
                    # its own check the moment it is popped, so every node would prune itself.
+    # One shared object per distinct collected set (HFCYTTEC, Nov 9): a frozenset of ~190 states is 8.4 KB, and a
+    # 12M-node frontier held one copy per node, ~100 GB. Nodes with equal sets now point at the same frozenset, so the
+    # values (and so every comparison, hash and dominance key) are unchanged.
+    CANON = {}
     NEED = a.states
 
     def dfs(stop, t, collected, aboard, path):
@@ -1651,6 +1655,7 @@ def main():
             path = it_[7]
             pair_kills[0] += st_[0]; triple_kills[0] += st_[1]; quad_kills[0] += st_[2]
             for frm, bt, trip, new, legs in kids:
+                new = CANON.setdefault(new, new)
                 sp2 = D - bt
                 if sp2 > limit[0] or not prefilter(frm, new, trip, sp2): continue
                 queued[(frm, new, trip)] = sp2
@@ -2368,6 +2373,7 @@ def main():
                 # the question the exit census cannot answer, since it only lists what is still alive.
                 de = dead_end[stop]; de[0] += 1; de[1] += len(collected) >= 25; de[2] = max(de[2], len(collected))
             for to, at, trip, new, legs, rm_ in kids:
+                new = CANON.setdefault(new, new)
                 sp_new = at - T0
                 if not prefilter(to, new, trip, sp_new): continue
                 queued[(to, new, trip)] = sp_new
