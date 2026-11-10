@@ -215,6 +215,10 @@ def main():
                     'everything of, which is most of them: the control\'s forty legs hold 3868010 options '
                     'and 71693 survivors. Still opt-in, because making it the default changes what every '
                     'search sees and that deserves its own measurement, not a coat-tail ride on this one.')
+    ap.add_argument('--pairs-owed', action='store_true', help='build the pair table only for the states not in '
+                    '--have: a segment search owing 15 of 197 countries needs 210 reverse scans, not 38612 '
+                    '(hfcyttec, Nov 10). Pairs touching a held state are left unknown and never prune. In memory, '
+                    'not cached. Without it the table is the full one, as before.')
     ap.add_argument('--pairs', default=None, choices=('report', 'pop', 'push'), help='kill a node when two states it '
                     'still owes cannot both be collected, in either order, and still finish. The per-state '
                     'test L[y][stop] >= t is what the search already has, and the run-1 chain passed it at '
@@ -581,7 +585,13 @@ def main():
                   f'{datetime.fromtimestamp(T_min_, ZoneInfo(a.tz)):%a %Y-%m-%d %H:%M})', flush=True)
             PT = PairTables(R, -T_min_, a.span, L_end=Lm_end, L=Lm, router_args=router_args, F=Fm)
         else:
-            PT = PairTables(R, D, a.span, L_end=L_end, L=L, router_args=router_args)
+            only_ = None
+            if a.pairs_owed:
+                # everything not in --have can still be owed (the start and end states too: harmless extra rows)
+                have_ = {R.state_names.index(inv[x_.strip()]) for x_ in (a.have or '').split(',') if x_.strip()}
+                only_ = [y_ for y_ in range(N_STATES) if y_ not in have_]
+                print(f'  pair tables for the {len(only_)} states not in --have (--pairs-owed)', flush=True)
+            PT = PairTables(R, D, a.span, L_end=L_end, L=L, router_args=router_args, only=only_)
     pair_kills = [0]; triple_kills = [0]; quad_kills = [0]
     TE = None; tour_scored = set(); tour_moved = [0]
     if a.tour > 0:

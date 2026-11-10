@@ -40,18 +40,18 @@ def _latest_from(F, D, span, nxt):
     return np.maximum(lat, eff)
 
 
-def _spawn_init(router_args, D, span, L, st_stops):
+def _spawn_init(router_args, D, span, L, st_stops, only=None):
     """Windows has no fork: each spawned worker loads the same cached router and rebuilds the reverse index."""
     from time_router import cached_router
     R = cached_router(*router_args, verbose=False)
-    _W.update(F=B.RevFast(R), D=D, span=span, L=L, st_stops=st_stops)
+    _W.update(F=B.RevFast(R), D=D, span=span, L=L, st_stops=st_stops, only=only)
 
 
 def _row(y):
-    """every L[y->z] for one y, relative to D, float32"""
+    """every L[y->z] for one y, relative to D, float32 (only the z in _W['only'] when that is set)"""
     F, D, span, L, st_stops = _W['F'], _W['D'], _W['span'], _W['L'], _W['st_stops']
     out = np.full((N_STATES, F.R.N), -np.inf, dtype=np.float32)
-    for z in range(N_STATES):
+    for z in (_W.get('only') if _W.get('only') is not None else range(N_STATES)):
         if z == y: continue
         nxt = {s: float(L[z][s]) for s in st_stops[y] if L[z][s] > -np.inf}
         if nxt: out[z] = (_latest_from(F, D, span, nxt) - D).astype(np.float32)
@@ -93,8 +93,15 @@ def fingerprint(R, F, D, span, L_end, L):
 
 class PairTables:
     def __init__(self, R, D, span=260, L_end=None, L=None, cache_dir=None, workers=None, verbose=True, router_args=None,
-                 F=None):
+                 F=None, only=None):
+        """only: the states that can still be owed (hfcyttec, Nov 10). A segment search owes 15-40 of 197 countries
+        and has its own deadline, so the full table (197 x 196 scans, cached per deadline) cost hours and was never
+        switched on. With `only`, just those rows are scanned (15 owed: 210 scans); every pair touching another
+        state is +inf, which can never prune, so asking about a state outside `only` is safe, just uninformative.
+        A partial table is kept in memory, not on disk. only=None is the full table, exactly as before."""
         self.R, self.D = R, float(D)
+        only = sorted({int(x) for x in only}) if only is not None else None
+        self.only = only
         F = F if F is not None else B.RevFast(R)   # rev_tables.FwdNeg for the backward search's mirror tables
         st_stops = [[] for _ in range(N_STATES)]
         for s in range(R.N):
@@ -108,15 +115,17 @@ class PairTables:
                              'are what encodes the end state, the transfer time, the span and the '
                              'deadline. Without them the key cannot tell a Vermont table from a Maine one.')
         key = fingerprint(R, F, D, span, L_end, L)
+        if only is not None:      # never the full table's key: the triple and quad caches are named by it
+            key = hashlib.sha1((key + '|only|' + ','.join(map(str, only))).encode()).hexdigest()[:16]
         self.key, self.span, self.F, self.cache_dir = key, span, F, cache_dir
         self.st_stops = st_stops
         path = os.path.join(cache_dir, f'pairs_{key}.npy')
-        if os.path.exists(path):
+        if only is None and os.path.exists(path):
             self.P = np.load(path, mmap_mode='r')
             if verbose: print(f'pair tables from cache ({os.path.basename(path)})', flush=True)
             return
         t0 = time.time()
-        _W.update(F=F, D=float(D), span=span, L=L, st_stops=st_stops)
+        _W.update(F=F, D=float(D), span=span, L=L, st_stops=st_stops, only=only)
         yz = np.full((N_STATES, N_STATES, R.N), -np.inf, dtype=np.float32)
         import multiprocessing as mp
         n = workers or max(1, (os.cpu_count() or 2) - 2)
@@ -128,21 +137,30 @@ class PairTables:
             if type(F) is not B.RevFast: raise SystemExit('mirror tables (FwdNeg) need fork: build them on Linux/WSL')
             n = min(n, 12)   # each spawned worker holds its own router
             pool = mp.get_context('spawn').Pool(n, initializer=_spawn_init,
-                                                initargs=(router_args, float(D), span, L, st_stops))
+                                                initargs=(router_args, float(D), span, L, st_stops, only))
         else:
             pool = None; n = 1
-        rows = pool.imap_unordered(_row, range(N_STATES)) if pool else map(_row, range(N_STATES))
+        ys = range(N_STATES) if only is None else only
+        rows = pool.imap_unordered(_row, ys) if pool else map(_row, ys)
         try:
             for k, (y, row) in enumerate(rows, 1):
                 yz[y] = row
                 if verbose and k % 8 == 0:
-                    print(f'  pair tables: {k}/{N_STATES} rows in {time.time() - t0:.0f} s', flush=True)
+                    print(f'  pair tables: {k}/{len(ys)} rows in {time.time() - t0:.0f} s', flush=True)
         finally:
             if pool: pool.close(); pool.join()
         P = np.maximum(yz, yz.transpose(1, 0, 2))            # best order, [y, z, stop]
         del yz
         idx = np.arange(N_STATES); P[idx, idx, :] = np.inf
+        if only is not None:
+            out_ = np.ones(N_STATES, bool); out_[only] = False
+            P[out_, :, :] = np.inf; P[:, out_, :] = np.inf    # not scanned: unknown, so it never prunes
         P = np.ascontiguousarray(P.transpose(2, 0, 1))        # [stop, y, z]: one node reads one 9 KB block
+        if only is not None:
+            self.P = P                                        # per-search: in memory, nothing written
+            if verbose: print(f'pair tables for {len(only)} of {N_STATES} states built in {time.time() - t0:.0f} s '
+                              f'with {n} workers ({len(only) * (len(only) - 1)} scans, in memory)', flush=True)
+            return
         tmp = path + f'.{os.getpid()}.tmp.npy'
         np.save(tmp, P); os.replace(tmp, path)
         self.P = np.load(path, mmap_mode='r')
