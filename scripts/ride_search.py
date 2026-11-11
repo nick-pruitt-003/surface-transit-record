@@ -211,6 +211,19 @@ def main():
                          'is dead under a bound so is the first. 39%% of the Nov 6 gate queue was such a copy (one '
                          'station under two stop ids, Penn Station vs Port Authority). A node next to a border '
                          'walk-in point whose state it does not hold is never dropped this way.')
+    ap.add_argument('--front-dom', choices=('off', 'push', 'all'), default='off',
+                    help="best-first (Nov 10): apply the pop-side dominance test (an expanded node at the same stop "
+                         "with a superset of the states, there no later; _beats) to nodes before they sit in the "
+                         "frontier. 'push': a child is not queued when a node with the same states was already "
+                         "expanded at that stop MIN_TRANSFER earlier (one lookup). It would die at pop anyway, so no "
+                         "route is lost; only the frontier is smaller (the order of expansion can shift, since a "
+                         "rejected pop used to take a layer's turn). 'all': also not queued when such a twin is "
+                         "already QUEUED, and a sweep, each time the frontier doubles and at --queue, drops queued "
+                         "nodes an expanded node beats (superset of the states) and queued nodes another queued node "
+                         "at the same stop beats (the survivor stays queued, so nothing the dropped node could do is "
+                         "lost). Measured on a full "
+                         "2,000,819-node frontier (Dakar -> Warsaw, 26 owed): 63.2%% beaten by an expanded node, "
+                         "22.3%% more by a queued one, 14.5%% left.")
     ap.add_argument('--dedupe', action='store_true', help='drop options another option can already do '
                     'everything of, which is most of them: the control\'s forty legs hold 3868010 options '
                     'and 71693 survivors. Still opt-in, because making it the default changes what every '
@@ -1286,10 +1299,20 @@ def main():
     # superset test is one AND.
     dom_stop = defaultdict(list)   # stop -> [(states bitmask, elapsed, aboard)]
     foot_drops = [0]               # --foot-dom: popped nodes covered by a later copy a footpath away
+    front_drops = [0, 0, 0, 0]     # --front-dom: not queued (an expanded twin), swept as beaten by an expanded /
+                                   # a queued node, not queued (a queued twin)
+    dom_eq, queued_eq = {}, {}     # --front-dom: (stop, states) -> earliest time expanded / queued, on any trip
+    next_dom = [200000]            # --front-dom all: frontier size at which the next dominance sweep runs
 
     def bits(cs):
         m = 0
         for y in cs: m |= 1 << y
+        return m
+
+    _MASK = {}                     # --front-dom: bitmask per distinct collected set (the sets are shared via CANON)
+    def mask_of(cs):
+        m = _MASK.get(cs)
+        if m is None: m = _MASK[cs] = bits(cs)
         return m
 
     # A node at the same stop with a superset of the states, there no later, dominates, but not when the beaten
@@ -1523,8 +1546,8 @@ def main():
         # Same split as best_first (Nov 5): pop-side tests in the main process, the menu and the table tests in
         # expand_b, which --jobs runs in forked workers; --save-queue / --resume-queue / --extend as forward.
         free_ = {'budget', 'nodes', 'extend', 'extend_step', 'save_queue', 'checkpoint', 'resume_queue', 'out',
-                 'quad_workers', 'harvest', 'jobs', 'batch'}
-        sig_ = ({k: v for k, v in sorted(vars(a).items()) if k not in free_}, PT.key if PT is not None else None)
+                 'quad_workers', 'harvest', 'jobs', 'batch', 'front_dom'}   # front_dom drops only beaten nodes: exact
+        sig_ =({k: v for k, v in sorted(vars(a).items()) if k not in free_}, PT.key if PT is not None else None)
         prev_el = 0.0
         if a.resume_queue:
             ck_ = pickle.load(open(a.resume_queue, 'rb'))
@@ -2217,8 +2240,8 @@ def main():
         # The flags that decide what the frontier holds and how it is ordered. Run length, output and worker counts
         # can change between a run and its resume; anything else would mix two different searches in one queue.
         free_ = {'budget', 'nodes', 'extend', 'extend_step', 'save_queue', 'checkpoint', 'resume_queue', 'out',
-                 'quad_workers', 'harvest', 'jobs', 'batch'}
-        sig_ = ({k: v for k, v in sorted(vars(a).items()) if k not in free_}, PT.key if PT is not None else None)
+                 'quad_workers', 'harvest', 'jobs', 'batch', 'front_dom'}   # front_dom drops only beaten nodes: exact
+        sig_ =({k: v for k, v in sorted(vars(a).items()) if k not in free_}, PT.key if PT is not None else None)
         prev_el = 0.0
         if a.resume_queue:
             ck_ = pickle.load(open(a.resume_queue, 'rb'))
@@ -2306,6 +2329,9 @@ def main():
             mk = bits(collected)
             if dominated(stop, mk, spent, aboard): return False
             remember(stop, mk, spent, aboard)
+            if a.front_dom != 'off':
+                k3 = (stop, collected); e_ = dom_eq.get(k3)
+                if e_ is None or spent < e_: dom_eq[k3] = spent
             if SPLIT is not None and t >= SPLIT:
                 # A label, not a node: the head ends here and a backward half picks up. Recorded after the
                 # dominance test, so for one (stop, states) only the earliest arrival is kept.
@@ -2386,6 +2412,22 @@ def main():
                 new = CANON.setdefault(new, new)
                 sp_new = at - T0
                 if not prefilter(to, new, trip, sp_new): continue
+                if a.front_dom != 'off':
+                    # The same stop and the same states, there MIN_TRANSFER earlier, on any trip: one dict lookup.
+                    # (The full superset scan here cost more than half the node rate at hub airports, Nov 10; the
+                    # sweep does that part in bulk.) An expanded one: pop_ok would reject this child, and _beats is
+                    # transitive, so it stays beaten whatever replaces that label.
+                    k3 = (to, new)
+                    e_ = dom_eq.get(k3)
+                    if e_ is not None and e_ + MIN_TRANSFER <= sp_new:
+                        front_drops[0] += 1; continue
+                    if a.front_dom == 'all':
+                        # A queued one: it is expanded, or dies on a test this later copy fails too (the limit, the
+                        # end deadline, a label that beats both), so the copy can add nothing.
+                        e_ = queued_eq.get(k3)
+                        if e_ is not None and e_ + MIN_TRANSFER <= sp_new:
+                            front_drops[3] += 1; continue
+                        if e_ is None or sp_new < e_: queued_eq[k3] = sp_new
                 queued[(to, new, trip)] = sp_new
                 seq[0] += 1
                 qpush((pri(at - T0, len(new), to, at, new, rm_), at - T0, seq[0], to, at, new, trip, path + legs))
@@ -2423,7 +2465,11 @@ def main():
                 _f, spent, sq_, stop, t, collected, aboard, path = it_
                 kids, st_ = expand(stop, t, aboard, collected, prefilter)
                 take(it_, kids, st_)
-            if len(q) > a.queue:
+            # --front-dom all: the dominance sweep also runs each time the frontier has doubled since the last one,
+            # not only at the cap. Most beaten nodes were queued BEFORE the node that beats them was expanded, so
+            # nothing at push can catch them, and at the cap the frontier is already 85% of them (Nov 10).
+            full_ = len(q) > a.queue
+            if full_ or (a.front_dom == 'all' and len(q) > next_dom[0]):
                 # Drop only what is provably dead: a node whose clock has passed the limit, or passed the
                 # latest it could still collect something it owes. Both are facts. The old rule kept the best
                 # half by hours per state, which is the same relative ranking that orders the frontier, and
@@ -2434,7 +2480,8 @@ def main():
                 before = len(q)
                 alive = []
                 swept_pairs = 0
-                for it in q:
+                if not full_: alive = list(q)          # a dominance-only sweep: the deadline tests ran at push
+                for it in (q if full_ else ()):
                     _f2, sp2, sq2, st2, t2, col2, ab2, pa2 = it
                     if sp2 > limit[0]: continue
                     if L is not None:
@@ -2453,13 +2500,69 @@ def main():
                 # Only when the test above actually ran. Under --pairs report it is skipped, and printing
                 # "0 of N were jointly dead pairs" there is a clean bill of health from a check that never
                 # happened. 448d830 fixed exactly this shape for the end-of-run line and missed this one.
-                if PT is not None and a.pairs != 'report':
+                if full_ and PT is not None and a.pairs != 'report':
                     print(f'  sweep: {swept_pairs} of {before} were jointly dead pairs', flush=True)
+                if a.front_dom == 'all':
+                    # Dominance is a fact about a queued node too. Per stop, earliest first: drop a node an expanded
+                    # node beats (it would die at pop), then one an earlier queued survivor beats. The survivor stays
+                    # in the frontier and _beats is transitive, so whatever the dropped node could reach is still
+                    # reachable. Equal nodes: the first in (time, seq) order is the one kept.
+                    t_dom = time.time(); by_st = defaultdict(list)
+                    for it in alive: by_st[it[3]].append(it)
+                    alive = []; nA_ = nB_ = 0
+                    NW_ = (N_STATES + 63) // 64; M64_ = (1 << 64) - 1
+                    for st2, lst_ in by_st.items():
+                        lst_.sort(key=lambda it: (it[1], it[2]))
+                        ex_ = sorted(dom_stop.get(st2, ()), key=lambda e_: e_[1]); fr_ = []
+                        if len(lst_) >= 256:
+                            # A hub: the same test in numpy, the states as 64-bit words. The pure-Python scan below is
+                            # quadratic in the nodes at one stop (89 s for an 844k frontier, 64k at one airport). It
+                            # compares against every earlier queued node, kept or not; a dropped one was beaten by a
+                            # kept one and _beats is transitive, so the answer is the same.
+                            ids_ = {}
+                            aid_ = lambda x_: -1 if x_ is None else ids_.setdefault(x_, len(ids_))
+                            wd_ = lambda m_: [(m_ >> (64 * k_)) & M64_ for k_ in range(NW_)]
+                            QW = np.array([wd_(mask_of(it[5])) for it in lst_], dtype=np.uint64)
+                            QS = np.array([it[1] for it in lst_], dtype=np.float64)
+                            QA = np.array([aid_(it[6]) for it in lst_], dtype=np.int64)
+                            EW = np.array([wd_(e_[0]) for e_ in ex_], dtype=np.uint64).reshape(-1, NW_)
+                            ES = np.array([e_[1] for e_ in ex_], dtype=np.float64)
+                            EA = np.array([aid_(e_[2]) for e_ in ex_], dtype=np.int64)
+                            cut_ = np.searchsorted(ES, QS, 'right')
+                            for i_ in range(len(lst_)):
+                                w_, s2_, a2_, k_ = QW[i_], QS[i_], QA[i_], int(cut_[i_])
+                                if k_:
+                                    sup_ = ((EW[:k_] & w_) == w_).all(axis=1)
+                                    if a2_ != -1: sup_ &= (EA[:k_] == a2_) | (ES[:k_] + MIN_TRANSFER <= s2_)
+                                    if sup_.any(): nA_ += 1; continue
+                                if i_:
+                                    sup_ = ((QW[:i_] & w_) == w_).all(axis=1)
+                                    if a2_ != -1: sup_ &= (QA[:i_] == a2_) | (QS[:i_] + MIN_TRANSFER <= s2_)
+                                    if sup_.any(): nB_ += 1; continue
+                                alive.append(lst_[i_])
+                            continue
+                        for it in lst_:
+                            mk2, sp2, ab2 = mask_of(it[5]), it[1], it[6]
+                            hit_ = False
+                            for m_, s_, b_ in ex_:
+                                if s_ > sp2: break                     # by time: no later label can beat it
+                                if (m_ & mk2) == mk2 and (b_ == ab2 or ab2 is None or s_ + MIN_TRANSFER <= sp2):
+                                    hit_ = True; break
+                            if hit_: nA_ += 1; continue
+                            for m_, s_, b_ in fr_:
+                                if (m_ & mk2) == mk2 and s_ <= sp2 and (b_ == ab2 or ab2 is None or s_ + MIN_TRANSFER <= sp2):
+                                    hit_ = True; break
+                            if hit_: nB_ += 1; continue
+                            fr_.append((mk2, sp2, ab2)); alive.append(it)
+                    front_drops[1] += nA_; front_drops[2] += nB_
+                    print(f'  sweep: {nA_} beaten by an expanded node, {nB_} by a queued one '
+                          f'({time.time() - t_dom:.0f} s)', flush=True)
                 if layered: cur_ = q.cur; q = LQ(alive); q.cur = cur_
                 else: q = alive; heapq.heapify(q)
                 print(f'  [{time.time() - t_run:5.0f}s] frontier swept {before} -> {len(q)} '
-                      f'(only provably dead nodes dropped)', flush=True)
-                if len(q) > a.queue:
+                      f'(only provably dead{" or dominated" if a.front_dom == "all" else ""} nodes dropped)', flush=True)
+                next_dom[0] = max(200000, 2 * len(q))
+                if full_ and len(q) > a.queue:
                     print(f'  frontier is {len(q)} and all of it is still live; raise --queue rather than '
                           f'guess which to discard', flush=True)
                     break
@@ -2667,6 +2770,10 @@ def main():
         print('  labels by states held: ' + ' '.join(f'{k}:{v}' for k, v in sorted(by_n.items())))
     print(f'\n{seen_nodes[0]} nodes in {el:.0f} s ({seen_nodes[0] / max(el, 1):.0f}/s), {sum(len(v) for v in dom_stop.values())} kept '
           f'(stop, states); deepest {deepest[0]}/{NEED} states')
+    if a.front_dom != 'off':
+        print(f'--front-dom {a.front_dom}: not queued {front_drops[0]} (an expanded twin got there first) + '
+              f'{front_drops[3]} (a queued twin did); swept {front_drops[1]} beaten by an expanded node and '
+              f'{front_drops[2]} by a queued one')
     if a.goal:
         print(f'goal scans: {goal_scans[0]}, one forward scan per node expanded')
     if a.xprobe and pri_fn[0] is not None and last_q[0] is not None:
