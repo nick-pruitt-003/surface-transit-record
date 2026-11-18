@@ -310,3 +310,55 @@ never merges. Not yet built into the search.
 its footpath neighbours. A/B over 15 min, 8 jobs, both bug fixes in: without it 262k nodes (290/s), queue 125k,
 deepest 26/48; with it 441k nodes (489/s), queue 102k, deepest 31/48. The backward --track does not exercise it (it
 follows X's own path), so the end-to-end check is a gate with it on finding X.
+
+## Exact tail solve with OR-Tools (`scripts/tail_mip.py`, Nov 18)
+
+A second, independent method, written on the Mac before the Oct 31 - Nov 7 PC sections above were pulled. The
+quad tables have since closed proofB's branches and the forward proof from X's start. What this method adds:
+- a cross-check of those proofs by a method that shares nothing with ride_search's dominance or tables (the X proof
+  ran before the dominance fix `a4db915`);
+- a possible route to the free-start question the reverse search has not settled. A free start is a source arc to
+  every stop at every moment after the cutoff, which this model takes without changing shape. Not built yet.
+
+A MIP over the time-expanded network computes the exact time-dependent bound over the whole owed set, instead of
+over pairs, triples or quads:
+- **Network:** a node per connection, per arrival, and per moment you could board at a stop.
+- **Arcs:** board, stay aboard, alight, walk on arrival, wait, finish.
+- **Constraints and objective:** one unit of flow; at least one used arc touches each owed state; minimise the finish.
+
+Time only runs forward, so the model needs no subtour constraints. It is a relaxation of the router's rules:
+- the first boarding needs no transfer;
+- every stop a used connection or walk touches collects its state;
+- one footpath, or a walk-in point plus one onward footpath, is allowed per arrival.
+
+So INFEASIBLE, or OPTIMAL at time T, is a proof about every real route. A route it returns still has to pass
+`verify_path.py`. Pruning is permissive only:
+- a forward CSA scan for the earliest arrival at each stop;
+- the L_end reverse scan for the latest time at each stop that can still finish (guard=False);
+- a reachability pass over the network.
+
+`--selftest`, synthetic and seconds, passes on this Mac:
+- hand cases: ride-through credit, the 5 min transfer, walk-in timing, a deadline 1 s under the optimum is infeasible;
+- 40 random networks agree with a brute-force enumeration;
+- the LP bound never exceeds the optimum.
+
+The brute force shares the model's walk rule, so this tests the flow encoding, not fidelity to the router. The
+node below tests that.
+
+**Not yet run on real data.** This Mac (8 GB, swap full) can't hold the router. First runs on the PC, one at a time,
+in a Python with `ortools` (no wheel for 3.15 yet; 3.13 works):
+
+1. Fidelity gate: X's own node at Harrisburg, deadline = X's finish. It must return a route by 15:28 CT, and that
+   route must pass `verify_path.py`. A route earlier than X's is unexplained until verified: either the model is too
+   permissive there, or X's tail is not optimal.
+   `python3 tail_mip.py --stop Harrisburg --at 2026-11-19T14:26 --tz America/New_York --owes IN,OH,WV,KY,TN,MS,AR,MO,IL,WI,MI,IA,NE,SD,ND --end MN --by 2026-11-22T15:28 --by-tz America/Chicago --lp`, then the same without `--lp`.
+   If `--stop` is ambiguous, it lists `#index` choices; take the Amtrak stop X arrives at.
+2. Proof: the same node with `--by 2026-11-22T15:27`. INFEASIBLE means X's last 16 states are optimal from there,
+   and agrees with the Nov 1 forward proof by a method that has no dominance rule.
+3. Scale up along X: earlier nodes (Jacksonville, 17 held; then Newton, 12 held) until CP-SAT stops settling. That
+   size is how far the free-start model could reach.
+
+The Harrisburg node is on the Nov 12 data. Check its clock against the current feeds' X replay before running.
+
+Falsification: if CP-SAT can't settle step 2 in about 30 minutes, the method won't scale to 48 states. Record the
+LP bound and the network size either way.
