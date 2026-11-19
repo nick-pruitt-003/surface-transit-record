@@ -148,14 +148,17 @@ def hopscan_c(N, NT):
     return lib
 
 
-def build(net, s0, t0, D, owed, end, ea=None, lend=None, mt=MIN_TRANSFER, log=print, city=None, use_c=None, check=0):
+def build(net, s0, t0, D, owed, end, ea=None, lend=None, mt=MIN_TRANSFER, log=print, city=None, use_c=None, check=0,
+          end_stops=None):
     """The time-expanded network as numpy arc arrays. city: bool per connection (net.city by default); those
     connections are not nodes, they are inside the hops. use_c: hopscan.c (default when it builds); check=n compares
     the C scan against scan_py on the first n origins and stops on a difference.
     s0=None is a free start (Nov 18): any stop at any moment from t0 on, the first boarding without a transfer, a walk
     or walk-in before it counting, as on Moorhead's start. Then t0 is the start cutoff and the question is whether any
     route inside [t0, D] collects the owed states: the source gets every start's hops, one multi-source scan per metro
-    (every stop of it at t0, labels merged: which stop a label started from does not matter to the flow)."""
+    (every stop of it at t0, labels merged: which stop a label started from does not matter to the flow).
+    end_stops (Nov 19): finish only by standing at one of these stops by D (a segment's end, e.g. X's Harrisburg node),
+    instead of anywhere in the end state; `end` is then unused."""
     owed = sorted(set(int(y) for y in owed))
     bit_of = {y: 1 << i for i, y in enumerate(owed)}
     st = np.asarray(net.state, np.int64)
@@ -203,6 +206,7 @@ def build(net, s0, t0, D, owed, end, ea=None, lend=None, mt=MIN_TRANSFER, log=pr
     # connections and every footpath, and a scan can only ever move inside the component of its origin, so giving it
     # that component's connections alone changes nothing but the time it takes
     N = len(st)
+    is_end = (st == end) if end_stops is None else np.isin(np.arange(N), np.asarray(list(end_stops), np.int64))
     from scipy.sparse import coo_matrix
     from scipy.sparse.csgraph import connected_components
     fa = [s_ for s_, fl in net.foot.items() for _ in fl]; fb = [j for s_, fl in net.foot.items() for j, _ in fl]
@@ -223,7 +227,7 @@ def build(net, s0, t0, D, owed, end, ea=None, lend=None, mt=MIN_TRANSFER, log=pr
     empty = (np.zeros(0), np.zeros(0), np.zeros(0, np.int32), np.zeros(0, np.int32), np.zeros(0, np.int32))
     big = sorted(((len(c[0]), m) for m, c in metro.items()), reverse=True)[:3]
     log(f'  {len(metro)} metros; largest {", ".join(str(x) for x, _ in big)} city connections')
-    outp = np.zeros(N, np.uint8); outp[stops_tl] = 1; outp[st == end] = 1
+    outp = np.zeros(N, np.uint8); outp[stops_tl] = 1; outp[is_end] = 1
     lib = None
     if use_c is not False:
         try: lib = hopscan_c(N, len(ctm))
@@ -260,7 +264,7 @@ def build(net, s0, t0, D, owed, end, ea=None, lend=None, mt=MIN_TRANSFER, log=pr
 
     def hops(node, b, t, off, lab, conns=None):
         res = scan(b, t, off, conns); nh[0] += 1
-        fin = [(s, tt, m) for s, tt, m, kd in res if int(st[s]) == end and tt <= D]
+        fin = [(s, tt, m) for s, tt, m, kd in res if is_end[s] and tt <= D]
         for s, tt, m in fin: add(node, 1, FINISH, tt, m, lab, s)
         by_stop = defaultdict(list)
         for s, tt, m, kd in res:
@@ -396,7 +400,7 @@ def read_path(M, chosen):
 
 # ---------------------------------------------------------------- self test (synthetic, no router)
 
-def _bruteforce(net, s0, t0, D, owed, end, mt=MIN_TRANSFER):
+def _bruteforce(net, s0, t0, D, owed, end, mt=MIN_TRANSFER, end_stops=None):
     """Enumerate every route on a tiny network under the model's own rules (DFS over boardings): the earliest finish."""
     best = [None]
     trips = defaultdict(list)
@@ -405,7 +409,7 @@ def _bruteforce(net, s0, t0, D, owed, end, mt=MIN_TRANSFER):
     def arrive(b, t, got, first):
         for j, w, sts in walks_from(net, b):
             g2 = got | (set(sts) & owed); tt = t + w
-            if int(net.state[j]) == end and tt <= D and owed <= g2:
+            if (int(net.state[j]) == end if end_stops is None else j in end_stops) and tt <= D and owed <= g2:
                 if best[0] is None or tt < best[0]: best[0] = tt
             ready = tt + (0 if first else mt)
             for tr, ks in trips.items():
@@ -435,8 +439,9 @@ def selftest():
     st = [0, 1, 2, 3]
     net = Net([0, 100, 0, 600, 900], [100, 200, 150, 700, 950], [0, 1, 0, 2, 2], [1, 2, 2, 3, 3],
               ['t1', 't1', 't2', 't3', 't4'], {}, st)
-    def run(net, owed, D, s0=0, t0=0, end=3, city=None, use_c=False):
-        M = build(net, s0, t0, D, owed, end, log=quiet, city=city, use_c=use_c, check=10 ** 6 if use_c else 0)
+    def run(net, owed, D, s0=0, t0=0, end=3, city=None, use_c=False, end_stops=None):
+        M = build(net, s0, t0, D, owed, end, log=quiet, city=city, use_c=use_c, check=10 ** 6 if use_c else 0,
+                  end_stops=end_stops)
         if missing_states(M): return None
         stt, f, b, ch = solve_cp(M, 30, 1, log=quiet)
         return f
@@ -460,6 +465,9 @@ def selftest():
     check('walk-in after a city ride', run(net3, {1, 4}, 2000, city=[True, True, False, False, False]), 800)
     check('everything a city hop', run(net3, {1, 4}, 2000, city=[True] * 5), 800)
     check('transfer inside a hop', run(net2, {1}, 2000, city=[True, True, True, False]), 950)
+    check('end stop B: ride to B only', run(net, set(), 2000, end_stops={1}), 100)
+    check('end stop C owing B: t1 through B', run(net, {1}, 2000, end_stops={2}), 200)
+    check('end stop C owing B by 199 is infeasible', run(net, {1}, 199, end_stops={2}), None)
     # a state nothing reaches: model must report it missing (no solve)
     M = build(net, 0, 0, 2000, {1, 9}, 3, log=quiet)
     check('unreachable state reported', missing_states(M), [9])
@@ -501,9 +509,19 @@ def selftest():
             got_f = run(netr, owed, 6000, s0=None, end=S - 1, city=cf_, use_c=uc)
             if not ((got_f is None and want_f is None) or (got_f is not None and want_f is not None and abs(got_f - want_f) < 1e-6)):
                 good = False; print(f'  FAIL random {trial} free start (hops {cf_ is not None}, C {uc}): got {got_f}, want {want_f}')
+        # fixed end stop: finish only at one named stop (any state), fixed and free start
+        es = {int(rng.integers(1, S))}
+        want_e = _bruteforce(netr, 0, 0, 6000, owed, S - 1, end_stops=es)
+        wants_e = [w for w in (_bruteforce(netr, s_, 0, 6000, owed, S - 1, end_stops=es) for s_ in range(S)) if w is not None]
+        for s0_, w_ in ((0, want_e), (None, min(wants_e) if wants_e else None)):
+            for cf_, uc in ((None, False), (cityf, False)) + (((cityf, True),) if HAVE_C else ()):
+                got_e = run(netr, owed, 6000, s0=s0_, end=S - 1, city=cf_, use_c=uc, end_stops=es)
+                if not ((got_e is None and w_ is None) or (got_e is not None and w_ is not None and abs(got_e - w_) < 1e-6)):
+                    good = False; print(f'  FAIL random {trial} end stop {es} start {s0_} (hops {cf_ is not None}, C {uc}): got {got_e}, want {w_}')
         if good: n_ok += 1
         else: print(f'  FAIL random {trial}: got {got}, want {want}')
-    check(f'random networks agree with brute force (plain, hops' + (', C hops' if HAVE_C else '') + '; fixed and free start)', n_ok, n)
+    check(f'random networks agree with brute force (plain, hops' + (', C hops' if HAVE_C else '') + '; fixed and free start; '
+          'end state and end stop)', n_ok, n)
     print('selftest', 'PASSED' if ok else 'FAILED')
     return ok
 
@@ -522,6 +540,8 @@ def main():
     ap.add_argument('--no-hops', action='store_true', help='city transit as plain connections (the uncontracted model)')
     ap.add_argument('--free-start', action='store_true', help='start anywhere from --at on (the cutoff); --stop unused, '
                     '--owes all by default: is there any route inside [--at, --by]?')
+    ap.add_argument('--end-stop', help='finish by standing at this stop (name or #index; several with |) by --by, '
+                    'any state; --owes must then list what the segment collects')
     ap.add_argument('--check', type=int, default=0, help='compare hopscan.c with the Python scan on the first N origins')
     a = ap.parse_args()
     if a.selftest: sys.exit(0 if selftest() else 1)
@@ -533,8 +553,22 @@ def main():
     R = cached_router(date.fromisoformat(a.d0), a.days)
     inv = {v: k for k, v in ABBR.items()}; code = lambda c: R.state_names.index(inv[c])
     end = code(a.end)
-    owed = ({y for y in range(len(R.state_names)) if y != end} if a.owes in (None, '', 'all')
-            else {code(c) for c in a.owes.split(',') if c and c != a.end})
+    def one_stop(q):
+        if q.startswith('#'): return int(q[1:])
+        c = [i for i in R.stops_matching(q) if R.stop_name[i].lower() == q.lower()] or R.stops_matching(q)
+        if len(c) != 1:
+            sys.exit(f'stop {q!r} matches {len(c)} stops; pass one as #index:\n' +
+                     '\n'.join(f'  #{i}  {R.stop_name[i]}  {R.abbr[i]}  {R.stop_ids[i]}' for i in c[:20]))
+        return c[0]
+    end_stops = None
+    if a.end_stop:
+        end_stops = [one_stop(q) for q in a.end_stop.split('|')]
+        if a.owes in (None, ''): sys.exit('--end-stop needs --owes (the states the segment must collect)')
+        owed = {code(c) for c in a.owes.split(',') if c}
+        print('end stops: ' + '; '.join(f'#{j} {R.stop_name[j]} {R.abbr[j]}' for j in end_stops))
+    else:
+        owed = ({y for y in range(len(R.state_names)) if y != end} if a.owes in (None, '', 'all')
+                else {code(c) for c in a.owes.split(',') if c and c != a.end})
     t0 = datetime.fromisoformat(a.at).replace(tzinfo=ZoneInfo(a.tz)).timestamp()
     D = datetime.fromisoformat(a.by).replace(tzinfo=ZoneInfo(a.by_tz)).timestamp()
     if a.free_start:
@@ -551,10 +585,11 @@ def main():
     if s0 is not None: print(f'from {R.stop_name[s0]} at {R.fmt_time(t0, s0)}, owes {len(owed)}: {a.owes}; end {a.end} by '
           f'{R.fmt_time(D, s0)} ({(D - t0) / 3600:.2f} h)', flush=True)
     t = time.time()
-    ref = s0 if s0 is not None else int(np.where(R.state == end)[0][0])      # whose clock to print times on
+    ref = s0 if s0 is not None else (end_stops[0] if end_stops else int(np.where(R.state == end)[0][0]))      # whose clock to print times on
     ea = R.scan({s0: (t0, None)}, set())[2] if s0 is not None else None
     F = B.RevFast(R)
-    lat, ok_, k0, k1 = F.layer({int(s): D for s in np.where(R.state == end)[0]}, False, t0, None)
+    ends = end_stops if end_stops is not None else np.where(R.state == end)[0]
+    lat, ok_, k0, k1 = F.layer({int(s): D for s in ends}, False, t0, None)
     eff, _ = F.through(ok_, k0, k1, np.ones(R.N, bool)); lend = np.maximum(lat, eff)
     print(f'  forward and reverse scans {time.time() - t:.0f} s', flush=True)
     city_feed = [fi for fi, f in enumerate(R.feeds) if getattr(f, 'city', False)]
@@ -562,7 +597,7 @@ def main():
     if a.no_hops: city[:] = False
     net = Net(R.dep, R.arr, R.cfrom, R.cto, R.ctrip, R.foot, R.state, virtual=lambda j: j >= R.first_virtual,
               name=lambda s: R.stop_name[s], city=city)
-    t = time.time(); M = build(net, s0, t0, D, owed, end, ea=ea, lend=lend, mt=MT, check=a.check)
+    t = time.time(); M = build(net, s0, t0, D, owed, end, ea=ea, lend=lend, mt=MT, check=a.check, end_stops=end_stops)
     print(f'  built in {time.time() - t:.0f} s', flush=True)
     miss = missing_states(M)
     if miss:

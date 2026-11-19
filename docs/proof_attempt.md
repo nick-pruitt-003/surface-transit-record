@@ -434,3 +434,40 @@ pickle writer), which only matters for a route that beats X.
 in 30 minutes. The free-start model is ~13 M arcs with 47 owed, so a free-start proof is out of reach as built; its LP
 bound (19.77 h) is far too weak to prune anything. Next lever if this is pursued: column generation or a stronger
 relaxation of the state-cover constraints (the LP's fractional flow is what makes these bounds weak), not more size.
+
+## Does X leave as late as possible? Segment proofs along the front (Nov 19)
+
+The tail is proved from Harrisburg (Thu 14:35, 32 held). The question that leaves: could a route start later than X
+and still stand at Harrisburg by 14:35 holding the same 32? A free-start model of the whole front (32 owed, ~160 h)
+is the size the free-start LP above could not use, so the front is cut at two of X's waypoints and solved backwards.
+
+**`--end-stop`** (new): finish by standing at a named stop (`#index`, several with `|`) by `--by`, any state; `--owes`
+lists what the segment must collect. The reverse deadline scan starts from those stops. Selftest: three hand cases
+and, in each of the 40 random networks, a random end stop from a fixed and a free start (plain, hops, C hops)
+against brute force. All pass.
+
+**Latest start** at a stop is a binary search on `--at` to the minute (`out/tailmip_latest.sh`, one CP-SAT run per
+probe, OPTIMAL = feasible, INFEASIBLE = dead). Each segment's deadline is the next segment's latest start.
+
+Runs (PC, WSL, 16 workers; current router d0 Nov 9, 22 days):
+
+| step | from | to (deadline) | owes | result |
+|---|---|---|---|---|
+| 1 gate | Jacksonville (Downtown) #626, Tue 14:50 ET (X's clock) | Harrisburg #476 by Thu 14:35 ET | CT DE GA MA MD ME NC NH NJ NY PA RI SC VA VT | OPTIMAL Thu 14:35 = X, bound = finish (215 k arcs, 122 s, 12.5 GB) |
+| 1 latest | Jacksonville #626 | same | same | **latest Tue 14:54** (14:54 OPTIMAL, 14:55 INFEASIBLE); X has 4 min there |
+| 2 latest | Barstow #1061 | Jacksonville #626 by Tue 14:54 ET | CO KS NM OK TX AL FL LA | **latest Sat 20:42 PT** (20:43 INFEASIBLE); X arrives 18:23, 2 h 19 min of slack |
+| 3 gate | free start, any stop, from Thu Nov 12 22:10 MT | Barstow #1061 by Sat 20:42 PT | WY MT ID WA OR UT NV AZ CA | OPTIMAL Sat 18:23 = X's arrival (62 k arcs, 7 GB) |
+| 3 proof | free start from Thu Nov 12 **22:21** MT | same | same | **INFEASIBLE in 6.3 s** |
+
+**What it proves.** No route starting anywhere after 22:20 MT Thu Nov 12 (the minute JL 701 leaves Sheridan) can be
+at Barstow #1061 by 20:42 Saturday holding those 9 states; so none can be at Jacksonville Downtown by 14:54 Tuesday
+holding those 17, nor at Harrisburg by 14:35 Thursday holding those 32, by way of those two waypoints with that
+split of states. With the Harrisburg tail proof: among routes through X's Barstow and Jacksonville waypoints, X's
+first boarding (JL 701, 22:20) is the latest possible start and its finish the earliest, so 232.13 h is optimal there.
+
+**What it does not prove.** A front that never stands at Barstow #1061 or Jacksonville Downtown #626, or holds a
+different set of states there (AZ on the Chief instead of before Barstow, say), is outside segments 1 and 2. Segment 3
+is free in where it starts; segments 1 and 2 are fixed at their start stop. The 2 h 19 min at Barstow is the front's
+only real slack and it does not reach back to Wyoming: the free start sees every later departure and none makes it.
+Closing the gap means the same cut at a free-start segment 2 (any stop, owing 17, by Jacksonville 14:54) and then
+a free-start segment 1, each sized before it is run.
