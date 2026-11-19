@@ -606,7 +606,6 @@ def main():
                 print(f'  pair tables for the {len(only_)} states not in --have (--pairs-owed)', flush=True)
             PT = PairTables(R, D, a.span, L_end=L_end, L=L, router_args=router_args, only=only_)
     pair_kills = [0]; triple_kills = [0]; quad_kills = [0]
-    pair_by = defaultdict(int); pair_at = defaultdict(int)   # stuck report (Nov 18 2026): which pair killed, where
     TE = None; tour_scored = set(); tour_moved = [0]
     if a.tour > 0:
         if L is None: sys.exit('--tour needs the deadline: --end and --by')
@@ -812,10 +811,6 @@ def main():
         if len(owed) < 2: return False
         if PT.dead(int(stop), float(t), owed):
             pair_kills[0] += 1
-            if hasattr(PT, 'worst'):          # which pair is the one it cannot collect: counting only
-                _m, y_, z_ = PT.worst(int(stop), float(t), owed)
-                if y_ >= 0: pair_by[(min(y_, z_), max(y_, z_))] += 1
-            pair_at[int(stop)] += 1
             return True
         return False
 
@@ -1246,11 +1241,6 @@ def main():
         return menu.list() if menu is not None else out
 
     best = [None]; limit = [a.target * 3600]; seen_nodes = [0]; t_run = time.time(); deepest = [0]
-    # HF_FLOOR (hours, Nov 18 2026): a segment that ends at a daily hinge has a floor, and every route under it finishes
-    # the trip at the same moment. With it set, a found route no longer tightens the limit below the floor, so the
-    # search keeps finding routes under it; each is kept in alts (up to HF_KEEP, default 40) for ranking by checked-ness.
-    FLOOR = float(os.environ.get('HF_FLOOR') or 0) * 3600; KEEP = int(os.environ.get('HF_KEEP') or 40)
-    alts = []; alt_keys = set()
 
     def _save_deep():
         # the deepest chain, saved as it improves, so a run that stalls can be stopped without losing it (Nov 6: a
@@ -1272,7 +1262,6 @@ def main():
     deep_path = [None]
     beat = [time.time()]
     budget = [a.budget]; qhist = []     # qhist: (time, frontier) per heartbeat, for --extend
-    stop_seen = [-1e9]
 
     def over_budget():
         """Out of time or nodes. With --extend, a run whose frontier is still falling at the budget gets another
@@ -1281,11 +1270,6 @@ def main():
         --extend-step seconds before; a flat or growing frontier stops as before."""
         if seen_nodes[0] > a.nodes: return True
         el = time.time() - t_run
-        if a.out and el - stop_seen[0] >= 2:     # OUT.stop ends the run as the budget would, route written (Nov 17)
-            stop_seen[0] = el                    # checked every 2 s at most: a stat on /mnt/c costs ~1 ms
-            if os.path.exists(a.out + '.stop'):
-                print(f'  [{el:5.0f}s] {a.out}.stop found: stopping as if out of budget', flush=True)
-                return True
         if el <= budget[0]: return False
         if a.extend and budget[0] + a.extend_step <= a.budget + a.extend * 3600 and qhist:
             old = [f for t_, f in qhist if t_ <= el - a.extend_step]
@@ -2311,16 +2295,9 @@ def main():
             # prune the whole way on the assumption the chain still has to reach it, so accepting a chain
             # that is standing somewhere else contradicts the pruning that got it there.
             if len(collected) >= NEED and (END_ST is None or int(R.state[stop]) == END_ST):
-                new_ = best[0] is None or spent < best[0][0]
-                if new_: best[0] = (spent, list(path), frozenset(collected))
-                limit[0] = max(spent, FLOOR) if FLOOR else spent
-                if FLOOR:
-                    k_ = tuple(l[0] for l in path)
-                    if spent <= FLOOR and k_ not in alt_keys and len(alts) < KEEP:
-                        alt_keys.add(k_); alts.append((spent, list(path), frozenset(collected))); new_ = True
-                if new_:   # a repeat (or an alt past HF_KEEP) prints nothing, so the stall stop still sees quiet
-                    print(f'  [{time.time() - t_run:5.0f}s] FOUND {spent / 3600:.2f} h, {len(collected)} states, '
-                          f'{len(path)} rides' + (f' (alt {len(alts)})' if FLOOR else ''), flush=True)
+                limit[0] = spent; best[0] = (spent, list(path), frozenset(collected))
+                print(f'  [{time.time() - t_run:5.0f}s] FOUND {spent / 3600:.2f} h, {len(collected)} states, '
+                      f'{len(path)} rides', flush=True)
                 return False
             # Finishing on foot over the end state's line, one way (Oct 20). A walk-in is modelled out and back to
             # the stop, so a chain whose last state is the end state collected it but never stood in it, and the
@@ -2882,25 +2859,6 @@ def main():
         print('pair table built, prune switched off (--pairs report); the census below is the measurement'
               if a.pairs == 'report' else
               f'pair prune at {a.pairs}: {pair_kills[0]} nodes killed for owing an uncollectable pair')
-        # Stuck report (Nick, Nov 18 2026): where the search gives up, not what the winner does. Counting only.
-        if pair_by:
-            print('  stuck: pairs that killed the most chains: ' + ', '.join(
-                f'{ab(y_)}+{ab(z_)} {n_}' for (y_, z_), n_ in sorted(pair_by.items(), key=lambda kv: -kv[1])[:10]))
-        if pair_at:
-            print('  stuck: stops where chains were killed for a pair: ' + ', '.join(
-                f'{R.stop_name[st_][:22]} {n_}' for st_, n_ in sorted(pair_at.items(), key=lambda kv: -kv[1])[:10]))
-    if last_q[0]:
-        near = [e for e in last_q[0] if len(e[5]) >= NEED - 3]
-        if near:
-            ow_, at_ = defaultdict(int), defaultdict(int)
-            for e in near:
-                at_[int(e[3])] += 1
-                for y_ in range(N_STATES):
-                    if y_ not in e[5]: ow_[y_] += 1
-            print(f'  stuck: {len(near)} queued chains 1-3 countries short; they owe ' + ', '.join(
-                f'{ab(y_)} {n_}' for y_, n_ in sorted(ow_.items(), key=lambda kv: -kv[1])[:10]))
-            print('  stuck: and are standing at ' + ', '.join(
-                f'{R.stop_name[st_][:22]} {n_}' for st_, n_ in sorted(at_.items(), key=lambda kv: -kv[1])[:10]))
     if TE is not None:
         print(f'tour shortfall: {len(tour_scored)} nodes scored at pop, {tour_moved[0]} moved back; '
               f'{TE.calls} tour estimates, {TE.tree_builds} shortest-path trees', flush=True)
@@ -2936,9 +2894,6 @@ def main():
             # labelling it complete would hand a reader a route the second witness rejected.
             pickle.dump(route_record(path, spent, best_states, agreed), open(a.out, 'wb'))
             print('wrote', a.out + ('' if agreed else '  (complete=False: the router did not confirm it)'))
-            if alts:
-                pickle.dump([route_record(p_, sp_, co_, False) for sp_, p_, co_ in alts], open(a.out + '.alts', 'wb'))
-                print(f'wrote {a.out}.alts: {len(alts)} routes under the {FLOOR / 3600:.2f} h floor (not router-checked)')
 
 
 if __name__ == '__main__':
