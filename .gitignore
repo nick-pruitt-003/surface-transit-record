@@ -16,3 +16,4 @@ scripts/menu.exp
 scripts/menu_*.lib
 scripts/menu_*.exp
 hfcyttec/
+scripts/hopscan_*.so

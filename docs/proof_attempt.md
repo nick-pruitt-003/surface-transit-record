@@ -391,3 +391,46 @@ rule each drop real routes, which makes the model stricter than the router. A pr
 city-only scan per arrival at an intercity stop (or walk-in point, or city stop in an owed state), in C, keeping every
 Pareto-best (arrival, states touched) label so a slower city path over a state line (St Louis -> East Riverfront) is
 kept. About a day. Column generation over the existing network is the other standard route at this size.
+
+### City hops, and the first proof by this method (Nov 18, later)
+
+`tail_mip.py` now collapses city transit into **hops** (`hopscan.c`, a C scan with `scan_py` as its Python reference).
+Intercity connections keep their ride and arrival nodes. Everything between alighting one intercity vehicle (or
+starting) and boarding the next, or finishing, is one arc from that arrival to a departure slot at an intercity stop,
+carrying the states it touched. The scan is exact under the router's rules: one footpath or a walk-in chain, 5 min
+between vehicles, staying aboard free, every city connection to the deadline, with no horizon, no round cap and no
+first-departure rule. Labels are Pareto in (time, states), so a slower path over a state line survives beside a faster
+one that stays in one state. Each scan sees only its own metro (a connected component of city connections and
+footpaths), which it can't leave anyway. Masks are 64-bit (47 owed states). `--no-hops` is the uncontracted model.
+
+Selftest (passes): the 10 hand cases; 4 hop cases (ride-through, walk-in after a city ride, everything a hop, transfer
+inside a hop); 40 random networks against brute force with half the trips as city hops, in Python and C (C = Python on
+every scan); and the same 40 with a free start against the best brute force over every start stop. The brute force now
+credits the start stop's own state, as the model and the router do.
+
+**Free start** (`--free-start --at <cutoff> --by <deadline>`, `--owes` all but the end by default): any stop at any
+moment from the cutoff, the first boarding without a transfer, a walk or walk-in before it counting. The source gets
+one multi-source scan per metro (every stop at the cutoff, labels merged). The question is whether any route inside
+[cutoff, deadline] collects the owed states; INFEASIBLE says none does.
+
+Runs (PC, WSL, 16 workers; `--by` Sun Nov 22 15:28 CT, X's finish; 100 GB stop):
+
+| node | owed | connections kept | hop model | LP | CP-SAT at X's finish | CP-SAT 1 min under | peak |
+|---|---|---|---|---|---|---|---|
+| Harrisburg Bus Station #476, Thu Nov 19 14:35 ET | 15 | 1.76 M (28,037 intercity) | 79,908 nodes, 1,707,575 arcs (28,038 scans, 36 s) | OPTIMAL 33.5 s, bound 32.39 h | **OPTIMAL 685 s, 73.88 h = X's finish, bound = finish** | **INFEASIBLE in 655.5 s** | 23.9 GB |
+| Jacksonville (Downtown) #626, Tue Nov 17 14:50 ET | 30 | 5.11 M (71,455 intercity) | 207,333 nodes, 4,188,472 arcs (71,456 scans, 81 s) | OPTIMAL 538 s, bound 43.06 h | **UNKNOWN after 1800 s**, no route found, bound 64.81 h (X: 117.6 h) | not run | 57.5 GB |
+| Free start from Thu Nov 12 22:10 MT | 47 | 16.68 M (233,869 intercity) | 687,282 nodes, 12,984,677 arcs (233,946 scans, 504 s) | OPTIMAL 6050 s, bound 19.77 h | not run | not run | 24.7 GB (LP) |
+
+For comparison, the uncontracted Harrisburg model was 78.3 M arcs and passed 100 GB inside GLOP without a bound.
+
+**What it proves.** From X's own Harrisburg node (32 states held, Thu 14:35), no route collects the other 15 and
+stands in Minnesota before 15:28 CT Sunday: **X's last 15 states are optimal from there**, by a method that shares
+nothing with ride_search's dominance or tables. CP-SAT's route at X's time is not X's tail (it goes Louisville,
+Nashville, the Big River Crossing walk for MS, Tornado from West Memphis, Kenosha, Four Winds, then X's Chicago 21:15
+block via Des Moines and Vermillion) but it ties X to the minute; it was not replayed through `verify_path.py` (no
+pickle writer), which only matters for a route that beats X.
+
+**Reach.** Settles at ~1.7 M arcs and 15 owed states in about 11 minutes; does not settle at ~4.2 M arcs and 30 owed
+in 30 minutes. The free-start model is ~13 M arcs with 47 owed, so a free-start proof is out of reach as built; its LP
+bound (19.77 h) is far too weak to prune anything. Next lever if this is pursued: column generation or a stronger
+relaxation of the state-cover constraints (the LP's fractional flow is what makes these bounds weak), not more size.
