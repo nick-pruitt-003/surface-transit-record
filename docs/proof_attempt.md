@@ -462,8 +462,10 @@ Runs (PC, WSL, 16 workers; current router d0 Nov 9, 22 days):
 **What it proves.** No route starting anywhere after 22:20 MT Thu Nov 12 (the minute JL 701 leaves Sheridan) can be
 at Barstow #1061 by 20:42 Saturday holding those 9 states; so none can be at Jacksonville Downtown by 14:54 Tuesday
 holding those 17, nor at Harrisburg by 14:35 Thursday holding those 32, by way of those two waypoints with that
-split of states. With the Harrisburg tail proof: among routes through X's Barstow and Jacksonville waypoints, X's
-first boarding (JL 701, 22:20) is the latest possible start and its finish the earliest, so 232.13 h is optimal there.
+split of states. Among routes through X's Barstow and Jacksonville waypoints, X's first boarding (JL 701, 22:20) is
+the latest possible start. With the Harrisburg tail proof, X's finish is the earliest from its Harrisburg node. That
+is not yet a duration proof: a route that starts earlier and reaches Harrisburg before 14:35 could finish earlier
+too, and nothing here bounds that (it needs the tail solved from earlier Harrisburg clocks).
 
 **What it does not prove.** A front that never stands at Barstow #1061 or Jacksonville Downtown #626, or holds a
 different set of states there (AZ on the Chief instead of before Barstow, say), is outside segments 1 and 2. Segment 3

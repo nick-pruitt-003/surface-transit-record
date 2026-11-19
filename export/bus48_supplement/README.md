@@ -5,6 +5,8 @@ US states (the timetabled record is 238.83 h). The public GTFS feeds don't have 
 no feed at all, some feeds disagree with the carrier's own booking site, and some feeds put stops in the wrong place.
 It's published so anyone can check the routes, and so the next person attempting this doesn't have to collect it again.
 
+The route this data supports, leg by leg, is in `export/ROUTE_X.md`, and why it's public is in `export/INTENT.md`.
+
 It **supplements** the public feeds; it doesn't replace them. Load it next to Amtrak's GTFS, the FlixBus/Greyhound
 feed, the intercity feed (`intercity_merged_gtfs.zip`), and the city transit feeds listed in `city_routes.csv`.
 
