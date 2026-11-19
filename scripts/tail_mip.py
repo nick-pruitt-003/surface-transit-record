@@ -59,118 +59,138 @@ def walks_from(net, b):
     return out
 
 
+STAY, ALIGHT, FINISH, WALK, WAIT, BOARD = range(6)
+KIND = ('stay', 'alight', 'finish', 'walk', 'wait', 'board')
+
+
 def build(net, s0, t0, D, owed, end, ea=None, lend=None, mt=MIN_TRANSFER, log=print):
-    """Arc list of the time-expanded network. Returns dict with arcs (tail, head, kind, cost, states), node count,
-    source, sink, and labels for reading a solution back."""
+    """The time-expanded network as numpy arc arrays (Nov 18: the first version kept a Python tuple per arc and a walk
+    arc per footpath per arrival, and passed 50 GB at Harrisburg before it finished building).
+
+    Node ids: 0 source, 1 sink, then one per kept connection (riding it), one per arrival, one per timeline slot.
+    A timeline slot is a (stop, departure moment) of a kept connection. Arrivals at a stop are chained by wait arcs in
+    time order, so a walk can be taken from the LATEST arrival that still lands on a given slot: one walk arc per
+    (footpath, slot), not per (footpath, arrival). Waiting at b and walking later reaches the same slot, so this is the
+    same set of routes. A walk lands straight on the first departure slot at or after its moment (the first version
+    inserted the moment into the timeline and waited from it to the same slot)."""
     owed = set(int(y) for y in owed)
+    st = np.asarray(net.state, np.int64)
+    ow = np.zeros(max([int(st.max())] + list(owed)) + 2, bool)
+    for y in owed: ow[y] = True
+    isowed = lambda s: np.where(s >= 0, ow[np.maximum(s, 0)], False)
     nC = len(net.dep)
     keep = (net.dep >= t0) & (net.arr <= D)
     if ea is not None: keep &= net.dep >= ea[net.cfrom]
     if lend is not None: keep &= net.arr <= lend[net.cto]
-    K = np.where(keep)[0]
-    log(f'  connections kept {len(K)} of {nC}')
-    nodes = {}                       # key -> id
-    def node(key):
-        v = nodes.get(key)
-        if v is None: v = nodes[key] = len(nodes)
-        return v
-    arcs = []                        # (u, v, kind, cost, states, label)
-    src, snk = node(('src',)), node(('snk',))
-    timeline = defaultdict(set)      # stop -> moments ready to board
-    pending = []                     # (u, stop, moment, states, label): walk arcs into timelines, added after
-    ride = {}
-    for k in K: ride[int(k)] = node(('c', int(k)))
-    # boarding: from the stop's timeline at the departure minute
-    for k in K:
-        k = int(k); a = int(net.cfrom[k]); timeline[a].add(net.dep[k])
+    K = np.where(keep)[0]; nK = len(K)
+    log(f'  connections kept {nK} of {nC}')
+    dep, arr, cf, ct = net.dep[K], net.arr[K], net.cfrom[K], net.cto[K]
+    RIDE0, ARR0 = 2, 2 + nK
+    # timelines: the unique (stop, departure) pairs, sorted by stop then time
+    o = np.lexsort((dep, cf)); sk, mk = cf[o], dep[o]
+    first = np.ones(nK, bool); first[1:] = (sk[1:] != sk[:-1]) | (mk[1:] != mk[:-1])
+    tl_stop, tl_mom = sk[first], mk[first]; nS = len(tl_stop)
+    TL0 = ARR0 + nK; n = TL0 + nS
+    slot_of = np.empty(nK, np.int64); slot_of[o] = np.cumsum(first) - 1
+    stops_tl, tl_lo = np.unique(tl_stop, return_index=True)
+    tl_hi = np.append(tl_lo[1:], nS)
+    rng_of = dict(zip(stops_tl.tolist(), zip(tl_lo.tolist(), tl_hi.tolist())))
+    U, V, KD, C, S1, S2, LK, LJ = [], [], [], [], [], [], [], []
+
+    def add(u, v, kind, cost=0.0, s1=-1, s2=-1, lk=-1, lj=-1):
+        u = np.atleast_1d(np.asarray(u, np.int64)); m_ = len(u)
+        f = lambda x, dt: np.array(np.broadcast_to(np.asarray(x, dt), (m_,)))
+        U.append(u); V.append(f(v, np.int64)); KD.append(f(kind, np.int8)); C.append(f(cost, float))
+        S1.append(f(s1, np.int16)); S2.append(f(s2, np.int16)); LK.append(f(lk, np.int64)); LJ.append(f(lj, np.int64))
+
+    # the states a connection touches are credited on the arcs INTO its ride node (board, stay), so a ride counts
+    # however it is left
+    a_ = st[cf]; b_ = st[ct]
+    cs1 = np.where(isowed(a_), a_, -1); cs2 = np.where(isowed(b_) & (b_ != cs1), b_, -1)
+    cs1, cs2 = np.where(cs1 < 0, cs2, cs1), np.where(cs1 < 0, -1, cs2)
+    idx = np.arange(nK)
+    add(TL0 + slot_of, RIDE0 + idx, BOARD, 0.0, cs1, cs2, K)
+    add(RIDE0 + idx, ARR0 + idx, ALIGHT, 0.0, -1, -1, K)
+    ws = np.where(tl_stop[1:] == tl_stop[:-1])[0]
+    add(TL0 + ws, TL0 + ws + 1, WAIT)                                                   # wait at a stop to board
     # stay aboard: consecutive kept connections of a trip
-    by_trip = defaultdict(list)
-    for k in K: by_trip[net.ctrip[k]].append(int(k))
-    for tr, ks in by_trip.items():
-        ks.sort(key=lambda k: net.dep[k])
-        for k, k2 in zip(ks, ks[1:]):
-            if net.cto[k] == net.cfrom[k2] and net.arr[k] <= net.dep[k2]:
-                arcs.append((ride[k], ride[k2], 'stay', 0.0, (), None))
-    # The states a connection touches are credited on the arcs INTO its ride node (board, stay), so a ride counts
-    # however it is left, alighting or staying aboard.
-    cstates = {}
-    for k in K:
-        k = int(k)
-        cstates[k] = tuple({int(net.state[net.cfrom[k]]), int(net.state[net.cto[k]])} & owed)
-        arcs.append((ride[k], node(('arr', k)), 'alight', 0.0, (), k))
-    # walks on arrival
-    def end_reached(j): return int(net.state[j]) == end
-    for k in K:
-        k = int(k); A = nodes[('arr', k)]; b = int(net.cto[k]); t = net.arr[k]
+    tmap = {}
+    tid = np.fromiter((tmap.setdefault(net.ctrip[k], len(tmap)) for k in K.tolist()), np.int64, nK)
+    ot = np.lexsort((dep, tid)); p, q = ot[:-1], ot[1:]
+    sm = (tid[p] == tid[q]) & (ct[p] == cf[q]) & (arr[p] <= dep[q])
+    add(RIDE0 + p[sm], RIDE0 + q[sm], STAY, 0.0, cs1[q[sm]], cs2[q[sm]])
+    # arrivals: chained per stop in time order
+    oa = np.lexsort((arr, ct)); ca, ta = ct[oa], arr[oa]
+    ch = np.where(ca[1:] == ca[:-1])[0]
+    add(ARR0 + oa[ch], ARR0 + oa[ch + 1], WAIT)                                         # wait after arriving
+    sa, a_lo = np.unique(ca, return_index=True); a_hi = np.append(a_lo[1:], nK)
+
+    def sts2(sts):
+        s = sorted(set(int(y) for y in sts) & owed) + [-1, -1]
+        return s[0], s[1]
+
+    def walks(b, T, ids, ready_extra, labs):
+        """Walks on arrival at b, at times T (sorted) from nodes ids: finishes per arrival, walks per landing slot."""
         for j, w, sts in walks_from(net, b):
-            sts = tuple(set(sts) & owed)
-            if end_reached(j) and t + w <= D:
-                arcs.append((A, snk, 'finish', t + w, sts, (k, j)))
-            m = t + w + mt
-            if j in timeline: pending.append((A, j, m, sts, (k, j)))
-    # the start: board at its own clock, walks too (permissive: no transfer)
-    for j, w, sts in walks_from(net, s0):
-        sts = tuple(set(sts) & owed)
-        if end_reached(j) and t0 + w <= D: arcs.append((src, snk, 'finish', t0 + w, sts, ('start', j)))
-        if j in timeline: pending.append((src, j, t0 + w, sts, ('start', j)))
-    # timelines: insert walk moments, wait arcs, boarding arcs
-    tl_node = {}; last = {i: max(ms) for i, ms in timeline.items()}
-    pending = [p for p in pending if p[2] <= last[p[1]]]     # a moment after the stop's last departure leads nowhere
-    for u, j, m, sts, lab in pending: timeline[j].add(m)
-    for i, ms in timeline.items():
-        ms = sorted(ms); tl_node[i] = (ms, [node(('tl', i, m)) for m in ms])
-        for p, q in zip(tl_node[i][1], tl_node[i][1][1:]): arcs.append((p, q, 'wait', 0.0, (), None))
-    for u, j, m, sts, lab in pending:
-        ms, ids = tl_node[j]
-        x = int(np.searchsorted(ms, m))
-        if x < len(ms): arcs.append((u, ids[x], 'walk', 0.0, sts, lab))
-    for k in K:
-        k = int(k); ms, ids = tl_node[int(net.cfrom[k])]
-        x = int(np.searchsorted(ms, net.dep[k]))
-        arcs.append((ids[x], ride[k], 'board', 0.0, cstates[k], k))
-    # stay arcs carry the states of the connection they enter (so riding through a stop counts once you are aboard)
-    rid = {v: k for k, v in ride.items()}
-    arcs = [(u, v, kind, c, cstates[rid[v]] if kind == 'stay' else st, lab) for (u, v, kind, c, st, lab) in arcs]
-    return prune(dict(arcs=arcs, n=len(nodes), src=src, snk=snk, ride=ride, owed=owed), log)
+            s1, s2 = sts2(sts)
+            if int(st[j]) == end:
+                tt = T + w; ok = tt <= D
+                if ok.any(): add(ids[ok], 1, FINISH, tt[ok], s1, s2, labs[ok], j)
+            r = rng_of.get(int(j))
+            if r is None: continue
+            lo, hi = r
+            x = np.searchsorted(tl_mom[lo:hi], T + w + ready_extra)
+            v = x < hi - lo
+            if not v.any(): continue
+            xi, ii = x[v], ids[v]
+            last = np.ones(len(xi), bool); last[:-1] = xi[1:] != xi[:-1]               # the latest arrival per slot
+            add(ii[last], TL0 + lo + xi[last], WALK, 0.0, s1, s2, -1, j)
+
+    nfixed = sum(len(u) for u in U)
+    for b, lo, hi in zip(sa.tolist(), a_lo.tolist(), a_hi.tolist()):
+        walks(b, ta[lo:hi], ARR0 + oa[lo:hi], mt, K[oa[lo:hi]])
+    # the start: board at its own clock (permissive: no transfer)
+    walks(int(s0), np.array([float(t0)]), np.array([0], np.int64), 0.0, np.array([-1], np.int64))
+    cat = lambda L, dt: np.concatenate(L) if L else np.zeros(0, dt)
+    M = dict(u=cat(U, np.int64), v=cat(V, np.int64), kind=cat(KD, np.int8), cost=cat(C, float), s1=cat(S1, np.int16),
+             s2=cat(S2, np.int16), lk=cat(LK, np.int64), lj=cat(LJ, np.int64), n=n, src=0, snk=1, owed=owed)
+    log(f'  network before pruning: {n} nodes, {len(M["u"])} arcs ({len(M["u"]) - nfixed} walk and finish)')
+    return prune(M, log)
 
 
 def prune(M, log):
-    """Drop arcs not on any source -> sink path (two BFS over the arc list)."""
+    """Drop arcs not on any source -> sink path (two BFS)."""
     from scipy.sparse import csr_matrix
     from scipy.sparse.csgraph import breadth_first_order
-    arcs, n = M['arcs'], M['n']
-    u = np.array([a[0] for a in arcs], np.int64); v = np.array([a[1] for a in arcs], np.int64)
-    G = csr_matrix((np.ones(len(arcs)), (u, v)), shape=(n, n))
+    u, v, n = M['u'], M['v'], M['n']
+    G = csr_matrix((np.ones(len(u), np.int8), (u, v)), shape=(n, n))
     fw = np.zeros(n, bool); fw[breadth_first_order(G, M['src'], directed=True, return_predecessors=False)] = True
     bw = np.zeros(n, bool); bw[breadth_first_order(G.T.tocsr(), M['snk'], directed=True, return_predecessors=False)] = True
     live = fw & bw
     ok = live[u] & live[v]
-    M['arcs'] = [a for a, o in zip(arcs, ok) if o]
+    for k in ('u', 'v', 'kind', 'cost', 's1', 's2', 'lk', 'lj'): M[k] = M[k][ok]
     M['live'] = live
-    log(f'  network: {int(live.sum())} live nodes of {n}, {len(M["arcs"])} arcs of {len(arcs)}')
+    log(f'  network: {int(live.sum())} live nodes of {n}, {len(M["u"])} arcs of {len(ok)}')
     return M
 
 
 # ---------------------------------------------------------------- the solvers
 
 def missing_states(M):
-    have = set()
-    for a in M['arcs']: have.update(a[4])
+    have = set(np.unique(M['s1']).tolist()) | set(np.unique(M['s2']).tolist())
     return sorted(M['owed'] - have)
 
 
 def flow_constraints(M, add_var, add_eq, add_ge):
-    arcs, n = M['arcs'], M['n']
-    x = [add_var(i) for i in range(len(arcs))]
-    out_, in_ = defaultdict(list), defaultdict(list)
-    for i, (u, v, *_r) in enumerate(arcs): out_[u].append(i); in_[v].append(i)
-    for w in set(out_) | set(in_):
+    u, v, n = M['u'], M['v'], M['n']
+    x = [add_var(i) for i in range(len(u))]
+    ou = np.argsort(u, kind='stable'); iv = np.argsort(v, kind='stable')
+    oc = np.concatenate([[0], np.cumsum(np.bincount(u, minlength=n))])
+    ic = np.concatenate([[0], np.cumsum(np.bincount(v, minlength=n))])
+    for w in np.where(M['live'])[0].tolist():
         rhs = 1 if w == M['src'] else (-1 if w == M['snk'] else 0)
-        add_eq(out_[w], in_[w], rhs)
-    cover = defaultdict(list)
-    for i, a in enumerate(arcs):
-        for y in a[4]: cover[y].append(i)
-    for y in M['owed']: add_ge(cover[y])
+        add_eq(ou[oc[w]:oc[w + 1]].tolist(), iv[ic[w]:ic[w + 1]].tolist(), rhs)
+    for y in M['owed']: add_ge(np.where((M['s1'] == y) | (M['s2'] == y))[0].tolist())
     return x
 
 
@@ -180,10 +200,18 @@ def solve_lp(M, log=print):
     s = pywraplp.Solver.CreateSolver('GLOP')
     xs = []
     def add_var(i): v = s.NumVar(0, 1, ''); xs.append(v); return v
-    def add_eq(o, i_, rhs): s.Add(sum(xs[a] for a in o) - sum(xs[a] for a in i_) == rhs)
-    def add_ge(c): s.Add(sum(xs[a] for a in c) >= 1)
-    flow_constraints(M, add_var, add_eq, add_ge)
-    s.Minimize(sum(xs[i] * a[3] for i, a in enumerate(M['arcs']) if a[2] == 'finish'))
+    def add_eq(o, i_, rhs):
+        c = s.Constraint(rhs, rhs)
+        for a in o: c.SetCoefficient(xs[a], 1)
+        for a in i_: c.SetCoefficient(xs[a], -1)
+    def add_ge(cv):
+        c = s.Constraint(1, s.infinity())
+        for a in cv: c.SetCoefficient(xs[a], 1)
+    t = time.time(); flow_constraints(M, add_var, add_eq, add_ge)
+    obj = s.Objective()
+    for i in np.where(M['kind'] == FINISH)[0].tolist(): obj.SetCoefficient(xs[i], float(M['cost'][i]))
+    obj.SetMinimization()
+    log(f'  LP model {len(xs)} vars, {s.NumConstraints()} constraints, built in {time.time() - t:.0f} s')
     t = time.time(); r = s.Solve()
     name = {pywraplp.Solver.OPTIMAL: 'OPTIMAL', pywraplp.Solver.INFEASIBLE: 'INFEASIBLE'}.get(r, str(r))
     log(f'  LP {name} in {time.time() - t:.1f} s' + (f', bound {s.Objective().Value():.0f}' if r == 0 else ''))
@@ -195,12 +223,15 @@ def solve_cp(M, time_limit=600, workers=8, hint=None, log=print):
     from ortools.sat.python import cp_model
     m = cp_model.CpModel(); xs = []
     def add_var(i): v = m.NewBoolVar(''); xs.append(v); return v
-    def add_eq(o, i_, rhs): m.Add(sum(xs[a] for a in o) - sum(xs[a] for a in i_) == rhs)
-    def add_ge(c): m.AddBoolOr([xs[a] for a in c]) if c else m.AddBoolOr([])
-    flow_constraints(M, add_var, add_eq, add_ge)
-    fin = [(i, a[3]) for i, a in enumerate(M['arcs']) if a[2] == 'finish']
-    base = min(c for _, c in fin) if fin else 0
-    m.Minimize(sum(xs[i] * int(round(c - base)) for i, c in fin))
+    def add_eq(o, i_, rhs):
+        m.Add(cp_model.LinearExpr.Sum([xs[a] for a in o]) - cp_model.LinearExpr.Sum([xs[a] for a in i_]) == rhs)
+    def add_ge(c): m.AddBoolOr([xs[a] for a in c])
+    t = time.time(); flow_constraints(M, add_var, add_eq, add_ge)
+    fin = np.where(M['kind'] == FINISH)[0]
+    base = float(M['cost'][fin].min()) if len(fin) else 0.0
+    m.Minimize(cp_model.LinearExpr.WeightedSum([xs[i] for i in fin.tolist()],
+                                               [int(round(c - base)) for c in M['cost'][fin].tolist()]))
+    log(f'  CP-SAT model {len(xs)} vars, built in {time.time() - t:.0f} s')
     s = cp_model.CpSolver(); s.parameters.max_time_in_seconds = time_limit; s.parameters.num_workers = workers
     t = time.time(); r = s.Solve(m); name = s.StatusName(r)
     log(f'  CP-SAT {name} in {time.time() - t:.1f} s')
@@ -211,12 +242,16 @@ def solve_cp(M, time_limit=600, workers=8, hint=None, log=print):
 
 
 def read_path(M, chosen):
-    """Arcs of the solution in travel order (follow the unit of flow from the source)."""
-    arcs = M['arcs']; nxt = defaultdict(list)
-    for i in chosen: nxt[arcs[i][0]].append(i)
+    """The solution in travel order (follow the unit of flow from the source), as
+    (kind, connection index or -1, stop index or -1, states)."""
+    nxt = defaultdict(list)
+    for i in chosen: nxt[int(M['u'][i])].append(i)
     out, u = [], M['src']
     while u != M['snk'] and nxt[u]:
-        i = nxt[u].pop(); out.append(arcs[i]); u = arcs[i][1]
+        i = nxt[u].pop()
+        out.append((KIND[M['kind'][i]], int(M['lk'][i]), int(M['lj'][i]),
+                    tuple(y for y in (int(M['s1'][i]), int(M['s2'][i])) if y >= 0)))
+        u = int(M['v'][i])
     return out
 
 
@@ -362,9 +397,12 @@ def main():
     if name == 'INFEASIBLE': print('PROVED DEAD: no route collects the owed states and finishes by the deadline'); return
     if f is None: print(f'UNKNOWN after {a.time:.0f} s' + (f', bound {(bnd - t0) / 3600:.2f} h' if bnd else '')); return
     print(f'{name}: finish {R.fmt_time(f, s0)} ({(f - t0) / 3600:.2f} h), bound {(bnd - t0) / 3600:.2f} h')
-    for u, v, kind, c, st, lab in read_path(M, chosen):
-        if kind in ('board', 'walk', 'finish'):
-            print(f'    {kind:6s} {lab}  {",".join(ABBR[R.state_names[y]] for y in st)}')
+    for kind, k, j, st in read_path(M, chosen):
+        if kind == 'board':
+            print(f'    board  {R.stop_name[R.cfrom[k]][:30]} {R.fmt_time(R.dep[k], R.cfrom[k])} {R.ctrip[k]}  '
+                  f'{",".join(ABBR[R.state_names[y]] for y in st)}')
+        elif kind in ('walk', 'finish'):
+            print(f'    {kind:6s} to {R.stop_name[j][:30]}  {",".join(ABBR[R.state_names[y]] for y in st)}')
     print('  check any route found with verify_path.py before believing it')
 
 

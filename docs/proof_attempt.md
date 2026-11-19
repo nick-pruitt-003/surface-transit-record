@@ -362,3 +362,32 @@ The Harrisburg node is on the Nov 12 data. Check its clock against the current f
 
 Falsification: if CP-SAT can't settle step 2 in about 30 minutes, the method won't scale to 48 states. Record the
 LP bound and the network size either way.
+
+### First real runs (Nov 18, PC under WSL, ortools 9.15, Python 3.14)
+
+**Step 0.** On the current router (`d0` Nov 9, 22 days) X reaches **Harrisburg Bus Station (#476) at Thu Nov 19 14:35
+ET**, +158.25 h, not the Amtrak stop at 14:26 above; it finishes at the Moorhead line Sun Nov 22 15:28 CT (232.13 h).
+The owed set is the doc's 15 states. All runs below use `--stop "#476" --at 2026-11-19T14:35 --tz America/New_York
+--by 2026-11-22T15:28 --by-tz America/Chicago` (a 73.88 h window).
+
+| run | builder | connections kept | network (live) | memory | result |
+|---|---|---|---|---|---|
+| LP | first version (Python tuple per arc, a walk arc per footpath per arrival) | 1,756,092 of 43,586,013 | never finished building | 56 GB at 43 min | stopped by hand while still building |
+| LP | numpy arcs, one walk arc per (footpath, landing slot) | 1,756,092 | 5,199,299 nodes, 78,294,227 arcs (69,875,259 walk/finish before pruning) | 12-15 GB built (176 s); LP model 39 GB (312 s) | **stopped at 65 GB inside the GLOP solve, no bound** |
+
+So the method did not reach the fidelity gate. Runs 2 (CP-SAT at X's finish) and 3 (one minute under) were not
+started: the brief stops at the first step that cannot hold the network under ~60 GB.
+
+**Where the size is.** Pruning by reachability removes almost nothing (78.50 M -> 78.29 M arcs): the forward scan and
+the L_end reverse scan leave the whole Midwest open across a 74 h window, and **89% of the arcs are walks** between
+nearby city stops. The fix that made it build at all: arcs in numpy arrays, arrivals at a stop chained by wait arcs so
+a walk is kept only from the latest arrival that lands on a given departure slot, and walks landing straight on a
+departure slot instead of inserting their moment into the timeline. Selftest (10 hand cases, 40 random networks
+against brute force, the LP bound never above the optimum) passes on the new builder.
+
+**What it would take.** City transit has to collapse into composite intercity-to-intercity moves before the model is
+small enough. `--city-hop`'s scan can't be reused for a proof: its horizon, round cap and first-departure-per-route
+rule each drop real routes, which makes the model stricter than the router. A proof-safe version needs an unlimited
+city-only scan per arrival at an intercity stop (or walk-in point, or city stop in an owed state), in C, keeping every
+Pareto-best (arrival, states touched) label so a slower city path over a state line (St Louis -> East Riverfront) is
+kept. About a day. Column generation over the existing network is the other standard route at this size.
