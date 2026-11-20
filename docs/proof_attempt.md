@@ -473,3 +473,15 @@ is free in where it starts; segments 1 and 2 are fixed at their start stop. The 
 only real slack and it does not reach back to Wyoming: the free start sees every later departure and none makes it.
 Closing the gap means the same cut at a free-start segment 2 (any stop, owing 17, by Jacksonville 14:54) and then
 a free-start segment 1, each sized before it is run.
+
+**Earlier Harrisburg clocks** (the duration gap above). Same tail model at #476 holding X's 32, deadline Sun 15:27 CT
+(one minute under X's finish), `--at` stepped down (`out/tailmip_down.sh`; dead at h is dead at every later h):
+
+| Harrisburg clock (Thu ET) | 12:00 | 10:00 | 08:00 | 06:00 | 04:00 | 02:00 | 00:00 |
+|---|---|---|---|---|---|---|---|
+| result | dead | dead (4 min) | dead (13 min) | dead (20 min) | dead | UNKNOWN 1800 s, bound 73.18 h | UNKNOWN 1800 s, bound 77.13 h, 2.6 M arcs, 47 GB |
+
+So holding the 32 at Harrisburg at any clock from **Thu 04:00 to 14:35** cannot beat X's finish. To beat X on duration
+through its waypoints, a route would have to be at Harrisburg with the 32 more than 10.5 h before X is (and start no
+later than 22:20 MT Thu Nov 12, from the segment proofs), or start later by a front that avoids X's waypoints.
+Before 04:00 the model does not settle in 30 minutes.
