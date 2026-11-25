@@ -1,0 +1,24 @@
+# Same-terminal connection at the Jacksonville Regional Transportation Center (JRTC), Nick's ruling Nov 24 2026.
+# Greyhound US0760 Tallahassee 11:25 -> Jacksonville (Downtown) 14:50 lands at JRTC, one bay from JTA route 4, whose
+# 14:50 departure from JRTC Bay H reaches the Amtrak station at 15:19, ahead of the Silver Meteor (16:11). JTA's
+# Nov 2 2026 feed made route 4 hourly (it was every 30 min, with a 15:00), and the router cannot make this connection:
+# it charges 57 s of walking to Bay H plus the 5 min transfer. Modelled as one through-trip, so riding it is staying
+# aboard (no transfer) across the bay change. Both legs remain in their own feeds; this adds only the 0 min link.
+# Days: JTA trip 1963020 runs Mon-Fri (service 2, to Mar 21 2027); the Greyhound service is daily (this version
+# Dec 1-31 2026 in the Nov 4 feed). Manual trips have no date range, so re-check both after any feed update.
+# Disable with BUS48_SKIP_MANUAL=jrtc_same_terminal to compare against the strict 5 min rule.
+agency = "Greyhound + JTA (JRTC same terminal)"
+
+[stops]
+tallahassee = "=flix:1c3a052d-6559-4341-9fb1-a778c1666938"
+live_oak = "=flix:a11b3733-35d7-4842-9874-94a35cf8acd1"
+lake_city = "=flix:38dd6257-00e6-4546-8022-c77c92e1c755"
+jax_downtown = "=flix:9b6abe93-3ecb-11ea-8017-02437075395e"
+jax_amtrak_jta = "=jta:2132"
+
+[[trip]]
+id = "jrtc_us0760_jta4"
+route = "Greyhound US0760 Tallahassee -> Jacksonville (JRTC), then JTA 4 14:50 Bay H -> Amtrak Station, 0 min at the bay"
+note = "Nick Nov 24 2026: same terminal, the bay next to route 4"
+days = "1111100"
+stops = ["tallahassee 11:25", "live_oak 12:55/13:05", "lake_city 13:35/13:45", "jax_downtown 14:50", "jax_amtrak_jta 15:19"]
