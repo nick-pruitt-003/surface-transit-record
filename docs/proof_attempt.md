@@ -524,3 +524,14 @@ MN by Sun 15:27 CT? 60 min per probe (November: 30).
 Same as November: holding the 32 at Harrisburg any time Thu 04:00-14:35 cannot beat X. Doubling the time did not
 move 02:00; the LP bound is ~10 h short, so more CP-SAT time is not the lever. A faster route through Harrisburg with
 these 32 states must stand there before Thu 04:00, 10.5 h ahead of X.
+
+### The whole front as one free-start model (Nov 25): not settled
+
+Free start from Nov 30 12:00 MT, owing X's 32, ending at Harrisburg (Flix) by Thu Dec 10 14:35 ET: 748,766 nodes,
+5,155,488 arcs (4.2 M hop arcs from 254,603 scans, 343 s). GLOP returned ABNORMAL (status 4) after 4791 s, 13.6 GB,
+no bound. Even a clean bound would not have proved it: this relaxation lands at half the true time or less
+(Harrisburg tail 32.4 vs 73.9 h; whole route 19.8 vs 232 h), and the front needs >= 160.25 h. CP-SAT at 5.2 M arcs is
+past the 4.2 M Jacksonville tail it could not close. Parked (Nick, Nov 25): the remaining proof route is an exhaustive
+cut-set split (every Western 9-state holder leaves the West through a listed set of crossings), to revisit after the
+Jan 7 refresh. What is proved stands: tail optimal, no later start through X's waypoints, no Harrisburg clock Thu
+04:00-14:35 beats X.
