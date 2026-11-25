@@ -1,0 +1,739 @@
+# Concord Coach Lines, Boston / Logan <-> New Hampshire and Maine, from the carrier timetables effective Oct 25 2026
+# (CCL-NH-OCT-2026 and CCL-ME-OCT-2026 PDFs, transcribed Nov 24 2026). Replaces the May 2025 GTFS trips of routes
+# PORTLAND_BOS, MIDCOAST_ME, INLAND_ME, SOUTHERN_NH and NORTHERN_NH (data/drop_trips.csv); the New York routes stay.
+# Not modelled: drop-off-only and flag stops (the router ignores pickup rules in every feed; noted per trip), and
+# semester limits (UMaine, Colby): those trips carry their weekdays and a note, but run all year here.
+# Thanksgiving and Christmas Day run a holiday schedule not in these PDFs.
+agency = "Concord Coach Lines"
+
+[stops]
+portland = "=concord_coach:STOP-c99cb943-4db3-4fb6-b612-c97a7d202d13"
+ss = "=concord_coach:STOP-0a858b61-d2dc-44f8-a6fd-9a528df6a3a8"
+logan = "=concord_coach:STOP-9a1d503f-4812-4ec4-af0d-6275316cc2c4"
+bangor = "=concord_coach:STOP-03ccfcf9-71d1-4861-9125-5dee34ba8185"
+orono = "=concord_coach:STOP-1fb028d3-bcd8-443a-813f-ded9328639c1"
+colby = "=concord_coach:STOP-aad6393e-f519-4661-9d97-138a5c77f389"
+augusta = "=concord_coach:STOP-306e424e-5cb5-4eaf-b3d2-78adf7b5b05a"
+searsport = "=concord_coach:STOP-548de3d1-bd8e-4d91-953b-d6e1e855bae8"
+belfast = "=concord_coach:STOP-f14cbec8-2864-41ad-bd32-c5d600e718ae"
+lincolnville = "=concord_coach:STOP-c2517a47-6f35-4868-8a09-446b6f1d5988"
+camden = "=concord_coach:STOP-59fb8cec-3d87-467c-a7bf-09b66c8aff66"
+rockland = "=concord_coach:STOP-b67cf7e0-518b-4d0a-9975-6ed55dc2f463"
+waldoboro = "=concord_coach:STOP-7dcd2057-360b-4333-b259-1d81c4e6f627"
+damariscotta = "=concord_coach:STOP-2a4ae733-a6d6-44a9-aa32-b8e4d97cd4b3"
+wiscasset = "=concord_coach:STOP-94218458-ccc8-479f-9e8b-4c278ee19234"
+bath = "=concord_coach:STOP-93d8c48f-73e4-4129-856b-bdd07288a373"
+brunswick = "=concord_coach:STOP-27af5c96-da03-4fb1-8c72-6fee48e6cf7f"
+concord = "=concord_coach:STOP-9f79a516-828e-4d8b-a56b-2af17c7c16ec"
+londonderry = "=concord_coach:STOP-ab1e0252-3728-4328-b527-bccf8c7a2223"
+salem = "=concord_coach:STOP-48ee1cea-ba6f-4041-9e1a-d5d896bfd005"
+tilton = "=concord_coach:STOP-95fba0a7-32a6-42d6-abe2-0cdcbc980b34"
+meredith = "=concord_coach:STOP-4dfa78fc-3d65-4296-b86e-aa93ce427f10"
+center_harbor = "=concord_coach:STOP-492d6b26-53c6-4fd8-8459-6ef99236b634"
+west_ossipee = "=concord_coach:STOP-c3f6b75a-5ba6-4ffd-b143-899a026a8451"
+conway = "=concord_coach:STOP-1bd5b7f8-0bfe-4c71-a9f2-c5725dd689cb"
+north_conway = "=concord_coach:STOP-66de59c2-fd14-45f0-9d35-29e1058ed77e"
+jackson = "=concord_coach:STOP-018500bb-30d9-4a89-9ab7-d50f7d66931a"
+pinkham = "=concord_coach:STOP-f5e8f10d-4362-409a-8c12-e3c72d0a74a1"
+gorham = "=concord_coach:STOP-17fcf713-2f9c-4d25-9e35-c3b6992009aa"
+berlin = "=concord_coach:STOP-afa1beb1-d90e-496d-946c-04fb5696e5b3"
+plymouth = "=concord_coach:STOP-4fc1d400-cbab-43f2-8ca7-37da1967e862"
+lincoln = "=concord_coach:STOP-35f112f7-5bcc-4443-b037-865304e4b9ec"
+franconia = "=concord_coach:STOP-78e19880-5ff7-441b-9150-0fab524ef2c3"
+littleton = "=concord_coach:STOP-193f1a74-8c21-442f-8d7d-4fed11795289"
+
+[[trip]]
+id = "ccl000_601"
+route = "CCL 601 concord -> ss"
+days = "1111111"
+stops = ["concord 03:15", "londonderry 03:45", "logan 04:40", "ss 04:55"]
+
+[[trip]]
+id = "ccl001_603"
+route = "CCL 603 concord -> logan"
+days = "1111111"
+stops = ["concord 05:00", "londonderry 05:30", "logan 06:30"]
+
+[[trip]]
+id = "ccl002_1"
+route = "CCL 1 concord -> ss"
+days = "1111111"
+stops = ["concord 05:00", "londonderry 05:30", "ss 06:30"]
+
+[[trip]]
+id = "ccl003_605"
+route = "CCL 605 concord -> logan"
+days = "1111111"
+stops = ["concord 06:00", "londonderry 06:30", "logan 07:40"]
+
+[[trip]]
+id = "ccl004_607"
+route = "CCL 607 concord -> logan"
+days = "1111111"
+stops = ["concord 07:00", "londonderry 07:30", "logan 08:40"]
+
+[[trip]]
+id = "ccl005_7"
+route = "CCL 7 concord -> ss"
+days = "1111111"
+stops = ["concord 07:00", "londonderry 07:30", "ss 08:40"]
+
+[[trip]]
+id = "ccl006_11"
+route = "CCL 11 concord -> logan"
+days = "1111111"
+stops = ["concord 08:00", "londonderry 08:30", "ss 09:30", "logan 09:50"]
+
+[[trip]]
+id = "ccl007_611"
+route = "CCL 611 concord -> logan"
+days = "1111111"
+stops = ["concord 09:00", "londonderry 09:30", "logan 10:30"]
+
+[[trip]]
+id = "ccl008_17"
+route = "CCL 17 concord -> ss"
+days = "1111111"
+stops = ["concord 09:00", "londonderry 09:30", "ss 10:30"]
+
+[[trip]]
+id = "ccl009_613"
+route = "CCL 613 concord -> logan"
+days = "1111111"
+stops = ["concord 10:00", "londonderry 10:30", "logan 11:30"]
+
+[[trip]]
+id = "ccl010_615"
+route = "CCL 615 concord -> logan"
+days = "1111111"
+stops = ["concord 11:00", "londonderry 11:30", "logan 12:30"]
+
+[[trip]]
+id = "ccl011_617"
+route = "CCL 617 concord -> logan"
+days = "1111111"
+stops = ["concord 12:00", "londonderry 12:30", "logan 13:30"]
+
+[[trip]]
+id = "ccl012_619"
+route = "CCL 619 concord -> logan"
+days = "1111111"
+stops = ["concord 13:00", "londonderry 13:30", "logan 14:30"]
+
+[[trip]]
+id = "ccl013_27"
+route = "CCL 27 concord -> ss"
+days = "1111111"
+stops = ["concord 13:00", "londonderry 13:30", "ss 14:30"]
+
+[[trip]]
+id = "ccl014_621"
+route = "CCL 621 concord -> logan"
+days = "1111111"
+stops = ["concord 14:00", "londonderry 14:30", "logan 15:30"]
+
+[[trip]]
+id = "ccl015_623"
+route = "CCL 623 concord -> logan"
+days = "1111111"
+stops = ["concord 15:00", "londonderry 15:30", "logan 16:30"]
+
+[[trip]]
+id = "ccl016_625"
+route = "CCL 625 concord -> logan"
+days = "1111111"
+stops = ["concord 16:00", "londonderry 16:30", "logan 17:30"]
+
+[[trip]]
+id = "ccl017_627"
+route = "CCL 627 concord -> logan"
+days = "1111111"
+stops = ["concord 17:00", "londonderry 17:30", "logan 18:30"]
+
+[[trip]]
+id = "ccl018_631"
+route = "CCL 631 concord -> ss"
+days = "1111111"
+stops = ["concord 19:45", "londonderry 20:15", "logan 21:15", "ss 21:35"]
+
+[[trip]]
+id = "ccl019_5"
+route = "CCL 5 concord -> ss"
+note = "Mon-Fri (except holidays)"
+days = "1111100"
+stops = ["concord 06:00", "londonderry 06:30", "ss 07:40"]
+
+[[trip]]
+id = "ccl020_5"
+route = "CCL 5 concord -> logan"
+note = "Sat-Sun. The PDF text layer gives SS 7:40 for this column; the rendered page reads ---- there: confirm on the site"
+days = "0000011"
+stops = ["concord 06:00", "londonderry 06:30", "salem 06:50", "ss 07:40", "logan 08:00"]
+
+[[trip]]
+id = "ccl021_21"
+route = "CCL 21 berlin -> ss"
+note = "Jackson is a flag stop; bus change at Concord for Logan"
+days = "1111111"
+stops = ["berlin 07:40", "gorham 07:50", "pinkham 08:07", "jackson 08:20", "north_conway 08:30", "conway 08:45", "west_ossipee 09:10", "center_harbor 09:37", "meredith 09:45", "tilton 10:15", "concord 10:45/11:00", "londonderry 11:30", "ss 12:30"]
+
+[[trip]]
+id = "ccl022_31"
+route = "CCL 31 littleton -> ss"
+days = "1111111"
+stops = ["littleton 12:40", "franconia 12:50", "lincoln 13:15", "plymouth 13:45", "tilton 14:10", "concord 14:40/15:00", "londonderry 15:30", "ss 16:30"]
+
+[[trip]]
+id = "ccl023_33"
+route = "CCL 33 concord -> ss"
+note = "Concord -> Boston part taken as daily; the North Conway start is Fri and Sun only (next trip)"
+days = "1111111"
+stops = ["concord 17:00", "londonderry 17:30", "ss 18:30"]
+
+[[trip]]
+id = "ccl024_33"
+route = "CCL 33 north_conway -> concord"
+note = "North Conway -> Concord, Fridays and Sundays only (shaded column)"
+days = "0000101"
+stops = ["north_conway 14:30", "conway 14:50", "west_ossipee 15:15", "center_harbor 15:42", "meredith 15:50", "tilton 16:20", "concord 16:45"]
+
+[[trip]]
+id = "ccl025_602"
+route = "CCL 602 ss -> concord"
+days = "1111111"
+stops = ["ss 06:15", "logan 06:25", "londonderry 07:30", "concord 08:00"]
+
+[[trip]]
+id = "ccl026_604"
+route = "CCL 604 logan -> concord"
+note = "N. Londonderry drop-off only"
+days = "1111111"
+stops = ["logan 07:25", "londonderry 08:35", "concord 09:05"]
+
+[[trip]]
+id = "ccl027_608"
+route = "CCL 608 logan -> concord"
+note = "N. Londonderry drop-off only"
+days = "1111111"
+stops = ["logan 09:25", "londonderry 10:35", "concord 11:05"]
+
+[[trip]]
+id = "ccl028_610"
+route = "CCL 610 logan -> concord"
+note = "N. Londonderry drop-off only"
+days = "1111111"
+stops = ["logan 10:25", "londonderry 11:35", "concord 12:05"]
+
+[[trip]]
+id = "ccl029_612"
+route = "CCL 612 logan -> concord"
+note = "N. Londonderry drop-off only"
+days = "1111111"
+stops = ["logan 11:25", "londonderry 12:35", "concord 13:05"]
+
+[[trip]]
+id = "ccl030_8"
+route = "CCL 8 ss -> concord"
+days = "1111111"
+stops = ["ss 12:00", "londonderry 12:55", "concord 13:25"]
+
+[[trip]]
+id = "ccl031_616"
+route = "CCL 616 logan -> concord"
+note = "N. Londonderry drop-off only"
+days = "1111111"
+stops = ["logan 13:25", "londonderry 14:35", "concord 15:05"]
+
+[[trip]]
+id = "ccl032_12"
+route = "CCL 12 ss -> concord"
+days = "1111111"
+stops = ["ss 14:00", "londonderry 14:55", "concord 15:25"]
+
+[[trip]]
+id = "ccl033_618"
+route = "CCL 618 logan -> concord"
+note = "N. Londonderry drop-off only"
+days = "1111111"
+stops = ["logan 14:25", "londonderry 15:40", "concord 16:10"]
+
+[[trip]]
+id = "ccl034_14"
+route = "CCL 14 ss -> concord"
+days = "1111111"
+stops = ["ss 15:00", "londonderry 15:55", "concord 16:25"]
+
+[[trip]]
+id = "ccl035_620"
+route = "CCL 620 logan -> concord"
+note = "N. Londonderry drop-off only"
+days = "1111111"
+stops = ["logan 15:25", "londonderry 16:40", "concord 17:10"]
+
+[[trip]]
+id = "ccl036_622"
+route = "CCL 622 logan -> concord"
+note = "N. Londonderry drop-off only"
+days = "1111111"
+stops = ["logan 16:25", "londonderry 17:40", "concord 18:10"]
+
+[[trip]]
+id = "ccl037_18"
+route = "CCL 18 ss -> concord"
+days = "1111111"
+stops = ["ss 17:00", "londonderry 17:55", "concord 18:25"]
+
+[[trip]]
+id = "ccl038_624"
+route = "CCL 624 logan -> concord"
+note = "N. Londonderry drop-off only"
+days = "1111111"
+stops = ["logan 17:25", "londonderry 18:40", "concord 19:10"]
+
+[[trip]]
+id = "ccl039_26"
+route = "CCL 26 ss -> concord"
+days = "1111111"
+stops = ["ss 18:00", "londonderry 18:55", "concord 19:25"]
+
+[[trip]]
+id = "ccl040_28"
+route = "CCL 28 logan -> concord"
+note = "N. Londonderry drop-off only"
+days = "1111111"
+stops = ["logan 18:25", "ss 19:00", "londonderry 19:55", "concord 20:25"]
+
+[[trip]]
+id = "ccl041_628"
+route = "CCL 628 logan -> concord"
+note = "N. Londonderry drop-off only"
+days = "1111111"
+stops = ["logan 19:25", "londonderry 20:35", "concord 21:05"]
+
+[[trip]]
+id = "ccl042_630"
+route = "CCL 630 ss -> concord"
+note = "N. Londonderry drop-off only"
+days = "1111111"
+stops = ["ss 20:15", "logan 20:25", "londonderry 21:35", "concord 22:05"]
+
+[[trip]]
+id = "ccl043_632"
+route = "CCL 632 ss -> concord"
+note = "N. Londonderry drop-off only"
+days = "1111111"
+stops = ["ss 21:15", "logan 21:25", "londonderry 22:35", "concord 23:05"]
+
+[[trip]]
+id = "ccl044_634"
+route = "CCL 634 ss -> concord"
+note = "N. Londonderry drop-off only"
+days = "1111111"
+stops = ["ss 22:15", "logan 22:25", "londonderry 23:35", "concord 00:05"]
+
+[[trip]]
+id = "ccl045_2"
+route = "CCL 2 ss -> littleton"
+note = "Lincoln, Franconia drop-off only"
+days = "1111111"
+stops = ["ss 08:00", "salem 08:35", "londonderry 08:55", "concord 09:30/09:40", "tilton 10:05", "plymouth 10:35", "lincoln 11:05", "franconia 11:25", "littleton 11:35"]
+
+[[trip]]
+id = "ccl046_4"
+route = "CCL 4 ss -> concord"
+note = "Boston -> Concord part taken as daily; the North Conway continuation is Fri and Sun only (next trip)"
+days = "1111111"
+stops = ["ss 10:00", "salem 10:35", "londonderry 10:55", "concord 11:30"]
+
+[[trip]]
+id = "ccl047_4"
+route = "CCL 4 concord -> north_conway"
+note = "Concord -> North Conway, Fridays and Sundays only (shaded column)"
+days = "0000101"
+stops = ["concord 11:40", "tilton 12:05", "meredith 12:35", "center_harbor 12:42", "west_ossipee 13:10", "conway 13:30", "north_conway 13:45"]
+
+[[trip]]
+id = "ccl048_16"
+route = "CCL 16 ss -> berlin"
+note = "Jackson flag stop; Pinkham Notch and Gorham drop-off only"
+days = "1111111"
+stops = ["ss 16:00", "londonderry 16:55", "concord 17:25/17:35", "tilton 17:55", "meredith 18:30", "center_harbor 18:37", "west_ossipee 19:00", "conway 19:25", "north_conway 19:35", "jackson 19:47", "pinkham 20:10", "gorham 20:25", "berlin 20:35"]
+
+[[trip]]
+id = "ccl049_301"
+route = "CCL 301 portland -> ss"
+days = "1111111"
+stops = ["portland 03:15", "logan 05:05", "ss 05:25"]
+
+[[trip]]
+id = "ccl050_303"
+route = "CCL 303 portland -> ss"
+days = "1111111"
+stops = ["portland 04:15", "logan 06:05", "ss 06:25"]
+
+[[trip]]
+id = "ccl051_305"
+route = "CCL 305 portland -> ss"
+days = "1111111"
+stops = ["portland 05:15", "logan 07:05", "ss 07:25"]
+
+[[trip]]
+id = "ccl052_53"
+route = "CCL 53 portland -> ss"
+days = "1111111"
+stops = ["portland 06:15", "ss 08:15"]
+
+[[trip]]
+id = "ccl053_307"
+route = "CCL 307 portland -> logan"
+days = "1111111"
+stops = ["portland 06:15", "logan 08:05"]
+
+[[trip]]
+id = "ccl054_309"
+route = "CCL 309 portland -> logan"
+days = "1111111"
+stops = ["portland 07:30", "logan 09:25"]
+
+[[trip]]
+id = "ccl055_57"
+route = "CCL 57 portland -> logan"
+days = "1111111"
+stops = ["portland 08:30", "ss 10:25", "logan 10:45"]
+
+[[trip]]
+id = "ccl056_313"
+route = "CCL 313 portland -> logan"
+days = "1111111"
+stops = ["portland 09:30", "logan 11:25"]
+
+[[trip]]
+id = "ccl057_61"
+route = "CCL 61 portland -> ss"
+days = "1111111"
+stops = ["portland 10:30", "ss 12:25"]
+
+[[trip]]
+id = "ccl058_315"
+route = "CCL 315 portland -> logan"
+days = "1111111"
+stops = ["portland 10:30", "logan 12:25"]
+
+[[trip]]
+id = "ccl059_65"
+route = "CCL 65 portland -> ss"
+days = "1111111"
+stops = ["portland 12:30", "ss 14:25"]
+
+[[trip]]
+id = "ccl060_319"
+route = "CCL 319 portland -> logan"
+days = "1111111"
+stops = ["portland 12:30", "logan 14:25"]
+
+[[trip]]
+id = "ccl061_69"
+route = "CCL 69 portland -> ss"
+days = "1111111"
+stops = ["portland 14:30", "ss 16:25"]
+
+[[trip]]
+id = "ccl062_321"
+route = "CCL 321 portland -> logan"
+days = "1111111"
+stops = ["portland 13:30", "logan 15:25"]
+
+[[trip]]
+id = "ccl063_323"
+route = "CCL 323 portland -> logan"
+days = "1111111"
+stops = ["portland 14:30", "logan 16:25"]
+
+[[trip]]
+id = "ccl064_325"
+route = "CCL 325 portland -> logan"
+days = "1111111"
+stops = ["portland 15:30", "logan 17:25"]
+
+[[trip]]
+id = "ccl065_73"
+route = "CCL 73 portland -> ss"
+days = "1111111"
+stops = ["portland 16:45", "ss 18:40"]
+
+[[trip]]
+id = "ccl066_327"
+route = "CCL 327 portland -> logan"
+days = "1111111"
+stops = ["portland 16:45", "logan 18:40"]
+
+[[trip]]
+id = "ccl067_329"
+route = "CCL 329 portland -> logan"
+days = "1111111"
+stops = ["portland 18:00", "logan 19:55"]
+
+[[trip]]
+id = "ccl068_331"
+route = "CCL 331 portland -> ss"
+days = "1111111"
+stops = ["portland 20:00", "logan 21:55", "ss 22:10"]
+
+[[trip]]
+id = "ccl069_55"
+route = "CCL 55 bangor -> ss"
+days = "1111111"
+stops = ["bangor 05:00", "augusta 06:15", "portland 07:25/07:30", "ss 09:25"]
+
+[[trip]]
+id = "ccl070_59"
+route = "CCL 59 bangor -> ss"
+days = "1111111"
+stops = ["bangor 07:00", "augusta 08:15", "portland 09:25/09:30", "ss 11:25"]
+
+[[trip]]
+id = "ccl071_317"
+route = "CCL 317 bangor -> ss"
+note = "Logan first, then South Station"
+days = "1111111"
+stops = ["bangor 09:00", "augusta 10:15", "portland 11:25/11:30", "logan 13:25", "ss 13:40"]
+
+[[trip]]
+id = "ccl072_67"
+route = "CCL 67 bangor -> ss"
+days = "1111111"
+stops = ["bangor 11:00", "augusta 12:15", "portland 13:10/13:30", "ss 15:25"]
+
+[[trip]]
+id = "ccl073_67"
+route = "CCL 67 orono -> ss"
+note = "from UMaine Orono: Thu-Mon during UMaine fall/spring semesters only"
+days = "1001111"
+stops = ["orono 10:15", "bangor 11:00", "augusta 12:15", "portland 13:10/13:30", "ss 15:25"]
+
+[[trip]]
+id = "ccl074_321"
+route = "CCL 321 colby -> portland"
+note = "Colby College -> Portland: Fri and Sun during semesters only; change at Portland"
+days = "0000101"
+stops = ["colby 11:40", "portland 13:10"]
+
+[[trip]]
+id = "ccl075_71"
+route = "CCL 71 bangor -> ss"
+days = "1111111"
+stops = ["bangor 13:00", "augusta 14:15", "portland 15:25/15:30", "ss 17:25"]
+
+[[trip]]
+id = "ccl076_75"
+route = "CCL 75 bangor -> ss"
+days = "1111111"
+stops = ["bangor 15:30", "augusta 16:45", "portland 17:55/18:00", "ss 19:55"]
+
+[[trip]]
+id = "ccl077_75"
+route = "CCL 75 orono -> ss"
+note = "from UMaine Orono: Fri and Sun during semesters only"
+days = "0000101"
+stops = ["orono 14:50", "bangor 15:30", "augusta 16:45", "portland 17:55/18:00", "ss 19:55"]
+
+[[trip]]
+id = "ccl078_63"
+route = "CCL 63 bangor -> ss"
+note = "Coastal; Lincolnville flag stop; Logan by a change at Portland"
+days = "1111111"
+stops = ["bangor 07:00", "searsport 07:45", "belfast 07:55", "lincolnville 08:10", "camden 08:30", "rockland 08:50", "waldoboro 09:20", "damariscotta 09:35", "wiscasset 09:50", "bath 10:10", "brunswick 10:25", "portland 11:00/11:30", "ss 13:25"]
+
+[[trip]]
+id = "ccl079_300"
+route = "CCL 300 ss -> portland"
+days = "1111111"
+stops = ["ss 05:45", "logan 05:55", "portland 07:55"]
+
+[[trip]]
+id = "ccl080_302"
+route = "CCL 302 logan -> portland"
+days = "1111111"
+stops = ["logan 07:30", "portland 09:40"]
+
+[[trip]]
+id = "ccl081_306"
+route = "CCL 306 logan -> portland"
+days = "1111111"
+stops = ["logan 09:30", "portland 11:40"]
+
+[[trip]]
+id = "ccl082_308"
+route = "CCL 308 logan -> portland"
+days = "1111111"
+stops = ["logan 10:35", "portland 12:45"]
+
+[[trip]]
+id = "ccl083_310"
+route = "CCL 310 logan -> portland"
+days = "1111111"
+stops = ["logan 11:35", "portland 13:45"]
+
+[[trip]]
+id = "ccl084_312"
+route = "CCL 312 logan -> portland"
+days = "1111111"
+stops = ["logan 12:35", "portland 14:45"]
+
+[[trip]]
+id = "ccl085_314"
+route = "CCL 314 logan -> portland"
+days = "1111111"
+stops = ["logan 13:35", "portland 15:45"]
+
+[[trip]]
+id = "ccl086_60"
+route = "CCL 60 ss -> portland"
+days = "1111111"
+stops = ["ss 14:15", "portland 16:10"]
+
+[[trip]]
+id = "ccl087_316"
+route = "CCL 316 logan -> portland"
+days = "1111111"
+stops = ["logan 14:35", "portland 16:45"]
+
+[[trip]]
+id = "ccl088_318"
+route = "CCL 318 logan -> portland"
+days = "1111111"
+stops = ["logan 15:35", "portland 17:45"]
+
+[[trip]]
+id = "ccl089_64"
+route = "CCL 64 ss -> portland"
+days = "1111111"
+stops = ["ss 16:15", "portland 18:10"]
+
+[[trip]]
+id = "ccl090_320"
+route = "CCL 320 logan -> portland"
+days = "1111111"
+stops = ["logan 16:35", "portland 18:45"]
+
+[[trip]]
+id = "ccl091_322"
+route = "CCL 322 logan -> portland"
+days = "1111111"
+stops = ["logan 17:35", "portland 19:45"]
+
+[[trip]]
+id = "ccl092_68"
+route = "CCL 68 ss -> portland"
+days = "1111111"
+stops = ["ss 18:15", "portland 20:10"]
+
+[[trip]]
+id = "ccl093_324"
+route = "CCL 324 logan -> portland"
+days = "1111111"
+stops = ["logan 18:35", "portland 20:45"]
+
+[[trip]]
+id = "ccl094_70"
+route = "CCL 70 ss -> portland"
+days = "1111111"
+stops = ["ss 19:15", "portland 21:10"]
+
+[[trip]]
+id = "ccl095_326"
+route = "CCL 326 logan -> portland"
+days = "1111111"
+stops = ["logan 19:35", "portland 21:45"]
+
+[[trip]]
+id = "ccl096_328"
+route = "CCL 328 ss -> portland"
+days = "1111111"
+stops = ["ss 20:25", "logan 20:35", "portland 22:45"]
+
+[[trip]]
+id = "ccl097_72"
+route = "CCL 72 logan -> portland"
+days = "1111111"
+stops = ["logan 21:45", "ss 22:15", "portland 00:10"]
+
+[[trip]]
+id = "ccl098_332"
+route = "CCL 332 ss -> portland"
+days = "1111111"
+stops = ["ss 23:15", "logan 23:25", "portland 01:25"]
+
+[[trip]]
+id = "ccl099_302"
+route = "CCL 302 portland -> colby"
+note = "Portland -> Colby College: Fri and Sun during semesters only"
+days = "0000101"
+stops = ["portland 10:00", "colby 11:20"]
+
+[[trip]]
+id = "ccl100_68"
+route = "CCL 68 portland -> colby"
+note = "Portland -> Colby College: Fri and Sun during semesters only"
+days = "0000101"
+stops = ["portland 20:15", "colby 21:25"]
+
+[[trip]]
+id = "ccl101_50"
+route = "CCL 50 ss -> bangor"
+note = "Logan 7:30 by a change at Portland"
+days = "1111111"
+stops = ["ss 08:00", "portland 09:55/10:00", "augusta 10:55", "bangor 12:10"]
+
+[[trip]]
+id = "ccl102_52"
+route = "CCL 52 ss -> bangor"
+days = "1111111"
+stops = ["ss 10:00", "portland 11:55/12:00", "augusta 12:55", "bangor 14:10"]
+
+[[trip]]
+id = "ccl103_52"
+route = "CCL 52 ss -> orono"
+note = "to UMaine Orono: Fri and Sun during semesters only"
+days = "0000101"
+stops = ["ss 10:00", "portland 11:55/12:00", "augusta 12:55", "bangor 14:10", "orono 14:30"]
+
+[[trip]]
+id = "ccl104_56"
+route = "CCL 56 ss -> bangor"
+days = "1111111"
+stops = ["ss 12:15", "portland 14:10/14:15", "augusta 15:10", "bangor 16:25"]
+
+[[trip]]
+id = "ccl105_58"
+route = "CCL 58 ss -> bangor"
+days = "1111111"
+stops = ["ss 13:15", "portland 15:10/15:15", "augusta 16:10", "bangor 17:25"]
+
+[[trip]]
+id = "ccl106_58"
+route = "CCL 58 ss -> orono"
+note = "to UMaine Orono (bus change in Bangor): Thu-Mon during semesters only"
+days = "1001111"
+stops = ["ss 13:15", "portland 15:10/15:15", "augusta 16:10", "bangor 17:25", "orono 17:45"]
+
+[[trip]]
+id = "ccl107_62"
+route = "CCL 62 ss -> bangor"
+note = "Augusta drop-off only"
+days = "1111111"
+stops = ["ss 15:15", "portland 17:10/17:15", "augusta 18:10", "bangor 19:25"]
+
+[[trip]]
+id = "ccl108_66"
+route = "CCL 66 ss -> bangor"
+note = "Augusta drop-off only"
+days = "1111111"
+stops = ["ss 17:15", "portland 19:10/19:15", "augusta 20:10", "bangor 21:25"]
+
+[[trip]]
+id = "ccl109_54"
+route = "CCL 54 ss -> bangor"
+note = "Coastal; Lincolnville flag stop; Logan 10:35 by a change at Portland"
+days = "1111111"
+stops = ["ss 11:15", "portland 13:10/13:15", "brunswick 13:50", "bath 14:05", "wiscasset 14:25", "damariscotta 14:45", "waldoboro 15:00", "rockland 15:30", "camden 15:50", "lincolnville 16:00", "belfast 16:15", "searsport 16:25", "bangor 17:15"]

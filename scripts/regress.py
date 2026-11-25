@@ -4,8 +4,8 @@
 
 Run it before committing router, search or data changes. Add a check whenever a bug is fixed or a fact verified.
 """
-import pickle, sys, time, traceback
-from datetime import datetime
+import os, pickle, sys, time, traceback
+from datetime import date, datetime, timedelta
 from zoneinfo import ZoneInfo
 import numpy as np
 import time_router as tr
@@ -17,6 +17,25 @@ import backward as B
 OUT = '../out/'
 ET, CT = ZoneInfo('America/New_York'), ZoneInfo('America/Chicago')
 results = []
+
+# The checks were written on the Nov 4-23 2026 window (X starts Thu Nov 12). They run that window moved forward by
+# whole weeks, so weekdays and wall clocks hold, to the first window that starts after today: the feeds are what the
+# attempt will ride, not a past week (Nick, Nov 24 2026). BUS48_REGRESS_WEEKS pins the shift (0 = the original dates).
+# A shift changes the router cache key, so a new week rebuilds the router once (~9 min).
+BASE = date(2026, 11, 4)
+WEEKS = int(os.environ.get('BUS48_REGRESS_WEEKS', -1))
+if WEEKS < 0: WEEKS = max(0, -(-((date.today() - BASE).days + 1) // 7))
+SHIFT = timedelta(weeks=WEEKS)
+
+
+def at(*a, tzinfo=None):
+    """datetime(*a) on the shifted window (wall clock kept across a DST change)."""
+    return datetime(*a, tzinfo=tzinfo) + SHIFT
+
+
+def shifted(t, tz=ZoneInfo('America/Denver')):
+    """A stored timestamp (res_x.pkl's start) moved by the same whole weeks, wall clock kept."""
+    return (datetime.fromtimestamp(t, tz) + SHIFT).timestamp()
 
 
 def check(name):
@@ -35,8 +54,9 @@ def search_for(R, start, t0):
 
 
 print('settings: MIN_TRANSFER', tr.MIN_TRANSFER // 60, 'min, WALKIN_KM', tr.WALKIN_KM, ', SCAN_SLACK', tr.SCAN_SLACK / 3600, 'h')
-R = cached_router(datetime(2026, 11, 4).date(), 20)   # Nov 4-23: the X control finishes Sunday Nov 22
-t237 = datetime(2026, 11, 5, 0, 30, tzinfo=ET).timestamp()
+print(f'window: {BASE + SHIFT} + 20 days ({WEEKS} weeks after the Nov 4 2026 original)')
+R = cached_router(BASE + SHIFT, 20)   # Nov 4-23 shifted: the X control finishes Sunday Nov 22 + SHIFT
+t237 = at(2026, 11, 5, 0, 30, tzinfo=ET).timestamp()
 hun = R.stops_matching('Huntington Bus Stop')[0]
 
 
@@ -58,7 +78,7 @@ def _():
 @check('Amtrak times are agency (Eastern) time: CONO Effingham 12:01 AM, Memphis 6:42 AM Central (the Oct 7 2026 timetable)')
 def _():
     efg = R.stops_matching('Effingham Amtrak Station')[0]; mem = R.idx['amtrak:MEM']
-    day = datetime(2026, 11, 5, tzinfo=CT).timestamp()
+    day = at(2026, 11, 5, tzinfo=CT).timestamp()
     ks = [k for k in range(len(R.dep)) if R.cfrom[k] == efg and day < R.dep[k] < day + 86400
           and R.trip_info[(R.ctrip[k][0], R.ctrip[k][1])][1] == 'City of New Orleans']
     deps = {datetime.fromtimestamp(R.dep[k], CT).strftime('%H:%M') for k in ks}
@@ -74,7 +94,7 @@ def _():
     # X replaced the 237 route as the control on Oct 11 2026: Amtrak moved the City of New Orleans two hours later from
     # Oct 7, and the 237 route finishes at 252 h at best in November. Built by rebuild_x.py.
     d = pickle.load(open(OUT + 'res_x.pkl', 'rb')); st = R.stop_name.index(d['start'])
-    S = search_for(R, st, d['t0'])
+    S = search_for(R, st, shifted(d['t0']))
     f, legs = S.evaluate(d['order'])
     assert S.all_states(legs), [R.state_names[s] for s in S.missing(legs)]
     first = next(l[3] for l in legs if l[0] == 'ride')
@@ -83,7 +103,7 @@ def _():
 
 @check('router and coverage agree: every state target is collected by a ride or border walk-in (Sunland seed)')
 def _():
-    st = R.stops_matching('McNutt & Calle Morocco')[0]; t0 = datetime(2026, 11, 4, tzinfo=ZoneInfo('America/Denver')).timestamp()
+    st = R.stops_matching('McNutt & Calle Morocco')[0]; t0 = at(2026, 11, 4, tzinfo=ZoneInfo('America/Denver')).timestamp()
     S = search_for(R, st, t0)
     inv = {v: k for k, v in ts.ABBR.items()}
     order = [R.state_names.index(inv[x]) for x in 'TX,LA,MS,AL,FL,GA,SC,NC,VA,MD,DE,PA,NJ,NY,CT,RI,MA,ME,NH,VT,OH,WV,KY,TN,AR,MO,IL,IN,MI,WI,MN,IA,NE,KS,OK,CO,WY,SD,ND,MT,ID,WA,OR,UT,AZ,NV,CA'.split(',')]
@@ -95,7 +115,7 @@ def _():
 def _():
     # The clock is the pickle's 22:10, ten minutes before the 22:20 Jefferson. A stale clock once read as a backward bug
     # here (the 237 route's Barons bus moved to 00:45 under a 00:54 clock): the check asserts the two passes agree.
-    d = pickle.load(open(OUT + 'res_x.pkl', 'rb')); order = d['order']; t0 = d['t0']
+    d = pickle.load(open(OUT + 'res_x.pkl', 'rb')); order = d['order']; t0 = shifted(d['t0'])
     start = R.stop_name.index(d['start'])
     fw, bad = B.forward(R, start, t0, order); assert bad is None, bad
     rev = [[] for _ in range(R.N)]
@@ -297,7 +317,7 @@ def _():
 @check('prefix-shared scoring (finish_many / _finish_block) equals one-at-a-time _finish on all 24 orders of AZ UT CO NM')
 def _():
     import itertools
-    t0 = datetime(2026, 11, 5, tzinfo=ZoneInfo('America/Denver')).timestamp()
+    t0 = at(2026, 11, 5, tzinfo=ZoneInfo('America/Denver')).timestamp()
     four = [R.state_names.index(n) for n in ('Arizona', 'Utah', 'Colorado', 'New Mexico')]
     S = Search(R, ts.FREE, t0, [], 1, [s for s in range(N_STATES) if s not in four])
     ts.bind(R, ts.FREE, t0, S)
@@ -315,7 +335,7 @@ def _():
     sc = R.idx['ibus:339']; ne = R.state_names.index('Nebraska')
     bank = R.stops_matching('Nebraska bank at South Sioux City')[0]
     assert R.walk_collects(bank) and not R._crosses(sc, bank), 'the measured link no longer counts as a walk-in'
-    t = datetime(2026, 11, 15, 21, 50, tzinfo=CT).timestamp()
+    t = at(2026, 11, 15, 21, 50, tzinfo=CT).timestamp()
     S = Search(R, sc, t, [], 1, [s for s in range(N_STATES) if s != ne], end=ne)
     ts.bind(R, sc, t, S, end=ne)
     f, legs = S.evaluate([ne])
@@ -353,7 +373,7 @@ def _():
     mid = R.stops_matching('Arkansas line on Big River Crossing')[0]
     assert not R.foot.get(mid) and all(j != mid for i in R.foot for j, _ in R.foot[i]), 'mid-bridge point has a footpath'
     def reach(h):
-        t = datetime(2026, 11, 11, h, 0, tzinfo=CT).timestamp()
+        t = at(2026, 11, 11, h, 0, tzinfo=CT).timestamp()
         S = Search(R, mem, t, [], 1, [s for s in range(N_STATES) if s != ar], end=ar)
         ts.bind(R, mem, t, S, end=ar)
         f, legs = S.evaluate([ar]); return f - t, legs

@@ -73,3 +73,8 @@ ibus,1681,Jefferson Pierre 10:00 -> Mobridge 12:01 (sits to 19:30) -> Bismarck 2
 ibus,3629,Jefferson Mobridge 12:01 -> Pierre 14:00: tracker JL_691 11:30 -> 13:30 (Nick Oct 17 2026). Replaced by t497
 ibus,2711,Jefferson Pierre 17:00 -> Bismarck: Fort Yates/Bismarck a day late in the feed; tracker Pierre 16:45 -> Bismarck 22:25 (Nick Oct 17 2026). Replaced by t498
 ibus,1128,Jefferson Mobridge 19:15 -> Pierre 21:15: tracker JL_689 middle stops differ (Nick Oct 17 2026). Replaced by t499
+concord_coach,PORTLAND_BOS_*,Concord Coach PORTLAND_BOS: replaced by data/manual/concord_coach.toml from the carrier timetables effective Oct 25 2026 (Nov 24 2026)
+concord_coach,MIDCOAST_ME_*,Concord Coach MIDCOAST_ME: replaced by data/manual/concord_coach.toml from the carrier timetables effective Oct 25 2026 (Nov 24 2026)
+concord_coach,INLAND_ME_*,Concord Coach INLAND_ME: replaced by data/manual/concord_coach.toml from the carrier timetables effective Oct 25 2026 (Nov 24 2026)
+concord_coach,SOUTHERN_NH_*,Concord Coach SOUTHERN_NH: replaced by data/manual/concord_coach.toml from the carrier timetables effective Oct 25 2026 (Nov 24 2026)
+concord_coach,NORTHERN_NH_*,Concord Coach NORTHERN_NH: replaced by data/manual/concord_coach.toml from the carrier timetables effective Oct 25 2026 (Nov 24 2026)

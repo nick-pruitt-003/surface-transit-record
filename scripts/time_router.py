@@ -52,7 +52,7 @@ LOCAL_SPEED = 15 / 3.6     # m/s effective
 # more_gtfs feeds that are intercity carriers; every other feed there is city transit. The 1.5-10 km local-transit
 # proxy link is only built when one end is an intercity stop: city-to-city-stop hops are covered by the real
 # city routes, and building them for every pair of city stops multiplied the footpaths ~9x (Sep 21 2026).
-INTERCITY_MORE = {'coachusa', 'l2a', 'concord_coach', 'bustang', 'gobus', 'kimball', 'vttranslines', 'outrider'}
+INTERCITY_MORE = {'coachusa', 'l2a', 'concord_coach', 'bustang', 'gobus', 'kimball', 'vttranslines', 'outrider', 'zzz_boston_express'}
 LOCAL_PROXY_ALL = os.environ.get('BUS48_LOCAL_PROXY', 'intercity') == 'all'
 # Nick, Oct 15 2026: where a city feed exists, a transfer should ride its timetable, not the modelled hop. With
 # BUS48_HOP_FEED_KM=1 the hop is not built between two stops that each have a city-feed stop within 1 km; the city
