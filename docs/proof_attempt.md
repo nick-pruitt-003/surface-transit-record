@@ -485,3 +485,28 @@ So holding the 32 at Harrisburg at any clock from **Thu 04:00 to 14:35** cannot 
 through its waypoints, a route would have to be at Harrisburg with the 32 more than 10.5 h before X is (and start no
 later than 22:20 MT Thu Nov 12, from the segment proofs), or start later by a front that avoids X's waypoints.
 Before 04:00 the model does not settle in 30 minutes.
+
+## The front and tail proofs again, on the Dec 3 2026 attempt data (Nov 24-25)
+
+Feeds refreshed Nov 24 (JTA v2, Flix/Greyhound to May 2027, MATA, Metro Transit, Rock Region, Advance Transit, SEVT,
+Concord Coach from the Oct 25 PDFs, Boston Express, Rochester MN, MBTA allowlisted) and Nick's JRTC same-terminal
+through-trip (JTA route 4 went hourly; without it X misses the Silver Meteor and reaches Harrisburg 19:25-20:29, not
+14:35). X shifted 3 weeks: Sheridan Thu Dec 3 22:20 MT, Barstow Sat Dec 5 18:23, Tallahassee Tue Dec 8 11:00,
+Harrisburg Thu Dec 10 14:35, Moorhead line Sun Dec 13 15:28 CT, every clock as in November. Router window Nov 30 + 22
+days; stops by feed id (`=flix:...`). X now rides through Jacksonville on the JRTC trip, so the front is cut at
+Tallahassee, where X stands. `out/proof_chain_dec.sh` (WSL, 16 workers):
+
+| stage | question | result |
+|---|---|---|
+| tail gate | Harrisburg Thu 14:35 holding 32, best finish | OPTIMAL Sun 15:28 CT = X (73.88 h), bound = finish |
+| tail proof | same, by 15:27 | **INFEASIBLE** |
+| 1 | latest at Tallahassee to stand at Harrisburg by Thu 14:35 with the 15 between | **Tue 11:20** (11:21 dead); X there 11:00 |
+| 2 | latest at Barstow to stand at Tallahassee by 11:20 with CO KS NM OK TX AL FL LA | **Sat 20:42** (20:43 dead); X there 18:23 |
+| 3 gate | free start from Thu Dec 3 22:10 MT to Barstow by 20:42 with the 9 | OPTIMAL Sat 18:23 = X |
+| 3 proof | free start from 22:21 | **INFEASIBLE** |
+
+Same conclusions as November, on the data the attempt would ride: X's last 15 states are optimal from Harrisburg, and
+among routes through X's Barstow and Tallahassee waypoints nobody starts after JL 701 (22:20). Same limits: the
+waypoints and their state split are fixed in stages 1-2, the start bound is not a duration proof, and the model
+holds no NJ Transit, PATCO or other Northeast commuter systems (Nick: never faster than Amtrak), so INFEASIBLE is
+about the modelled network.
