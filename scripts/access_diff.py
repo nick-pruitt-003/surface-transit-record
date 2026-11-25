@@ -16,7 +16,7 @@ and then diffs two listings: visits that are new, gone, or run on different days
 it replaces between the same outside stops, if any, with both in-state spans, so "faster" is a pair of exact times
 rather than a summary number. Nothing is ranked or estimated; a visit is a fact from the timetable.
 
-The week listed is Mon Nov 16 - Sun Nov 22 2026 (after the Portal Bridge gap), from the same router window
+The week listed is Mon Dec 7 - Sun Dec 13 2026 (X's Dec 3 test week; BUS48_ACCESS_AT moves it), router window
 retime_routes.py uses (--at 2026-11-09 --days 22), so the cache is shared. Times are each stop's local clock.
 
 usage (from scripts/):
@@ -30,13 +30,15 @@ goes to docs/access_<rev>.md. Leaf script: nothing imports it.
 """
 import argparse, json, os, subprocess, sys
 from collections import defaultdict
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 HARD = 'SD,ND,MT,WY,ME,VT,NH,WA,ID,NM,OK,AR,MS,WV'
-AT, DAYS = date(2026, 11, 9), 22
-WEEK = (date(2026, 11, 16), date(2026, 11, 22))
+# window: the attempt test window (Dec 3 2026 start: router Nov 30 + 22, X's week Mon Dec 7 - Sun Dec 13);
+# BUS48_ACCESS_AT=YYYY-MM-DD moves both (the week is the Monday a week after AT)
+AT = date.fromisoformat(os.environ.get('BUS48_ACCESS_AT', '2026-11-30')); DAYS = 22
+WEEK = (AT + timedelta(days=7 - AT.weekday()), AT + timedelta(days=13 - AT.weekday()))
 DOW = 'MTWTFSS'
 
 
