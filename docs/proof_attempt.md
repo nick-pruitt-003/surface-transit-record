@@ -510,3 +510,17 @@ among routes through X's Barstow and Tallahassee waypoints nobody starts after J
 waypoints and their state split are fixed in stages 1-2, the start bound is not a duration proof, and the model
 holds no NJ Transit, PATCO or other Northeast commuter systems (Nick: never faster than Amtrak), so INFEASIBLE is
 about the modelled network.
+
+### Earlier Harrisburg clocks on the Dec 3 data (Nov 25)
+
+`out/tailmip_down.sh hdd`: at Harrisburg (Flix) on Thu Dec 10 at clock h holding X's 32 states, can anyone finish in
+MN by Sun 15:27 CT? 60 min per probe (November: 30).
+
+| h (Thu ET) | result |
+|---|---|
+| 12:00, 10:00, 08:00, 06:00, 04:00 | dead (each 1-20 min) |
+| 02:00 | UNKNOWN after 3600 s, bound 76.74 h (finish >= Sun 05:44 CT only) |
+
+Same as November: holding the 32 at Harrisburg any time Thu 04:00-14:35 cannot beat X. Doubling the time did not
+move 02:00; the LP bound is ~10 h short, so more CP-SAT time is not the lever. A faster route through Harrisburg with
+these 32 states must stand there before Thu 04:00, 10.5 h ahead of X.
