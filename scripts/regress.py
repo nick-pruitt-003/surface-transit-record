@@ -19,12 +19,16 @@ ET, CT = ZoneInfo('America/New_York'), ZoneInfo('America/Chicago')
 results = []
 
 # The checks were written on the Nov 4-23 2026 window (X starts Thu Nov 12). They run that window moved forward by
-# whole weeks, so weekdays and wall clocks hold, to the first window that starts after today: the feeds are what the
-# attempt will ride, not a past week (Nick, Nov 24 2026). BUS48_REGRESS_WEEKS pins the shift (0 = the original dates).
-# A shift changes the router cache key, so a new week rebuilds the router once (~9 min).
-BASE = date(2026, 11, 4)
+# whole weeks, so weekdays and wall clocks hold, onto the target attempt (Nick, Nov 24 2026): X starting Thu Dec 3
+# 2026 while that date is still ahead, then Thu Jan 7 2027 (by then the feeds that end Dec 31 - Jan 2 are refreshed).
+# Past the last target it falls back to the first whole-week window after today. BUS48_REGRESS_WEEKS pins the shift
+# (0 = the original dates). A shift changes the router cache key, so a new window rebuilds the router once (~9 min).
+BASE, X_BASE = date(2026, 11, 4), date(2026, 11, 12)
+X_TARGETS = (date(2026, 12, 3), date(2027, 1, 7))   # Thursdays: X's start day on the attempt windows
 WEEKS = int(os.environ.get('BUS48_REGRESS_WEEKS', -1))
-if WEEKS < 0: WEEKS = max(0, -(-((date.today() - BASE).days + 1) // 7))
+if WEEKS < 0:
+    tgt = next((d for d in X_TARGETS if d >= date.today()), None)
+    WEEKS = (tgt - X_BASE).days // 7 if tgt else max(0, -(-((date.today() - BASE).days + 1) // 7))
 SHIFT = timedelta(weeks=WEEKS)
 
 
