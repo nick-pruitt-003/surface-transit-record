@@ -6,7 +6,7 @@
   `tail_mip.py` defaults to it) until Dec 3, then on **Thu Jan 7 2027** (window Dec 30 + 22; finishes Sun Jan 17, the
   day before MLK). `regress.py` picks the window itself: the Nov 4-23 checks moved by whole weeks onto the next target
   (Dec 3, then Jan 7; `BUS48_REGRESS_WEEKS` pins it). For Jan 7, refresh around Dec 26 - Jan 2: Amtrak, MBTA (zzzz_mbta,
-  Nov 16 - Dec 12 only), Advance Transit, WMATA, MARC, MTA Manhattan bus, StarMetro, CTA, MATA, UTA, Metro Transit,
+  Nov 16 - Dec 12 only), Advance Transit, WMATA, MARC, MTA Manhattan bus, StarMetro, CTA, MATA, UTA, Metro Transit, Metro St. Louis (the Control's IL loop),
   Omaha; then regress, `retime_routes.py --at 2027-01-04`, the front proofs. The Nov dates and the Portal Bridge bound
   below are history. JTA route 4 went hourly (Nov 2 feed); X keeps the Silver Meteor only through Nick's JRTC
   same-terminal ruling, `data/manual/jrtc_same_terminal.toml` (strict 5 min: Harrisburg 19:25-20:29, not 14:35).
