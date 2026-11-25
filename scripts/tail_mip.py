@@ -556,6 +556,10 @@ def main():
     end = code(a.end)
     def one_stop(q):
         if q.startswith('#'): return int(q[1:])
+        if q.startswith('='):                                    # a feed stop id, stable across feed changes
+            c = [i for i in range(R.N) if R.stop_ids[i] == q[1:]]
+            if len(c) != 1: sys.exit(f'stop id {q[1:]!r} matches {len(c)} stops')
+            return c[0]
         c = [i for i in R.stops_matching(q) if R.stop_name[i].lower() == q.lower()] or R.stops_matching(q)
         if len(c) != 1:
             sys.exit(f'stop {q!r} matches {len(c)} stops; pass one as #index:\n' +
@@ -577,7 +581,7 @@ def main():
         print(f'free start from {datetime.fromtimestamp(t0, ZoneInfo(a.tz))}, owes {len(owed)}; end {a.end} by '
               f'{datetime.fromtimestamp(D, ZoneInfo(a.by_tz))} ({(D - t0) / 3600:.2f} h)', flush=True)
         s0s = [None]
-    elif a.stop.startswith('#'): s0s = [int(a.stop[1:])]          # an exact stop index, as the error below lists them
+    elif a.stop.startswith(('#', '=')): s0s = [one_stop(a.stop)]   # an exact stop index or feed stop id
     else: s0s = [i for i in R.stops_matching(a.stop) if R.stop_name[i].lower() == a.stop.lower()] or R.stops_matching(a.stop)
     if len(s0s) != 1:
         sys.exit(f'--stop matches {len(s0s)} stops; pass one as #index:\n' +
