@@ -68,7 +68,10 @@ Find a scheduled surface route through all 48 contiguous states faster than the 
 
 ## Working rules
 
-- **One search at a time.** Not three in parallel to compare them.
+- **Searches may run in parallel, up to 4 at once** (Nick, Nov 27 2026; was one at a time). The rule came from the
+  container this project used to run in; the Windows host has 24 threads and ~100 GB for WSL, and a search takes one
+  core and 5-15 GB. `run_lock.py` enforces the cap (`HF_MAX_SEARCHES`, default 4): one over it waits. A rebuild still
+  runs alone. Use it for independent runs (a sweep over start days or hinges), not three variants to compare.
 - **Run `regress.py` from inside `scripts/` before committing** (it resolves `../out/` relatively, so
   running it from the repository root fails on missing pickles rather than on anything real) anything touching the router, the search or the
   data. A new leaf script that nothing imports is the one exception, and say so when you skip it.
